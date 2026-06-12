@@ -3,6 +3,7 @@
  */
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 
 export interface TwinGroup {
   id: string
@@ -13,11 +14,17 @@ export interface TwinGroup {
 }
 
 export const useFamilyStore = defineStore('family', () => {
-  const currentGroup = ref<TwinGroup | null>(null)
+  const _p = createPersistence<TwinGroup>(PERSIST_KEYS.family)
+
+  const currentGroup = ref<TwinGroup | null>(_p.load())
 
   const hasGroup = computed(() => currentGroup.value !== null)
   const groupName = computed(() => currentGroup.value?.name ?? '我的家庭')
   const babyCount = computed(() => currentGroup.value?.babyIds?.length ?? 0)
+
+  function _save() {
+    if (currentGroup.value) _p.save(currentGroup.value)
+  }
 
   function createGroup(name: string) {
     currentGroup.value = {
@@ -27,11 +34,13 @@ export const useFamilyStore = defineStore('family', () => {
       babyIds: [],
       createdAt: new Date().toISOString(),
     }
+    _save()
   }
 
   function updateName(name: string) {
     if (currentGroup.value) {
       currentGroup.value = { ...currentGroup.value, name }
+      _save()
     }
   }
 
@@ -42,6 +51,7 @@ export const useFamilyStore = defineStore('family', () => {
         ...currentGroup.value,
         babyIds: [...currentGroup.value.babyIds, babyId],
       }
+      _save()
     }
   }
 

@@ -4,6 +4,7 @@
  */
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 
 export type TaskCategory = 'feeding' | 'diaper' | 'sleep' | 'bath' | 'play' | 'custom'
 export type TaskMode = 'solo' | 'tandem'  // 单独 / 双人同时
@@ -40,15 +41,22 @@ export const CATEGORY_META: Record<TaskCategory, { emoji: string; label: string 
 }
 
 export const useDutyStore = defineStore('duty', () => {
-  const tasks = ref<SOPTask[]>([])
+  const _p = createPersistence<{ tasks: SOPTask[]; phrase: string }>(PERSIST_KEYS.duty)
+  const _saved = _p.load()
+
+  const tasks = ref<SOPTask[]>(_saved?.tasks ?? [])
   const mode = ref<TaskMode>('solo')
-  const phrase = ref('') // 今日鸡汤
+  const phrase = ref(_saved?.phrase ?? '')
 
   const totalCount = computed(() => tasks.value.length)
   const doneCount = computed(() => tasks.value.filter(t => t.done).length)
   const progress = computed(() => totalCount.value > 0 ? Math.round(doneCount.value / totalCount.value * 100) : 0)
   const isAllDone = computed(() => totalCount.value > 0 && doneCount.value === totalCount.value)
   const undoneCount = computed(() => totalCount.value - doneCount.value)
+
+  function _save() {
+    _p.save({ tasks: tasks.value, phrase: phrase.value })
+  }
 
   function initDuty() {
     const now = Date.now()
@@ -67,10 +75,12 @@ export const useDutyStore = defineStore('duty', () => {
       '拍照。妈妈想看到你们三个在一起。',
     ]
     phrase.value = phrases[Math.floor(Math.random() * phrases.length)]
+    _save()
   }
 
   function toggleTask(id: string) {
     tasks.value = tasks.value.map(t => t.id === id ? { ...t, done: !t.done } : t)
+    _save()
   }
 
   function toggleBabyNeed(id: string, baby: 'A' | 'B') {
@@ -78,13 +88,15 @@ export const useDutyStore = defineStore('duty', () => {
       if (t.id !== id) return t
       return baby === 'A' ? { ...t, babyANeed: !t.babyANeed } : { ...t, babyBNeed: !t.babyBNeed }
     })
+    _save()
   }
 
   function updateNote(id: string, note: string) {
     tasks.value = tasks.value.map(t => t.id === id ? { ...t, note } : t)
+    _save()
   }
 
-  function resetDuty() { tasks.value = []; phrase.value = '' }
+  function resetDuty() { tasks.value = []; phrase.value = ''; _p.remove() }
 
   return {
     tasks, mode, phrase,

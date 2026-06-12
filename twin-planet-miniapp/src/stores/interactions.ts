@@ -4,6 +4,7 @@
  */
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 
 // ============================================================
 // 萌芽日记
@@ -66,8 +67,11 @@ export const CONTRIBUTION_TYPES: Record<ContributionCategory, { emoji: string; l
 // ============================================================
 
 export const useInteractionsStore = defineStore('interactions', () => {
-  const sproutEntries = ref<SproutEntry[]>([])
-  const contributionEntries = ref<ContributionEntry[]>([])
+  const _pSprout = createPersistence<SproutEntry[]>(PERSIST_KEYS.interactions + '_sprout')
+  const _pContrib = createPersistence<ContributionEntry[]>(PERSIST_KEYS.interactions + '_contrib')
+
+  const sproutEntries = ref<SproutEntry[]>(_pSprout.load() ?? [])
+  const contributionEntries = ref<ContributionEntry[]>(_pContrib.load() ?? [])
 
   // ---- 萌芽日记 ----
 
@@ -79,6 +83,7 @@ export const useInteractionsStore = defineStore('interactions', () => {
       id: `sprout-${Date.now()}`,
       recordedAt: Date.now(),
     }]
+    _pSprout.save(sproutEntries.value)
   }
 
   // ---- 今天我做了什么 ----
@@ -91,12 +96,31 @@ export const useInteractionsStore = defineStore('interactions', () => {
     ).reverse()
   })
 
-  function addContribution(data: Omit<ContributionEntry, 'id' | 'recordedAt'>) {
+  /**
+   * 添加贡献记录。
+   * 自动从 userStore 读取当前用户信息填充 userName，
+   * 这样妈妈/爸爸/奶奶的贡献可以区分开来（不再全是"我"）。
+   */
+  function addContribution(data: Omit<ContributionEntry, 'id' | 'recordedAt' | 'userName'> & { userName?: string }) {
+    // 如果调用方传了 userName 就用传入的，否则从 userStore 读取
+    let userName = data.userName
+    if (!userName) {
+      try {
+        const { useUserStore } = require('@/stores/user')
+        const userStore = useUserStore()
+        userName = userStore.profile?.nickname || userStore.roleLabel
+      } catch {
+        userName = '家人'
+      }
+    }
+
     contributionEntries.value = [...contributionEntries.value, {
       ...data,
       id: `contrib-${Date.now()}`,
+      userName,
       recordedAt: Date.now(),
     }]
+    _pContrib.save(contributionEntries.value)
   }
 
   return {

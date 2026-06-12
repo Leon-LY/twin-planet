@@ -5,6 +5,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useRecordsStore } from './records'
+import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 
 export type AlertLevel = 'info' | 'nudge' | 'urgent'
 
@@ -23,8 +24,14 @@ const FEEDING_GAP_URGENT = 4 * 60 * 60 * 1000  // 4小时
 const DIAPER_GAP_WARN = 4 * 60 * 60 * 1000     // 4小时
 
 export const useAlertsStore = defineStore('alerts', () => {
-  const alerts = ref<Alert[]>([])
+  const _p = createPersistence<Alert[]>(PERSIST_KEYS.alerts)
+
+  const alerts = ref<Alert[]>(_p.load() ?? [])
   const lastCheckAt = ref(0)
+
+  function _save() {
+    _p.save(alerts.value.slice(0, 50)) // 最多保留 50 条
+  }
 
   const unreadCount = computed(() => alerts.value.filter(a => !a.read).length)
   const recent = computed(() => alerts.value.slice().reverse().slice(0, 10))
@@ -61,15 +68,18 @@ export const useAlertsStore = defineStore('alerts', () => {
     if (newAlerts.length) {
       const fresh = newAlerts.map(a => ({ ...a, id: `alert-${Date.now()}-${Math.random().toString(36).slice(2,4)}`, createdAt: now, read: false }))
       alerts.value = [...fresh, ...alerts.value]
+      _save()
     }
   }
 
   function markRead(id: string) {
     alerts.value = alerts.value.map(a => a.id === id ? { ...a, read: true } : a)
+    _save()
   }
 
   function markAllRead() {
     alerts.value = alerts.value.map(a => ({ ...a, read: true }))
+    _save()
   }
 
   return { alerts, unreadCount, recent, checkAlerts, markRead, markAllRead }

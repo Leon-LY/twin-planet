@@ -3,6 +3,7 @@
  */
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 
 const BABY_COLORS = { 1: '#4299E1', 2: '#F56565' } as const
 
@@ -23,7 +24,9 @@ export interface Baby {
 }
 
 export const useBabiesStore = defineStore('babies', () => {
-  const babies = ref<Baby[]>([])
+  const _p = createPersistence<Baby[]>(PERSIST_KEYS.babies)
+
+  const babies = ref<Baby[]>(_p.load() ?? [])
   const activeBabyId = ref<string | null>(null)
 
   const count = computed(() => babies.value.length)
@@ -32,6 +35,10 @@ export const useBabiesStore = defineStore('babies', () => {
   const babyB = computed(() => babies.value.find(b => b.birthOrder === 2) ?? null)
   const areSameGender = computed(() => babyA.value?.gender === babyB.value?.gender)
   const isTwinsComplete = computed(() => count.value >= 2)
+
+  function _save() {
+    _p.save(babies.value)
+  }
 
   function addBaby(data: Omit<Baby, 'id' | 'userId' | 'twinGroupId' | 'color'>) {
     const id = `baby-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
@@ -45,6 +52,7 @@ export const useBabiesStore = defineStore('babies', () => {
     }
     babies.value = [...babies.value, baby]
     if (!activeBabyId.value) activeBabyId.value = id
+    _save()
     return baby
   }
 
@@ -54,6 +62,7 @@ export const useBabiesStore = defineStore('babies', () => {
 
   function updateBaby(id: string, data: Partial<Baby>) {
     babies.value = babies.value.map(b => b.id === id ? { ...b, ...data } : b)
+    _save()
   }
 
   function getBaby(id: string): Baby | undefined {

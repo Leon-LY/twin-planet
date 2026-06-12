@@ -5,6 +5,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useRecordsStore } from './records'
 import { useBabiesStore } from './babies'
+import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 
 // ---- 电量表 ----
 export interface EnergyState {
@@ -26,14 +27,19 @@ export interface OneOnOneSession {
 }
 
 export const useGuardianStore = defineStore('guardian', () => {
+  const _pEnergy = createPersistence<{ mom: EnergyState; dad: EnergyState }>(PERSIST_KEYS.guardian + '_energy')
+  const _pSessions = createPersistence<OneOnOneSession[]>(PERSIST_KEYS.guardian + '_sessions')
+  const _savedEnergy = _pEnergy.load()
+
   // ---- 电量表 ----
-  const momEnergy = ref<EnergyState>({ level: 5, reason: '还没开始记录', updatedAt: Date.now() })
-  const dadEnergy = ref<EnergyState>({ level: 5, reason: '还没开始记录', updatedAt: Date.now() })
+  const momEnergy = ref<EnergyState>(_savedEnergy?.mom ?? { level: 5, reason: '还没开始记录', updatedAt: Date.now() })
+  const dadEnergy = ref<EnergyState>(_savedEnergy?.dad ?? { level: 5, reason: '还没开始记录', updatedAt: Date.now() })
 
   function setEnergy(who: 'mom' | 'dad', level: number, reason: string) {
     const clamped = Math.max(1, Math.min(10, Math.round(level)))
     const target = who === 'mom' ? momEnergy : dadEnergy
     target.value = { level: clamped, reason, updatedAt: Date.now() }
+    _pEnergy.save({ mom: momEnergy.value, dad: dadEnergy.value })
   }
 
   function autoCalcEnergy(who: 'mom' | 'dad') {
@@ -52,13 +58,11 @@ export const useGuardianStore = defineStore('guardian', () => {
   }
 
   // ---- 一人时光 ----
-  const sessions = ref<OneOnOneSession[]>([])
+  const sessions = ref<OneOnOneSession[]>(_pSessions.load() ?? [])
   const activeSession = ref<OneOnOneSession | null>(null)
 
-  const babyATimeToday = computed(() => {
-    const today = Date.now() - 86400000
-    return sessions.value.filter(s => s.babyId && s.endedAt && s.endedAt > today && s.endedAt > today)
-  })
+  // babyATimeToday 已移除 — 原实现存在重复比较 bug (s.endedAt > today 写了两次) 且未按 babyId 过滤
+  // 请使用 timeWithBaby(babyId) 替代
 
   function timeWithBaby(babyId: string): number {
     const today = Date.now() - 86400000
@@ -93,6 +97,7 @@ export const useGuardianStore = defineStore('guardian', () => {
     const finished: OneOnOneSession = { ...activeSession.value, endedAt: ended, durationMin: dur }
     sessions.value = [...sessions.value, finished]
     activeSession.value = null
+    _pSessions.save(sessions.value)
     return finished
   }
 
@@ -100,7 +105,7 @@ export const useGuardianStore = defineStore('guardian', () => {
     momEnergy, dadEnergy,
     setEnergy, autoCalcEnergy,
     sessions, activeSession,
-    babyATimeToday, timeGapWarning,
+    timeGapWarning,
     timeWithBaby,
     startSession, endSession,
   }

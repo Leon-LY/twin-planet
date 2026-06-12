@@ -4,6 +4,7 @@
  */
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 
 export interface UserProfile {
   id: string
@@ -32,9 +33,16 @@ const DEFAULT_UI_CONFIG: UserUIConfig = {
 }
 
 export const useUserStore = defineStore('user', () => {
+  const _p = createPersistence<UserProfile>(PERSIST_KEYS.user)
+
   const isLoggedIn = ref(false)
-  const profile = ref<UserProfile | null>(null)
-  const isNewUser = ref(true)
+  const profile = ref<UserProfile | null>(_p.load())
+  const isNewUser = ref(!profile.value)
+
+  // 如果从存储恢复了 profile，自动登录
+  if (profile.value) {
+    isLoggedIn.value = true
+  }
 
   const isGrandmaMode = computed(() => profile.value?.preferredUiMode === 'large')
   const isDad = computed(() => profile.value?.role === 'dad')
@@ -50,6 +58,10 @@ export const useUserStore = defineStore('user', () => {
 
   const fontSize = computed(() => profile.value?.uiConfig?.fontSize ?? 14)
   const shouldShowTTS = computed(() => profile.value?.uiConfig?.showTTS ?? false)
+
+  function _save() {
+    if (profile.value) _p.save(profile.value)
+  }
 
   async function loginByWechat() {
     try {
@@ -67,6 +79,8 @@ export const useUserStore = defineStore('user', () => {
         createdAt: new Date().toISOString(),
       }
       isLoggedIn.value = true
+      isNewUser.value = false
+      _save()
     } catch (err) {
       throw err
     }
@@ -79,7 +93,9 @@ export const useUserStore = defineStore('user', () => {
     // 奶奶/外婆自动启用大字模式
     if (role === 'grandma' || role === 'grandpa') {
       toggleLargeMode(true)
+      return // toggleLargeMode 内部会 _save()
     }
+    _save()
   }
 
   /** 切换大字模式（不可变更新） */
@@ -95,15 +111,20 @@ export const useUserStore = defineStore('user', () => {
         simplifiedHome: enabled,
       },
     }
+    _save()
   }
 
   function setNickname(name: string) {
-    if (profile.value) profile.value = { ...profile.value, nickname: name }
+    if (profile.value) {
+      profile.value = { ...profile.value, nickname: name }
+      _save()
+    }
   }
 
   function logout() {
     isLoggedIn.value = false
     profile.value = null
+    _p.remove()
   }
 
   return {
