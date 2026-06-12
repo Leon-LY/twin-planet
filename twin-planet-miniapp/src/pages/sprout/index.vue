@@ -1,0 +1,187 @@
+<template>
+  <view class="sprout-page">
+    <!-- 头部 -->
+    <view class="section-header">
+      <text class="section-icon">🌱</text>
+      <text class="section-title">萌芽日记</text>
+      <text class="section-desc">记录两个宝宝之间的互动瞬间</text>
+    </view>
+
+    <!-- 添加按钮 -->
+    <view class="add-section">
+      <scroll-view scroll-x class="type-scroll">
+        <view class="type-chips">
+          <view
+            v-for="(info, type) in INTERACTION_TYPES"
+            :key="type"
+            class="type-chip"
+            :class="{ selected: selectedType === type }"
+            @click="selectedType = type as InteractionType"
+          >
+            <text class="chip-emoji">{{ info.emoji }}</text>
+            <text class="chip-label">{{ info.label }}</text>
+          </view>
+        </view>
+      </scroll-view>
+
+      <view class="note-input-row">
+        <input
+          class="note-input"
+          v-model="noteText"
+          placeholder="简单写一句发生了什么..."
+          placeholder-style="color: #CBD5E0"
+          maxlength="200"
+          confirm-type="done"
+          @confirm="addEntry"
+        />
+        <view class="btn-send" @click="addEntry">
+          <text>记录</text>
+        </view>
+      </view>
+      <text class="input-hint" v-if="noteText.length > 0">{{ noteText.length }}/200</text>
+    </view>
+
+    <!-- 时间线 -->
+    <view class="timeline-section" v-if="store.recentSprouts.length">
+      <text class="section-label">互动时间线</text>
+      <view class="timeline">
+        <view
+          v-for="(entry, idx) in store.recentSprouts"
+          :key="entry.id"
+          class="timeline-item"
+        >
+          <view class="timeline-line">
+            <view class="timeline-dot" :class="{ first: idx === 0 }" />
+            <view class="timeline-bar" v-if="idx < store.recentSprouts.length - 1" />
+          </view>
+          <view class="timeline-card">
+            <view class="timeline-header">
+              <text class="timeline-emoji">{{ INTERACTION_TYPES[entry.type].emoji }}</text>
+              <text class="timeline-type">{{ INTERACTION_TYPES[entry.type].label }}</text>
+              <text class="timeline-time">{{ timeStr(entry.recordedAt) }}</text>
+            </view>
+            <text class="timeline-note">{{ entry.note }}</text>
+            <view class="timeline-twins">
+              <text class="twin-tag blue">{{ entry.babyAName }}</text>
+              <text class="tag-arrow">↔</text>
+              <text class="twin-tag pink">{{ entry.babyBName }}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" v-else>
+      <text class="empty-emoji">📖</text>
+      <text class="empty-title">还没有萌芽日记</text>
+      <text class="empty-desc">记录双胞胎之间的互动瞬间：第一次分享、争抢玩具、互相模仿...</text>
+    </view>
+  </view>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useBabiesStore } from '@/stores/babies'
+import { useInteractionsStore, INTERACTION_TYPES, type InteractionType } from '@/stores/interactions'
+
+const babiesStore = useBabiesStore()
+const store = useInteractionsStore()
+
+const selectedType = ref<InteractionType>('share')
+const noteText = ref('')
+
+function addEntry() {
+  if (!noteText.value.trim()) return
+  const babyA = babiesStore.babyA
+  const babyB = babiesStore.babyB
+  if (!babyA || !babyB) {
+    uni.showToast({ title: '请先添加双胞胎宝宝', icon: 'none' })
+    return
+  }
+
+  store.addSprout({
+    twinGroupId: '',
+    type: selectedType.value,
+    babyAName: babyA.nickname || babyA.name,
+    babyBName: babyB.nickname || babyB.name,
+    note: noteText.value.trim(),
+  })
+
+  noteText.value = ''
+  uni.showToast({ title: '🌱 已记录', icon: 'success', duration: 1000 })
+}
+
+function timeStr(ts: number): string {
+  const d = new Date(ts)
+  return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
+onMounted(() => {
+  uni.setNavigationBarTitle({ title: '萌芽日记' })
+})
+</script>
+
+<style scoped>
+.sprout-page { min-height: 100vh; background: #FFFBF5; padding: 32rpx 32rpx 80rpx; }
+
+.section-header { text-align: center; margin-bottom: 32rpx; }
+.section-icon { font-size: 40px; }
+.section-title { display: block; font-size: 44rpx; font-weight: 700; color: #2D3748; margin: 12rpx 0; }
+.section-desc { font-size: 26rpx; color: #A0AEC0; }
+
+/* 添加区 */
+.add-section { margin-bottom: 40rpx; }
+.type-scroll { white-space: nowrap; margin-bottom: 20rpx; }
+.type-chips { display: flex; gap: 12rpx; }
+.type-chip {
+  display: inline-flex; align-items: center; gap: 8rpx;
+  padding: 16rpx 24rpx; background: #FFFFFF;
+  border: 4rpx solid #E2E8F0; border-radius: 40rpx;
+  font-size: 24rpx; color: #718096; white-space: nowrap;
+}
+.type-chip.selected { border-color: #48BB78; background: #F0FFF4; color: #2D3748; }
+.chip-emoji { font-size: 28rpx; }
+.chip-label { font-size: 24rpx; }
+
+.note-input-row { display: flex; gap: 12rpx; }
+.note-input {
+  flex: 1; padding: 24rpx 28rpx; background: #FFFFFF;
+  border: 4rpx solid #E2E8F0; border-radius: 24rpx;
+  font-size: 28rpx; color: #2D3748;
+}
+.btn-send {
+  padding: 0 32rpx; background: #48BB78; border-radius: 24rpx;
+  display: flex; align-items: center; justify-content: center;
+  color: #FFFFFF; font-size: 28rpx; font-weight: 600;
+}
+.input-hint { display: block; text-align: right; font-size: 20rpx; color: #CBD5E0; margin-top: 8rpx; }
+
+/* 时间线 */
+.section-label { display: block; font-size: 26rpx; font-weight: 600; color: #2D3748; margin-bottom: 20rpx; }
+.timeline { padding-left: 32rpx; }
+.timeline-item { display: flex; gap: 20rpx; padding-bottom: 28rpx; }
+.timeline-line { display: flex; flex-direction: column; align-items: center; width: 24rpx; flex-shrink: 0; }
+.timeline-dot { width: 16rpx; height: 16rpx; border-radius: 50%; background: #CBD5E0; margin-top: 8rpx; }
+.timeline-dot.first { background: #48BB78; width: 20rpx; height: 20rpx; }
+.timeline-bar { flex: 1; width: 2rpx; background: #E2E8F0; margin-top: 4rpx; }
+.timeline-card {
+  flex: 1; background: #FFFFFF; border-radius: 16rpx; padding: 20rpx 24rpx;
+  border-left: 6rpx solid #48BB78;
+}
+.timeline-header { display: flex; align-items: center; gap: 8rpx; margin-bottom: 8rpx; }
+.timeline-emoji { font-size: 24rpx; }
+.timeline-type { font-size: 24rpx; font-weight: 600; color: #2D3748; }
+.timeline-time { font-size: 20rpx; color: #A0AEC0; margin-left: auto; }
+.timeline-note { font-size: 26rpx; color: #4A5568; line-height: 1.6; }
+.timeline-twins { display: flex; align-items: center; gap: 8rpx; margin-top: 12rpx; }
+.twin-tag { font-size: 22rpx; padding: 4rpx 16rpx; border-radius: 20rpx; }
+.twin-tag.blue { background: #EBF8FF; color: #4299E1; }
+.twin-tag.pink { background: #FFF5F5; color: #F56565; }
+.tag-arrow { font-size: 18rpx; color: #CBD5E0; }
+
+.empty-state { text-align: center; padding: 80rpx 32rpx; }
+.empty-emoji { font-size: 48px; }
+.empty-title { display: block; font-size: 32rpx; font-weight: 600; color: #2D3748; margin: 16rpx 0 8rpx; }
+.empty-desc { font-size: 26rpx; color: #A0AEC0; line-height: 1.6; }
+</style>

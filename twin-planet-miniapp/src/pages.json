@@ -42,6 +42,20 @@
 				"navigationBarTitleText": "双轨记录",
 				"navigationBarBackgroundColor": "#FFFBF5"
 			}
+		},
+		{
+			"path": "pages/sprout/index",
+			"style": {
+				"navigationBarTitleText": "萌芽日记",
+				"navigationBarBackgroundColor": "#FFFBF5"
+			}
+		},
+		{
+			"path": "pages/contribution/index",
+			"style": {
+				"navigationBarTitleText": "今天我做了什么",
+				"navigationBarBackgroundColor": "#FFFBF5"
+			}
 		}
 	],
 	"globalStyle": {

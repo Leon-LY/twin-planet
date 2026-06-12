@@ -58,24 +58,24 @@
         <text class="feature-arrow">›</text>
       </view>
 
-      <!-- 双胞胎知识库 — 待实现 -->
-      <view class="feature-card feature-pending">
-        <view class="feature-icon">📚</view>
-        <view class="feature-body">
-          <text class="feature-name">双胞胎知识库</text>
-          <text class="feature-desc">20+ 双胞胎专属育儿文章 · 按年龄段智能推荐</text>
-        </view>
-        <view class="feature-badge">Sprint 6</view>
-      </view>
-
-      <!-- 萌芽日记 — 待实现 -->
-      <view class="feature-card feature-pending">
+      <!-- 萌芽日记 — 刚实现 -->
+      <view class="feature-card feature-ready" @click="goSprout">
         <view class="feature-icon">🌱</view>
         <view class="feature-body">
           <text class="feature-name">萌芽日记</text>
           <text class="feature-desc">记录双胞胎之间的互动瞬间 · 第一次分享/第一次打架</text>
         </view>
-        <view class="feature-badge">Sprint 2.5</view>
+        <text class="feature-arrow">›</text>
+      </view>
+
+      <!-- 今天我做了什么 — 刚实现 -->
+      <view class="feature-card feature-ready" @click="goContribution">
+        <view class="feature-icon">💪</view>
+        <view class="feature-body">
+          <text class="feature-name">今天我做了什么</text>
+          <text class="feature-desc">看见每一位家人的付出 · 每件小事都值得被记录</text>
+        </view>
+        <text class="feature-arrow">›</text>
       </view>
     </view>
 
@@ -90,6 +90,8 @@
 <script setup lang="ts">
 const goGrowth = () => { uni.navigateTo({ url: '/pages/growth/index' }) }
 const goRecord = () => { uni.navigateTo({ url: '/pages/record/index' }) }
+const goSprout = () => { uni.navigateTo({ url: '/pages/sprout/index' }) }
+const goContribution = () => { uni.navigateTo({ url: '/pages/contribution/index' }) }
 </script>
 
 <style scoped>
