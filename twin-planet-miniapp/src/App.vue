@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { useUserStore } from '@/stores/user'
+import { onLaunch } from '@dcloudio/uni-app'
 
 onLaunch(() => {
   // 检查登录状态，决定启动页
-  const userStore = useUserStore()
-  // 开发阶段默认进入 login，后续接入真实登录后在此判断
+  // 开发阶段暂不强制路由跳转
+  // const userStore = useUserStore()
   // if (!userStore.isLoggedIn) { uni.reLaunch({ url: '/pages/login/index' }) }
 })
 </script>
