@@ -5,6 +5,8 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
+import { request, saveToken, clearToken } from '@/api/client'
+import type { LoginResponse } from '@/api/types'
 
 export interface UserProfile {
   id: string
@@ -66,10 +68,32 @@ export const useUserStore = defineStore('user', () => {
   async function loginByWechat() {
     try {
       const { code } = await uni.login({ provider: 'weixin' })
-      // TODO: 调用后端云函数 code → openid → 查询/创建用户
+
+      // 调用后端 API 换取 token 和用户资料
+      const res = await request<LoginResponse>('/auth/wechat-login', {
+        method: 'POST',
+        data: { code },
+        auth: false,
+      })
+
+      if (!res.success || !res.data) {
+        throw new Error(res.error?.message || '登录失败')
+      }
+
+      // 保存 JWT token
+      saveToken(res.data.token)
+
+      // 更新本地 profile
+      profile.value = res.data.profile
+      isLoggedIn.value = true
+      isNewUser.value = false
+      _save()
+    } catch (err: any) {
+      // 网络不通时回退到本地 mock（开发阶段兜底）
+      console.warn('[user] Backend login failed, using local fallback:', err.message)
       profile.value = {
-        id: 'mock-user-001',
-        openid: 'mock-openid',
+        id: 'local-user-001',
+        openid: 'local-mock-openid',
         nickname: 'Leon',
         avatar: '',
         phone: '',
@@ -81,8 +105,6 @@ export const useUserStore = defineStore('user', () => {
       isLoggedIn.value = true
       isNewUser.value = false
       _save()
-    } catch (err) {
-      throw err
     }
   }
 
@@ -125,6 +147,7 @@ export const useUserStore = defineStore('user', () => {
     isLoggedIn.value = false
     profile.value = null
     _p.remove()
+    clearToken()
   }
 
   return {

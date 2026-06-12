@@ -1,24 +1,30 @@
 # 并蒂星球 · 后端服务
 # 部署到 49.232.49.175，端口 3003（避免与 investlearn/studio 冲突）
-# 注意：PostgreSQL 和 Redis 复用现有容器，不在此 docker-compose 中启动
+# PostgreSQL 和 Redis 复用 investlearn 项目的现有容器
 
 services:
   api:
     build: .
     container_name: twin-planet-api
     ports:
-      - "3003:3000"                  # 主机 3003 → 容器 3000
+      - "3003:3000"
     environment:
-      - DATABASE_URL=postgresql://twin_planet_user:tp_dev_2026@host.docker.internal:5432/twin_planet
-      - REDIS_URL=redis://host.docker.internal:6379/2
+      - DATABASE_URL=postgresql://twin_planet_user:tp_dev_2026@investlearn-db:5432/twin_planet
+      - REDIS_URL=redis://investlearn-redis:6379/2
       - JWT_SECRET=${JWT_SECRET:-dev-secret-change-me}
       - WECHAT_APPID=${WECHAT_APPID:-wxee2ef767a77058db}
       - WECHAT_SECRET=${WECHAT_SECRET:-}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    networks:
+      - default
+      - deploy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
       interval: 30s
       timeout: 5s
       retries: 3
+
+networks:
+  deploy:
+    external: true
+    name: deploy_default
