@@ -122,11 +122,5 @@
 		"navigationBarTitleText": "并蒂星球",
 		"navigationBarBackgroundColor": "#FFFBF5",
 		"backgroundColor": "#FFFBF5"
-	},
-	"preloadRule": {
-		"pages/index/index": {
-			"network": "all",
-			"packages": ["pages/growth"]
-		}
 	}
 }
