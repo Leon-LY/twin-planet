@@ -13,6 +13,28 @@
 				"navigationBarTitleText": "生长曲线",
 				"navigationBarBackgroundColor": "#FFFBF5"
 			}
+		},
+		{
+			"path": "pages/login/index",
+			"style": {
+				"navigationBarTitleText": "欢迎",
+				"navigationBarBackgroundColor": "#FFFBF5",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/onboarding/family",
+			"style": {
+				"navigationBarTitleText": "创建家庭",
+				"navigationBarBackgroundColor": "#FFFBF5"
+			}
+		},
+		{
+			"path": "pages/onboarding/babies",
+			"style": {
+				"navigationBarTitleText": "添加宝宝",
+				"navigationBarBackgroundColor": "#FFFBF5"
+			}
 		}
 	],
 	"globalStyle": {
