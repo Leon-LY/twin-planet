@@ -37,7 +37,7 @@
           {{ runningBaby?.nickname || runningBaby?.name }}
         </text>
       </view>
-      <button class="btn-stop" @click="recordsStore.stopTimer()">
+      <button class="btn-stop" @click="handleStop">
         停止记录
       </button>
     </view>
@@ -119,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onUnmounted } from 'vue'
 import { useBabiesStore } from '@/stores/babies'
 import { useRecordsStore } from '@/stores/records'
 import type { RecordType } from '@/stores/records'
@@ -147,6 +147,22 @@ function startRecord(babyId: string | undefined, type: RecordType) {
   if (!babyId) return
   recordsStore.startTimer(babyId, type)
 }
+
+function handleStop() {
+  const log = recordsStore.stopTimer()
+  if (log) {
+    uni.showToast({ title: `${log.babyName} ${log.type === 'feeding' ? '🍼' : '😴'} 已记录`, icon: 'success', duration: 1200 })
+  } else {
+    uni.showToast({ title: '不足1分钟，未保存', icon: 'none', duration: 1200 })
+  }
+}
+
+onUnmounted(() => {
+  // 页面退出时若有运行中的计时器，自动停止保存
+  if (recordsStore.isRunning && recordsStore.runningTimer!.elapsed >= 60) {
+    recordsStore.stopTimer()
+  }
+})
 
 function formatElapsed(seconds: number): string {
   const m = Math.floor(seconds / 60)
