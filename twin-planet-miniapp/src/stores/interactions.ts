@@ -107,7 +107,6 @@ export const useInteractionsStore = defineStore('interactions', () => {
     let userName = data.userName
     if (!userName) {
       try {
-        const { useUserStore } = require('@/stores/user')
         const userStore = useUserStore()
         userName = userStore.profile?.nickname || userStore.roleLabel
       } catch {
