@@ -16,8 +16,9 @@ authRoutes.post('/wechat-login', async (req, res) => {
     const { code } = req.body
     if (!code) return fail(res, 'MISSING_CODE', '缺少微信登录 code')
 
-    // 开发环境跳过微信验证
-    if (code === 'dev-mock-code' && !config.wechat.secret) {
+    // 开发环境跳过微信验证（无真实 secret 或使用 mock code）
+    const isMockSecret = !config.wechat.secret || config.wechat.secret.startsWith('your-');
+    if (code === 'dev-mock-code' && isMockSecret) {
       const profile = await db.query.users.findFirst({
         where: eq(schema.users.openid, 'dev-mock-openid'),
       })
