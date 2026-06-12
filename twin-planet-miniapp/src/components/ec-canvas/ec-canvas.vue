@@ -19,7 +19,7 @@ defineProps<{
   canvasId?: string
   width?: number
   height?: number
-  option?: any  // EChartsOption — 类型仅在使用时按需加载
+  option?: any
 }>()
 
 const emit = defineEmits<{ (e: 'inited', chart: any): void }>()
@@ -42,6 +42,46 @@ function getDpr() {
   return sysInfo.pixelRatio ?? 2
 }
 
+/**
+ * 加载 ECharts —— 微信小程序用分包静态文件 require.async 避免打入 vendor.js
+ * 其他平台保持 npm 动态 import（支持 tree-shaking）
+ */
+async function loadEcharts(): Promise<any> {
+  // #ifdef MP-WEIXIN
+  return new Promise((resolve, reject) => {
+    // 从 static/echarts/ 加载预置的 echarts.simple.min.js（~500KB）
+    // require.async 仅在访问生长曲线页面时才加载，不影响首页启动
+    ;(require as any).async?.('/static/echarts/echarts.min.js', (mod: any) => {
+      resolve(mod)
+    }, (err: any) => {
+      reject(new Error('ECharts load failed: ' + JSON.stringify(err)))
+    })
+  })
+  // #endif
+
+  // #ifndef MP-WEIXIN
+  const [echarts, { LineChart }, {
+    TitleComponent, TooltipComponent, GridComponent, LegendComponent,
+  }, { CanvasRenderer }] = await Promise.all([
+    (await import('echarts/core')).default || (await import('echarts/core')),
+    import('echarts/charts'),
+    import('echarts/components'),
+    import('echarts/renderers'),
+  ])
+
+  const mod = echarts as any
+  mod.use([
+    (LineChart as any).default ?? LineChart,
+    (TitleComponent as any).default ?? TitleComponent,
+    (TooltipComponent as any).default ?? TooltipComponent,
+    (GridComponent as any).default ?? GridComponent,
+    (LegendComponent as any).default ?? LegendComponent,
+    (CanvasRenderer as any).default ?? CanvasRenderer,
+  ])
+  return mod
+  // #endif
+}
+
 async function initChart() {
   if (!(props as any).canvasId) return
 
@@ -51,24 +91,8 @@ async function initChart() {
   }
 
   try {
-    // 懒加载 ECharts——仅在生长曲线页面用到时才拉取，避免首页超时
-    const [echarts, { LineChart }, {
-      TitleComponent, TooltipComponent, GridComponent, LegendComponent,
-    }, { CanvasRenderer }] = await Promise.all([
-      (await import('echarts/core')).default || (await import('echarts/core')),
-      import('echarts/charts'),
-      import('echarts/components'),
-      import('echarts/renderers'),
-    ])
-
-    const mod = echarts as any
-    mod.use([(LineChart as any).default ?? LineChart,
-      (TitleComponent as any).default ?? TitleComponent,
-      (TooltipComponent as any).default ?? TooltipComponent,
-      (GridComponent as any).default ?? GridComponent,
-      (LegendComponent as any).default ?? LegendComponent,
-      (CanvasRenderer as any).default ?? CanvasRenderer,
-    ])
+    const echarts = await loadEcharts()
+    if (!echarts) return
 
     const dpr = getDpr()
     const query = uni.createSelectorQuery()
@@ -85,7 +109,7 @@ async function initChart() {
     canvasNode.width = canvasWidth.value * dpr
     canvasNode.height = canvasHeight.value * dpr
 
-    chartInstance = mod.init(canvasNode, undefined, {
+    chartInstance = echarts.init(canvasNode, undefined, {
       width: canvasWidth.value,
       height: canvasHeight.value,
       devicePixelRatio: dpr,
@@ -108,7 +132,6 @@ watch(() => (props as any).option, (newOpt: any) => {
 }, { deep: true })
 
 onMounted(() => {
-  // 确保 vue lifecycle 完成后再初始化 canvas
   setTimeout(initChart, 200)
 })
 

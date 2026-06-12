@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#1A202C" rx="60"/>
+  <!-- 星空 -->
+  <circle cx="40" cy="60" r="1.5" fill="#FFFFFF" fill-opacity="0.4"/>
+  <circle cx="80" cy="30" r="1" fill="#FFFFFF" fill-opacity="0.3"/>
+  <circle cx="330" cy="50" r="2" fill="#FFFFFF" fill-opacity="0.5"/>
+  <circle cx="360" cy="120" r="1" fill="#FFFFFF" fill-opacity="0.3"/>
+  <circle cx="60" cy="320" r="1.5" fill="#FFFFFF" fill-opacity="0.4"/>
+  <circle cx="350" cy="330" r="2" fill="#FFFFFF" fill-opacity="0.5"/>
+  <circle cx="280" cy="360" r="1" fill="#FFFFFF" fill-opacity="0.3"/>
+  <circle cx="120" cy="350" r="1.5" fill="#FFFFFF" fill-opacity="0.4"/>
+  <circle cx="200" cy="30" r="1" fill="#FFFFFF" fill-opacity="0.25"/>
+  <circle cx="160" cy="370" r="1" fill="#FFFFFF" fill-opacity="0.3"/>
+  <!-- 轨道 -->
+  <ellipse cx="200" cy="200" rx="170" ry="130" fill="none" stroke="#A0AEC0" stroke-opacity="0.15" stroke-width="1" stroke-dasharray="4,12"/>
+  <!-- 蓝色星球 -->
+  <g transform="translate(115, 170)">
+    <circle cx="0" cy="0" r="62" fill="#4299E1"/>
+    <circle cx="0" cy="0" r="62" fill="none" stroke="#FFFFFF" stroke-opacity="0.15" stroke-width="2"/>
+    <ellipse cx="0" cy="-12" rx="50" ry="18" fill="#3182CE" fill-opacity="0.6"/>
+    <ellipse cx="0" cy="10" rx="45" ry="14" fill="#3182CE" fill-opacity="0.5"/>
+    <ellipse cx="-18" cy="-45" rx="22" ry="35" fill="#FFFFFF" fill-opacity="0.15"/>
+  </g>
+  <!-- 粉色星球 -->
+  <g transform="translate(275, 235)">
+    <circle cx="0" cy="0" r="46" fill="#F56565"/>
+    <circle cx="0" cy="0" r="46" fill="none" stroke="#FFFFFF" stroke-opacity="0.12" stroke-width="1.5"/>
+    <ellipse cx="0" cy="-8" rx="38" ry="14" fill="#E53E3E" fill-opacity="0.5"/>
+    <ellipse cx="-12" cy="-32" rx="16" ry="26" fill="#FFFFFF" fill-opacity="0.12"/>
+  </g>
+  <!-- 大星星 -->
+  <g transform="translate(290, 60)">
+    <line x1="-12" y1="0" x2="12" y2="0" stroke="#FFFBF5" stroke-opacity="0.7" stroke-width="2"/>
+    <line x1="0" y1="-12" x2="0" y2="12" stroke="#FFFBF5" stroke-opacity="0.7" stroke-width="2"/>
+    <circle cx="0" cy="0" r="3" fill="#FFFBF5" fill-opacity="0.9"/>
+  </g>
+  <g transform="translate(65, 290)">
+    <line x1="-8" y1="0" x2="8" y2="0" stroke="#FFFBF5" stroke-opacity="0.5" stroke-width="1.5"/>
+    <line x1="0" y1="-8" x2="0" y2="8" stroke="#FFFBF5" stroke-opacity="0.5" stroke-width="1.5"/>
+    <circle cx="0" cy="0" r="2" fill="#FFFBF5" fill-opacity="0.7"/>
+  </g>
+  <text x="200" y="380" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#A0AEC0" fill-opacity="0.6" font-weight="300">方案C · 双星轨迹</text>
+</svg>

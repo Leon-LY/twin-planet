@@ -5,6 +5,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 
+// 颜色按出生顺序分配（不按性别）：大宝=蓝，二宝=粉，适用于任何性别组合
 const BABY_COLORS = { 1: '#4299E1', 2: '#F56565' } as const
 
 export interface Baby {

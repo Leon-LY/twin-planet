@@ -8,13 +8,6 @@
 			}
 		},
 		{
-			"path": "pages/growth/index",
-			"style": {
-				"navigationBarTitleText": "生长曲线",
-				"navigationBarBackgroundColor": "#FFFBF5"
-			}
-		},
-		{
 			"path": "pages/login/index",
 			"style": {
 				"navigationBarTitleText": "欢迎",
@@ -84,20 +77,44 @@
 				"navigationBarTitleText": "守护中心",
 				"navigationBarBackgroundColor": "#FFFBF5"
 			}
+		}
+	],
+	"subPackages": [
+		{
+			"root": "pages/growth",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "生长曲线",
+						"navigationBarBackgroundColor": "#FFFBF5"
+					}
+				}
+			]
 		},
 		{
-			"path": "pages/school/index",
-			"style": {
-				"navigationBarTitleText": "入园助手",
-				"navigationBarBackgroundColor": "#FFFBF5"
-			}
+			"root": "pages/school",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "入园助手",
+						"navigationBarBackgroundColor": "#FFFBF5"
+					}
+				}
+			]
 		},
 		{
-			"path": "pages/milestones/index",
-			"style": {
-				"navigationBarTitleText": "能力观察",
-				"navigationBarBackgroundColor": "#FFFBF5"
-			}
+			"root": "pages/milestones",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "能力观察",
+						"navigationBarBackgroundColor": "#FFFBF5"
+					}
+				}
+			]
 		}
 	],
 	"globalStyle": {
@@ -105,5 +122,11 @@
 		"navigationBarTitleText": "并蒂星球",
 		"navigationBarBackgroundColor": "#FFFBF5",
 		"backgroundColor": "#FFFBF5"
+	},
+	"preloadRule": {
+		"pages/index/index": {
+			"network": "all",
+			"packages": ["pages/growth"]
+		}
 	}
 }
