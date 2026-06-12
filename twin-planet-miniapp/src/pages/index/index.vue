@@ -48,14 +48,14 @@
         <text class="feature-arrow">›</text>
       </view>
 
-      <!-- 双轨记录 — 待实现 -->
-      <view class="feature-card feature-pending">
+      <!-- 双轨记录 — 刚实现 -->
+      <view class="feature-card feature-ready" @click="goRecord">
         <view class="feature-icon">🍼</view>
         <view class="feature-body">
           <text class="feature-name">极简双轨记录</text>
-          <text class="feature-desc">2 秒完成喂养/睡眠记录 · 两个宝宝一起记</text>
+          <text class="feature-desc">1 点开始 · 2 点结束 · 两个宝宝一起记</text>
         </view>
-        <view class="feature-badge">Sprint 2</view>
+        <text class="feature-arrow">›</text>
       </view>
 
       <!-- 双胞胎知识库 — 待实现 -->
@@ -88,9 +88,8 @@
 </template>
 
 <script setup lang="ts">
-const goGrowth = () => {
-  uni.navigateTo({ url: '/pages/growth/index' })
-}
+const goGrowth = () => { uni.navigateTo({ url: '/pages/growth/index' }) }
+const goRecord = () => { uni.navigateTo({ url: '/pages/record/index' }) }
 </script>
 
 <style scoped>
