@@ -7,7 +7,6 @@
       :canvas-id="canvasId"
       :style="canvasStyle"
       @touchstart="onTouchStart"
-      @touchmove="onTouchMove"
       @touchend="onTouchEnd"
     />
   </view>
@@ -15,156 +14,116 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
-import * as echarts from 'echarts/core'
-import { LineChart } from 'echarts/charts'
-import {
-  TitleComponent,
-  TooltipComponent,
-  GridComponent,
-  LegendComponent,
-} from 'echarts/components'
-import { CanvasRenderer } from 'echarts/renderers'
 
-echarts.use([LineChart, TitleComponent, TooltipComponent, GridComponent, LegendComponent, CanvasRenderer])
-
-const props = defineProps<{
+defineProps<{
   canvasId?: string
   width?: number
   height?: number
-  option?: echarts.EChartsOption
+  option?: any  // EChartsOption — 类型仅在使用时按需加载
 }>()
 
-const emit = defineEmits<{
-  (e: 'inited', chart: ReturnType<typeof echarts.init>): void
-}>()
+const emit = defineEmits<{ (e: 'inited', chart: any): void }>()
 
-let chartInstance: ReturnType<typeof echarts.init> | null = null
-const canvasWidth = ref(props.width ?? 375)
-const canvasHeight = ref(props.height ?? 300)
+let chartInstance: any = null
+const canvasWidth = ref(375)
+const canvasHeight = ref(300)
 
 const containerStyle = computed(() => ({
   width: canvasWidth.value + 'px',
   height: canvasHeight.value + 'px',
 }))
-
 const canvasStyle = computed(() => ({
   width: canvasWidth.value + 'px',
   height: canvasHeight.value + 'px',
 }))
 
-function getDpr(): number {
-  // uni-app 小程序环境
+function getDpr() {
   const sysInfo = uni.getSystemInfoSync()
   return sysInfo.pixelRatio ?? 2
 }
 
 async function initChart() {
-  if (!props.canvasId) return
+  if (!(props as any).canvasId) return
 
-  // 销毁旧实例
   if (chartInstance) {
     chartInstance.dispose()
     chartInstance = null
   }
 
   try {
-    const dpr = getDpr()
+    // 懒加载 ECharts——仅在生长曲线页面用到时才拉取，避免首页超时
+    const [echarts, { LineChart }, {
+      TitleComponent, TooltipComponent, GridComponent, LegendComponent,
+    }, { CanvasRenderer }] = await Promise.all([
+      (await import('echarts/core')).default || (await import('echarts/core')),
+      import('echarts/charts'),
+      import('echarts/components'),
+      import('echarts/renderers'),
+    ])
 
-    // 获取 Canvas 节点
+    const mod = echarts as any
+    mod.use([(LineChart as any).default ?? LineChart,
+      (TitleComponent as any).default ?? TitleComponent,
+      (TooltipComponent as any).default ?? TooltipComponent,
+      (GridComponent as any).default ?? GridComponent,
+      (LegendComponent as any).default ?? LegendComponent,
+      (CanvasRenderer as any).default ?? CanvasRenderer,
+    ])
+
+    const dpr = getDpr()
     const query = uni.createSelectorQuery()
-    const res = await new Promise<UniApp.NodeInfo[]>((resolve) => {
-      query
-        .select(`#${props.canvasId}`)
-        .fields({ node: true, size: true })
-        .exec((data) => resolve(data as UniApp.NodeInfo[]))
+    const res: any = await new Promise((resolve) => {
+      query.select(`#${(props as any).canvasId}`).fields({ node: true, size: true }).exec(resolve)
     })
 
     const canvasNode = res[0]?.node
     if (!canvasNode) {
-      console.warn('[ec-canvas] Canvas node not found, retrying...')
       setTimeout(initChart, 300)
       return
     }
 
-    const canvas = canvasNode as unknown as HTMLCanvasElement
-    canvas.width = canvasWidth.value * dpr
-    canvas.height = canvasHeight.value * dpr
+    canvasNode.width = canvasWidth.value * dpr
+    canvasNode.height = canvasHeight.value * dpr
 
-    chartInstance = echarts.init(canvas, undefined, {
+    chartInstance = mod.init(canvasNode, undefined, {
       width: canvasWidth.value,
       height: canvasHeight.value,
       devicePixelRatio: dpr,
     })
 
-    if (props.option) {
-      chartInstance.setOption(props.option)
+    if ((props as any).option) {
+      chartInstance.setOption((props as any).option)
     }
-
     emit('inited', chartInstance)
   } catch (err) {
     console.error('[ec-canvas] Init failed:', err)
   }
 }
 
-function onTouchStart(e: any) {
-  if (chartInstance) {
-    chartInstance.dispatchAction({
-      type: 'takeGlobalCursor',
-      key: 'growthChart',
-      action: 'showTip',
-      dataIndex: 0,
-    })
-  }
-}
+function onTouchStart() {}
+function onTouchEnd() {}
 
-function onTouchMove(e: any) {
-  // ECharts tooltip 跟随
-}
-
-function onTouchEnd(e: any) {
-  if (chartInstance) {
-    chartInstance.dispatchAction({
-      type: 'takeGlobalCursor',
-      key: 'growthChart',
-      action: 'hideTip',
-    })
-  }
-}
-
-watch(
-  () => props.option,
-  (newOpt) => {
-    if (chartInstance && newOpt) {
-      chartInstance.setOption(newOpt, true)
-    }
-  },
-  { deep: true }
-)
+watch(() => (props as any).option, (newOpt: any) => {
+  if (chartInstance && newOpt) chartInstance.setOption(newOpt, true)
+}, { deep: true })
 
 onMounted(() => {
+  // 确保 vue lifecycle 完成后再初始化 canvas
   setTimeout(initChart, 200)
 })
 
 onUnmounted(() => {
-  if (chartInstance) {
-    chartInstance.dispose()
-    chartInstance = null
-  }
+  if (chartInstance) { chartInstance.dispose(); chartInstance = null }
 })
 
 defineExpose({
   getChart: () => chartInstance,
   refresh: () => {
-    if (chartInstance && props.option) {
-      chartInstance.setOption(props.option, true)
-    }
+    if (chartInstance && (props as any).option) chartInstance.setOption((props as any).option, true)
   },
 })
 </script>
 
 <style scoped>
-.ec-canvas-container {
-  position: relative;
-  overflow: hidden;
-}
+.ec-canvas-container { position: relative; overflow: hidden; }
 </style>
