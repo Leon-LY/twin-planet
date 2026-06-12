@@ -77,6 +77,13 @@
 				"navigationBarTitleText": "爸爸值班",
 				"navigationBarBackgroundColor": "#FFFBF5"
 			}
+		},
+		{
+			"path": "pages/guardian/index",
+			"style": {
+				"navigationBarTitleText": "守护中心",
+				"navigationBarBackgroundColor": "#FFFBF5"
+			}
 		}
 	],
 	"globalStyle": {

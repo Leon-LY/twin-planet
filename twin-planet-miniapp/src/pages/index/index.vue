@@ -88,12 +88,12 @@
         <text class="feature-arrow">›</text>
       </view>
 
-      <!-- 交接班语音 — 刚实现 -->
-      <view class="feature-card feature-ready" @click="goHandover">
-        <view class="feature-icon">🎙️</view>
+      <!-- 守护中心 — 刚实现 -->
+      <view class="feature-card feature-ready" @click="goGuardian">
+        <view class="feature-icon">🛡️</view>
         <view class="feature-body">
-          <text class="feature-name">交接班语音便签</text>
-          <text class="feature-desc">录一段话，换班的家人打开就能听</text>
+          <text class="feature-name">守护中心</text>
+          <text class="feature-desc">电量表 + 一人时光守护 · 确保每个宝宝都有专属陪伴</text>
         </view>
         <text class="feature-arrow">›</text>
       </view>
@@ -115,6 +115,7 @@ const goContribution = () => { uni.navigateTo({ url: '/pages/contribution/index'
 const goDuty = () => { uni.navigateTo({ url: '/pages/duty/index' }) }
 const goHandover = () => { uni.navigateTo({ url: '/pages/handover/index' }) }
 const goSnapshot = () => { uni.navigateTo({ url: '/pages/snapshot/index' }) }
+const goGuardian = () => { uni.navigateTo({ url: '/pages/guardian/index' }) }
 </script>
 
 <style scoped>
