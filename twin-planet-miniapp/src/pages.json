@@ -56,6 +56,20 @@
 				"navigationBarTitleText": "今天我做了什么",
 				"navigationBarBackgroundColor": "#FFFBF5"
 			}
+		},
+		{
+			"path": "pages/snapshot/index",
+			"style": {
+				"navigationBarTitleText": "爸爸的快照",
+				"navigationBarBackgroundColor": "#FFFBF5"
+			}
+		},
+		{
+			"path": "pages/handover/index",
+			"style": {
+				"navigationBarTitleText": "交接班语音",
+				"navigationBarBackgroundColor": "#FFFBF5"
+			}
 		}
 	],
 	"globalStyle": {
