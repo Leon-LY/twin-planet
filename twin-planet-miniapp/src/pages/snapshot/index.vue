@@ -75,8 +75,8 @@
       <text class="section-label">快速操作</text>
       <view class="action-row">
         <view class="quick-btn" @click="goRecord"><text class="quick-emoji">🍼</text><text class="quick-label">记录</text></view>
-        <view class="quick-btn" @click="goHandover"><text class="quick-emoji">🎙️</text><text class="quick-label">交接班</text></view>
-        <view class="quick-btn" @click="goContribution"><text class="quick-emoji">💪</text><text class="quick-label">我做了</text></view>
+        <view class="quick-btn" @click="goDuty"><text class="quick-emoji">🦸</text><text class="quick-label">值班</text></view>
+        <view class="quick-btn" @click="goHandover"><text class="quick-emoji">🎙️</text><text class="quick-label">交接</text></view>
         <view class="quick-btn" @click="goSprout"><text class="quick-emoji">🌱</text><text class="quick-label">萌芽</text></view>
       </view>
     </view>
@@ -131,6 +131,7 @@ function getLastSleep(baby: Baby | null): string {
 }
 
 const goRecord = () => uni.navigateTo({ url: '/pages/record/index' })
+const goDuty = () => uni.navigateTo({ url: '/pages/duty/index' })
 const goHandover = () => uni.navigateTo({ url: '/pages/handover/index' })
 const goContribution = () => uni.navigateTo({ url: '/pages/contribution/index' })
 const goSprout = () => uni.navigateTo({ url: '/pages/sprout/index' })

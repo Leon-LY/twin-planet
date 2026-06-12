@@ -77,6 +77,26 @@
         </view>
         <text class="feature-arrow">›</text>
       </view>
+
+      <!-- 爸爸值班模式 — 刚实现 -->
+      <view class="feature-card feature-ready" @click="goDuty">
+        <view class="feature-icon">🦸</view>
+        <view class="feature-body">
+          <text class="feature-name">爸爸值班模式</text>
+          <text class="feature-desc">SOP 清单引擎 · 照着做，一个人也能搞定两个</text>
+        </view>
+        <text class="feature-arrow">›</text>
+      </view>
+
+      <!-- 交接班语音 — 刚实现 -->
+      <view class="feature-card feature-ready" @click="goHandover">
+        <view class="feature-icon">🎙️</view>
+        <view class="feature-body">
+          <text class="feature-name">交接班语音便签</text>
+          <text class="feature-desc">录一段话，换班的家人打开就能听</text>
+        </view>
+        <text class="feature-arrow">›</text>
+      </view>
     </view>
 
     <!-- 底部信息 -->
@@ -92,6 +112,9 @@ const goGrowth = () => { uni.navigateTo({ url: '/pages/growth/index' }) }
 const goRecord = () => { uni.navigateTo({ url: '/pages/record/index' }) }
 const goSprout = () => { uni.navigateTo({ url: '/pages/sprout/index' }) }
 const goContribution = () => { uni.navigateTo({ url: '/pages/contribution/index' }) }
+const goDuty = () => { uni.navigateTo({ url: '/pages/duty/index' }) }
+const goHandover = () => { uni.navigateTo({ url: '/pages/handover/index' }) }
+const goSnapshot = () => { uni.navigateTo({ url: '/pages/snapshot/index' }) }
 </script>
 
 <style scoped>

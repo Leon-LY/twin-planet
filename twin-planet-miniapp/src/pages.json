@@ -70,6 +70,13 @@
 				"navigationBarTitleText": "交接班语音",
 				"navigationBarBackgroundColor": "#FFFBF5"
 			}
+		},
+		{
+			"path": "pages/duty/index",
+			"style": {
+				"navigationBarTitleText": "爸爸值班",
+				"navigationBarBackgroundColor": "#FFFBF5"
+			}
 		}
 	],
 	"globalStyle": {
