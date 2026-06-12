@@ -1,6 +1,5 @@
 <template>
   <view class="login-page">
-    <!-- 品牌区 -->
     <view class="brand-hero">
       <view class="brand-icon">🌺🌺</view>
       <text class="brand-name">并蒂星球</text>
@@ -8,21 +7,22 @@
       <text class="brand-desc">中国首款双胞胎育儿伴侣</text>
     </view>
 
-    <!-- 登录按钮 -->
     <view class="login-actions">
       <button class="btn-wechat" @click="doLogin" :loading="loading">
-        <text class="btn-icon">💬</text>
         <text class="btn-text">微信一键登录</text>
       </button>
 
-      <text class="privacy-hint">
-        登录即同意《用户协议》和《隐私政策》
-      </text>
+      <view class="privacy-row">
+        <text class="privacy-text">登录即同意</text>
+        <text class="privacy-link" @click="openPrivacy('terms')">《用户协议》</text>
+        <text class="privacy-text">和</text>
+        <text class="privacy-link" @click="openPrivacy('privacy')">《隐私政策》</text>
+      </view>
     </view>
 
-    <!-- 跳过登录（开发阶段） -->
+    <!-- 开发环境跳过登录 -->
     <view class="dev-skip" v-if="isDev">
-      <text class="skip-link" @click="skipLogin">跳过登录（开发用）→</text>
+      <text class="skip-link" @click="skipLogin">⚙️ 跳过登录（开发用）</text>
     </view>
   </view>
 </template>
@@ -33,15 +33,20 @@ import { useUserStore } from '@/stores/user'
 
 const userStore = useUserStore()
 const loading = ref(false)
-const isDev = ref(true) // Phase 0 开发模式
+
+// 开发环境检测：仅 development 模式显示跳过入口
+const isDev = ref(typeof import.meta !== 'undefined' && (import.meta as any).env?.DEV === true)
+// 安全兜底：如果无法检测环境变量，强制隐藏
+if (!isDev.value && typeof (import.meta as any)?.env?.DEV === 'undefined') {
+  isDev.value = false
+}
 
 async function doLogin() {
   loading.value = true
   try {
     await userStore.loginByWechat()
     navigateNext()
-  } catch (err) {
-    console.error('登录失败:', err)
+  } catch {
     uni.showToast({ title: '登录失败，请重试', icon: 'none' })
   } finally {
     loading.value = false
@@ -54,8 +59,12 @@ function skipLogin() {
 }
 
 function navigateNext() {
-  // 检查是否有家庭，有则跳首页，无则跳创建家庭
   uni.reLaunch({ url: '/pages/onboarding/family' })
+}
+
+function openPrivacy(type: string) {
+  // TODO: Phase 1 部署后替换为实际链接
+  uni.showToast({ title: '协议页面建设中', icon: 'none' })
 }
 
 onMounted(() => {
@@ -71,79 +80,29 @@ onMounted(() => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 40px 30px;
+  padding: 60rpx 32rpx;
 }
 
-/* 品牌区 */
-.brand-hero {
-  text-align: center;
-  margin-bottom: 60px;
-}
-.brand-icon {
-  font-size: 56px;
-  margin-bottom: 12px;
-}
-.brand-name {
-  display: block;
-  font-size: 32px;
-  font-weight: 700;
-  color: #2D3748;
-  letter-spacing: 4px;
-}
-.brand-slogan {
-  display: block;
-  font-size: 15px;
-  color: #718096;
-  margin-top: 8px;
-  letter-spacing: 6px;
-}
-.brand-desc {
-  display: block;
-  font-size: 12px;
-  color: #A0AEC0;
-  margin-top: 12px;
-}
+.brand-hero { text-align: center; margin-bottom: 120rpx; }
+.brand-icon { font-size: 56px; margin-bottom: 12px; }
+.brand-name { display: block; font-size: 64rpx; font-weight: 700; color: #2D3748; letter-spacing: 4px; }
+.brand-slogan { display: block; font-size: 28rpx; color: #718096; margin-top: 16rpx; letter-spacing: 6px; }
+.brand-desc { display: block; font-size: 24rpx; color: #A0AEC0; margin-top: 24rpx; }
 
-/* 登录按钮 */
-.login-actions {
-  width: 100%;
-  text-align: center;
-}
+.login-actions { width: 100%; text-align: center; }
 .btn-wechat {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  max-width: 320px;
-  margin: 0 auto;
-  padding: 14px 0;
-  background: linear-gradient(135deg, #48BB78, #38A169);
-  color: #FFFFFF;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-}
-.btn-icon {
-  font-size: 20px;
-}
-.btn-text {
-  color: #FFFFFF;
-}
-.privacy-hint {
-  display: block;
-  margin-top: 14px;
-  font-size: 11px;
-  color: #CBD5E0;
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; max-width: 640rpx; margin: 0 auto;
+  padding: 28rpx 0;
+  background: #4299E1;
+  color: #FFFFFF; border: none; border-radius: 24rpx;
+  font-size: 36rpx; font-weight: 600;
 }
 
-/* 跳过登录 */
-.dev-skip {
-  margin-top: 30px;
-}
-.skip-link {
-  font-size: 13px;
-  color: #A0AEC0;
-}
+.privacy-row { margin-top: 28rpx; }
+.privacy-text { font-size: 22rpx; color: #A0AEC0; }
+.privacy-link { font-size: 22rpx; color: #4299E1; }
+
+.dev-skip { margin-top: 60rpx; }
+.skip-link { font-size: 26rpx; color: #ED8936; }
 </style>

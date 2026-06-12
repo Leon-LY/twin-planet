@@ -12,14 +12,16 @@
     <!-- 标题 -->
     <view class="section-header">
       <text class="section-icon">👶👶</text>
-      <text class="section-title">添加你的双胞胎宝宝</text>
-      <text class="section-desc">每个宝宝都有专属的颜色和身份</text>
+      <text class="section-title">{{ currentBaby === 1 ? '添加大宝' : '添加二宝' }}</text>
+      <text class="section-desc">
+        {{ currentBaby === 1 ? '先填大宝的信息吧' : '二宝来啦，出生日期已帮你填好了~' }}
+      </text>
     </view>
 
     <!-- 宝宝表单切换 -->
     <view class="baby-tabs">
       <view
-        class="baby-tab"
+        class="baby-tab tab-aning"
         :class="{ active: currentBaby === 1 }"
         @click="currentBaby = 1"
       >
@@ -27,7 +29,7 @@
         <text>大宝</text>
       </view>
       <view
-        class="baby-tab"
+        class="baby-tab tab-anran"
         :class="{ active: currentBaby === 2 }"
         @click="currentBaby = 2"
       >
@@ -38,7 +40,7 @@
 
     <!-- 表单 -->
     <view class="form-group">
-      <text class="form-label">大名</text>
+      <text class="form-label">大名 <text class="required">*</text></text>
       <input
         class="form-input"
         v-model="form.name"
@@ -60,28 +62,24 @@
     </view>
 
     <view class="form-row">
-      <view class="form-group" style="flex: 1; margin-right: 10px;">
-        <text class="form-label">性别</text>
+      <view class="form-group half">
+        <text class="form-label">性别 <text class="required">*</text></text>
         <view class="gender-toggle">
           <view
             class="gender-btn"
             :class="{ active: form.gender === 'male' }"
             @click="form.gender = 'male'"
-          >
-            <text>👦 男孩</text>
-          </view>
+          ><text>👦 男孩</text></view>
           <view
             class="gender-btn"
             :class="{ active: form.gender === 'female' }"
             @click="form.gender = 'female'"
-          >
-            <text>👧 女孩</text>
-          </view>
+          ><text>👧 女孩</text></view>
         </view>
       </view>
 
-      <view class="form-group" style="flex: 1;">
-        <text class="form-label">出生日期</text>
+      <view class="form-group half">
+        <text class="form-label">出生日期 <text class="required">*</text></text>
         <picker
           mode="date"
           :value="form.birthDate"
@@ -89,15 +87,13 @@
           :end="today"
           :start="'2020-01-01'"
         >
-          <view class="form-input date-picker">
-            {{ form.birthDate || '点击选择' }}
-          </view>
+          <view class="form-input date-picker">{{ form.birthDate || '点击选择' }}</view>
         </picker>
       </view>
     </view>
 
     <view class="form-row">
-      <view class="form-group" style="flex: 1; margin-right: 10px;">
+      <view class="form-group half">
         <text class="form-label">出生体重 (kg)</text>
         <input
           class="form-input"
@@ -107,15 +103,16 @@
           placeholder-style="color: #CBD5E0"
         />
       </view>
-      <view class="form-group" style="flex: 1;">
-        <text class="form-label">出生身长 (cm)</text>
+      <view class="form-group half">
+        <text class="form-label">出生身长 (cm) <text class="optional">选填</text></text>
         <input
           class="form-input"
           v-model="form.birthHeight"
           type="digit"
-          placeholder="如 50"
+          placeholder="记不清可跳过"
           placeholder-style="color: #CBD5E0"
         />
+        <text class="form-sublabel">记不清也没关系，不影响使用</text>
       </view>
     </view>
 
@@ -136,12 +133,11 @@ const babiesStore = useBabiesStore()
 const currentBaby = ref(1)
 const today = new Date().toISOString().slice(0, 10)
 
-// 每个宝宝的独立表单
 const baby1Form = reactive({
   name: '',
   nickname: '',
   gender: 'male' as 'male' | 'female',
-  birthDate: '2022-07-07',
+  birthDate: '',
   birthWeight: '',
   birthHeight: '',
 })
@@ -150,7 +146,7 @@ const baby2Form = reactive({
   name: '',
   nickname: '',
   gender: 'female' as 'male' | 'female',
-  birthDate: '2022-07-07',
+  birthDate: '', // 自动从大宝继承
   birthWeight: '',
   birthHeight: '',
 })
@@ -183,10 +179,11 @@ function saveBaby() {
   })
 
   if (currentBaby.value === 1) {
+    // 自动将大宝的出生日期填充到二宝
+    baby2Form.birthDate = baby1Form.birthDate
     currentBaby.value = 2
     uni.showToast({ title: '大宝已保存，请添加二宝', icon: 'none' })
   } else {
-    // 注册完成，跳转首页
     uni.showToast({ title: '🎉 欢迎来到并蒂星球！', icon: 'none', duration: 1500 })
     setTimeout(() => {
       uni.reLaunch({ url: '/pages/index/index' })
@@ -203,88 +200,78 @@ onMounted(() => {
 .onboard-page {
   min-height: 100vh;
   background: #FFFBF5;
-  padding: 24px 20px 40px;
+  padding: 48rpx 32rpx 40px;
 }
 
 /* 进度条 */
 .progress-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 40rpx;
 }
 .progress-step {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  width: 64rpx; height: 64rpx; border-radius: 50%;
   background: #EDF2F7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  color: #A0AEC0;
-  font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28rpx; color: #A0AEC0; font-weight: 600;
 }
 .progress-step.active { background: #48BB78; color: #FFFFFF; }
 .progress-step.done { background: #48BB78; color: #FFFFFF; }
-.progress-line { flex: 1; max-width: 60px; height: 2px; background: #EDF2F7; }
+.progress-line { flex: 1; max-width: 120rpx; height: 4rpx; background: #EDF2F7; }
 .progress-line.done { background: #48BB78; }
 
 /* 标题 */
-.section-header { text-align: center; margin-bottom: 20px; }
+.section-header { text-align: center; margin-bottom: 32rpx; }
 .section-icon { font-size: 32px; }
-.section-title { display: block; font-size: 20px; font-weight: 700; color: #2D3748; margin-top: 6px; }
-.section-desc { display: block; font-size: 12px; color: #A0AEC0; margin-top: 4px; }
+.section-title { display: block; font-size: 40rpx; font-weight: 700; color: #2D3748; margin-top: 12rpx; }
+.section-desc { display: block; font-size: 24rpx; color: #A0AEC0; margin-top: 8rpx; }
 
-/* 宝宝切换 */
-.baby-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+/* 宝宝切换 -- 独立颜色 */
+.baby-tabs { display: flex; gap: 20rpx; margin-bottom: 32rpx; }
 .baby-tab {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 0;
-  background: #FFFFFF;
-  border: 2px solid #E2E8F0;
-  border-radius: 10px;
-  font-size: 14px;
-  color: #A0AEC0;
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  gap: 16rpx; padding: 20rpx 0; background: #FFFFFF;
+  border: 4rpx solid #E2E8F0; border-radius: 20rpx;
+  font-size: 28rpx; color: #A0AEC0;
 }
-.baby-tab.active { border-color: #4299E1; color: #2D3748; font-weight: 600; }
-.tab-dot { width: 10px; height: 10px; border-radius: 50%; }
+.tab-aning.active { border-color: #4299E1; background: #EBF8FF; color: #2D3748; font-weight: 600; }
+.tab-anran.active { border-color: #F56565; background: #FFF5F5; color: #2D3748; font-weight: 600; }
+.tab-dot { width: 20rpx; height: 20rpx; border-radius: 50%; }
 
 /* 表单 */
-.form-group { margin-bottom: 16px; }
-.form-label { display: block; font-size: 12px; font-weight: 600; color: #4A5568; margin-bottom: 6px; }
+.form-group { margin-bottom: 28rpx; }
+.form-group.half { flex: 1; margin-right: 0; }
+.form-group.half:first-child { margin-right: 16rpx; }
+.form-label { display: block; font-size: 24rpx; font-weight: 600; color: #4A5568; margin-bottom: 12rpx; }
+.required { color: #F56565; }
+.optional { font-weight: 400; color: #A0AEC0; font-size: 22rpx; }
 .form-input {
-  width: 100%; padding: 12px 14px;
-  background: #FFFFFF; border: 2px solid #E2E8F0;
-  border-radius: 10px; font-size: 15px; color: #2D3748;
+  width: 100%; padding: 24rpx 28rpx;
+  background: #FFFFFF; border: 4rpx solid #E2E8F0;
+  border-radius: 20rpx; font-size: 30rpx; color: #2D3748;
   box-sizing: border-box;
 }
-.form-input:focus { border-color: #4299E1; }
+.form-sublabel { display: block; font-size: 20rpx; color: #CBD5E0; margin-top: 8rpx; }
 .form-row { display: flex; }
 .date-picker { color: #2D3748; line-height: 1.6; }
 
 /* 性别切换 */
-.gender-toggle { display: flex; gap: 6px; }
+.gender-toggle { display: flex; gap: 12rpx; }
 .gender-btn {
-  flex: 1; text-align: center; padding: 10px 0;
-  background: #FFFFFF; border: 2px solid #E2E8F0;
-  border-radius: 10px; font-size: 13px; color: #718096;
+  flex: 1; text-align: center; padding: 20rpx 0;
+  background: #FFFFFF; border: 4rpx solid #E2E8F0;
+  border-radius: 20rpx; font-size: 26rpx; color: #718096;
 }
 .gender-btn.active { border-color: #4299E1; background: #EBF8FF; color: #2D3748; }
 
 /* 底部 */
 .bottom-action {
   position: fixed; bottom: 0; left: 0; right: 0;
-  padding: 16px 20px 32px;
+  padding: 32rpx 32rpx calc(64rpx + env(safe-area-inset-bottom));
   background: linear-gradient(transparent, #FFFBF5 30%);
 }
 .btn-primary {
-  width: 100%; padding: 14px 0; background: #4299E1;
-  color: #FFFFFF; border: none; border-radius: 12px;
-  font-size: 16px; font-weight: 600;
+  width: 100%; padding: 28rpx 0; background: #4299E1;
+  color: #FFFFFF; border: none; border-radius: 24rpx;
+  font-size: 36rpx; font-weight: 600;
 }
 </style>
