@@ -5,6 +5,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
+import { useUserStore } from '@/stores/user'
 
 // ============================================================
 // 萌芽日记

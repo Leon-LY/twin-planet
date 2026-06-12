@@ -84,6 +84,20 @@
 				"navigationBarTitleText": "守护中心",
 				"navigationBarBackgroundColor": "#FFFBF5"
 			}
+		},
+		{
+			"path": "pages/school/index",
+			"style": {
+				"navigationBarTitleText": "入园助手",
+				"navigationBarBackgroundColor": "#FFFBF5"
+			}
+		},
+		{
+			"path": "pages/milestones/index",
+			"style": {
+				"navigationBarTitleText": "能力观察",
+				"navigationBarBackgroundColor": "#FFFBF5"
+			}
 		}
 	],
 	"globalStyle": {
