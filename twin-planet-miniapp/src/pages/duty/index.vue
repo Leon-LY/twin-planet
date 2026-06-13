@@ -3,7 +3,7 @@
     <!-- 我独自带娃 -->
     <view class="duty-header">
       <text class="duty-icon">🦸</text>
-      <text class="duty-title">爸爸值班模式</text>
+      <text class="duty-title">指挥官控制台</text>
       <text class="duty-sub">照着清单做，一个人也能搞定两个</text>
     </view>
 
@@ -18,7 +18,7 @@
         <text class="progress-num" v-if="!store.isAllDone">{{ store.doneCount }}/{{ store.totalCount }}</text>
         <text class="progress-num done" v-else>🎉</text>
       </view>
-      <text class="progress-label">{{ store.isAllDone ? '全部完成！好爸爸！' : '还剩 ' + store.undoneCount + ' 项' }}</text>
+      <text class="progress-label">{{ store.isAllDone ? '任务完成！好爸爸！' : '还剩 ' + store.undoneCount + ' 项' }}</text>
     </view>
 
     <!-- 清单 -->
@@ -93,7 +93,7 @@ function finishDuty() {
 }
 
 onMounted(() => {
-  uni.setNavigationBarTitle({ title: '爸爸值班' })
+  uni.setNavigationBarTitle({ title: '指挥官控制台' })
   if (store.tasks.length === 0) startDuty()
   alertsStore.checkAlerts()
 })

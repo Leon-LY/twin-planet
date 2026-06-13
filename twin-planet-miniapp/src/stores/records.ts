@@ -229,10 +229,61 @@ export const useRecordsStore = defineStore('records', () => {
     _saveLogs()
   }
 
+  /** 宇宙洞察 — 基于今日记录的诗意总结 */
+  const cosmicInsight = computed(() => {
+    const todayLogs = logs.value.filter(l => l.createdAt >= new Date().setHours(0,0,0,0))
+    const total = todayLogs.length
+    if (total === 0) return '两颗星球等待今天的第一次星际守护 ✦'
+    const feedCount = todayLogs.filter(l => l.type === 'feeding').length
+    const sleepCount = todayLogs.filter(l => l.type === 'sleep').length
+    const parts: string[] = []
+    if (feedCount > 0) parts.push(`${feedCount}次星光降临`)
+    if (sleepCount > 0) parts.push(`${sleepCount}次休眠`)
+    const runningCount = Object.keys(_timers.value).length
+    if (runningCount > 0) parts.push(`${runningCount}颗星球正在接收星光`)
+    if (parts.length === 0) parts.push(`${total}次星际守护`)
+    return `今日：${parts.join(' · ')} ✦`
+  })
+
+  /** 双星同步率 — 30分钟内同类型记录的匹配比例 */
+  const twinSyncRate = computed(() => {
+    const todayLogs = logs.value.filter(l => l.createdAt >= new Date().setHours(0,0,0,0))
+    if (todayLogs.length < 2) return 0
+    const babiesStore = useBabiesStore()
+    const aId = babiesStore.babyA?.id; const bId = babiesStore.babyB?.id
+    if (!aId || !bId) return 0
+    let syncCount = 0; let totalPairs = 0
+    const aLogs = todayLogs.filter(l => l.babyId === aId)
+    const bLogs = todayLogs.filter(l => l.babyId === bId)
+    for (const al of aLogs) {
+      const match = bLogs.find(bl => bl.type === al.type && Math.abs(bl.createdAt - al.createdAt) < 30 * 60000)
+      if (match) syncCount++
+      totalPairs++
+    }
+    return totalPairs > 0 ? Math.round((syncCount / totalPairs) * 100) : 0
+  })
+
+  /** 连胜天数 */
+  const streakDays = computed(() => {
+    if (!logs.value.length) return 0
+    const dates = [...new Set(logs.value.map(l => new Date(l.createdAt).toISOString().slice(0,10)))].sort().reverse()
+    const today = new Date().toISOString().slice(0,10)
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10)
+    if (dates[0] !== today && dates[0] !== yesterday) return 0
+    let streak = dates[0] === today ? 1 : 0
+    for (let i = 1; i < dates.length; i++) {
+      const d = new Date(dates[i-1]); d.setDate(d.getDate() - 1)
+      if (dates[i] === d.toISOString().slice(0,10)) streak++
+      else break
+    }
+    return streak
+  })
+
   return {
     _timers, logs, selectedBabyId,
     isRunning, runningTimer, runningTimers, recentLogsByBaby,
     isBabyRunning, getTimer,
     startTimer, stopTimer, quickLog,
+    cosmicInsight, twinSyncRate, streakDays,
   }
 })

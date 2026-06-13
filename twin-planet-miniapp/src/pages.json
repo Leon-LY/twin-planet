@@ -10,7 +10,7 @@
 		{
 			"path": "pages/login/index",
 			"style": {
-				"navigationBarTitleText": "欢迎",
+				"navigationBarTitleText": "进入宇宙",
 				"navigationBarBackgroundColor": "#FFFBF5",
 				"navigationStyle": "custom"
 			}
@@ -18,63 +18,63 @@
 		{
 			"path": "pages/onboarding/family",
 			"style": {
-				"navigationBarTitleText": "创建家庭",
+				"navigationBarTitleText": "命名你的星系",
 				"navigationBarBackgroundColor": "#FFFBF5"
 			}
 		},
 		{
 			"path": "pages/onboarding/babies",
 			"style": {
-				"navigationBarTitleText": "添加宝宝",
+				"navigationBarTitleText": "遇见你的星球",
 				"navigationBarBackgroundColor": "#FFFBF5"
 			}
 		},
 		{
 			"path": "pages/record/index",
 			"style": {
-				"navigationBarTitleText": "双轨记录",
+				"navigationBarTitleText": "宇宙记录",
 				"navigationBarBackgroundColor": "#FFFBF5"
 			}
 		},
 		{
 			"path": "pages/sprout/index",
 			"style": {
-				"navigationBarTitleText": "萌芽日记",
+				"navigationBarTitleText": "光桥编年史",
 				"navigationBarBackgroundColor": "#FFFBF5"
 			}
 		},
 		{
 			"path": "pages/contribution/index",
 			"style": {
-				"navigationBarTitleText": "今天我做了什么",
+				"navigationBarTitleText": "星尘日志",
 				"navigationBarBackgroundColor": "#FFFBF5"
 			}
 		},
 		{
 			"path": "pages/snapshot/index",
 			"style": {
-				"navigationBarTitleText": "爸爸的快照",
+				"navigationBarTitleText": "星图快照",
 				"navigationBarBackgroundColor": "#FFFBF5"
 			}
 		},
 		{
 			"path": "pages/handover/index",
 			"style": {
-				"navigationBarTitleText": "交接班语音",
+				"navigationBarTitleText": "星际通讯",
 				"navigationBarBackgroundColor": "#FFFBF5"
 			}
 		},
 		{
 			"path": "pages/duty/index",
 			"style": {
-				"navigationBarTitleText": "爸爸值班",
+				"navigationBarTitleText": "指挥官控制台",
 				"navigationBarBackgroundColor": "#FFFBF5"
 			}
 		},
 		{
 			"path": "pages/guardian/index",
 			"style": {
-				"navigationBarTitleText": "守护中心",
+				"navigationBarTitleText": "星光监测站",
 				"navigationBarBackgroundColor": "#FFFBF5"
 			}
 		}
@@ -86,7 +86,7 @@
 				{
 					"path": "index",
 					"style": {
-						"navigationBarTitleText": "生长曲线",
+						"navigationBarTitleText": "星球档案",
 						"navigationBarBackgroundColor": "#FFFBF5"
 					}
 				}
@@ -98,7 +98,7 @@
 				{
 					"path": "index",
 					"style": {
-						"navigationBarTitleText": "入园助手",
+						"navigationBarTitleText": "轨道决策",
 						"navigationBarBackgroundColor": "#FFFBF5"
 					}
 				}
@@ -110,7 +110,7 @@
 				{
 					"path": "index",
 					"style": {
-						"navigationBarTitleText": "能力观察",
+						"navigationBarTitleText": "星座日志",
 						"navigationBarBackgroundColor": "#FFFBF5"
 					}
 				}

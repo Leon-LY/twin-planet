@@ -2,12 +2,12 @@
   <view class="guard-page">
     <view class="section-header">
       <text class="section-icon">🛡️</text>
-      <text class="section-title">守护中心</text>
+      <text class="section-title">星光监测站</text>
     </view>
 
-    <!-- 电量表 -->
+    <!-- ✨ 星光强度 -->
     <view class="energy-section">
-      <text class="section-label">⚡ 电量表</text>
+      <text class="section-label">✨ 星光强度</text>
       <view class="energy-cards">
         <view class="energy-card">
           <text class="energy-who">👩 妈妈</text>
@@ -27,7 +27,7 @@
         </view>
       </view>
       <view class="energy-adjust">
-        <text class="adjust-label">手动调整：</text>
+        <text class="adjust-label">星光调节：</text>
         <view v-for="n in 5" :key="n" class="adjust-btn" @click="setMom(n * 2)">👩{{ n * 2 }}</view>
         <text class="adjust-spacer">|</text>
         <view v-for="n in 5" :key="'d'+n" class="adjust-btn" @click="setDad(n * 2)">👨{{ n * 2 }}</view>
@@ -36,8 +36,8 @@
 
     <!-- 一人时光 -->
     <view class="onetime-section">
-      <text class="section-label">⏳ 一人时光守护者</text>
-      <text class="section-sub">确保每个宝宝都有专属的陪伴时间</text>
+      <text class="section-label">⏳ 专属星尘时光</text>
+      <text class="section-sub">每颗星球都值得独一无二的星尘</text>
 
       <!-- 时间对比 -->
       <view class="time-compare" v-if="babiesStore.isTwinsComplete">
@@ -59,7 +59,7 @@
 
       <!-- 快速计时 -->
       <view class="quick-timer" v-if="babiesStore.isTwinsComplete && !store.activeSession">
-        <text class="timer-label">现在陪谁？</text>
+        <text class="timer-label">现在照亮谁？</text>
         <view class="timer-btns">
           <view
             class="timer-btn blue"
@@ -79,13 +79,13 @@
       <!-- 计时中 -->
       <view class="active-timer" v-if="store.activeSession">
         <text class="timer-baby-name">{{ store.activeSession.babyName }}</text>
-        <text class="timer-running">陪伴中...</text>
-        <button class="btn-end" @click="endTime">结束陪伴</button>
+        <text class="timer-running">星尘降临中...</text>
+        <button class="btn-end" @click="endTime">结束星尘时光</button>
       </view>
 
       <!-- 今日记录 -->
       <view class="today-sessions" v-if="store.sessions.length">
-        <text class="mini-label">今日一人时光</text>
+        <text class="mini-label">今日星尘时光</text>
         <view v-for="s in store.sessions.slice().reverse().slice(0, 5)" :key="s.id" class="session-item">
           <text class="s-baby" :style="{ color: s.babyColor }">{{ s.babyName }}</text>
           <text class="s-dur">{{ s.durationMin }}分钟</text>
@@ -109,11 +109,11 @@ function energyColor(lv: number) {
   return 'var(--twin-baby-b)'
 }
 function energyLabel(lv: number) {
-  if (lv >= 8) return '满电'
-  if (lv >= 6) return '还行'
-  if (lv >= 4) return '有点累'
-  if (lv >= 2) return '很累了'
-  return '快没电了'
+  if (lv >= 8) return '星光满盈'
+  if (lv >= 6) return '星光稳定'
+  if (lv >= 4) return '星光微弱'
+  if (lv >= 2) return '星光黯淡'
+  return '星光几乎熄灭'
 }
 
 function setMom(n: number) { store.setEnergy('mom', n, '手动设置') }
@@ -124,12 +124,12 @@ function startTime(id: string, name: string, color: string) {
 }
 function endTime() {
   const s = store.endSession()
-  if (s) uni.showToast({ title: `陪${s.babyName} ${s.durationMin}分钟 💚`, icon: 'success' })
+  if (s) uni.showToast({ title: `为${s.babyName}降下${s.durationMin}分钟星尘 💚`, icon: 'success' })
   else uni.showToast({ title: '不足1分钟，未记录', icon: 'none' })
 }
 
 onMounted(() => {
-  uni.setNavigationBarTitle({ title: '守护中心' })
+  uni.setNavigationBarTitle({ title: '星光监测站' })
   store.autoCalcEnergy('mom')
   store.autoCalcEnergy('dad')
 })
@@ -144,7 +144,7 @@ onMounted(() => {
 .section-label { display: block; font-size: 28rpx; font-weight: 600; color: var(--twin-text); margin-bottom: 16rpx; }
 .section-sub { display: block; font-size: 24rpx; color: var(--twin-text-secondary); margin-bottom: 16rpx; margin-top: -12rpx; }
 
-/* 电量表 */
+/* ✨ 星光强度 */
 .energy-section { margin-bottom: 40rpx; }
 .energy-cards { display: flex; gap: 16rpx; margin-bottom: 16rpx; }
 .energy-card {
