@@ -168,7 +168,7 @@ const goHelp=()=>uni.showModal({title:'需要帮忙？',content:'打电话给家
 /* 页眉 */
 .header{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:36rpx}
 .date-tag{font-family:var(--font-journal);font-size:24rpx;color:var(--ink-md);letter-spacing:1rpx;padding-bottom:4rpx;border-bottom:1.5px solid var(--dot)}
-.streak-stamp{background:var(--gold-lt);color:var(--gold);font-weight:700;font-size:22rpx;padding:8rpx 18rpx;border-radius:16rpx;letter-spacing:3rpx;font-family:var(--font-journal);box-shadow:0 2rpx 8rpx rgba(200,153,62,0.12)}
+.streak-stamp{background:var(--gold-lt);color:var(--gold);font-weight:700;font-size:22rpx;padding:8rpx 18rpx;border-radius:16rpx;letter-spacing:3rpx;font-family:var(--font-journal);box-shadow:0 2rpx 8rpx rgba(200,153,62,0.12);transform:rotate(3deg);animation:badgePop 0.5s var(--ease-bounce)}@keyframes badgePop{0%{transform:rotate(3deg)scale(0);opacity:0}70%{transform:rotate(-2deg)scale(1.15)}100%{transform:rotate(3deg)scale(1);opacity:1}}
 
 /* 问候 */
 .greet-zone{position:relative;z-index:1;margin-bottom:40rpx}
