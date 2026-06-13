@@ -37,29 +37,35 @@
 
         <!-- 双宝贴纸 -->
         <view class="sticker-row">
-          <view class="sticker-card card-amber" :class="{ selected: selectedBaby === 'a', running: isRunningA }" @click="selectedBaby = 'a'">
-            <view class="sticker-tear" />
+          <view class="sticker-card card-a" :class="{ running: isRunningA }" @click="goRecord">
+            <!-- 装饰星星 -->
+            <text class="card-deco dl">⭐</text>
+            <text class="card-deco dr">✨</text>
+            <!-- 大头像 -->
             <view class="sticker-face face-a">
               <text class="face-emoji">{{ isRunningA ? '😋' : '😊' }}</text>
             </view>
             <text class="sticker-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
+            <text class="sticker-sub">大宝</text>
             <view class="sticker-status">
-              <text v-if="isRunningA" class="tag running">● 计时中</text>
+              <text v-if="isRunningA" class="tag running"><text class="tag-dot"></text>喂奶中</text>
               <text v-else-if="babyStatus(babyA)" class="tag idle">{{ babyStatus(babyA) }}</text>
-              <text v-else class="tag idle">轻触记录</text>
+              <text v-else class="tag idle">轻触记录 ✦</text>
             </view>
           </view>
 
-          <view class="sticker-card card-rose" :class="{ selected: selectedBaby === 'b', running: isRunningB }" @click="selectedBaby = 'b'">
-            <view class="sticker-tear" />
+          <view class="sticker-card card-b" :class="{ running: isRunningB }" @click="goRecord">
+            <text class="card-deco dl">🌸</text>
+            <text class="card-deco dr">💫</text>
             <view class="sticker-face face-b">
               <text class="face-emoji">{{ isRunningB ? '😴' : '😊' }}</text>
             </view>
             <text class="sticker-name">{{ babyB?.nickname || babyB?.name || '二宝' }}</text>
+            <text class="sticker-sub">二宝</text>
             <view class="sticker-status">
-              <text v-if="isRunningB" class="tag running">● 计时中</text>
+              <text v-if="isRunningB" class="tag running"><text class="tag-dot"></text>计时中</text>
               <text v-else-if="babyStatus(babyB)" class="tag idle">{{ babyStatus(babyB) }}</text>
-              <text v-else class="tag idle">轻触记录</text>
+              <text v-else class="tag idle">轻触记录 ✦</text>
             </view>
           </view>
         </view>
@@ -199,29 +205,38 @@ const goHelp = () => uni.showModal({ title:'需要帮忙？', content:'打电话
 @keyframes moodFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5rpx)} }
 
 /* 贴纸卡片 */
-.sticker-row { display:flex; gap:var(--space-sm); margin-bottom:20rpx; }
-.sticker-card { flex:1; background:var(--paper-warm); border-radius:var(--radius-lg); padding:24rpx 16rpx 20rpx; position:relative; box-shadow:var(--twin-shadow-sm); border:2rpx solid transparent; transition:transform var(--dur-fast) var(--ease-bounce),border-color var(--dur-fast); }
-.sticker-card:active { transform:scale(0.96); }
-.sticker-card.selected { border-color:var(--amber); }
-.sticker-card.card-amber { background:var(--amber-lt); }
-.sticker-card.card-rose { background:var(--rose-lt); }
+.sticker-row { display:flex; gap:18rpx; margin-bottom:20rpx; }
+.sticker-card {
+  flex:1; border-radius:28rpx; padding:28rpx 16rpx 20rpx;
+  position:relative; overflow:visible;
+  box-shadow:0 4rpx 16rpx rgba(44,36,22,0.05);
+  border:2rpx solid transparent;
+  transition:transform 0.2s var(--ease-bounce),border-color 0.2s,box-shadow 0.2s;
+}
+.sticker-card:active { transform:scale(0.95); }
+.sticker-card.card-a { background:var(--amber-lt); border-color:rgba(232,130,74,0.12); }
+.sticker-card.card-b { background:var(--rose-lt); border-color:rgba(212,133,107,0.12); }
 
-/* 撕边 */
-.sticker-tear { position:absolute; top:-4rpx; left:16rpx; right:16rpx; height:5rpx; background:repeating-linear-gradient(90deg,transparent,transparent 3rpx,var(--paper) 3rpx,var(--paper) 5rpx); opacity:0.55; }
+/* 装饰星星 */
+.card-deco { position:absolute; font-size:24rpx; pointer-events:none; }
+.card-deco.dl { top:8rpx; left:10rpx; animation:floatA 3s ease-in-out infinite; }
+.card-deco.dr { top:6rpx; right:10rpx; animation:floatB 3.5s ease-in-out infinite 0.5s; }
 
-.sticker-face { width:72rpx;height:72rpx;border-radius:50%; display:flex;align-items:center;justify-content:center; margin-bottom:14rpx; transition:transform 0.3s var(--ease-bounce); }
-.sticker-card:active .sticker-face { transform:scale(1.15); }
-.face-a { background:var(--amber-lt); }
-.face-b { background:var(--rose-lt); }
-.face-emoji { font-size:40rpx; transition:transform 0.3s ease; }
+/* 大头像 */
+.sticker-face { width:88rpx;height:88rpx;border-radius:50%; display:flex;align-items:center;justify-content:center; margin:0 auto 16rpx; transition:transform 0.3s var(--ease-bounce); }
+.sticker-card:active .sticker-face { transform:scale(1.12); }
+.face-a { background:rgba(232,130,74,0.2); }
+.face-b { background:rgba(212,133,107,0.2); }
+.face-emoji { font-size:48rpx; transition:transform 0.3s ease; }
 .sticker-card.running .face-emoji { animation:faceWiggle 0.6s ease-in-out infinite; }
 @keyframes faceWiggle { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-6deg)} 75%{transform:rotate(6deg)} }
 
-.sticker-name { font-family:var(--font-journal); font-size:var(--font-card); font-weight:700; color:var(--ink); display:block; margin-bottom:6rpx; }
-.sticker-status { font-size:var(--font-caption); color:var(--ink-md); }
-.tag { display:inline; }
+.sticker-name { font-family:var(--font-journal); font-size:var(--font-card); font-weight:700; color:var(--ink); display:block; text-align:center; margin-bottom:2rpx; }
+.sticker-sub { font-size:var(--font-caption); color:var(--ink-lt); display:block; text-align:center; margin-bottom:8rpx; }
+.sticker-status { font-size:var(--font-caption); color:var(--ink-md); text-align:center; }
+.tag { display:inline-flex; align-items:center; gap:6rpx; }
+.tag-dot { width:7rpx;height:7rpx;border-radius:50%;background:var(--mint);display:inline-block;animation:dotPulse 1.5s ease-in-out infinite; }
 .tag.running { color:var(--mint); font-weight:600; }
-.tag.running::before { content:''; display:inline-block; width:6rpx;height:6rpx;border-radius:50%;background:var(--mint);margin-right:6rpx;animation:dotPulse 1.5s ease-in-out infinite; }
 @keyframes dotPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(1.6)} }
 
 .sticker-name { font-family:var(--font-journal); font-size:var(--font-card); font-weight:700; color:var(--ink); display:block; margin-bottom:4rpx; }
