@@ -22,6 +22,32 @@
 - **vendor.js 从 1.15MB → 71KB**（↓94%）
 - **注意**：升级 echarts 版本时需重新复制 `node_modules/echarts/dist/echarts.simple.min.js` → `src/static/echarts/echarts.min.js`
 
+### Pinia 版本兼容性
+
+- **问题**：Pinia ≥2.1.0 在 uni-app v3 alpha 编译为微信小程序时，`createPinia` 导出不可用，启动报 `t.createPinia is not a function`
+- **根因**：uni-app v3 alpha 的 Vite 构建对 Pinia 2.1.x 的 ESM/CJS 导出处理有问题
+- **解决**：**锁定 `pinia@2.0.36`**（最后已知兼容版本）
+- **安装**：`npm install pinia@2.0.36 --legacy-peer-deps`
+
+### 微信 WXSS 编译器不兼容的 CSS 特性
+
+> 以下 CSS 特性在微信基础库 3.9.x / 3.10.x 的 WXSS 编译器中会导致 `SystemError (appServiceSDKScriptError)` 崩溃。
+
+| 特性 | 状态 | 说明 |
+|------|:--:|------|
+| `font-variant-numeric: tabular-nums` | ❌ 禁用 | 微信 WXSS 不支持此属性 |
+| `.stagger-reveal > *` 通用子选择器 + `animation` | ❌ 禁用 | `> *` 选择器配合 animation 触发编译器崩溃 |
+| `@keyframes` 配合 `transform` / `opacity` | ✅ 可用 | 基础动画正常 |
+| `page[data-theme="dark"]` 属性选择器 | ✅ 可用 | 正常 |
+| `::before` / `::after` 伪元素 | ✅ 可用 | 在 `.brand-mark` 上正常工作 |
+| `gap` 属性 (flexbox) | ✅ 可用 | 基础库 3.9+ 支持 |
+| CSS 变量中 `cubic-bezier()` 值 | ✅ 可用 | `var(--ease-spring)` 正常工作 |
+| `box-shadow` 多值逗号分隔 | ✅ 可用 | 正常工作 |
+
+**替代方案**：
+- 交错入场动画用页面专属 `nth-child` 选择器（`.helix-item:nth-child(1)`），**不要**用 `> *` 通用选择器
+- 等宽数字用等宽字体替代 `font-variant-numeric`
+
 ---
 
 ---
@@ -282,10 +308,10 @@ dist/build/mp-weixin/
 完整建设方案和论证报告在 Obsidian vault：
 
 ```
-E:/ly/Obsidian/work/知识库/项目/私活/双生星球/
-├── 双生星球-项目建设方案.md          # V3.2 建设方案（~1200行）
-├── 双生星球-十角色终局论证.md         # 终局论证
-├── 双生星球-Phase0-执行手册.md         # Phase 0 手册
+E:/ly/Obsidian/work/知识库/项目/私活/并蒂星球/
+├── 并蒂星球-项目建设方案.md          # V3.2 建设方案（~1200行）
+├── 并蒂星球-十角色终局论证.md         # 终局论证
+├── 并蒂星球-Phase0-执行手册.md         # Phase 0 手册
 └── ... (共 7 份文档)
 ```
 
