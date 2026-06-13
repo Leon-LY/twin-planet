@@ -24,7 +24,7 @@
         <view class="bg-spot spot-b" />
 
         <!-- 页眉 -->
-        <view class="header">
+        <view class="header reveal-1">
           <text class="date-tag">{{ dateStr }}</text>
           <view class="streak-stamp" v-if="streakDays > 0">
             <text>✦ 连续 {{ streakDays }} 天</text>
@@ -32,7 +32,7 @@
         </view>
 
         <!-- 问候 -->
-        <view class="greet-zone">
+        <view class="greet-zone reveal-2">
           <text class="greet-hand">{{ greeting }}</text>
           <text class="greet-hand"><text class="highlight">两个小怪兽</text></text>
           <view class="greet-quote">
@@ -42,7 +42,7 @@
         </view>
 
         <!-- 双宝卡片 — 重叠 -->
-        <view class="twins-zone">
+        <view class="twins-zone reveal-3">
           <view class="twin-card card-a" @click="goRecord">
             <view class="card-bg bg-a" />
             <view class="avatar-wrap">
@@ -81,18 +81,17 @@
         </view>
 
         <!-- 连接线 -->
-        <view class="thread-zone">
+        <view class="thread-zone reveal-4">
           <view class="thread-line" />
           <text class="thread-knot">💛</text>
         </view>
 
         <!-- 中央按钮 -->
-        <view class="center-zone">
+        <view class="center-zone reveal-5">
           <view class="btn-stage">
             <view class="orbit-ring" />
             <text class="float-el f1">⭐</text><text class="float-el f2">💫</text>
             <text class="float-el f3">🌸</text><text class="float-el f4">✨</text>
-            <text class="float-el f5">🪐</text><text class="float-el f6">🌟</text>
             <button class="main-btn" @click="goRecord">
               <text class="btn-icon">✋</text>
               <text class="btn-text">记 一 笔</text>
@@ -101,7 +100,7 @@
         </view>
 
         <!-- 快捷 -->
-        <view class="quick-row" v-if="babyA && babyB">
+        <view class="quick-row reveal-6" v-if="babyA && babyB">
           <view class="q-chip" @click="dualRecord('feeding')"><text>🍼 都喂了</text></view>
           <view class="q-chip" @click="dualRecord('sleep')"><text>😴 都睡了</text></view>
           <view class="q-chip" @click="dualRecord('diaper')"><text>🧷 都换了</text></view>
@@ -227,15 +226,21 @@ const goHelp=()=>uni.showModal({title:'需要帮忙？',content:'打电话给家
 .orbit-ring{position:absolute;inset:0;border-radius:50%;border:2rpx dashed var(--dot);animation:spin 35s linear infinite;opacity:0.45}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* 交错入场 */
+.reveal-1{animation:revealUp 0.5s var(--ease-soft) both}
+.reveal-2{animation:revealUp 0.5s var(--ease-soft) 0.08s both}
+.reveal-3{animation:revealUp 0.5s var(--ease-soft) 0.16s both}
+.reveal-4{animation:revealUp 0.5s var(--ease-soft) 0.24s both}
+.reveal-5{animation:revealUp 0.5s var(--ease-soft) 0.32s both}
+.reveal-6{animation:revealUp 0.5s var(--ease-soft) 0.40s both}
+@keyframes revealUp{from{opacity:0;transform:translateY(16rpx)}to{opacity:1;transform:translateY(0)}}
+
 .float-el{position:absolute;font-size:28rpx;pointer-events:none}
-.f1{top:10rpx;left:30rpx;animation:orbA 4s ease-in-out infinite}
-.f2{top:30rpx;right:20rpx;animation:orbB 3.5s ease-in-out infinite 0.6s}
-.f3{bottom:40rpx;right:10rpx;animation:orbA 5s ease-in-out infinite 1.2s}
-.f4{bottom:10rpx;left:20rpx;animation:orbB 4.5s ease-in-out infinite 0.3s}
-.f5{top:45%;right:-10rpx;animation:orbA 3s ease-in-out infinite 1.8s}
-.f6{top:45%;left:-10rpx;animation:orbB 3.8s ease-in-out infinite 0.9s}
-@keyframes orbA{0%,100%{transform:translate(0,0)rotate(0);opacity:0.35}25%{transform:translate(8rpx,-12rpx)rotate(12deg);opacity:0.85}50%{transform:translate(-4rpx,-18rpx)rotate(-5deg);opacity:0.5}75%{transform:translate(-12rpx,-6rpx)rotate(-12deg);opacity:0.75}}
-@keyframes orbB{0%,100%{transform:translate(0,0)rotate(0);opacity:0.3}33%{transform:translate(-8rpx,-10rpx)rotate(-10deg);opacity:0.8}66%{transform:translate(6rpx,-6rpx)rotate(8deg);opacity:0.45}}
+.f1{top:10rpx;left:30rpx;animation:orbFloat 4s ease-in-out infinite}
+.f2{top:30rpx;right:20rpx;animation:orbFloat 3.5s ease-in-out infinite 0.6s}
+.f3{bottom:30rpx;right:10rpx;animation:orbFloat 5s ease-in-out infinite 1.2s}
+.f4{bottom:10rpx;left:20rpx;animation:orbFloat 4.5s ease-in-out infinite 0.3s}
+@keyframes orbFloat{0%,100%{transform:translate(0,0)rotate(0);opacity:0.3}25%{transform:translate(6rpx,-10rpx)rotate(8deg);opacity:0.8}50%{transform:translate(-4rpx,-16rpx)rotate(-5deg);opacity:0.5}75%{transform:translate(-10rpx,-4rpx)rotate(-8deg);opacity:0.7}}
 
 .main-btn{width:320rpx;height:320rpx;border-radius:50%;position:relative;z-index:2;background:var(--amber);border:none;color:#FFF;font-family:var(--font-journal);box-shadow:0 24rpx 64rpx rgba(224,123,62,0.22),0 8rpx 16rpx rgba(224,123,62,0.12),inset 0 3rpx 0 rgba(255,255,255,0.2),inset 0 -6rpx 12rpx rgba(0,0,0,0.08);transform:rotate(-3deg);transition:transform 0.18s var(--ease-bounce),box-shadow 0.18s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10rpx}
 .main-btn::after{content:'';position:absolute;top:14rpx;left:22%;right:22%;height:35%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.28) 0%,transparent 70%);border-radius:50%;pointer-events:none}
