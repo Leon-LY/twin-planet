@@ -31,8 +31,8 @@
         <!-- 问候 -->
         <view class="greeting-zone">
           <text class="greeting-main">{{ greeting }}</text>
-          <text class="greeting-sub">今天的两个小怪兽</text>
-          <text class="greeting-mood">{{ moodEmoji }}</text>
+          <text class="greeting-main" style="margin-top:-4rpx">今天的两个<text style="font-family:var(--font-ui)">小怪兽</text></text>
+          <text class="greeting-sub"><text class="greeting-mood">{{ moodEmoji }}</text> 又为同一个玩具打起来了</text>
         </view>
 
         <!-- 双宝贴纸 -->
