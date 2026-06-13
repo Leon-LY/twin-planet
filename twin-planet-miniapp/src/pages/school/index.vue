@@ -77,7 +77,7 @@
         <view class="toggle-btn" :class="{ active: sameClass }" @click="sameClass = true">👫 同班</view>
         <view class="toggle-btn" :class="{ active: !sameClass }" @click="sameClass = false">👤👤 分班</view>
       </view>
-      <input class="note-input" v-model="noteText" placeholder="记录决策原因..." placeholder-style="color: #CBD5E0" />
+      <input class="note-input" v-model="noteText" placeholder="记录决策原因..." placeholder-style="color: var(--twin-text-muted)" />
       <button class="btn-save" @click="saveDecision">💾 保存评估</button>
     </view>
   </view>
@@ -102,9 +102,9 @@ const terms = ['2026-春季', '2026-秋季', '2027-春季', '2027-秋季']
 const dims = computed(() => {
   const scores = store.getLatestCoupling() ?? calcCouplingScores(interactionsStore.sproutEntries.map(e => e.type), 48)
   return [
-    { key: 'emotional', label: '情绪依赖', score: scores.emotional, color: '#F56565' },
-    { key: 'social', label: '社交重叠', score: scores.social, color: '#4299E1' },
-    { key: 'identity', label: '身份认同', score: scores.identity, color: '#48BB78' },
+    { key: 'emotional', label: '情绪依赖', score: scores.emotional, color: 'var(--twin-baby-b)' },
+    { key: 'social', label: '社交重叠', score: scores.social, color: 'var(--twin-baby-a)' },
+    { key: 'identity', label: '身份认同', score: scores.identity, color: 'var(--twin-accent)' },
   ]
 })
 
@@ -117,9 +117,9 @@ const verdictText = computed(() => {
 })
 
 const verdictBg = computed(() => {
-  if (avgCoupling.value >= 70) return '#FFFAF0'
-  if (avgCoupling.value >= 40) return '#F0FFF4'
-  return '#EBF8FF'
+  if (avgCoupling.value >= 70) return 'var(--twin-warning-light)'
+  if (avgCoupling.value >= 40) return 'var(--twin-accent-light)'
+  return 'var(--twin-baby-a-light)'
 })
 
 function saveDecision() {
@@ -133,23 +133,23 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '入园助手' }) })
 </script>
 
 <style scoped>
-.school-page { min-height: 100vh; background: #FFFBF5; padding: 32rpx 32rpx 100rpx; }
+.school-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 100rpx; }
 .section-header { text-align: center; margin-bottom: 28rpx; }
 .section-icon { font-size: 40px; }
-.section-title { display: block; font-size: 44rpx; font-weight: 700; color: #2D3748; margin: 12rpx 0; }
-.section-desc { font-size: 26rpx; color: #A0AEC0; }
+.section-title { display: block; font-size: 44rpx; font-weight: 700; color: var(--twin-text); margin: 12rpx 0; }
+.section-desc { font-size: 26rpx; color: var(--twin-text-secondary); }
 
-.card-title { display: block; font-size: 28rpx; font-weight: 600; color: #2D3748; margin-bottom: 12rpx; }
-.card-sub { display: block; font-size: 22rpx; color: #A0AEC0; margin-bottom: 16rpx; margin-top: -8rpx; }
+.card-title { display: block; font-size: 28rpx; font-weight: 600; color: var(--twin-text); margin-bottom: 12rpx; }
+.card-sub { display: block; font-size: 22rpx; color: var(--twin-text-secondary); margin-bottom: 16rpx; margin-top: -8rpx; }
 
 /* 雷达图模拟 */
-.radar-card { background: #FFFFFF; border-radius: 20rpx; padding: 24rpx; margin-bottom: 20rpx; }
-.radar-axis { display: flex; justify-content: space-between; font-size: 20rpx; color: #A0AEC0; margin-bottom: 12rpx; }
+.radar-card { background: var(--twin-card-bg); border-radius: 20rpx; padding: 24rpx; margin-bottom: 20rpx; }
+.radar-axis { display: flex; justify-content: space-between; font-size: 20rpx; color: var(--twin-text-secondary); margin-bottom: 12rpx; }
 .radar-bar-wrap { display: flex; align-items: center; gap: 12rpx; margin-bottom: 12rpx; }
 .bar-label { font-size: 24rpx; width: 120rpx; color: #4A5568; }
-.bar-track { flex: 1; height: 16rpx; background: #EDF2F7; border-radius: 8rpx; }
+.bar-track { flex: 1; height: 16rpx; background: var(--twin-border); border-radius: 8rpx; }
 .bar-fill { height: 16rpx; border-radius: 8rpx; }
-.bar-val { font-size: 24rpx; font-weight: 700; width: 48rpx; text-align: right; color: #2D3748; }
+.bar-val { font-size: 24rpx; font-weight: 700; width: 48rpx; text-align: right; color: var(--twin-text); }
 
 .coupling-verdict { padding: 16rpx 20rpx; border-radius: 12rpx; margin-top: 12rpx; }
 .verdict-text { font-size: 24rpx; color: #4A5568; line-height: 1.5; }
@@ -157,31 +157,31 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '入园助手' }) })
 /* 同班/分班对比 */
 .compare-section { margin-bottom: 20rpx; }
 .compare-cols { display: flex; gap: 12rpx; }
-.compare-col { flex: 1; background: #FFFFFF; border-radius: 16rpx; padding: 16rpx 14rpx; }
-.compare-col.blue { border-top: 6rpx solid #4299E1; }
-.compare-col.pink { border-top: 6rpx solid #F56565; }
+.compare-col { flex: 1; background: var(--twin-card-bg); border-radius: 16rpx; padding: 16rpx 14rpx; }
+.compare-col.blue { border-top: 6rpx solid var(--twin-baby-a); }
+.compare-col.pink { border-top: 6rpx solid var(--twin-baby-b); }
 .col-title { display: block; font-size: 28rpx; font-weight: 700; margin-bottom: 10rpx; }
-.compare-col.blue .col-title { color: #4299E1; }
-.compare-col.pink .col-title { color: #F56565; }
+.compare-col.blue .col-title { color: var(--twin-baby-a); }
+.compare-col.pink .col-title { color: var(--twin-baby-b); }
 .col-item { display: block; font-size: 22rpx; color: #4A5568; line-height: 1.8; }
-.col-item.risk { color: #A0AEC0; }
+.col-item.risk { color: var(--twin-text-secondary); }
 
 /* 评估记录 */
 .assess-section { margin-bottom: 20rpx; }
 .assess-list { display: flex; flex-direction: column; gap: 8rpx; }
-.assess-card { background: #FFFFFF; border-radius: 14rpx; padding: 16rpx 20rpx; }
+.assess-card { background: var(--twin-card-bg); border-radius: 14rpx; padding: 16rpx 20rpx; }
 .assess-header { display: flex; justify-content: space-between; margin-bottom: 8rpx; }
-.assess-term { font-size: 26rpx; font-weight: 600; color: #2D3748; }
-.assess-choice { font-size: 24rpx; color: #4299E1; }
-.assess-note { font-size: 24rpx; color: #718096; }
-.empty-mini { font-size: 24rpx; color: #A0AEC0; padding: 24rpx; text-align: center; }
+.assess-term { font-size: 26rpx; font-weight: 600; color: var(--twin-text); }
+.assess-choice { font-size: 24rpx; color: var(--twin-baby-a); }
+.assess-note { font-size: 24rpx; color: var(--twin-text-tertiary); }
+.empty-mini { font-size: 24rpx; color: var(--twin-text-secondary); padding: 24rpx; text-align: center; }
 
 /* 新建评估 */
-.new-assess { background: #FFFFFF; border-radius: 20rpx; padding: 24rpx; }
-.picker-row { display: flex; justify-content: space-between; padding: 16rpx 0; font-size: 28rpx; color: #2D3748; border-bottom: 2rpx solid #EDF2F7; margin-bottom: 16rpx; }
+.new-assess { background: var(--twin-card-bg); border-radius: 20rpx; padding: 24rpx; }
+.picker-row { display: flex; justify-content: space-between; padding: 16rpx 0; font-size: 28rpx; color: var(--twin-text); border-bottom: 2rpx solid var(--twin-border); margin-bottom: 16rpx; }
 .toggle-row { display: flex; gap: 12rpx; margin-bottom: 16rpx; }
-.toggle-btn { flex: 1; text-align: center; padding: 20rpx 0; background: #FFFFFF; border: 4rpx solid #E2E8F0; border-radius: 16rpx; font-size: 26rpx; color: #718096; }
-.toggle-btn.active { border-color: #4299E1; background: #EBF8FF; color: #2D3748; font-weight: 600; }
-.note-input { width: 100%; padding: 20rpx 24rpx; background: #F7FAFC; border-radius: 14rpx; font-size: 26rpx; margin-bottom: 16rpx; box-sizing: border-box; }
-.btn-save { width: 100%; padding: 24rpx 0; background: #48BB78; color: #FFFFFF; border: none; border-radius: 16rpx; font-size: 28rpx; font-weight: 600; }
+.toggle-btn { flex: 1; text-align: center; padding: 20rpx 0; background: var(--twin-card-bg); border: 4rpx solid var(--twin-border); border-radius: 16rpx; font-size: 26rpx; color: var(--twin-text-tertiary); }
+.toggle-btn.active { border-color: var(--twin-baby-a); background: var(--twin-baby-a-light); color: var(--twin-text); font-weight: 600; }
+.note-input { width: 100%; padding: 20rpx 24rpx; background: var(--twin-hover); border-radius: 14rpx; font-size: 26rpx; margin-bottom: 16rpx; box-sizing: border-box; }
+.btn-save { width: 100%; padding: 24rpx 0; background: var(--twin-accent); color: var(--twin-card-bg); border: none; border-radius: 16rpx; font-size: 28rpx; font-weight: 600; }
 </style>

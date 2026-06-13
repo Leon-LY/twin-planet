@@ -38,7 +38,7 @@
             <text class="norm-age">{{ norm.ageMonths }}月</text>
           </view>
           <view class="add-custom">
-            <input class="custom-input" v-model="customNotes[domain]" placeholder="自己添加一个..." placeholder-style="color: #CBD5E0" @confirm="addCustom(domain as MilestoneDomain)" />
+            <input class="custom-input" v-model="customNotes[domain]" placeholder="自己添加一个..." placeholder-style="color: var(--twin-text-muted)" @confirm="addCustom(domain as MilestoneDomain)" />
           </view>
         </view>
       </view>
@@ -123,47 +123,47 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '能力观察' }) })
 </script>
 
 <style scoped>
-.ms-page { min-height: 100vh; background: #FFFBF5; padding: 32rpx 32rpx 80rpx; }
+.ms-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
 .section-header { text-align: center; margin-bottom: 24rpx; }
 .section-icon { font-size: 40px; }
-.section-title { display: block; font-size: 44rpx; font-weight: 700; color: #2D3748; margin: 12rpx 0; }
-.section-desc { font-size: 26rpx; color: #A0AEC0; }
+.section-title { display: block; font-size: 44rpx; font-weight: 700; color: var(--twin-text); margin: 12rpx 0; }
+.section-desc { font-size: 26rpx; color: var(--twin-text-secondary); }
 
 .baby-tabs { display: flex; gap: 16rpx; margin-bottom: 24rpx; }
-.baby-tab { flex: 1; text-align: center; padding: 18rpx 0; background: #FFFFFF; border: 4rpx solid #E2E8F0; border-radius: 16rpx; font-size: 28rpx; color: #718096; }
-.baby-tab.active.blue { border-color: #4299E1; background: #EBF8FF; color: #2D3748; font-weight: 600; }
-.baby-tab.active.pink { border-color: #F56565; background: #FFF5F5; color: #2D3748; font-weight: 600; }
+.baby-tab { flex: 1; text-align: center; padding: 18rpx 0; background: var(--twin-card-bg); border: 4rpx solid var(--twin-border); border-radius: 16rpx; font-size: 28rpx; color: var(--twin-text-tertiary); }
+.baby-tab.active.blue { border-color: var(--twin-baby-a); background: var(--twin-baby-a-light); color: var(--twin-text); font-weight: 600; }
+.baby-tab.active.pink { border-color: var(--twin-baby-b); background: var(--twin-baby-b-light); color: var(--twin-text); font-weight: 600; }
 
 .domain-cards { display: flex; flex-direction: column; gap: 10rpx; margin-bottom: 28rpx; }
-.domain-card { background: #FFFFFF; border-radius: 16rpx; padding: 20rpx; }
+.domain-card { background: var(--twin-card-bg); border-radius: 16rpx; padding: 20rpx; }
 .domain-head { display: flex; align-items: center; gap: 14rpx; }
 .domain-emoji { font-size: 32rpx; }
 .domain-body { flex: 1; }
-.domain-label { display: block; font-size: 28rpx; font-weight: 600; color: #2D3748; }
-.domain-count { font-size: 22rpx; color: #A0AEC0; }
-.domain-arrow { font-size: 20rpx; color: #CBD5E0; transition: transform 0.2s; }
+.domain-label { display: block; font-size: 28rpx; font-weight: 600; color: var(--twin-text); }
+.domain-count { font-size: 22rpx; color: var(--twin-text-secondary); }
+.domain-arrow { font-size: 20rpx; color: var(--twin-text-muted); transition: transform 0.2s; }
 .domain-arrow.open { transform: rotate(180deg); }
 
-.domain-detail { margin-top: 16rpx; padding-top: 16rpx; border-top: 2rpx solid #EDF2F7; }
-.detail-examples { display: block; font-size: 22rpx; color: #A0AEC0; margin-bottom: 12rpx; }
+.domain-detail { margin-top: 16rpx; padding-top: 16rpx; border-top: 2rpx solid var(--twin-border); }
+.detail-examples { display: block; font-size: 22rpx; color: var(--twin-text-secondary); margin-bottom: 12rpx; }
 .norm-item { display: flex; align-items: center; gap: 12rpx; padding: 10rpx 0; }
 .norm-item.achieved { opacity: 0.5; }
 .norm-check { font-size: 28rpx; }
 .norm-title { flex: 1; font-size: 26rpx; color: #4A5568; }
-.norm-age { font-size: 22rpx; color: #CBD5E0; }
+.norm-age { font-size: 22rpx; color: var(--twin-text-muted); }
 
 .add-custom { margin-top: 8rpx; }
-.custom-input { width: 100%; padding: 16rpx 20rpx; background: #F7FAFC; border-radius: 10rpx; font-size: 24rpx; box-sizing: border-box; }
+.custom-input { width: 100%; padding: 16rpx 20rpx; background: var(--twin-hover); border-radius: 10rpx; font-size: 24rpx; box-sizing: border-box; }
 
 .timeline { padding-left: 24rpx; }
 .tl-item { display: flex; gap: 16rpx; padding-bottom: 20rpx; }
-.tl-dot { width: 12rpx; height: 12rpx; border-radius: 50%; background: #CBD5E0; margin-top: 8rpx; flex-shrink: 0; }
-.tl-dot.first { background: #48BB78; width: 16rpx; height: 16rpx; }
-.tl-card { flex: 1; background: #FFFFFF; border-radius: 12rpx; padding: 14rpx 18rpx; display: flex; align-items: center; gap: 10rpx; }
+.tl-dot { width: 12rpx; height: 12rpx; border-radius: 50%; background: var(--twin-text-muted); margin-top: 8rpx; flex-shrink: 0; }
+.tl-dot.first { background: var(--twin-accent); width: 16rpx; height: 16rpx; }
+.tl-card { flex: 1; background: var(--twin-card-bg); border-radius: 12rpx; padding: 14rpx 18rpx; display: flex; align-items: center; gap: 10rpx; }
 .tl-emoji { font-size: 24rpx; }
-.tl-title { flex: 1; font-size: 26rpx; color: #2D3748; }
-.tl-time { font-size: 20rpx; color: #A0AEC0; }
+.tl-title { flex: 1; font-size: 26rpx; color: var(--twin-text); }
+.tl-time { font-size: 20rpx; color: var(--twin-text-secondary); }
 
-.section-label { display: block; font-size: 26rpx; font-weight: 600; color: #2D3748; margin-bottom: 16rpx; }
-.empty-state { text-align: center; padding: 80rpx; color: #A0AEC0; font-size: 28rpx; }
+.section-label { display: block; font-size: 26rpx; font-weight: 600; color: var(--twin-text); margin-bottom: 16rpx; }
+.empty-state { text-align: center; padding: 80rpx; color: var(--twin-text-secondary); font-size: 28rpx; }
 </style>

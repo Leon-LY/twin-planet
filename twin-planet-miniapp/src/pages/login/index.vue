@@ -75,7 +75,7 @@ onMounted(() => {
 <style scoped>
 .login-page {
   min-height: 100vh;
-  background: #FFFBF5;
+  background: var(--twin-bg);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -85,24 +85,24 @@ onMounted(() => {
 
 .brand-hero { text-align: center; margin-bottom: 120rpx; }
 .brand-icon { font-size: 56px; margin-bottom: 12px; }
-.brand-name { display: block; font-size: 64rpx; font-weight: 700; color: #2D3748; letter-spacing: 4px; }
-.brand-slogan { display: block; font-size: 28rpx; color: #718096; margin-top: 16rpx; letter-spacing: 6px; }
-.brand-desc { display: block; font-size: 24rpx; color: #A0AEC0; margin-top: 24rpx; }
+.brand-name { display: block; font-size: 64rpx; font-weight: 700; color: var(--twin-text); letter-spacing: 4px; }
+.brand-slogan { display: block; font-size: 28rpx; color: var(--twin-text-tertiary); margin-top: 16rpx; letter-spacing: 6px; }
+.brand-desc { display: block; font-size: 24rpx; color: var(--twin-text-secondary); margin-top: 24rpx; }
 
 .login-actions { width: 100%; text-align: center; }
 .btn-wechat {
   display: flex; align-items: center; justify-content: center;
   width: 100%; max-width: 640rpx; margin: 0 auto;
   padding: 28rpx 0;
-  background: #4299E1;
-  color: #FFFFFF; border: none; border-radius: 24rpx;
+  background: var(--twin-baby-a);
+  color: var(--twin-card-bg); border: none; border-radius: 24rpx;
   font-size: 36rpx; font-weight: 600;
 }
 
 .privacy-row { margin-top: 28rpx; }
-.privacy-text { font-size: 22rpx; color: #A0AEC0; }
-.privacy-link { font-size: 22rpx; color: #4299E1; }
+.privacy-text { font-size: 22rpx; color: var(--twin-text-secondary); }
+.privacy-link { font-size: 22rpx; color: var(--twin-baby-a); }
 
 .dev-skip { margin-top: 60rpx; }
-.skip-link { font-size: 26rpx; color: #ED8936; }
+.skip-link { font-size: 26rpx; color: var(--twin-warning); }
 </style>

@@ -8,9 +8,9 @@
     <!-- 三明治卡片 -->
     <view class="sandwich-cards">
       <!-- 大宝 -->
-      <view class="sandwich-card" style="border-color: #4299E1">
+      <view class="sandwich-card" style="border-color: var(--twin-baby-a)">
         <view class="card-top">
-          <view class="baby-avatar" style="background: #EBF8FF"><text>👦</text></view>
+          <view class="baby-avatar" style="background: var(--twin-baby-a-light)"><text>👦</text></view>
           <view class="baby-info">
             <text class="baby-name">{{ twinA?.nickname || '大宝' }}</text>
             <text class="baby-status">{{ getBabyStatus(twinA) }}</text>
@@ -48,9 +48,9 @@
       </view>
 
       <!-- 二宝 -->
-      <view class="sandwich-card" style="border-color: #F56565">
+      <view class="sandwich-card" style="border-color: var(--twin-baby-b)">
         <view class="card-top">
-          <view class="baby-avatar" style="background: #FFF5F5"><text>👧</text></view>
+          <view class="baby-avatar" style="background: var(--twin-baby-b-light)"><text>👧</text></view>
           <view class="baby-info">
             <text class="baby-name">{{ twinB?.nickname || '二宝' }}</text>
             <text class="baby-status">{{ getBabyStatus(twinB) }}</text>
@@ -140,38 +140,38 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '爸爸的快照' }) })
 </script>
 
 <style scoped>
-.snap-page { min-height: 100vh; background: #FFFBF5; padding: 32rpx 32rpx 80rpx; }
+.snap-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
 .greeting { margin-bottom: 28rpx; }
-.greeting-text { font-size: 44rpx; font-weight: 700; color: #2D3748; }
-.greeting-sub { display: block; font-size: 26rpx; color: #A0AEC0; margin-top: 8rpx; }
+.greeting-text { font-size: 44rpx; font-weight: 700; color: var(--twin-text); }
+.greeting-sub { display: block; font-size: 26rpx; color: var(--twin-text-secondary); margin-top: 8rpx; }
 
 /* 三明治卡片 */
 .sandwich-cards { margin-bottom: 32rpx; }
 .sandwich-card {
-  background: #FFFFFF; border-radius: 20rpx; padding: 24rpx;
+  background: var(--twin-card-bg); border-radius: 20rpx; padding: 24rpx;
   border-left: 8rpx solid; margin-bottom: 0;
 }
 .card-top { display: flex; align-items: center; gap: 16rpx; margin-bottom: 16rpx; }
 .baby-avatar { width: 72rpx; height: 72rpx; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32rpx; }
-.baby-name { font-size: 30rpx; font-weight: 600; color: #2D3748; }
-.baby-status { font-size: 24rpx; color: #718096; display: block; margin-top: 4rpx; }
+.baby-name { font-size: 30rpx; font-weight: 600; color: var(--twin-text); }
+.baby-status { font-size: 24rpx; color: var(--twin-text-tertiary); display: block; margin-top: 4rpx; }
 .card-metrics { display: flex; align-items: center; gap: 16rpx; }
 .metric { flex: 1; }
-.metric-label { font-size: 22rpx; color: #A0AEC0; }
-.metric-value { display: block; font-size: 26rpx; color: #2D3748; font-weight: 500; margin-top: 4rpx; }
-.metric-divider { width: 2rpx; height: 48rpx; background: #E2E8F0; }
+.metric-label { font-size: 22rpx; color: var(--twin-text-secondary); }
+.metric-value { display: block; font-size: 26rpx; color: var(--twin-text); font-weight: 500; margin-top: 4rpx; }
+.metric-divider { width: 2rpx; height: 48rpx; background: var(--twin-border); }
 
 /* 中间夹层 */
-.sandwich-middle { background: #FFFFFF; border-radius: 0; padding: 20rpx 24rpx; border-left: 8rpx solid #48BB78; margin: -2rpx 0; }
+.sandwich-middle { background: var(--twin-card-bg); border-radius: 0; padding: 20rpx 24rpx; border-left: 8rpx solid var(--twin-accent); margin: -2rpx 0; }
 .middle-row { display: flex; justify-content: space-around; }
 .middle-item { text-align: center; }
-.middle-num { font-size: 40rpx; font-weight: 700; color: #48BB78; }
-.middle-label { display: block; font-size: 22rpx; color: #A0AEC0; margin-top: 4rpx; }
+.middle-num { font-size: 40rpx; font-weight: 700; color: var(--twin-accent); }
+.middle-label { display: block; font-size: 22rpx; color: var(--twin-text-secondary); margin-top: 4rpx; }
 
 /* 快速操作 */
-.section-label { display: block; font-size: 26rpx; font-weight: 600; color: #2D3748; margin-bottom: 16rpx; }
+.section-label { display: block; font-size: 26rpx; font-weight: 600; color: var(--twin-text); margin-bottom: 16rpx; }
 .action-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12rpx; }
-.quick-btn { text-align: center; padding: 24rpx 8rpx; background: #FFFFFF; border-radius: 16rpx; }
+.quick-btn { text-align: center; padding: 24rpx 8rpx; background: var(--twin-card-bg); border-radius: 16rpx; }
 .quick-emoji { font-size: 36rpx; display: block; }
 .quick-label { font-size: 22rpx; color: #4A5568; margin-top: 8rpx; display: block; }
 </style>

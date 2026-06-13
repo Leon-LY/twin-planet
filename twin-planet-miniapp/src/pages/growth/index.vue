@@ -29,11 +29,11 @@
       <view class="chart-header">
         <view class="legend-row">
           <view class="legend-item">
-            <view class="legend-dot" style="background: #4299E1" />
+            <view class="legend-dot" style="background: var(--twin-baby-a)" />
             <text class="legend-label">安宁</text>
           </view>
           <view class="legend-item">
-            <view class="legend-dot" style="background: #F56565" />
+            <view class="legend-dot" style="background: var(--twin-baby-b)" />
             <text class="legend-label">安然</text>
           </view>
         </view>
@@ -61,7 +61,7 @@
     <!-- 数据卡片 -->
     <view class="data-cards">
       <view class="data-card card-aning">
-        <view class="card-color-bar" style="background: #4299E1" />
+        <view class="card-color-bar" style="background: var(--twin-baby-a)" />
         <text class="card-name">李牧川 · 安宁</text>
         <text class="card-gender">👦 男孩</text>
         <view class="card-stats">
@@ -77,7 +77,7 @@
       </view>
 
       <view class="data-card card-anran">
-        <view class="card-color-bar" style="background: #F56565" />
+        <view class="card-color-bar" style="background: var(--twin-baby-b)" />
         <text class="card-name">李牧岑 · 安然</text>
         <text class="card-gender">👧 女孩</text>
         <view class="card-stats">
@@ -231,20 +231,20 @@ const chartOption = computed(() => {
     xAxis: {
       type: 'value',
       name: '月龄',
-      nameTextStyle: { fontSize: 10, color: '#A0AEC0' },
+      nameTextStyle: { fontSize: 10, color: 'var(--twin-text-secondary)' },
       min: 0,
       max: 48,
-      axisLabel: { fontSize: 9, color: '#A0AEC0' },
-      axisLine: { lineStyle: { color: '#E2E8F0' } },
+      axisLabel: { fontSize: 9, color: 'var(--twin-text-secondary)' },
+      axisLine: { lineStyle: { color: 'var(--twin-border)' } },
       splitLine: { show: false },
     },
     yAxis: {
       type: 'value',
       name: indicatorLabel,
-      nameTextStyle: { fontSize: 10, color: '#A0AEC0' },
-      axisLabel: { fontSize: 9, color: '#A0AEC0' },
-      axisLine: { lineStyle: { color: '#E2E8F0' } },
-      splitLine: { lineStyle: { color: '#EDF2F7', type: 'dashed' } },
+      nameTextStyle: { fontSize: 10, color: 'var(--twin-text-secondary)' },
+      axisLabel: { fontSize: 9, color: 'var(--twin-text-secondary)' },
+      axisLine: { lineStyle: { color: 'var(--twin-border)' } },
+      splitLine: { lineStyle: { color: 'var(--twin-border)', type: 'dashed' } },
     },
     series: [
       // WHO P3 参考带
@@ -252,7 +252,7 @@ const chartOption = computed(() => {
         type: 'line',
         name: 'P3 参考',
         data: p3Boy.points.map((p) => [p.x, p.y]),
-        lineStyle: { color: '#CBD5E0', width: 0.5, type: 'dotted' },
+        lineStyle: { color: 'var(--twin-text-muted)', width: 0.5, type: 'dotted' },
         symbol: 'none',
         silent: true,
       },
@@ -261,7 +261,7 @@ const chartOption = computed(() => {
         type: 'line',
         name: 'P50 中位',
         data: p50Boy.points.map((p) => [p.x, p.y]),
-        lineStyle: { color: '#E2E8F0', width: 1, type: 'dashed' },
+        lineStyle: { color: 'var(--twin-border)', width: 1, type: 'dashed' },
         symbol: 'none',
         silent: true,
       },
@@ -270,7 +270,7 @@ const chartOption = computed(() => {
         type: 'line',
         name: 'P97 参考',
         data: p97Boy.points.map((p) => [p.x, p.y]),
-        lineStyle: { color: '#CBD5E0', width: 0.5, type: 'dotted' },
+        lineStyle: { color: 'var(--twin-text-muted)', width: 0.5, type: 'dotted' },
         symbol: 'none',
         silent: true,
       },
@@ -279,8 +279,8 @@ const chartOption = computed(() => {
         type: 'line',
         name: '安宁',
         data: boyPoints,
-        lineStyle: { color: '#4299E1', width: 2.5 },
-        itemStyle: { color: '#4299E1' },
+        lineStyle: { color: 'var(--twin-baby-a)', width: 2.5 },
+        itemStyle: { color: 'var(--twin-baby-a)' },
         symbol: 'circle',
         symbolSize: 5,
         emphasis: { symbolSize: 8 },
@@ -290,8 +290,8 @@ const chartOption = computed(() => {
         type: 'line',
         name: '安然',
         data: girlPoints,
-        lineStyle: { color: '#F56565', width: 2.5 },
-        itemStyle: { color: '#F56565' },
+        lineStyle: { color: 'var(--twin-baby-b)', width: 2.5 },
+        itemStyle: { color: 'var(--twin-baby-b)' },
         symbol: 'circle',
         symbolSize: 5,
         emphasis: { symbolSize: 8 },
@@ -300,9 +300,9 @@ const chartOption = computed(() => {
     legend: { show: false },
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#FFFFFF',
-      borderColor: '#E2E8F0',
-      textStyle: { color: '#2D3748', fontSize: 11 },
+      backgroundColor: 'var(--twin-card-bg)',
+      borderColor: 'var(--twin-border)',
+      textStyle: { color: 'var(--twin-text)', fontSize: 11 },
     },
   }
 })
@@ -323,7 +323,7 @@ onMounted(() => {
 <style scoped>
 .growth-page {
   min-height: 100vh;
-  background: #FFFBF5;
+  background: var(--twin-bg);
   padding: 16px 15px 40px;
 }
 
@@ -335,11 +335,11 @@ onMounted(() => {
   display: block;
   font-size: 22px;
   font-weight: 700;
-  color: #2D3748;
+  color: var(--twin-text);
 }
 .page-subtitle {
   font-size: 12px;
-  color: #A0AEC0;
+  color: var(--twin-text-secondary);
   margin-top: 4px;
 }
 
@@ -355,20 +355,20 @@ onMounted(() => {
   padding: 10px 0;
   border-radius: 10px;
   font-size: 14px;
-  color: #A0AEC0;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  color: var(--twin-text-secondary);
+  background: var(--twin-card-bg);
+  border: 1px solid var(--twin-border);
   transition: all 0.2s;
 }
 .tab-item.active {
-  background: #2D3748;
-  color: #FFFFFF;
-  border-color: #2D3748;
+  background: var(--twin-text);
+  color: var(--twin-card-bg);
+  border-color: var(--twin-text);
 }
 
 /* 图表卡片 */
 .chart-card {
-  background: #FFFFFF;
+  background: var(--twin-card-bg);
   border-radius: 14px;
   padding: 14px 10px 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
@@ -397,7 +397,7 @@ onMounted(() => {
 .legend-label {
   font-size: 13px;
   font-weight: 600;
-  color: #2D3748;
+  color: var(--twin-text);
 }
 
 /* 差异徽标 */
@@ -408,15 +408,15 @@ onMounted(() => {
   font-weight: 600;
 }
 .diff-green {
-  background: #F0FFF4;
+  background: var(--twin-accent-light);
   color: #38A169;
 }
 .diff-yellow {
-  background: #FFFAF0;
+  background: var(--twin-warning-light);
   color: #DD6B20;
 }
 .diff-red {
-  background: #FFF5F5;
+  background: var(--twin-baby-b-light);
   color: #E53E3E;
 }
 
@@ -427,7 +427,7 @@ onMounted(() => {
   gap: 6px;
   padding: 10px 8px 4px;
   margin-top: 4px;
-  border-top: 1px solid #EDF2F7;
+  border-top: 1px solid var(--twin-border);
 }
 .disclaimer-icon {
   font-size: 12px;
@@ -435,7 +435,7 @@ onMounted(() => {
 }
 .disclaimer-text {
   font-size: 10px;
-  color: #A0AEC0;
+  color: var(--twin-text-secondary);
   line-height: 1.5;
 }
 
@@ -447,7 +447,7 @@ onMounted(() => {
 }
 .data-card {
   flex: 1;
-  background: #FFFFFF;
+  background: var(--twin-card-bg);
   border-radius: 12px;
   padding: 14px;
   position: relative;
@@ -466,12 +466,12 @@ onMounted(() => {
   display: block;
   font-size: 14px;
   font-weight: 600;
-  color: #2D3748;
+  color: var(--twin-text);
   margin-bottom: 2px;
 }
 .card-gender {
   font-size: 11px;
-  color: #A0AEC0;
+  color: var(--twin-text-secondary);
 }
 .card-stats {
   display: flex;
@@ -482,44 +482,44 @@ onMounted(() => {
 .stat-value {
   font-size: 28px;
   font-weight: 700;
-  color: #2D3748;
+  color: var(--twin-text);
 }
 .stat-unit {
   font-size: 12px;
-  color: #A0AEC0;
+  color: var(--twin-text-secondary);
   margin-left: 3px;
 }
 .stat-label {
   display: block;
   font-size: 10px;
-  color: #A0AEC0;
+  color: var(--twin-text-secondary);
   margin-bottom: 2px;
 }
 .stat-value-sm {
   font-size: 16px;
   font-weight: 600;
-  color: #48BB78;
+  color: var(--twin-accent);
 }
 
 /* 下一步 */
 .next-actions {
   margin-top: 24px;
   padding: 16px;
-  background: #FFFFFF;
+  background: var(--twin-card-bg);
   border-radius: 12px;
   text-align: center;
-  border: 2px dashed #E2E8F0;
+  border: 2px dashed var(--twin-border);
 }
 .next-hint {
   display: block;
   font-size: 13px;
-  color: #2D3748;
+  color: var(--twin-text);
   font-weight: 600;
 }
 .next-hint-sub {
   display: block;
   font-size: 11px;
-  color: #A0AEC0;
+  color: var(--twin-text-secondary);
   margin-top: 4px;
 }
 </style>

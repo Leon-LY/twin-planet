@@ -63,13 +63,13 @@
         <view class="timer-btns">
           <view
             class="timer-btn blue"
-            @click="startTime(babiesStore.babyA?.id ?? '', babiesStore.babyA?.nickname ?? '大宝', '#4299E1')"
+            @click="startTime(babiesStore.babyA?.id ?? '', babiesStore.babyA?.nickname ?? '大宝', 'var(--twin-baby-a)')"
           >
             <text>👦 {{ babiesStore.babyA?.nickname }}</text>
           </view>
           <view
             class="timer-btn pink"
-            @click="startTime(babiesStore.babyB?.id ?? '', babiesStore.babyB?.nickname ?? '二宝', '#F56565')"
+            @click="startTime(babiesStore.babyB?.id ?? '', babiesStore.babyB?.nickname ?? '二宝', 'var(--twin-baby-b)')"
           >
             <text>👧 {{ babiesStore.babyB?.nickname }}</text>
           </view>
@@ -104,9 +104,9 @@ const store = useGuardianStore()
 const babiesStore = useBabiesStore()
 
 function energyColor(lv: number) {
-  if (lv >= 7) return '#48BB78'
-  if (lv >= 4) return '#ED8936'
-  return '#F56565'
+  if (lv >= 7) return 'var(--twin-accent)'
+  if (lv >= 4) return 'var(--twin-warning)'
+  return 'var(--twin-baby-b)'
 }
 function energyLabel(lv: number) {
   if (lv >= 8) return '满电'
@@ -136,64 +136,64 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.guard-page { min-height: 100vh; background: #FFFBF5; padding: 32rpx 32rpx 80rpx; }
+.guard-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
 .section-header { text-align: center; margin-bottom: 32rpx; }
 .section-icon { font-size: 40px; }
-.section-title { display: block; font-size: 44rpx; font-weight: 700; color: #2D3748; margin-top: 12rpx; }
+.section-title { display: block; font-size: 44rpx; font-weight: 700; color: var(--twin-text); margin-top: 12rpx; }
 
-.section-label { display: block; font-size: 28rpx; font-weight: 600; color: #2D3748; margin-bottom: 16rpx; }
-.section-sub { display: block; font-size: 24rpx; color: #A0AEC0; margin-bottom: 16rpx; margin-top: -12rpx; }
+.section-label { display: block; font-size: 28rpx; font-weight: 600; color: var(--twin-text); margin-bottom: 16rpx; }
+.section-sub { display: block; font-size: 24rpx; color: var(--twin-text-secondary); margin-bottom: 16rpx; margin-top: -12rpx; }
 
 /* 电量表 */
 .energy-section { margin-bottom: 40rpx; }
 .energy-cards { display: flex; gap: 16rpx; margin-bottom: 16rpx; }
 .energy-card {
-  flex: 1; background: #FFFFFF; border-radius: 16rpx; padding: 20rpx 24rpx;
+  flex: 1; background: var(--twin-card-bg); border-radius: 16rpx; padding: 20rpx 24rpx;
 }
-.energy-who { font-size: 26rpx; font-weight: 600; color: #2D3748; }
+.energy-who { font-size: 26rpx; font-weight: 600; color: var(--twin-text); }
 .energy-bar-wrap {
-  height: 12rpx; background: #EDF2F7; border-radius: 6rpx; margin: 12rpx 0;
+  height: 12rpx; background: var(--twin-border); border-radius: 6rpx; margin: 12rpx 0;
 }
 .energy-bar { height: 12rpx; border-radius: 6rpx; transition: width 0.5s; min-width: 10%; }
-.energy-text { font-size: 32rpx; font-weight: 700; color: #2D3748; }
-.energy-reason { display: block; font-size: 22rpx; color: #A0AEC0; margin-top: 4rpx; }
+.energy-text { font-size: 32rpx; font-weight: 700; color: var(--twin-text); }
+.energy-reason { display: block; font-size: 22rpx; color: var(--twin-text-secondary); margin-top: 4rpx; }
 .energy-adjust { display: flex; align-items: center; gap: 8rpx; flex-wrap: wrap; }
-.adjust-label { font-size: 22rpx; color: #A0AEC0; margin-right: 4rpx; }
-.adjust-btn { font-size: 20rpx; padding: 6rpx 14rpx; background: #FFFFFF; border-radius: 20rpx; color: #718096; }
-.adjust-spacer { color: #E2E8F0; }
+.adjust-label { font-size: 22rpx; color: var(--twin-text-secondary); margin-right: 4rpx; }
+.adjust-btn { font-size: 20rpx; padding: 6rpx 14rpx; background: var(--twin-card-bg); border-radius: 20rpx; color: var(--twin-text-tertiary); }
+.adjust-spacer { color: var(--twin-border); }
 
 /* 一人时光 */
 .onetime-section { margin-bottom: 40rpx; }
 .time-compare { display: flex; align-items: center; gap: 16rpx; margin-bottom: 16rpx; }
 .time-slot {
-  flex: 1; text-align: center; padding: 20rpx; background: #FFFFFF; border-radius: 16rpx;
+  flex: 1; text-align: center; padding: 20rpx; background: var(--twin-card-bg); border-radius: 16rpx;
 }
-.time-slot.blue { border-top: 6rpx solid #4299E1; }
-.time-slot.pink { border-top: 6rpx solid #F56565; }
-.time-baby { font-size: 24rpx; color: #718096; }
+.time-slot.blue { border-top: 6rpx solid var(--twin-baby-a); }
+.time-slot.pink { border-top: 6rpx solid var(--twin-baby-b); }
+.time-baby { font-size: 24rpx; color: var(--twin-text-tertiary); }
 .time-val { display: block; font-size: 44rpx; font-weight: 700; margin-top: 8rpx; }
-.time-vs { font-size: 24rpx; color: #CBD5E0; font-weight: 600; }
+.time-vs { font-size: 24rpx; color: var(--twin-text-muted); font-weight: 600; }
 .time-warning {
-  padding: 16rpx 20rpx; background: #FFFAF0; border-radius: 12rpx;
-  margin-bottom: 16rpx; font-size: 24rpx; color: #ED8936;
+  padding: 16rpx 20rpx; background: var(--twin-warning-light); border-radius: 12rpx;
+  margin-bottom: 16rpx; font-size: 24rpx; color: var(--twin-warning);
 }
 
-.mini-label { display: block; font-size: 22rpx; color: #A0AEC0; margin: 16rpx 0 8rpx; }
+.mini-label { display: block; font-size: 22rpx; color: var(--twin-text-secondary); margin: 16rpx 0 8rpx; }
 .quick-timer { margin-bottom: 16rpx; }
-.timer-label { display: block; font-size: 26rpx; color: #2D3748; margin-bottom: 12rpx; font-weight: 600; }
+.timer-label { display: block; font-size: 26rpx; color: var(--twin-text); margin-bottom: 12rpx; font-weight: 600; }
 .timer-btns { display: flex; gap: 16rpx; }
 .timer-btn {
   flex: 1; padding: 28rpx 0; text-align: center;
   border-radius: 20rpx; font-size: 28rpx; font-weight: 600;
 }
-.timer-btn.blue { background: #EBF8FF; color: #4299E1; }
-.timer-btn.pink { background: #FFF5F5; color: #F56565; }
-.active-timer { text-align: center; padding: 32rpx; background: #FFFFFF; border-radius: 20rpx; margin-bottom: 16rpx; }
+.timer-btn.blue { background: var(--twin-baby-a-light); color: var(--twin-baby-a); }
+.timer-btn.pink { background: var(--twin-baby-b-light); color: var(--twin-baby-b); }
+.active-timer { text-align: center; padding: 32rpx; background: var(--twin-card-bg); border-radius: 20rpx; margin-bottom: 16rpx; }
 .timer-baby-name { display: block; font-size: 36rpx; font-weight: 700; }
-.timer-running { display: block; font-size: 24rpx; color: #48BB78; margin: 8rpx 0 16rpx; }
-.btn-end { width: 100%; padding: 20rpx 0; background: #F56565; color: #FFFFFF; border: none; border-radius: 16rpx; font-size: 28rpx; }
+.timer-running { display: block; font-size: 24rpx; color: var(--twin-accent); margin: 8rpx 0 16rpx; }
+.btn-end { width: 100%; padding: 20rpx 0; background: var(--twin-baby-b); color: var(--twin-card-bg); border: none; border-radius: 16rpx; font-size: 28rpx; }
 
-.session-item { display: flex; justify-content: space-between; padding: 12rpx 16rpx; background: #FFFFFF; border-radius: 10rpx; margin-bottom: 6rpx; }
+.session-item { display: flex; justify-content: space-between; padding: 12rpx 16rpx; background: var(--twin-card-bg); border-radius: 10rpx; margin-bottom: 6rpx; }
 .s-baby { font-size: 24rpx; font-weight: 600; }
-.s-dur { font-size: 24rpx; color: #718096; }
+.s-dur { font-size: 24rpx; color: var(--twin-text-tertiary); }
 </style>

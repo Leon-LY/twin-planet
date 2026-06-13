@@ -25,7 +25,7 @@
         :class="{ active: currentBaby === 1 }"
         @click="currentBaby = 1"
       >
-        <view class="tab-dot" style="background: #4299E1" />
+        <view class="tab-dot" style="background: var(--twin-baby-a)" />
         <text>大宝</text>
       </view>
       <view
@@ -33,7 +33,7 @@
         :class="{ active: currentBaby === 2 }"
         @click="currentBaby = 2"
       >
-        <view class="tab-dot" style="background: #F56565" />
+        <view class="tab-dot" style="background: var(--twin-baby-b)" />
         <text>二宝</text>
       </view>
     </view>
@@ -45,7 +45,7 @@
         class="form-input"
         v-model="form.name"
         placeholder="宝宝的大名"
-        placeholder-style="color: #CBD5E0"
+        placeholder-style="color: var(--twin-text-muted)"
         maxlength="10"
       />
     </view>
@@ -56,7 +56,7 @@
         class="form-input"
         v-model="form.nickname"
         placeholder="平时怎么叫TA"
-        placeholder-style="color: #CBD5E0"
+        placeholder-style="color: var(--twin-text-muted)"
         maxlength="10"
       />
     </view>
@@ -100,7 +100,7 @@
           v-model="form.birthWeight"
           type="digit"
           placeholder="如 3.2"
-          placeholder-style="color: #CBD5E0"
+          placeholder-style="color: var(--twin-text-muted)"
         />
       </view>
       <view class="form-group half">
@@ -110,7 +110,7 @@
           v-model="form.birthHeight"
           type="digit"
           placeholder="记不清可跳过"
-          placeholder-style="color: #CBD5E0"
+          placeholder-style="color: var(--twin-text-muted)"
         />
         <text class="form-sublabel">记不清也没关系，不影响使用</text>
       </view>
@@ -199,7 +199,7 @@ onMounted(() => {
 <style scoped>
 .onboard-page {
   min-height: 100vh;
-  background: #FFFBF5;
+  background: var(--twin-bg);
   padding: 48rpx 32rpx 40px;
 }
 
@@ -210,31 +210,31 @@ onMounted(() => {
 }
 .progress-step {
   width: 64rpx; height: 64rpx; border-radius: 50%;
-  background: #EDF2F7;
+  background: var(--twin-border);
   display: flex; align-items: center; justify-content: center;
-  font-size: 28rpx; color: #A0AEC0; font-weight: 600;
+  font-size: 28rpx; color: var(--twin-text-secondary); font-weight: 600;
 }
-.progress-step.active { background: #48BB78; color: #FFFFFF; }
-.progress-step.done { background: #48BB78; color: #FFFFFF; }
-.progress-line { flex: 1; max-width: 120rpx; height: 4rpx; background: #EDF2F7; }
-.progress-line.done { background: #48BB78; }
+.progress-step.active { background: var(--twin-accent); color: var(--twin-card-bg); }
+.progress-step.done { background: var(--twin-accent); color: var(--twin-card-bg); }
+.progress-line { flex: 1; max-width: 120rpx; height: 4rpx; background: var(--twin-border); }
+.progress-line.done { background: var(--twin-accent); }
 
 /* 标题 */
 .section-header { text-align: center; margin-bottom: 32rpx; }
 .section-icon { font-size: 32px; }
-.section-title { display: block; font-size: 40rpx; font-weight: 700; color: #2D3748; margin-top: 12rpx; }
-.section-desc { display: block; font-size: 24rpx; color: #A0AEC0; margin-top: 8rpx; }
+.section-title { display: block; font-size: 40rpx; font-weight: 700; color: var(--twin-text); margin-top: 12rpx; }
+.section-desc { display: block; font-size: 24rpx; color: var(--twin-text-secondary); margin-top: 8rpx; }
 
 /* 宝宝切换 -- 独立颜色 */
 .baby-tabs { display: flex; gap: 20rpx; margin-bottom: 32rpx; }
 .baby-tab {
   flex: 1; display: flex; align-items: center; justify-content: center;
-  gap: 16rpx; padding: 20rpx 0; background: #FFFFFF;
-  border: 4rpx solid #E2E8F0; border-radius: 20rpx;
-  font-size: 28rpx; color: #A0AEC0;
+  gap: 16rpx; padding: 20rpx 0; background: var(--twin-card-bg);
+  border: 4rpx solid var(--twin-border); border-radius: 20rpx;
+  font-size: 28rpx; color: var(--twin-text-secondary);
 }
-.tab-aning.active { border-color: #4299E1; background: #EBF8FF; color: #2D3748; font-weight: 600; }
-.tab-anran.active { border-color: #F56565; background: #FFF5F5; color: #2D3748; font-weight: 600; }
+.tab-aning.active { border-color: var(--twin-baby-a); background: var(--twin-baby-a-light); color: var(--twin-text); font-weight: 600; }
+.tab-anran.active { border-color: var(--twin-baby-b); background: var(--twin-baby-b-light); color: var(--twin-text); font-weight: 600; }
 .tab-dot { width: 20rpx; height: 20rpx; border-radius: 50%; }
 
 /* 表单 */
@@ -242,36 +242,36 @@ onMounted(() => {
 .form-group.half { flex: 1; margin-right: 0; }
 .form-group.half:first-child { margin-right: 16rpx; }
 .form-label { display: block; font-size: 24rpx; font-weight: 600; color: #4A5568; margin-bottom: 12rpx; }
-.required { color: #F56565; }
-.optional { font-weight: 400; color: #A0AEC0; font-size: 22rpx; }
+.required { color: var(--twin-baby-b); }
+.optional { font-weight: 400; color: var(--twin-text-secondary); font-size: 22rpx; }
 .form-input {
   width: 100%; padding: 24rpx 28rpx;
-  background: #FFFFFF; border: 4rpx solid #E2E8F0;
-  border-radius: 20rpx; font-size: 30rpx; color: #2D3748;
+  background: var(--twin-card-bg); border: 4rpx solid var(--twin-border);
+  border-radius: 20rpx; font-size: 30rpx; color: var(--twin-text);
   box-sizing: border-box;
 }
-.form-sublabel { display: block; font-size: 20rpx; color: #CBD5E0; margin-top: 8rpx; }
+.form-sublabel { display: block; font-size: 20rpx; color: var(--twin-text-muted); margin-top: 8rpx; }
 .form-row { display: flex; }
-.date-picker { color: #2D3748; line-height: 1.6; }
+.date-picker { color: var(--twin-text); line-height: 1.6; }
 
 /* 性别切换 */
 .gender-toggle { display: flex; gap: 12rpx; }
 .gender-btn {
   flex: 1; text-align: center; padding: 20rpx 0;
-  background: #FFFFFF; border: 4rpx solid #E2E8F0;
-  border-radius: 20rpx; font-size: 26rpx; color: #718096;
+  background: var(--twin-card-bg); border: 4rpx solid var(--twin-border);
+  border-radius: 20rpx; font-size: 26rpx; color: var(--twin-text-tertiary);
 }
-.gender-btn.active { border-color: #4299E1; background: #EBF8FF; color: #2D3748; }
+.gender-btn.active { border-color: var(--twin-baby-a); background: var(--twin-baby-a-light); color: var(--twin-text); }
 
 /* 底部 */
 .bottom-action {
   position: fixed; bottom: 0; left: 0; right: 0;
   padding: 32rpx 32rpx calc(64rpx + env(safe-area-inset-bottom));
-  background: linear-gradient(transparent, #FFFBF5 30%);
+  background: linear-gradient(transparent, var(--twin-bg) 30%);
 }
 .btn-primary {
-  width: 100%; padding: 28rpx 0; background: #4299E1;
-  color: #FFFFFF; border: none; border-radius: 24rpx;
+  width: 100%; padding: 28rpx 0; background: var(--twin-baby-a);
+  color: var(--twin-card-bg); border: none; border-radius: 24rpx;
   font-size: 36rpx; font-weight: 600;
 }
 </style>

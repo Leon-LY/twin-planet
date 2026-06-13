@@ -23,7 +23,7 @@
         class="form-input"
         v-model="familyName"
         placeholder="例如：川岑小星球、安宁安然的家"
-        placeholder-style="color: #CBD5E0; font-size: 28rpx;"
+        placeholder-style="color: var(--twin-text-muted); font-size: 28rpx;"
         maxlength="20"
       />
       <text class="form-hint">{{ familyName.length }}/20</text>
@@ -100,7 +100,7 @@ onMounted(() => {
 <style scoped>
 .onboard-page {
   min-height: 100vh;
-  background: #FFFBF5;
+  background: var(--twin-bg);
   padding: 48rpx 32rpx 40px;
 }
 
@@ -111,39 +111,39 @@ onMounted(() => {
 }
 .progress-step {
   width: 64rpx; height: 64rpx; border-radius: 50%;
-  background: #EDF2F7;
+  background: var(--twin-border);
   display: flex; align-items: center; justify-content: center;
-  font-size: 28rpx; color: #A0AEC0; font-weight: 600;
+  font-size: 28rpx; color: var(--twin-text-secondary); font-weight: 600;
 }
-.progress-step.active { background: #4299E1; color: #FFFFFF; }
-.progress-line { flex: 1; max-width: 120rpx; height: 4rpx; background: #EDF2F7; }
-.progress-line.active { background: #4299E1; }
+.progress-step.active { background: var(--twin-baby-a); color: var(--twin-card-bg); }
+.progress-line { flex: 1; max-width: 120rpx; height: 4rpx; background: var(--twin-border); }
+.progress-line.active { background: var(--twin-baby-a); }
 
 /* 标题 */
 .section-header { text-align: center; margin-bottom: 48rpx; }
 .section-icon { font-size: 36px; }
-.section-title { display: block; font-size: 44rpx; font-weight: 700; color: #2D3748; margin-top: 16rpx; }
-.section-desc { display: block; font-size: 26rpx; color: #A0AEC0; margin-top: 12rpx; }
+.section-title { display: block; font-size: 44rpx; font-weight: 700; color: var(--twin-text); margin-top: 16rpx; }
+.section-desc { display: block; font-size: 26rpx; color: var(--twin-text-secondary); margin-top: 12rpx; }
 
 /* 表单 */
 .form-group { margin-bottom: 40rpx; }
 .form-label { display: block; font-size: 26rpx; font-weight: 600; color: #4A5568; margin-bottom: 16rpx; }
 .form-input {
   width: 100%; padding: 28rpx 32rpx;
-  background: #FFFFFF; border: 4rpx solid #E2E8F0;
-  border-radius: 24rpx; font-size: 32rpx; color: #2D3748;
+  background: var(--twin-card-bg); border: 4rpx solid var(--twin-border);
+  border-radius: 24rpx; font-size: 32rpx; color: var(--twin-text);
   box-sizing: border-box;
 }
-.form-hint { display: block; text-align: right; font-size: 22rpx; color: #CBD5E0; margin-top: 8rpx; }
+.form-hint { display: block; text-align: right; font-size: 22rpx; color: var(--twin-text-muted); margin-top: 8rpx; }
 
 /* 角色选择 */
 .role-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20rpx; }
 .role-card {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 32rpx 16rpx; background: #FFFFFF; border: 4rpx solid #E2E8F0;
+  padding: 32rpx 16rpx; background: var(--twin-card-bg); border: 4rpx solid var(--twin-border);
   border-radius: 24rpx; text-align: center; gap: 12rpx;
 }
-.role-card.selected { border-color: #4299E1; background: #EBF8FF; }
+.role-card.selected { border-color: var(--twin-baby-a); background: var(--twin-baby-a-light); }
 .role-icon { font-size: 28px; }
 .role-name { font-size: 26rpx; font-weight: 500; color: #4A5568; }
 
@@ -151,12 +151,12 @@ onMounted(() => {
 .bottom-action {
   position: fixed; bottom: 0; left: 0; right: 0;
   padding: 32rpx 32rpx calc(64rpx + env(safe-area-inset-bottom));
-  background: linear-gradient(transparent, #FFFBF5 30%);
+  background: linear-gradient(transparent, var(--twin-bg) 30%);
 }
 .btn-primary {
-  width: 100%; padding: 28rpx 0; background: #4299E1;
-  color: #FFFFFF; border: none; border-radius: 24rpx;
+  width: 100%; padding: 28rpx 0; background: var(--twin-baby-a);
+  color: var(--twin-card-bg); border: none; border-radius: 24rpx;
   font-size: 36rpx; font-weight: 600;
 }
-.btn-primary[disabled] { background: #CBD5E0; }
+.btn-primary[disabled] { background: var(--twin-text-muted); }
 </style>

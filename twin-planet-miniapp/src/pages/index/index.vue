@@ -293,7 +293,7 @@ const goHelp = () => {
 /* =========================================================== */
 .home-page {
   min-height: 100vh;
-  background: #FFFBF5;
+  background: var(--twin-bg);
   padding: 48rpx 30rpx 80rpx;
 }
 
@@ -322,19 +322,19 @@ const goHelp = () => {
 .grandpa-btn {
   text-align: center;
   padding: 56rpx 32rpx;
-  background: #FFFFFF;
+  background: var(--twin-card-bg);
   border-radius: 28rpx;
-  border: 6rpx solid #E2E8F0;
+  border: 6rpx solid var(--twin-border);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16rpx;
 }
 .grandpa-btn:active {
-  background: #F7FAFC;
+  background: var(--twin-hover);
 }
 .grandpa-btn.help-btn {
-  border-color: #ED8936;
+  border-color: var(--twin-warning);
 }
 .grandpa-emoji {
   font-size: 64rpx;
@@ -342,7 +342,7 @@ const goHelp = () => {
 .grandpa-label {
   font-size: 40rpx;
   font-weight: 700;
-  color: #2D3748;
+  color: var(--twin-text);
 }
 .grandpa-footer {
   margin-top: 80rpx;
@@ -350,7 +350,7 @@ const goHelp = () => {
 }
 .grandpa-footer-text {
   font-size: 32rpx;
-  color: #A0AEC0;
+  color: var(--twin-text-secondary);
 }
 
 /* =========================================================== */
@@ -371,7 +371,7 @@ const goHelp = () => {
   display: block;
   font-size: 52rpx;
   font-weight: 700;
-  color: #2D3748;
+  color: var(--twin-text);
   letter-spacing: 4rpx;
 }
 .compact-name {
@@ -381,7 +381,7 @@ const goHelp = () => {
 .brand-slogan {
   display: block;
   font-size: 26rpx;
-  color: #A0AEC0;
+  color: var(--twin-text-secondary);
   margin-top: 12rpx;
   letter-spacing: 8rpx;
 }
@@ -392,7 +392,7 @@ const goHelp = () => {
 .twins-cards {
   display: flex;
   margin-top: 40rpx;
-  background: #FFFFFF;
+  background: var(--twin-card-bg);
   border-radius: 28rpx;
   padding: 28rpx 32rpx;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
@@ -413,14 +413,14 @@ const goHelp = () => {
   bottom: 8rpx;
   width: 8rpx;
   border-radius: 4rpx;
-  background: #4299E1;
+  background: var(--twin-baby-a);
 }
 .card-accent.pink {
-  background: #F56565;
+  background: var(--twin-baby-b);
 }
 .card-divider {
   width: 2rpx;
-  background: #EDF2F7;
+  background: var(--twin-border);
   margin: 0 12rpx;
 }
 .card-emoji {
@@ -430,17 +430,17 @@ const goHelp = () => {
   display: block;
   font-size: 32rpx;
   font-weight: 600;
-  color: #2D3748;
+  color: var(--twin-text);
   margin-top: 8rpx;
 }
 .card-status {
   display: block;
   font-size: 24rpx;
-  color: #718096;
+  color: var(--twin-text-tertiary);
   margin-top: 8rpx;
 }
 .card-status.muted {
-  color: #CBD5E0;
+  color: var(--twin-text-muted);
 }
 
 /* =========================================================== */
@@ -452,7 +452,7 @@ const goHelp = () => {
   justify-content: center;
   gap: 12rpx;
   margin-top: 32rpx;
-  background: #FFFFFF;
+  background: var(--twin-card-bg);
   border-radius: 20rpx;
   padding: 24rpx 32rpx;
 }
@@ -462,15 +462,15 @@ const goHelp = () => {
 .metric-num {
   font-size: 44rpx;
   font-weight: 700;
-  color: #48BB78;
+  color: var(--twin-accent);
 }
 .metric-label {
   font-size: 26rpx;
-  color: #718096;
+  color: var(--twin-text-tertiary);
 }
 .metric-divider {
   font-size: 26rpx;
-  color: #CBD5E0;
+  color: var(--twin-text-muted);
   margin: 0 8rpx;
 }
 
@@ -484,16 +484,16 @@ const goHelp = () => {
 .dad-action-card {
   text-align: center;
   padding: 36rpx 16rpx;
-  background: #FFFFFF;
+  background: var(--twin-card-bg);
   border-radius: 24rpx;
-  border: 4rpx solid #E2E8F0;
+  border: 4rpx solid var(--twin-border);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12rpx;
 }
 .dad-action-card:active {
-  background: #F7FAFC;
+  background: var(--twin-hover);
 }
 .dad-action-emoji {
   font-size: 48rpx;
@@ -501,7 +501,7 @@ const goHelp = () => {
 .dad-action-label {
   font-size: 28rpx;
   font-weight: 600;
-  color: #2D3748;
+  color: var(--twin-text);
 }
 
 /* =========================================================== */
@@ -513,7 +513,7 @@ const goHelp = () => {
 .section-title {
   font-size: 30rpx;
   font-weight: 600;
-  color: #2D3748;
+  color: var(--twin-text);
   margin-bottom: 20rpx;
 }
 .feature-card {
@@ -522,12 +522,12 @@ const goHelp = () => {
   gap: 24rpx;
   padding: 28rpx;
   margin-bottom: 16rpx;
-  background: #FFFFFF;
+  background: var(--twin-card-bg);
   border-radius: 24rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.03);
 }
 .feature-card:active {
-  background: #F7FAFC;
+  background: var(--twin-hover);
 }
 .feature-icon {
   font-size: 56rpx;
@@ -540,17 +540,17 @@ const goHelp = () => {
   display: block;
   font-size: 28rpx;
   font-weight: 600;
-  color: #2D3748;
+  color: var(--twin-text);
 }
 .feature-desc {
   display: block;
   font-size: 22rpx;
-  color: #A0AEC0;
+  color: var(--twin-text-secondary);
   margin-top: 6rpx;
 }
 .feature-arrow {
   font-size: 44rpx;
-  color: #CBD5E0;
+  color: var(--twin-text-muted);
 }
 
 /* =========================================================== */
@@ -563,12 +563,12 @@ const goHelp = () => {
 .footer-text {
   display: block;
   font-size: 22rpx;
-  color: #CBD5E0;
+  color: var(--twin-text-muted);
 }
 .footer-version {
   display: block;
   font-size: 20rpx;
-  color: #E2E8F0;
+  color: var(--twin-border);
   margin-top: 8rpx;
 }
 </style>

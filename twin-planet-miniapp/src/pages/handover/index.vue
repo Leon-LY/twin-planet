@@ -112,49 +112,49 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '交接班语音' }) })
 </script>
 
 <style scoped>
-.handover-page { min-height: 100vh; background: #FFFBF5; padding: 32rpx 32rpx 80rpx; }
+.handover-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
 .section-header { text-align: center; margin-bottom: 32rpx; }
 .section-icon { font-size: 40px; }
-.section-title { display: block; font-size: 44rpx; font-weight: 700; color: #2D3748; margin: 12rpx 0; }
-.section-desc { font-size: 26rpx; color: #A0AEC0; }
+.section-title { display: block; font-size: 44rpx; font-weight: 700; color: var(--twin-text); margin: 12rpx 0; }
+.section-desc { font-size: 26rpx; color: var(--twin-text-secondary); }
 
 .recorder-section { margin-bottom: 40rpx; }
 .recorder-card {
-  background: #FFFFFF; border-radius: 28rpx; padding: 48rpx 32rpx;
-  text-align: center; border: 4rpx solid #E2E8F0;
+  background: var(--twin-card-bg); border-radius: 28rpx; padding: 48rpx 32rpx;
+  text-align: center; border: 4rpx solid var(--twin-border);
 }
-.recorder-card.recording { border-color: #F56565; }
+.recorder-card.recording { border-color: var(--twin-baby-b); }
 .recorder-visual { height: 160rpx; display: flex; align-items: center; justify-content: center; margin-bottom: 24rpx; }
 .recorder-icon { font-size: 64rpx; }
 .audio-waves { display: flex; align-items: center; gap: 8rpx; }
-.wave-bar { width: 8rpx; height: 40rpx; background: #F56565; border-radius: 4rpx; animation: wave 0.6s ease-in-out infinite alternate; }
+.wave-bar { width: 8rpx; height: 40rpx; background: var(--twin-baby-b); border-radius: 4rpx; animation: wave 0.6s ease-in-out infinite alternate; }
 @keyframes wave { from { height: 16rpx; } to { height: 80rpx; } }
-.recorder-time { font-size: 56rpx; font-weight: 700; color: #2D3748; margin-bottom: 16rpx; font-variant-numeric: tabular-nums; }
-.recorder-hint { font-size: 28rpx; color: #A0AEC0; margin-bottom: 32rpx; }
-.btn-record { display: inline-flex; padding: 24rpx 64rpx; background: #F56565; border-radius: 60rpx; color: #FFFFFF; font-size: 32rpx; font-weight: 600; }
+.recorder-time { font-size: 56rpx; font-weight: 700; color: var(--twin-text); margin-bottom: 16rpx; font-variant-numeric: tabular-nums; }
+.recorder-hint { font-size: 28rpx; color: var(--twin-text-secondary); margin-bottom: 32rpx; }
+.btn-record { display: inline-flex; padding: 24rpx 64rpx; background: var(--twin-baby-b); border-radius: 60rpx; color: var(--twin-card-bg); font-size: 32rpx; font-weight: 600; }
 .recorder-btns { display: flex; justify-content: center; gap: 24rpx; }
-.btn-cancel { padding: 20rpx 40rpx; background: #EDF2F7; border-radius: 40rpx; font-size: 28rpx; color: #718096; }
-.btn-done { padding: 20rpx 40rpx; background: #48BB78; border-radius: 40rpx; color: #FFFFFF; font-size: 28rpx; font-weight: 600; }
+.btn-cancel { padding: 20rpx 40rpx; background: var(--twin-border); border-radius: 40rpx; font-size: 28rpx; color: var(--twin-text-tertiary); }
+.btn-done { padding: 20rpx 40rpx; background: var(--twin-accent); border-radius: 40rpx; color: var(--twin-card-bg); font-size: 28rpx; font-weight: 600; }
 
-.section-label { display: block; font-size: 26rpx; font-weight: 600; color: #2D3748; margin-bottom: 16rpx; }
+.section-label { display: block; font-size: 26rpx; font-weight: 600; color: var(--twin-text); margin-bottom: 16rpx; }
 .message-card {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 24rpx; background: #FFFFFF; border-radius: 16rpx;
-  margin-bottom: 8rpx; border-left: 6rpx solid #E2E8F0;
+  padding: 24rpx; background: var(--twin-card-bg); border-radius: 16rpx;
+  margin-bottom: 8rpx; border-left: 6rpx solid var(--twin-border);
 }
-.message-card.unread { border-left-color: #F56565; background: #FFFBF5; }
+.message-card.unread { border-left-color: var(--twin-baby-b); background: var(--twin-bg); }
 .msg-left { display: flex; align-items: center; gap: 16rpx; }
-.msg-avatar { width: 64rpx; height: 64rpx; border-radius: 50%; background: #EDF2F7; display: flex; align-items: center; justify-content: center; font-size: 28rpx; }
+.msg-avatar { width: 64rpx; height: 64rpx; border-radius: 50%; background: var(--twin-border); display: flex; align-items: center; justify-content: center; font-size: 28rpx; }
 .msg-body { display: flex; flex-direction: column; }
-.msg-author { font-size: 26rpx; font-weight: 600; color: #2D3748; }
-.msg-duration { font-size: 22rpx; color: #718096; }
-.msg-time { font-size: 20rpx; color: #A0AEC0; }
+.msg-author { font-size: 26rpx; font-weight: 600; color: var(--twin-text); }
+.msg-duration { font-size: 22rpx; color: var(--twin-text-tertiary); }
+.msg-time { font-size: 20rpx; color: var(--twin-text-secondary); }
 .msg-right { display: flex; align-items: center; gap: 12rpx; }
-.play-btn { width: 64rpx; height: 64rpx; border-radius: 50%; background: #EBF8FF; display: flex; align-items: center; justify-content: center; font-size: 24rpx; color: #4299E1; }
-.unread-dot { width: 12rpx; height: 12rpx; border-radius: 50%; background: #F56565; }
+.play-btn { width: 64rpx; height: 64rpx; border-radius: 50%; background: var(--twin-baby-a-light); display: flex; align-items: center; justify-content: center; font-size: 24rpx; color: var(--twin-baby-a); }
+.unread-dot { width: 12rpx; height: 12rpx; border-radius: 50%; background: var(--twin-baby-b); }
 
 .empty-state { text-align: center; padding: 80rpx 32rpx; }
 .empty-emoji { font-size: 48px; }
-.empty-title { display: block; font-size: 32rpx; font-weight: 600; color: #2D3748; margin: 16rpx 0 8rpx; }
-.empty-desc { font-size: 26rpx; color: #A0AEC0; }
+.empty-title { display: block; font-size: 32rpx; font-weight: 600; color: var(--twin-text); margin: 16rpx 0 8rpx; }
+.empty-desc { font-size: 26rpx; color: var(--twin-text-secondary); }
 </style>
