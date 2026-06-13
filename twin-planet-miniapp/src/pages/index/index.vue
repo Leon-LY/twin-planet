@@ -1,574 +1,171 @@
+<!-- 宇宙苗圃 · Cosmic Nursery — 双星系统 + 并蒂光桥 + 一个核心按钮 -->
 <template>
-  <view class="home-page" :class="{ 'granny-mode': isGrandma }">
-    <!-- ================================================================ -->
-    <!-- 奶奶模式：极简 3 大按钮 -->
-    <!-- ================================================================ -->
-    <template v-if="isGrandma">
-      <view class="brand-section grandpa-brand">
-        <text class="brand-name grandpa-name">并蒂星球</text>
-        <text class="brand-slogan grandpa-slogan">并蒂而生，同步成长</text>
-      </view>
-
-      <view class="grandpa-grid">
-        <view class="grandpa-btn" @click="goRecord">
-          <text class="grandpa-emoji">📝</text>
-          <text class="grandpa-label">记录</text>
-        </view>
-        <view class="grandpa-btn" @click="goGrowth">
-          <text class="grandpa-emoji">📈</text>
-          <text class="grandpa-label">看对比</text>
-        </view>
-        <view class="grandpa-btn help-btn" @click="goHelp">
-          <text class="grandpa-emoji">📞</text>
-          <text class="grandpa-label">找帮助</text>
-        </view>
-      </view>
-
-      <view class="grandpa-footer">
-        <text class="grandpa-footer-text">点上面的按钮就行，别怕按错</text>
-      </view>
+  <view :class="[themeClass, { 'font-large': isGrandma }]">
+    <template v-if="loading">
+      <view class="page-shell"><TwinSkeleton type="brand" /><TwinSkeleton type="twins" /></view>
     </template>
 
-    <!-- ================================================================ -->
-    <!-- 爸爸模式：简化快照 + 核心入口 -->
-    <!-- ================================================================ -->
-    <template v-else-if="isDad">
-      <view class="brand-section compact">
-        <text class="brand-name compact-name">并蒂星球</text>
-      </view>
-
-      <!-- 三明治快照卡片 -->
-      <view class="twins-cards">
-        <view class="baby-card card-aning" v-if="babyA">
-          <view class="card-accent" />
-          <text class="card-emoji">{{ babyA.gender === 'male' ? '👦' : '👧' }}</text>
-          <text class="card-name">{{ babyA.nickname || babyA.name }}</text>
-          <text class="card-status" v-if="babyStatus(babyA.id)">{{ babyStatus(babyA.id) }}</text>
-          <text class="card-status muted" v-else>📝 开始记录吧</text>
-        </view>
-        <view class="card-divider" />
-        <view class="baby-card card-anran" v-if="babyB">
-          <view class="card-accent pink" />
-          <text class="card-emoji">{{ babyB.gender === 'male' ? '👦' : '👧' }}</text>
-          <text class="card-name">{{ babyB.nickname || babyB.name }}</text>
-          <text class="card-status" v-if="babyStatus(babyB.id)">{{ babyStatus(babyB.id) }}</text>
-          <text class="card-status muted" v-else>📝 开始记录吧</text>
-        </view>
-      </view>
-
-      <!-- 今天关键数字 -->
-      <view class="dad-metrics" v-if="todayLogCount > 0">
-        <text class="metric-num">{{ todayLogCount }}</text>
-        <text class="metric-label">次记录</text>
-        <text class="metric-divider">·</text>
-        <text class="metric-num">{{ todayFeedingCount }}</text>
-        <text class="metric-label">次喂奶</text>
-        <text class="metric-divider">·</text>
-        <text class="metric-num">{{ todayDiaperCount }}</text>
-        <text class="metric-label">次换尿布</text>
-      </view>
-      <view class="dad-metrics empty" v-else>
-        <text class="metric-label">今天还没记录，去记录第一条吧</text>
-      </view>
-
-      <!-- 爸爸专属入口 -->
-      <view class="dad-actions">
-        <view class="dad-action-card" @click="goRecord">
-          <text class="dad-action-emoji">🍼</text>
-          <text class="dad-action-label">双轨记录</text>
-        </view>
-        <view class="dad-action-card" @click="goDuty">
-          <text class="dad-action-emoji">🦸</text>
-          <text class="dad-action-label">值班模式</text>
-        </view>
-        <view class="dad-action-card" @click="goSnapshot">
-          <text class="dad-action-emoji">📊</text>
-          <text class="dad-action-label">爸爸快照</text>
-        </view>
-        <view class="dad-action-card" @click="goGrowth">
-          <text class="dad-action-emoji">📈</text>
-          <text class="dad-action-label">生长曲线</text>
-        </view>
-        <view class="dad-action-card" @click="goSchool">
-          <text class="dad-action-emoji">🏫</text>
-          <text class="dad-action-label">入园助手</text>
+    <template v-else-if="isGrandma">
+      <view class="page-shell granny-shell">
+        <view class="brand-mark brand-mark-lg" style="margin:0 auto 48rpx" />
+        <text class="heading-xl" style="text-align:center;display:block;margin-bottom:8rpx">并蒂星球</text>
+        <text class="body-text" style="text-align:center;display:block;margin-bottom:64rpx">{{ greeting }}</text>
+        <view class="granny-actions">
+          <view class="granny-btn" @click="goRecord"><view class="brand-mark brand-mark-sm" /><text class="granny-label">记一笔</text></view>
+          <view class="granny-btn" @click="goGrowth"><text class="granny-emoji">🌱</text><text class="granny-label">看看长多大了</text></view>
+          <view class="granny-btn granny-help" @click="goHelp"><text class="granny-emoji">📞</text><text class="granny-label">问家里人</text></view>
         </view>
       </view>
     </template>
 
-    <!-- ================================================================ -->
-    <!-- 妈妈 / 默认模式：完整版首页 -->
-    <!-- ================================================================ -->
-    <template v-else>
-      <view class="brand-section">
-        <view class="brand-icon">🌺🌺</view>
-        <text class="brand-name">并蒂星球</text>
-        <text class="brand-slogan">并蒂而生，同步成长</text>
-      </view>
-
-      <!-- 双宝动态卡片 -->
-      <view class="twins-cards">
-        <view class="baby-card card-aning" v-if="babyA">
-          <view class="card-accent" />
-          <text class="card-emoji">{{ babyA.gender === 'male' ? '👦' : '👧' }}</text>
-          <text class="card-name">{{ babyA.nickname || babyA.name }}</text>
-          <text class="card-status" v-if="babyStatus(babyA.id)">{{ babyStatus(babyA.id) }}</text>
-          <text class="card-status muted" v-else>📝 开始记录吧</text>
-        </view>
-        <view class="card-divider" />
-        <view class="baby-card card-anran" v-if="babyB">
-          <view class="card-accent pink" />
-          <text class="card-emoji">{{ babyB.gender === 'male' ? '👦' : '👧' }}</text>
-          <text class="card-name">{{ babyB.nickname || babyB.name }}</text>
-          <text class="card-status" v-if="babyStatus(babyB.id)">{{ babyStatus(babyB.id) }}</text>
-          <text class="card-status muted" v-else>📝 开始记录吧</text>
-        </view>
-        <!-- 无宝宝时显示引导 -->
-        <view class="baby-card empty-card" v-if="!babyA && !babyB" @click="goOnboarding">
-          <text class="card-emoji">👶</text>
-          <text class="card-name">添加宝宝</text>
-          <text class="card-status muted">开始记录双胞胎的成长</text>
-        </view>
-      </view>
-
-      <!-- 核心功能入口（6 卡片） -->
-      <view class="feature-section">
-        <text class="section-title">核心功能</text>
-
-        <view class="feature-card" @click="goGrowth">
-          <view class="feature-icon">📈</view>
-          <view class="feature-body">
-            <text class="feature-name">对比生长曲线</text>
-            <text class="feature-desc">WHO 标准 + 双宝实测对比 · 一个页面看两个娃</text>
+    <template v-else-if="!loading">
+      <view class="page-shell cosmic-nursery">
+        <view class="top-bar">
+          <view>
+            <text class="heading-lg">{{ greeting }}</text>
+            <text class="caption" v-if="streakDays > 0" style="color:var(--cosmic-gold);margin-top:4rpx">✦ 轨道连续 {{ streakDays }} 天</text>
           </view>
-          <text class="feature-arrow">›</text>
+          <view class="brand-mark brand-mark-sm" />
         </view>
 
-        <view class="feature-card" @click="goRecord">
-          <view class="feature-icon">🍼</view>
-          <view class="feature-body">
-            <text class="feature-name">极简双轨记录</text>
-            <text class="feature-desc">1 点开始 · 2 点结束 · 两个宝宝一起记</text>
+        <view class="twin-system">
+          <view class="planet-stage" @click="goRecord">
+            <PlanetOrb :size="110" color="var(--twin-a)" :initial-text="(babyA?.nickname || babyA?.name || 'A').charAt(0)"
+              :label="babyA?.nickname || babyA?.name || '大宝'"
+              :running="babyA ? recordsStore.isBabyRunning(babyA.id) : false" :glowing="true" twin="a" />
+            <text class="planet-status">{{ babyStatus(babyA) }}</text>
           </view>
-          <text class="feature-arrow">›</text>
-        </view>
-
-        <view class="feature-card" @click="goSprout">
-          <view class="feature-icon">🌱</view>
-          <view class="feature-body">
-            <text class="feature-name">萌芽日记</text>
-            <text class="feature-desc">记录双胞胎之间的互动瞬间</text>
+          <view class="bridge-stage"><LightBridge :state="bridgeState" :height="64" :animated="true" /></view>
+          <view class="planet-stage" @click="goRecord">
+            <PlanetOrb :size="110" color="var(--twin-b)" :initial-text="(babyB?.nickname || babyB?.name || 'B').charAt(0)"
+              :label="babyB?.nickname || babyB?.name || '二宝'"
+              :running="babyB ? recordsStore.isBabyRunning(babyB.id) : false" :glowing="true" twin="b" />
+            <text class="planet-status">{{ babyStatus(babyB) }}</text>
           </view>
-          <text class="feature-arrow">›</text>
         </view>
 
-        <view class="feature-card" @click="goContribution">
-          <view class="feature-icon">💪</view>
-          <view class="feature-body">
-            <text class="feature-name">今天我做了什么</text>
-            <text class="feature-desc">看见每一位家人的付出</text>
-          </view>
-          <text class="feature-arrow">›</text>
+        <view class="streak-bar" v-if="streakDays > 0">
+          <text class="caption" style="color:var(--cosmic-gold)">{{ streakDays >= 7 ? '✦ 轨道坚如磐石 ' + streakDays + ' 天 ✦' : '✦ 轨道环 ' + streakDays + '/7 ✦' }}</text>
         </view>
 
-        <view class="feature-card" @click="goDuty">
-          <view class="feature-icon">🦸</view>
-          <view class="feature-body">
-            <text class="feature-name">爸爸值班模式</text>
-            <text class="feature-desc">SOP 清单引擎 · 照着做就能搞定</text>
-          </view>
-          <text class="feature-arrow">›</text>
+        <view class="primary-action-zone">
+          <button class="cosmic-main-btn" @click="goRecord"><text class="cosmic-btn-text">⚡ 宇宙记录</text></button>
         </view>
 
-        <view class="feature-card" @click="goGuardian">
-          <view class="feature-icon">🛡️</view>
-          <view class="feature-body">
-            <text class="feature-name">守护中心</text>
-            <text class="feature-desc">电量表 + 一人时光守护</text>
-          </view>
-          <text class="feature-arrow">›</text>
+        <view class="quick-dual" v-if="babyA && babyB">
+          <view class="quick-chip" @click="dualRecord('feeding')"><text>🍼 两个都喂了</text></view>
+          <view class="quick-chip" @click="dualRecord('sleep')"><text>😴 都睡了</text></view>
+          <view class="quick-chip" @click="dualRecord('diaper')"><text>🧷 都换了</text></view>
         </view>
 
-        <view class="feature-card" @click="goSchool">
-          <view class="feature-icon">🏫</view>
-          <view class="feature-body">
-            <text class="feature-name">入园助手</text>
-            <text class="feature-desc">分班决策 · 双生耦合度雷达图</text>
-          </view>
-          <text class="feature-arrow">›</text>
+        <view class="nav-zone">
+          <view class="nav-item" @click="goGrowth"><text class="nav-icon">🌱</text><text class="nav-label">生长</text></view>
+          <view class="nav-item" @click="goSnapshot"><text class="nav-icon">📊</text><text class="nav-label">快照</text></view>
+          <view class="nav-item" @click="goMore"><text class="nav-icon">✦</text><text class="nav-label">探索</text></view>
         </view>
-
-        <view class="feature-card" @click="goMilestones">
-          <view class="feature-icon">🌟</view>
-          <view class="feature-body">
-            <text class="feature-name">双宝能力观察</text>
-            <text class="feature-desc">独立成长时间线 · 欣赏各自独特</text>
-          </view>
-          <text class="feature-arrow">›</text>
-        </view>
-      </view>
-
-      <!-- 底部信息 -->
-      <view class="footer-info">
-        <text class="footer-text">并蒂星球 · 中国首款双胞胎育儿伴侣</text>
-        <text class="footer-version">v0.2.0 · Phase 0</text>
       </view>
     </template>
   </view>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useBabiesStore } from '@/stores/babies'
 import { useRecordsStore } from '@/stores/records'
+import { useTheme } from '@/composables/useTheme'
+import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
+import PlanetOrb from '@/components/cosmic/PlanetOrb.vue'
+import LightBridge from '@/components/cosmic/LightBridge.vue'
+
+const { themeClass } = useTheme()
+const loading = ref(true)
+onMounted(() => { setTimeout(() => { loading.value = false }, 400) })
 
 const userStore = useUserStore()
 const babiesStore = useBabiesStore()
 const recordsStore = useRecordsStore()
 
 const isGrandma = computed(() => userStore.isGrandmaMode)
-const isDad = computed(() => userStore.isDad)
 const babyA = computed(() => babiesStore.babyA)
 const babyB = computed(() => babiesStore.babyB)
+const streakDays = computed(() => recordsStore.streakDays)
 
-// 今天的统计
-const todayStart = new Date().setHours(0, 0, 0, 0)
-const todayLogs = computed(() =>
-  recordsStore.logs.filter(l => l.createdAt >= todayStart)
-)
-const todayLogCount = computed(() => todayLogs.value.length)
-const todayFeedingCount = computed(() => todayLogs.value.filter(l => l.type === 'feeding').length)
-const todayDiaperCount = computed(() => todayLogs.value.filter(l => l.type === 'diaper').length)
+const greeting = computed(() => {
+  const h = new Date().getHours()
+  if (h < 6) return '凌晨好，宇宙守护者'; if (h < 9) return '早上好'
+  if (h < 12) return '上午好'; if (h < 14) return '中午好'
+  if (h < 18) return '下午好'; if (h < 22) return '晚上好'
+  return '夜深了，星星很亮'
+})
 
-/** 获取某个宝宝的最新状态文本 */
-function babyStatus(babyId: string): string {
-  const logs = recordsStore.recentLogsByBaby[babyId]
-  if (!logs || logs.length === 0) return ''
+function babyStatus(baby: any): string {
+  if (!baby) return ''
+  const logs = recordsStore.recentLogsByBaby[baby.id]
+  if (!logs?.length) return '轻触记录'
   const last = logs[logs.length - 1]
-  const now = Date.now()
-  const minutesAgo = Math.floor((now - last.createdAt) / 60000)
-
-  if (recordsStore.isBabyRunning(babyId)) {
-    const timer = recordsStore.getTimer(babyId)
-    const emoji = timer?.type === 'feeding' ? '🍼' : timer?.type === 'sleep' ? '😴' : '🧷'
-    return `${emoji} 进行中`
-  }
-
-  const emoji = last.type === 'feeding' ? '🍼' : last.type === 'sleep' ? '😴' : '🧷'
-  if (minutesAgo < 1) return `${emoji} 刚刚`
-  if (minutesAgo < 60) return `${emoji} ${minutesAgo}分钟前`
-  const hoursAgo = Math.floor(minutesAgo / 60)
-  if (hoursAgo < 24) return `${emoji} ${hoursAgo}小时前`
-  const daysAgo = Math.floor(hoursAgo / 24)
-  return `${emoji} ${daysAgo}天前`
+  if (recordsStore.isBabyRunning(baby.id)) return '计时中…'
+  const mins = Math.floor((Date.now() - last.createdAt) / 60000)
+  const action = last.type === 'feeding' ? '喂奶' : last.type === 'sleep' ? '睡觉' : last.type === 'diaper' ? '换尿布' : '记录'
+  if (mins < 1) return `刚刚${action}`; if (mins < 60) return `${mins}分钟前${action}`
+  return `${Math.floor(mins / 60)}小时前${action}`
 }
 
-// 导航
-const goGrowth = () => uni.navigateTo({ url: '/pages/growth/index' })
-const goRecord = () => uni.navigateTo({ url: '/pages/record/index' })
-const goSprout = () => uni.navigateTo({ url: '/pages/sprout/index' })
-const goContribution = () => uni.navigateTo({ url: '/pages/contribution/index' })
-const goDuty = () => uni.navigateTo({ url: '/pages/duty/index' })
-const goGuardian = () => uni.navigateTo({ url: '/pages/guardian/index' })
-const goSnapshot = () => uni.navigateTo({ url: '/pages/snapshot/index' })
-const goSchool = () => uni.navigateTo({ url: '/pages/school/index' })
-const goMilestones = () => uni.navigateTo({ url: '/pages/milestones/index' })
-const goHandover = () => uni.navigateTo({ url: '/pages/handover/index' })
-const goOnboarding = () => uni.navigateTo({ url: '/pages/onboarding/babies' })
-const goHelp = () => {
-  // 奶奶模式求助：弹出一个提示
-  uni.showModal({
-    title: '需要帮助？',
-    content: '打电话给家人，或者打开记录页点最大的按钮就行。',
-    confirmText: '我知道了',
-    showCancel: false,
+const bridgeState = computed(() => {
+  const aR = babyA.value && recordsStore.isBabyRunning(babyA.value.id)
+  const bR = babyB.value && recordsStore.isBabyRunning(babyB.value.id)
+  if (aR && bR) return 'bright'
+  if (aR || bR) return 'steady'
+  const aL = babyA.value ? (recordsStore.recentLogsByBaby[babyA.value.id]?.length || 0) : 0
+  const bL = babyB.value ? (recordsStore.recentLogsByBaby[babyB.value.id]?.length || 0) : 0
+  if (aL === 0 && bL === 0) return 'faint'
+  return 'steady'
+})
+
+function dualRecord(type: 'feeding' | 'sleep' | 'diaper') {
+  if (babyA.value) recordsStore.quickLog(babyA.value.id, type)
+  if (babyB.value) recordsStore.quickLog(babyB.value.id, type)
+  uni.showToast({ title: type === 'feeding' ? '两个都喂了 ✦' : type === 'sleep' ? '两个都睡了 ✦' : '两个都换了 ✦', icon: 'success' })
+}
+
+const navigate = (url: string) => uni.navigateTo({ url })
+const goRecord = () => navigate('/pages/record/index')
+const goGrowth = () => navigate('/pages/growth/index')
+const goSnapshot = () => navigate('/pages/snapshot/index')
+const goMore = () => {
+  uni.showActionSheet({
+    itemList: ['萌芽日记','今天我做了什么','爸爸值班','守护中心','交接班','入园助手','成长足迹'],
+    success: (res) => {
+      uni.navigateTo({ url: ['/pages/sprout/index','/pages/contribution/index','/pages/duty/index','/pages/guardian/index','/pages/handover/index','/pages/school/index','/pages/milestones/index'][res.tapIndex] })
+    },
   })
 }
+const goHelp = () => uni.showModal({ title: '需要帮忙？', content: '打电话给家里人，或者打开记录页点最大的按钮就行。', confirmText: '我知道了', showCancel: false })
 </script>
 
 <style scoped>
-/* =========================================================== */
-/* 通用 */
-/* =========================================================== */
-.home-page {
-  min-height: 100vh;
-  background: var(--twin-bg);
-  padding: 48rpx 30rpx 80rpx;
-}
-
-/* =========================================================== */
-/* 奶奶模式 */
-/* =========================================================== */
-.granny-mode {
-  padding: 80rpx 40rpx 80rpx;
-}
-.grandpa-brand {
-  text-align: center;
-  padding: 40rpx 0;
-}
-.grandpa-name {
-  font-size: 52rpx !important;
-}
-.grandpa-slogan {
-  font-size: 32rpx !important;
-}
-.grandpa-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 40rpx;
-  margin-top: 60rpx;
-}
-.grandpa-btn {
-  text-align: center;
-  padding: 56rpx 32rpx;
-  background: var(--twin-card-bg);
-  border-radius: 28rpx;
-  border: 6rpx solid var(--twin-border);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16rpx;
-}
-.grandpa-btn:active {
-  background: var(--twin-hover);
-}
-.grandpa-btn.help-btn {
-  border-color: var(--twin-warning);
-}
-.grandpa-emoji {
-  font-size: 64rpx;
-}
-.grandpa-label {
-  font-size: 40rpx;
-  font-weight: 700;
-  color: var(--twin-text);
-}
-.grandpa-footer {
-  margin-top: 80rpx;
-  text-align: center;
-}
-.grandpa-footer-text {
-  font-size: 32rpx;
-  color: var(--twin-text-secondary);
-}
-
-/* =========================================================== */
-/* 品牌区 */
-/* =========================================================== */
-.brand-section {
-  text-align: center;
-  padding: 40rpx 0 24rpx;
-}
-.brand-section.compact {
-  padding: 24rpx 0 16rpx;
-}
-.brand-icon {
-  font-size: 72rpx;
-  margin-bottom: 16rpx;
-}
-.brand-name {
-  display: block;
-  font-size: 52rpx;
-  font-weight: 700;
-  color: var(--twin-text);
-  letter-spacing: 4rpx;
-}
-.compact-name {
-  font-size: 36rpx;
-  text-align: left;
-}
-.brand-slogan {
-  display: block;
-  font-size: 26rpx;
-  color: var(--twin-text-secondary);
-  margin-top: 12rpx;
-  letter-spacing: 8rpx;
-}
-
-/* =========================================================== */
-/* 双宝卡片（动态） */
-/* =========================================================== */
-.twins-cards {
-  display: flex;
-  margin-top: 40rpx;
-  background: var(--twin-card-bg);
-  border-radius: 28rpx;
-  padding: 28rpx 32rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
-}
-.baby-card {
-  flex: 1;
-  position: relative;
-  padding-left: 24rpx;
-}
-.baby-card.empty-card {
-  text-align: center;
-  padding-left: 0;
-}
-.card-accent {
-  position: absolute;
-  left: 0;
-  top: 8rpx;
-  bottom: 8rpx;
-  width: 8rpx;
-  border-radius: 4rpx;
-  background: var(--twin-baby-a);
-}
-.card-accent.pink {
-  background: var(--twin-baby-b);
-}
-.card-divider {
-  width: 2rpx;
-  background: var(--twin-border);
-  margin: 0 12rpx;
-}
-.card-emoji {
-  font-size: 56rpx;
-}
-.card-name {
-  display: block;
-  font-size: 32rpx;
-  font-weight: 600;
-  color: var(--twin-text);
-  margin-top: 8rpx;
-}
-.card-status {
-  display: block;
-  font-size: 24rpx;
-  color: var(--twin-text-tertiary);
-  margin-top: 8rpx;
-}
-.card-status.muted {
-  color: var(--twin-text-muted);
-}
-
-/* =========================================================== */
-/* 爸爸模式 · 关键数字 */
-/* =========================================================== */
-.dad-metrics {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12rpx;
-  margin-top: 32rpx;
-  background: var(--twin-card-bg);
-  border-radius: 20rpx;
-  padding: 24rpx 32rpx;
-}
-.dad-metrics.empty {
-  padding: 24rpx 32rpx;
-}
-.metric-num {
-  font-size: 44rpx;
-  font-weight: 700;
-  color: var(--twin-accent);
-}
-.metric-label {
-  font-size: 26rpx;
-  color: var(--twin-text-tertiary);
-}
-.metric-divider {
-  font-size: 26rpx;
-  color: var(--twin-text-muted);
-  margin: 0 8rpx;
-}
-
-/* 爸爸专属操作 */
-.dad-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16rpx;
-  margin-top: 32rpx;
-}
-.dad-action-card {
-  text-align: center;
-  padding: 36rpx 16rpx;
-  background: var(--twin-card-bg);
-  border-radius: 24rpx;
-  border: 4rpx solid var(--twin-border);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12rpx;
-}
-.dad-action-card:active {
-  background: var(--twin-hover);
-}
-.dad-action-emoji {
-  font-size: 48rpx;
-}
-.dad-action-label {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--twin-text);
-}
-
-/* =========================================================== */
-/* 功能入口（妈妈/默认模式） */
-/* =========================================================== */
-.feature-section {
-  margin-top: 48rpx;
-}
-.section-title {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: var(--twin-text);
-  margin-bottom: 20rpx;
-}
-.feature-card {
-  display: flex;
-  align-items: center;
-  gap: 24rpx;
-  padding: 28rpx;
-  margin-bottom: 16rpx;
-  background: var(--twin-card-bg);
-  border-radius: 24rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.03);
-}
-.feature-card:active {
-  background: var(--twin-hover);
-}
-.feature-icon {
-  font-size: 56rpx;
-  flex-shrink: 0;
-}
-.feature-body {
-  flex: 1;
-}
-.feature-name {
-  display: block;
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--twin-text);
-}
-.feature-desc {
-  display: block;
-  font-size: 22rpx;
-  color: var(--twin-text-secondary);
-  margin-top: 6rpx;
-}
-.feature-arrow {
-  font-size: 44rpx;
-  color: var(--twin-text-muted);
-}
-
-/* =========================================================== */
-/* 底部 */
-/* =========================================================== */
-.footer-info {
-  margin-top: 64rpx;
-  text-align: center;
-}
-.footer-text {
-  display: block;
-  font-size: 22rpx;
-  color: var(--twin-text-muted);
-}
-.footer-version {
-  display: block;
-  font-size: 20rpx;
-  color: var(--twin-border);
-  margin-top: 8rpx;
-}
+.cosmic-nursery { position: relative; }
+.top-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-lg); }
+.twin-system { display: flex; flex-direction: column; align-items: center; gap: 0; margin-bottom: var(--space-md); }
+.planet-stage { display: flex; flex-direction: column; align-items: center; gap: 12rpx; padding: 8rpx 0; }
+.planet-status { font-size: var(--font-caption); color: var(--text-dust); text-align: center; }
+.bridge-stage { display: flex; justify-content: center; padding: 8rpx 0; }
+.streak-bar { text-align: center; padding: 8rpx 0 16rpx; }
+.primary-action-zone { margin-bottom: var(--space-md); }
+.cosmic-main-btn { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 96rpx; padding: 28rpx; background: var(--surface-card); border: 3rpx solid rgba(0,229,255,0.2); border-radius: var(--radius-full); box-shadow: 0 0 20rpx rgba(0,229,255,0.08); }
+.quick-dual { display: flex; gap: var(--space-sm); margin-bottom: var(--space-xl); }
+.quick-chip { flex: 1; text-align: center; padding: 20rpx 8rpx; background: var(--surface-card); border: 1rpx solid var(--border-void); border-radius: var(--radius-lg); font-size: var(--font-caption); color: var(--text-dust); transition: transform 0.1s; }
+.quick-chip:active { transform: scale(0.94); }
+.nav-zone { display: flex; justify-content: space-around; padding-top: var(--space-md); border-top: 1rpx solid var(--border-void); }
+.nav-item { display: flex; flex-direction: column; align-items: center; gap: 6rpx; padding: 12rpx 24rpx; }
+.nav-item:active { transform: scale(0.92); }
+.nav-icon { font-size: 32rpx; }
+.nav-label { font-size: var(--font-caption); color: var(--text-dust); }
+.granny-shell { display: flex; flex-direction: column; justify-content: center; min-height: 100vh; padding: 80rpx 48rpx !important; }
+.granny-actions { display: flex; flex-direction: column; gap: var(--space-md); }
+.granny-btn { text-align: center; padding: 56rpx; background: var(--surface-card); border-radius: var(--radius-xl); border: 4rpx solid var(--border-void); display: flex; flex-direction: column; align-items: center; gap: var(--space-sm); }
+.granny-btn:active { border-color: var(--cosmic-cyan); transform: scale(0.97); }
+.granny-help { border-color: rgba(255,210,63,0.25); }
+.granny-emoji { font-size: 72rpx; }
+.granny-label { font-size: 48rpx; font-weight: 700; color: var(--text-starlight); }
 </style>
