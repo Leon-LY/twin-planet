@@ -37,7 +37,7 @@
           <text class="greet-hand"><text class="highlight">两个小怪兽</text></text>
           <view class="greet-quote">
             <text class="greet-emoji">{{ moodEmoji }}</text>
-            <text>今天的打架战绩：平局</text>
+            <text>{{ insightText }}</text>
           </view>
         </view>
 
@@ -47,7 +47,7 @@
             <view class="card-bg bg-a" />
             <view class="avatar-wrap">
               <view class="avatar av-a" :class="{ running: isRunningA }">
-                <text class="av-emoji">{{ isRunningA ? '😋' : '😊' }}</text>
+                <text class="av-emoji">{{ isRunningA ? '😋' : '😛' }}</text>
               </view>
               <text class="av-sparkle s1">⭐</text>
               <text class="av-sparkle s2">✨</text>
@@ -65,7 +65,7 @@
             <view class="card-bg bg-b" />
             <view class="avatar-wrap">
               <view class="avatar av-b" :class="{ running: isRunningB }">
-                <text class="av-emoji">{{ isRunningB ? '😴' : '😊' }}</text>
+                <text class="av-emoji">{{ isRunningB ? '😴' : '😪' }}</text>
               </view>
               <text class="av-sparkle s1">🌸</text>
               <text class="av-sparkle s2">💫</text>
@@ -80,10 +80,9 @@
           </view>
         </view>
 
-        <!-- 连接线 -->
-        <view class="thread-zone reveal-4">
-          <view class="thread-line" />
-          <text class="thread-knot">💛</text>
+        <!-- 并蒂光桥 -->
+        <view class="bridge-wrap reveal-4">
+          <LightBridge :state="bridgeState" :height="40" :animated="true" />
         </view>
 
         <!-- 中央按钮 -->
@@ -91,7 +90,6 @@
           <view class="btn-stage">
             <view class="orbit-ring" />
             <text class="float-el f1">⭐</text><text class="float-el f2">💫</text>
-            <text class="float-el f3">🌸</text><text class="float-el f4">✨</text>
             <button class="main-btn" @click="goRecord">
               <text class="btn-icon">✋</text>
               <text class="btn-text">记 一 笔</text>
@@ -126,6 +124,7 @@ import { useUserStore } from '@/stores/user'
 import { useBabiesStore } from '@/stores/babies'
 import { useRecordsStore } from '@/stores/records'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
+import LightBridge from '@/components/cosmic/LightBridge.vue'
 
 const loading=ref(true);const userStore=useUserStore()
 const themeClass=computed(()=>{const c=['page-root'];const h=new Date().getHours();if(h>=22||h<6)c.push('theme-dark');if(userStore.isGrandmaMode)c.push('font-large');return c.join(' ')})
@@ -143,6 +142,10 @@ const moodEmoji=computed(()=>{const h=new Date().getHours();if(h>=2&&h<6)return'
 const dateStr=computed(()=>{const d=new Date();const days=['日','一','二','三','四','五','六'];return `${d.getMonth()+1}月${d.getDate()}日 · 星期${days[d.getDay()]}`})
 
 function babyStatus(b:any):string{if(!b)return'';const logs=recordsStore.recentLogsByBaby[b.id];if(!logs?.length)return'';const last=logs[logs.length-1];const m=Math.floor((Date.now()-last.createdAt)/60000);const a=last.type==='feeding'?'喂奶':last.type==='sleep'?'睡觉':'记录';if(m<1)return`刚刚${a}`;if(m<60)return`${m}分钟前${a}`;return`${Math.floor(m/60)}小时前${a}`}
+
+const syncRate=computed(()=>recordsStore.twinSyncRate)
+const insightText=computed(()=>{const s=syncRate.value;if(s>70)return`今天同步率 ${s}% · 越来越有默契了`;if(s>30)return`今天同步率 ${s}% · 打架战绩：平局`;if(s>0)return`今天各有各的节奏`;return'今天的两个小怪兽'})
+const bridgeState=computed(()=>{const aId=babyA.value?.id;const bId=babyB.value?.id;if(!aId||!bId)return'faint';const aLogs=recordsStore.recentLogsByBaby[aId]||[];const bLogs=recordsStore.recentLogsByBaby[bId]||[];const aRecent=aLogs.length&&(Date.now()-aLogs[aLogs.length-1].createdAt)<3600000;const bRecent=bLogs.length&&(Date.now()-bLogs[bLogs.length-1].createdAt)<3600000;if(aRecent&&bRecent)return'bright';if(aRecent)return'one-sided-a';if(bRecent)return'one-sided-b';if(aLogs.length||bLogs.length)return'steady';return'faint'})
 
 function dualRecord(t:'feeding'|'sleep'|'diaper'){if(babyA.value)recordsStore.quickLog(babyA.value.id,t);if(babyB.value)recordsStore.quickLog(babyB.value.id,t);uni.showToast({title:t==='feeding'?'都喂了 ✦':t==='sleep'?'都睡了 ✦':'都换了 ✦',icon:'success'})}
 
@@ -195,8 +198,6 @@ const goHelp=()=>uni.showModal({title:'需要帮忙？',content:'打电话给家
 .av-emoji{font-size:48rpx;line-height:1}
 .avatar.running::before{content:'';position:absolute;inset:-8rpx;border-radius:50%;border:2rpx solid var(--mint);opacity:0.5;animation:ringPulse 2s ease-in-out infinite}
 @keyframes ringPulse{0%,100%{transform:scale(1);opacity:0.35}50%{transform:scale(1.12);opacity:0.85}}
-.avatar.running .av-emoji{animation:wiggle 0.5s ease-in-out infinite}
-@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
 
 .av-sparkle{position:absolute;font-size:22rpx;pointer-events:none;z-index:2}
 .av-sparkle.s1{top:-6rpx;right:-8rpx;animation:sparkleFloat 3s ease-in-out infinite}
@@ -209,16 +210,12 @@ const goHelp=()=>uni.showModal({title:'需要帮忙？',content:'打电话给家
 
 /* 状态 */
 .st-dot{width:6rpx;height:6rpx;border-radius:50%;display:inline-block}
-.st-dot.green{background:var(--mint);animation:dotPulse 1.5s ease-in-out infinite}
-@keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.25;transform:scale(1.8)}}
+.st-dot.green{background:var(--mint)}
 .status-running{color:var(--mint);font-weight:600}
 .status-idle{color:var(--ink-md)}
 
-/* 连接线 */
-.thread-zone{display:flex;align-items:center;justify-content:center;position:relative;z-index:1;margin-bottom:28rpx;height:24rpx}
-.thread-line{width:55%;height:0;border-top:1.5px dashed var(--dot)}
-.thread-knot{position:absolute;font-size:24rpx;background:var(--paper);padding:0 10rpx;animation:heartBeat 1.2s ease-in-out infinite}
-@keyframes heartBeat{0%,100%{transform:scale(1)}15%{transform:scale(1.35)}30%{transform:scale(1)}}
+/* 并蒂光桥 */
+.bridge-wrap{display:flex;justify-content:center;position:relative;z-index:1;margin-bottom:28rpx}
 
 /* 中央按钮 */
 .center-zone{flex:1;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;margin-bottom:20rpx}
@@ -238,8 +235,6 @@ const goHelp=()=>uni.showModal({title:'需要帮忙？',content:'打电话给家
 .float-el{position:absolute;font-size:28rpx;pointer-events:none}
 .f1{top:10rpx;left:30rpx;animation:orbFloat 4s ease-in-out infinite}
 .f2{top:30rpx;right:20rpx;animation:orbFloat 3.5s ease-in-out infinite 0.6s}
-.f3{bottom:30rpx;right:10rpx;animation:orbFloat 5s ease-in-out infinite 1.2s}
-.f4{bottom:10rpx;left:20rpx;animation:orbFloat 4.5s ease-in-out infinite 0.3s}
 @keyframes orbFloat{0%,100%{transform:translate(0,0)rotate(0);opacity:0.3}25%{transform:translate(6rpx,-10rpx)rotate(8deg);opacity:0.8}50%{transform:translate(-4rpx,-16rpx)rotate(-5deg);opacity:0.5}75%{transform:translate(-10rpx,-4rpx)rotate(-8deg);opacity:0.7}}
 
 .main-btn{width:320rpx;height:320rpx;border-radius:50%;position:relative;z-index:2;background:var(--amber);border:none;color:#FFF;font-family:var(--font-journal);box-shadow:0 24rpx 64rpx rgba(224,123,62,0.22),0 8rpx 16rpx rgba(224,123,62,0.12),inset 0 3rpx 0 rgba(255,255,255,0.2),inset 0 -6rpx 12rpx rgba(0,0,0,0.08);transform:rotate(-3deg);transition:transform 0.18s var(--ease-bounce),box-shadow 0.18s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10rpx}

@@ -117,9 +117,14 @@ onShow(() => {
 .progress-section { text-align: center; margin-bottom: 32rpx; }
 .progress-ring {
   width: 120rpx; height: 120rpx; border-radius: 50%;
-  background: conic-gradient(var(--twin-accent) 0deg, var(--twin-accent) calc(3.6deg * var(--pct, 0)), var(--twin-border) calc(3.6deg * var(--pct, 0)));
   display: inline-flex; align-items: center; justify-content: center;
-  clip-path: circle(44rpx at center); /* 内圈镂空 */
+  border: 8rpx solid var(--twin-border);
+  position: relative;
+}
+/* WXSS-safe: 用 border-color 替代 conic-gradient。满环 = 全部 accent 色 */
+.progress-ring.celebrated {
+  border-color: var(--twin-accent);
+  box-shadow: 0 0 24rpx rgba(107,175,126,0.2);
 }
 .progress-num { font-size: 36rpx; font-weight: 700; color: var(--twin-text); }
 .progress-num.done { font-size: 40rpx; }

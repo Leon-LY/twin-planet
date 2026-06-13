@@ -75,7 +75,7 @@ page {
   font-family:PingFang SC,Microsoft YaHei,sans-serif;
 }
 
-.page-shell{min-height:100vh;background:var(--paper);padding:48rpx 28rpx calc(64rpx + env(safe-area-inset-bottom))}
+.page-shell{min-height:100vh;background:var(--paper);padding:48rpx 28rpx calc(64rpx + env(safe-area-inset-bottom))}/* 纸张微粒纹理 */.page-shell::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:999;background:repeating-linear-gradient(0deg,transparent,transparent 2rpx,rgba(45,35,24,0.015) 2rpx,rgba(45,35,24,0.015) 3rpx),repeating-linear-gradient(90deg,transparent,transparent 3rpx,rgba(45,35,24,0.008) 3rpx,rgba(45,35,24,0.008) 4rpx);opacity:0.5}.reduce-motion *,.reduce-motion ::before,.reduce-motion ::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}
 
 /* 手绘虚线 */
 .journal-divider{border:none;border-top:1.5px dashed var(--dot);margin:20rpx 0}
