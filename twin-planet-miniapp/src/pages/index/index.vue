@@ -160,7 +160,7 @@ const goGrowth=()=>navigate('/pages/growth/index')
 const goSnapshot=()=>navigate('/pages/snapshot/index')
 const goMore=()=>uni.showActionSheet({itemList:['萌芽日记','星尘日志','指挥官控制台','星光监测站','星际通讯','轨道决策','星座日志'],success:(res)=>uni.navigateTo({url:['/pages/sprout/index','/pages/contribution/index','/pages/duty/index','/pages/guardian/index','/pages/handover/index','/pages/school/index','/pages/milestones/index'][res.tapIndex]})})
 const goHelp=()=>uni.showModal({title:'需要帮忙？',content:'打电话给家里人，或者打开记录页点最大的按钮就行。',confirmText:'我知道了',showCancel:false})
-const switchRole=()=>{const roles=['👩 妈妈','👨 爸爸','👵 奶奶','👴 爷爷','👩‍🍼 育儿嫂'];uni.showActionSheet({itemList:roles,success:(res)=>{const r=['mom','dad','grandma','grandpa','nanny'][res.tapIndex];userStore.setRole(r);uni.showToast({title:`已切换为${roles[res.tapIndex]}模式`,icon:'success',duration:1500})}})}
+const switchRole=()=>{const roles=['👩 妈妈','👨 爸爸','👵 奶奶','👴 爷爷','👩‍🍼 育儿嫂','📝 重新创建家庭','🚪 退出登录'];uni.showActionSheet({itemList:roles,success:(res)=>{if(res.tapIndex===5){uni.reLaunch({url:'/pages/onboarding/family'})}else if(res.tapIndex===6){userStore.logout();uni.reLaunch({url:'/pages/login/index'})}else{const r=['mom','dad','grandma','grandpa','nanny'][res.tapIndex];userStore.setRole(r);uni.showToast({title:`已切换为${roles[res.tapIndex]}模式`,icon:'success',duration:1500})}}})}
 </script>
 
 <style scoped>
