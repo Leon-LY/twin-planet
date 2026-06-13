@@ -73,12 +73,18 @@ import { computed, ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useBabiesStore } from '@/stores/babies'
 import { useRecordsStore } from '@/stores/records'
-import { useTheme } from '@/composables/useTheme'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
 import PlanetOrb from '@/components/cosmic/PlanetOrb.vue'
 import LightBridge from '@/components/cosmic/LightBridge.vue'
 
-const { themeClass } = useTheme()
+// Inline useTheme to avoid lazy-load module issue
+const themeClass = computed(() => {
+  const classes = ['page-root']
+  const h = new Date().getHours()
+  if (h >= 22 || h < 6) classes.push('theme-dark')
+  if (userStore.isGrandmaMode) classes.push('font-large')
+  return classes.join(' ')
+})
 const loading = ref(true)
 onMounted(() => { setTimeout(() => { loading.value = false }, 400) })
 
