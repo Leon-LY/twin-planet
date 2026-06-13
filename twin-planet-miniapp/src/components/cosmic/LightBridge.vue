@@ -64,16 +64,17 @@ const nodeBottomClass = computed(() => props.state === 'one-sided-b' ? 'active-b
 }
 
 .light-bridge-line {
-  width: 4rpx;
+  width: 6rpx;
   min-height: 24rpx;
-  border-radius: 2rpx;
+  border-radius: 3rpx;
   background: linear-gradient(
     to bottom,
-    var(--twin-a),
+    var(--twin-a) 0%,
     var(--cosmic-gold) 50%,
-    var(--twin-b)
+    var(--twin-b) 100%
   );
   opacity: 0.7;
+  box-shadow: 0 0 12rpx rgba(255,210,63,0.1);
   transition: opacity var(--dur-flow) var(--ease-orbit),
               box-shadow var(--dur-flow) var(--ease-orbit);
 }
@@ -81,27 +82,57 @@ const nodeBottomClass = computed(() => props.state === 'one-sided-b' ? 'active-b
 /* 状态变体 */
 .light-bridge-line.bright {
   opacity: 1;
-  box-shadow: 0 0 16rpx rgba(255,210,63,0.4),
-              0 0 32rpx rgba(255,210,63,0.15);
+  width: 8rpx;
+  box-shadow: 0 0 24rpx rgba(255,210,63,0.5),
+              0 0 48rpx rgba(255,210,63,0.2),
+              0 0 80rpx rgba(255,107,53,0.1);
   background: linear-gradient(
     to bottom,
     var(--twin-a) 0%,
-    var(--cosmic-gold) 30%,
+    var(--cosmic-gold) 25%,
     #FFFFFF 50%,
-    var(--cosmic-gold) 70%,
+    var(--cosmic-gold) 75%,
     var(--twin-b) 100%
   );
 }
 
 .light-bridge-line.steady {
   opacity: 0.7;
-  box-shadow: 0 0 8rpx rgba(255,210,63,0.15);
+  box-shadow: 0 0 16rpx rgba(255,210,63,0.2);
 }
 
 .light-bridge-line.faint {
-  opacity: 0.25;
+  opacity: 0.2;
   box-shadow: none;
+  width: 3rpx;
 }
+
+.light-bridge-line.one-sided-a {
+  opacity: 0.5;
+  background: linear-gradient(to bottom, var(--twin-a), var(--cosmic-gold), transparent);
+}
+.light-bridge-line.one-sided-b {
+  opacity: 0.5;
+  background: linear-gradient(to bottom, transparent, var(--cosmic-gold), var(--twin-b));
+}
+
+/* 端点发光节点 */
+.bridge-node {
+  position: absolute;
+  width: 16rpx; height: 16rpx;
+  border-radius: 50%;
+  background: var(--cosmic-gold);
+  opacity: 0.6;
+  left: 50%; transform: translateX(-50%);
+  box-shadow: 0 0 12rpx rgba(255,210,63,0.4);
+}
+.bridge-node-top { top: -6rpx; }
+.bridge-node-bottom { bottom: -6rpx; }
+.bridge-node.active-a { background: var(--twin-a); box-shadow: 0 0 16rpx var(--twin-a-glow); }
+.bridge-node.active-b { background: var(--twin-b); box-shadow: 0 0 16rpx var(--twin-b-glow); }
+
+/* 脉动动画 */
+.anim-bridge { animation: bridgePulse 3s var(--ease-pulse) infinite; }
 
 .light-bridge-line.one-sided-a {
   background: linear-gradient(

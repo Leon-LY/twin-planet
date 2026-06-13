@@ -23,11 +23,15 @@
         <!-- 星场 -->
         <CosmicStarfield />
 
+        <!-- 星云光晕 — 深度感 -->
+        <view class="nebula-glow" />
+
         <!-- 顶栏 -->
         <view class="top-bar anim-orbit-in anim-d1">
           <view>
-            <text class="greeting-text">{{ greeting }}</text>
-            <text class="caption" v-if="streakDays > 0" style="color:var(--cosmic-gold);margin-top:4rpx">
+            <text class="greeting-main">{{ greeting }}</text>
+            <text class="greeting-sub">并蒂而生，同步成长</text>
+            <text class="caption" v-if="streakDays > 0" style="color:var(--cosmic-gold);margin-top:6rpx">
               ✦ 轨道连续 {{ streakDays }} 天
             </text>
           </view>
@@ -197,9 +201,22 @@ const goHelp = () => uni.showModal({ title: '需要帮忙？', content: '打电�
 <style scoped>
 .cosmic-nursery { position: relative; padding-top: 40rpx; padding-bottom: 100rpx; }
 
+/* 星云光晕 */
+.nebula-glow {
+  position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+  width: 500rpx; height: 500rpx; border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(168,85,247,0.06) 0%,
+    rgba(255,107,53,0.04) 40%,
+    transparent 70%
+  );
+  pointer-events: none; z-index: 0;
+}
+
 /* 顶栏 */
 .top-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 48rpx; position: relative; z-index: 1; }
-.greeting-text { font-size: var(--font-title); font-weight: 700; color: var(--text-starlight); display: block; }
+.greeting-main { font-size: var(--font-hero); font-weight: 800; color: var(--text-starlight); display: block; letter-spacing: 1rpx; }
+.greeting-sub { font-size: var(--font-caption); color: var(--text-whisper); display: block; margin-top: 4rpx; letter-spacing: 4rpx; }
 
 /* 双星系统 */
 .twin-system { display: flex; flex-direction: column; align-items: center; gap: 0; margin-bottom: 24rpx; position: relative; z-index: 1; }

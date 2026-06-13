@@ -95,14 +95,22 @@ function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r},${g},${b},${alpha})`
 }
 
-const planetStyle = computed(() => ({
-  width: props.size + 'rpx',
-  height: props.size + 'rpx',
-  background: `radial-gradient(circle at 35% 35%, ${hexToRgba(props.color, 0.4)}, ${props.color} 70%, ${hexToRgba(props.color, 0.53)} 100%)`,
-  boxShadow: props.glowing
-    ? `0 0 ${props.size * 0.3}rpx ${hexToRgba(props.color, 0.27)}, 0 0 ${props.size * 0.15}rpx ${hexToRgba(props.color, 0.13)}`
-    : 'none',
-}))
+const planetStyle = computed(() => {
+  const s = props.size
+  return {
+    width: s + 'rpx',
+    height: s + 'rpx',
+    // 3D 球体效果：高光点 + 中间色 + 暗边缘 + 底部反光
+    background: `
+      radial-gradient(circle at 30% 25%, ${hexToRgba(props.color, 0.6)} 0%, ${hexToRgba(props.color, 0.25)} 25%, transparent 50%),
+      radial-gradient(circle at 70% 75%, ${hexToRgba(props.color, 0.15)} 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, ${props.color} 0%, ${hexToRgba(props.color, 0.5)} 60%, ${hexToRgba(props.color, 0.15)} 100%)
+    `,
+    boxShadow: props.glowing
+      ? `0 0 ${s * 0.5}rpx ${hexToRgba(props.color, 0.35)}, 0 0 ${s * 0.25}rpx ${hexToRgba(props.color, 0.2)}, inset 0 -${s * 0.05}rpx ${s * 0.15}rpx ${hexToRgba('#000000', 0.3)}`
+      : `inset 0 -${s * 0.04}rpx ${s * 0.1}rpx rgba(0,0,0,0.25)`,
+  }
+})
 
 /**
  * 轨道环分段圆点
