@@ -26,8 +26,8 @@
         <!-- 页眉 -->
         <view class="header reveal-1">
           <text class="date-tag">{{ dateStr }}</text>
-          <view class="streak-stamp" v-if="streakDays > 0">
-            <text>✦ 连续 {{ streakDays }} 天</text>
+          <view class="streak-stamp">
+             <text v-if="streakDays > 0">✦ 连续 {{ streakDays }} 天</text><text v-else>✦ 今天开始</text>
           </view>
         </view>
 
