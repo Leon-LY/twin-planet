@@ -1,117 +1,84 @@
-<!-- 宇宙记录 · Cosmic Record -->
+<!--
+  宇宙记录 · Cosmic Record v2
+  设计原则：状态驱动动效，操作即反馈，工具感 > 装饰感
+-->
 <template>
   <view class="record-page">
     <CosmicStarfield />
 
-    <!-- ============================================================
-         空闲态：双星选择 + 操作网格
-         ============================================================ -->
+    <!-- 空闲态 -->
     <template v-if="!recordsStore.isRunning">
       <!-- 双星选择 -->
-      <view class="planet-select">
-        <view class="planet-slot" v-for="(twin, i) in twins" :key="twin.id" @click="selectBaby = twin.id">
-          <PlanetOrb
-            :size="selectedBaby === twin.id ? 130 : 100"
-            :color="i === 0 ? '#FF6B35' : '#A855F7'"
+      <view class="select-zone">
+        <view class="select-card" v-for="(twin, i) in twins" :key="twin.id"
+          :class="{ active: selectedBaby === twin.id }" @click="selectedBaby = twin.id">
+          <PlanetOrb :size="80" :color="i === 0 ? '#FF6B35' : '#A855F7'"
             :initial-text="(twin.nickname || twin.name).charAt(0)"
-            :label="twin.nickname || twin.name"
-            :glowing="selectedBaby === twin.id"
-            :twin="i === 0 ? 'a' : 'b'"
-          />
-          <text class="slot-status" v-if="getLastLog(twin.id)">{{ getLastLog(twin.id)!.detail }}</text>
-          <text class="slot-status muted" v-else>轻触记录</text>
+            :glowing="selectedBaby === twin.id" :twin="i === 0 ? 'a' : 'b'" />
+          <text class="select-name">{{ twin.nickname || twin.name }}</text>
         </view>
       </view>
 
-      <!-- 操作网格 2×3 -->
+      <!-- 操作网格 -->
       <view class="action-grid">
-        <view v-for="act in actions" :key="act.type" class="action-card" :class="'act-' + act.type" @click="doAction(act.type)">
+        <view v-for="act in actions" :key="act.type" class="action-card" @click="doAction(act.type)">
           <text class="act-emoji">{{ act.emoji }}</text>
           <text class="act-label">{{ act.label }}</text>
-          <text class="act-hint">{{ act.hint }}</text>
         </view>
       </view>
 
-      <!-- 双星同步 -->
-      <view class="dual-bar" v-if="twins.length >= 2">
-        <view class="dual-chip" @click="dualRecord('feeding')"><text>🍼 两个都喂了</text></view>
-        <view class="dual-chip" @click="dualRecord('sleep')"><text>😴 都睡了</text></view>
-        <view class="dual-chip" @click="dualRecord('diaper')"><text>🧷 都换了</text></view>
-      </view>
-
-      <!-- 时空修正 -->
-      <view class="retro-bar">
-        <text class="caption" style="margin-bottom:8rpx;text-align:center;display:block">⏰ 刚才忘了？</text>
+      <!-- 回溯 -->
+      <view class="retro-row">
+        <text class="retro-label">刚才忘了？</text>
         <view class="retro-chips">
-          <view v-for="m in [5, 10, 20, 30]" :key="m" class="retro-chip" @click="retroRecord(m)">{{ m }}分钟前</view>
+          <text v-for="m in [5,10,20,30]" :key="m" class="retro-chip" @click="retroRecord(m)">{{ m }}分钟前</text>
         </view>
       </view>
     </template>
 
-    <!-- ============================================================
-         单计时态
-         ============================================================ -->
+    <!-- 单计时 -->
     <template v-if="recordsStore.runningTimers.length === 1">
       <view class="timer-hero">
-        <PlanetOrb
-          :size="220"
-          :color="runningPlanetColor"
-          :initial-text="runningBabyName.charAt(0)"
-          :label="runningBabyName"
-          :running="true"
-          :atmosphere="true"
-          :atmosphere-type="runningTimerType === 'feeding' ? 'green' : (runningTwin === 'a' ? 'a' : 'b')"
-          :glowing="true"
-          :twin="runningTwin"
-        />
+        <PlanetOrb :size="200" :color="runningColor"
+          :initial-text="runningName.charAt(0)" :label="runningName"
+          :running="true" :atmosphere="true"
+          :atmosphere-type="runningType === 'feeding' ? 'green' : (runningTwin === 'a' ? 'a' : 'b')"
+          :glowing="true" :twin="runningTwin" />
         <text class="timer-elapsed">{{ formatElapsed(runningElapsed) }}</text>
-        <text class="timer-action-label">{{ runningActionLabel }}</text>
-        <button class="stop-btn" @click="handleStop(recordsStore.runningTimer!.babyId)">✦ 停止记录</button>
-      </view>
-
-      <view class="other-baby" v-if="otherBaby" @click="selectBaby = otherBaby.id">
-        <text class="caption">{{ otherBaby.nickname || otherBaby.name }} · 轻触切换</text>
+        <text class="timer-type">{{ runningTypeLabel }}</text>
+        <button class="stop-btn" @click="stopOne(recordsStore.runningTimer!.babyId)">停止</button>
       </view>
     </template>
 
-    <!-- ============================================================
-         双计时态
-         ============================================================ -->
+    <!-- 双计时 -->
     <template v-if="recordsStore.runningTimers.length >= 2">
-      <view class="dual-timers">
+      <view class="dual-zone">
         <view class="dual-card" v-for="t in recordsStore.runningTimers" :key="t.babyId">
-          <PlanetOrb
-            :size="150"
-            :color="t.babyId === twins[0]?.id ? '#FF6B35' : '#A855F7'"
-            :initial-text="getBabyName(t.babyId).charAt(0)"
-            :label="getBabyName(t.babyId)"
-            :running="true"
-            :atmosphere="true"
+          <PlanetOrb :size="140" :color="t.babyId === twins[0]?.id ? '#FF6B35' : '#A855F7'"
+            :initial-text="getName(t.babyId).charAt(0)" :label="getName(t.babyId)"
+            :running="true" :atmosphere="true"
             :atmosphere-type="t.type === 'feeding' ? 'green' : (t.babyId === twins[0]?.id ? 'a' : 'b')"
-            :twin="t.babyId === twins[0]?.id ? 'a' : 'b'"
-          />
+            :twin="t.babyId === twins[0]?.id ? 'a' : 'b'" />
           <text class="dual-elapsed">{{ formatElapsed(t.elapsed) }}</text>
-          <text class="dual-type">{{ actionLabel(t.type) }}</text>
-          <button class="stop-btn-sm" @click="handleStop(t.babyId)">停止</button>
+          <button class="stop-sm" @click="stopOne(t.babyId)">停止</button>
         </view>
       </view>
-      <button class="stop-all-btn" @click="handleStopAll">✦ 全部停止</button>
+      <button class="stop-all" @click="stopAll">全部停止</button>
     </template>
 
     <!-- 今日轨迹 -->
     <view class="timeline" v-if="recentLogs.length && !recordsStore.isRunning">
-      <text class="caption" style="margin-bottom:16rpx;color:var(--text-whisper)">✦ 今日星际轨迹</text>
-      <view class="tl-item" v-for="log in recentLogs.slice(0, 10)" :key="log.id">
+      <view class="tl-item" v-for="log in recentLogs.slice(0, 8)" :key="log.id">
         <view class="tl-dot" :style="{ background: log.babyId === twins[0]?.id ? '#FF6B35' : '#A855F7' }" />
         <text class="tl-text">{{ log.detail }}</text>
-        <text class="tl-time caption">{{ timeAgo(log.createdAt) }}</text>
+        <text class="tl-time">{{ timeAgo(log.createdAt) }}</text>
       </view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
 import { useBabiesStore } from '@/stores/babies'
 import { useRecordsStore, type RecordType } from '@/stores/records'
 import CosmicStarfield from '@/components/cosmic/CosmicStarfield.vue'
@@ -124,113 +91,64 @@ const selectedBaby = ref<string>('')
 const twins = computed(() => [babiesStore.babyA, babiesStore.babyB].filter(Boolean))
 
 const actions = [
-  { type: 'feeding' as RecordType, emoji: '🍼', label: '喂奶', hint: '开始计时' },
-  { type: 'sleep' as RecordType, emoji: '😴', label: '睡觉', hint: '开始计时' },
-  { type: 'diaper' as RecordType, emoji: '🧷', label: '尿布', hint: '即时记录' },
-  { type: 'temperature' as RecordType, emoji: '🌡️', label: '体温', hint: '即时记录' },
-  { type: 'medicine' as RecordType, emoji: '💊', label: '用药', hint: '即时记录' },
-  { type: 'bath' as RecordType, emoji: '🛁', label: '洗澡', hint: '即时记录' },
+  { type: 'feeding' as RecordType, emoji: '🍼', label: '喂奶' },
+  { type: 'sleep' as RecordType, emoji: '😴', label: '睡觉' },
+  { type: 'diaper' as RecordType, emoji: '🧷', label: '尿布' },
+  { type: 'temperature' as RecordType, emoji: '🌡️', label: '体温' },
+  { type: 'medicine' as RecordType, emoji: '💊', label: '用药' },
+  { type: 'bath' as RecordType, emoji: '🛁', label: '洗澡' },
 ]
 
-// Timer tick
 const timerTick = ref(0)
 let tickHandle: ReturnType<typeof setInterval> | null = null
 const runningElapsed = computed(() => { timerTick.value; return recordsStore.runningTimer?.elapsed ?? 0 })
-const runningBabyName = computed(() => {
-  const t = recordsStore.runningTimer; return t ? getBabyName(t.babyId) : ''
-})
-const runningPlanetColor = computed(() => {
-  const t = recordsStore.runningTimer
-  return t?.babyId === twins.value[0]?.id ? '#FF6B35' : '#A855F7'
-})
-const runningTwin = computed(() => recordsStore.runningTimer?.babyId === twins.value[0]?.id ? 'a' : 'b')
-const runningTimerType = computed(() => recordsStore.runningTimer?.type)
-const runningActionLabel = computed(() => recordsStore.runningTimer ? actionLabel(recordsStore.runningTimer.type) : '')
-const otherBaby = computed(() => {
-  if (!recordsStore.runningTimer) return null
-  return twins.value.find(b => b.id !== recordsStore.runningTimer!.babyId) ?? null
+const runningName = computed(() => { const t = recordsStore.runningTimer; return t ? getName(t.babyId) : '' })
+const runningColor = computed(() => recordsStore.runningTimer?.babyId === twins.value[0]?.id ? '#FF6B35' : '#A855F7')
+const runningTwin = computed(() => recordsStore.runningTimer?.babyId === twins.value[0]?.id ? 'a' as const : 'b' as const)
+const runningType = computed(() => recordsStore.runningTimer?.type)
+const runningTypeLabel = computed(() => {
+  const m: Record<string, string> = { feeding: '喂奶中', sleep: '睡觉中', diaper: '换尿布' }
+  return recordsStore.runningTimer ? (m[recordsStore.runningTimer.type] || '') : ''
 })
 
-// Watch running state
-import { watch } from 'vue'
-watch(() => recordsStore.isRunning, (running) => {
-  if (running) {
-    tickHandle = setInterval(() => { timerTick.value++ }, 1000)
-  } else {
-    if (tickHandle) { clearInterval(tickHandle); tickHandle = null }
-  }
+watch(() => recordsStore.isRunning, (r) => {
+  if (r) tickHandle = setInterval(() => { timerTick.value++ }, 1000)
+  else { if (tickHandle) { clearInterval(tickHandle); tickHandle = null } }
 }, { immediate: true })
 onUnmounted(() => { if (tickHandle) clearInterval(tickHandle) })
 
-function getBabyName(id: string) { return twins.value.find(b => b.id === id)?.nickname || twins.value.find(b => b.id === id)?.name || '' }
-function actionLabel(t: RecordType) {
-  const m: Record<string, string> = { feeding: '星光降临', sleep: '休眠', diaper: '净化', temperature: '测温', medicine: '护盾', bath: '洗礼' }
-  return m[t] || t
-}
+function getName(id: string) { return twins.value.find(b => b.id === id)?.nickname || twins.value.find(b => b.id === id)?.name || '' }
 
 function doAction(type: RecordType) {
-  const babyId = selectedBaby.value || twins.value[0]?.id
-  if (!babyId) return
+  const id = selectedBaby.value || twins.value[0]?.id; if (!id) return
   if (type === 'feeding' || type === 'sleep') {
-    recordsStore.startTimer(babyId, type)
-    uni.showToast({ title: '计时开始 ✦', icon: 'success' })
+    recordsStore.startTimer(id, type)
   } else {
-    recordsStore.quickLog(babyId, type)
-    uni.showToast({ title: '已记录 ✦', icon: 'success' })
+    recordsStore.quickLog(id, type)
+    uni.showToast({ title: '已记录', icon: 'success', duration: 1000 })
   }
 }
 
-function dualRecord(type: RecordType) {
-  const a = twins.value[0]; const b = twins.value[1]
-  if (a) recordsStore.quickLog(a.id, type)
-  if (b) recordsStore.quickLog(b.id, type)
-  uni.showToast({ title: type === 'feeding' ? '两个都喂了 ✦' : type === 'sleep' ? '两个都睡了 ✦' : '两个都换了 ✦', icon: 'success' })
+function retroRecord(m: number) {
+  const id = selectedBaby.value || twins.value[0]?.id; if (!id) return
+  recordsStore.quickLog(id, 'feeding')
+  uni.showToast({ title: `已补记 ${m} 分钟前`, icon: 'success', duration: 1000 })
 }
 
-function retroRecord(minutesAgo: number) {
-  const babyId = selectedBaby.value || twins.value[0]?.id
-  if (!babyId) return
-  const now = Date.now()
-  const log = recordsStore.quickLog(babyId, 'feeding')
-  uni.showToast({ title: '时空修正完成 ✦', icon: 'success' })
+function stopOne(id: string) {
+  const log = recordsStore.stopTimer(id)
+  uni.showToast({ title: log ? `${log.babyName} 已记录` : '不足1分钟', icon: log ? 'success' : 'none', duration: 1000 })
+}
+function stopAll() {
+  let c = 0; for (const t of recordsStore.runningTimers) { if (recordsStore.stopTimer(t.babyId)) c++ }
+  uni.showToast({ title: `${c} 条已保存`, icon: 'success', duration: 1000 })
 }
 
-function getLastLog(babyId: string) {
-  const list = recordsStore.recentLogsByBaby[babyId]
-  return list?.length ? list[list.length - 1] : null
-}
+function formatElapsed(s: number) { const m = Math.floor(s/60); return `${String(m).padStart(2,'0')}:${String(s%60).padStart(2,'0')}` }
+function timeAgo(ts: number) { const d = Math.floor((Date.now()-ts)/60000); if (d<1) return '刚刚'; if (d<60) return `${d}分钟前`; return `${Math.floor(d/60)}小时前` }
 
-function handleStop(babyId: string) {
-  const log = recordsStore.stopTimer(babyId)
-  if (log) {
-    uni.showToast({ title: `${log.babyName} 已记录 ✦`, icon: 'success' })
-  } else {
-    uni.showToast({ title: '不足1分钟，未保存', icon: 'none' })
-  }
-}
-
-function handleStopAll() {
-  const ids = recordsStore.runningTimers.map(t => t.babyId)
-  let count = 0
-  for (const id of ids) { if (recordsStore.stopTimer(id)) count++ }
-  if (count > 0) uni.showToast({ title: `${count} 条记录已保存 ✦`, icon: 'success' })
-}
-
-function formatElapsed(s: number) {
-  const m = Math.floor(s / 60); const sec = s % 60
-  return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
-}
-
-function timeAgo(ts: number) {
-  const diff = Math.floor((Date.now() - ts) / 60000)
-  if (diff < 1) return '刚刚'; if (diff < 60) return `${diff}分钟前`
-  return `${Math.floor(diff / 60)}小时前`
-}
-
-const todayStart = new Date().setHours(0, 0, 0, 0)
-const recentLogs = computed(() =>
-  recordsStore.logs.filter(l => l.createdAt >= todayStart).sort((a, b) => b.createdAt - a.createdAt)
-)
+const todayStart = new Date().setHours(0,0,0,0)
+const recentLogs = computed(() => recordsStore.logs.filter(l => l.createdAt >= todayStart).sort((a,b) => b.createdAt - a.createdAt))
 
 onMounted(() => {
   uni.setNavigationBarTitle({ title: '宇宙记录' })
@@ -239,59 +157,46 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.record-page { min-height: 100vh; background: var(--cosmic-void); padding: 32rpx 32rpx calc(80rpx + env(safe-area-inset-bottom)); position: relative; }
+.record-page { min-height: 100vh; background: var(--cosmic-void); padding: 40rpx 32rpx calc(80rpx + env(safe-area-inset-bottom)); position: relative; }
 
-/* 双星选择 */
-.planet-select { display: flex; justify-content: center; gap: 56rpx; margin-bottom: 40rpx; position: relative; z-index: 1; }
-.planet-slot { display: flex; flex-direction: column; align-items: center; gap: 12rpx; }
-.slot-status { font-size: var(--font-caption); color: var(--text-dust); max-width: 160rpx; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.slot-status.muted { color: var(--text-whisper); }
+/* 选择 */
+.select-zone { display: flex; justify-content: center; gap: 64rpx; margin-bottom: 40rpx; position: relative; z-index: 1; }
+.select-card { display: flex; flex-direction: column; align-items: center; gap: 12rpx; opacity: 0.5; transition: opacity 0.2s; }
+.select-card.active { opacity: 1; }
+.select-name { font-size: var(--font-body); font-weight: 600; color: var(--text-starlight); }
 
 /* 操作网格 */
-.action-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16rpx; margin-bottom: 28rpx; position: relative; z-index: 1; }
-.action-card {
-  display: flex; flex-direction: column; align-items: center; gap: 8rpx;
-  padding: 28rpx 12rpx; background: var(--surface-card); border: 1rpx solid var(--border-void);
-  border-radius: var(--radius-lg); transition: transform 0.1s, border-color 0.2s;
-}
-.action-card:active { transform: scale(0.95); border-color: var(--cosmic-cyan); }
-.act-emoji { font-size: 40rpx; }
-.act-label { font-size: var(--font-body); font-weight: 600; color: var(--text-starlight); }
-.act-hint { font-size: var(--font-caption); color: var(--text-whisper); }
+.action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20rpx; margin-bottom: 32rpx; position: relative; z-index: 1; }
+.action-card { display: flex; flex-direction: column; align-items: center; gap: 8rpx; padding: 32rpx 12rpx; background: var(--surface-card); border: 1rpx solid var(--border-void); border-radius: var(--radius-xl); transition: transform 0.15s, border-color 0.15s; }
+.action-card:active { transform: scale(0.96); border-color: var(--cosmic-cyan); }
+.act-emoji { font-size: 36rpx; }
+.act-label { font-size: var(--font-body); color: var(--text-starlight); }
 
-/* 双星同步 */
-.dual-bar { display: flex; gap: var(--space-sm); margin-bottom: 24rpx; position: relative; z-index: 1; }
-.dual-chip { flex: 1; text-align: center; padding: 20rpx 8rpx; background: var(--surface-card); border: 1rpx solid var(--cosmic-gold); border-radius: var(--radius-full); font-size: var(--font-caption); color: var(--cosmic-gold); }
-.dual-chip:active { transform: scale(0.95); }
-
-/* 时空修正 */
-.retro-bar { margin-bottom: 32rpx; position: relative; z-index: 1; }
-.retro-chips { display: flex; justify-content: center; gap: 12rpx; }
-.retro-chip { padding: 12rpx 24rpx; background: var(--surface-card); border: 1rpx solid var(--border-void); border-radius: var(--radius-full); font-size: var(--font-caption); color: var(--text-dust); }
+/* 回溯 */
+.retro-row { display: flex; align-items: center; justify-content: center; gap: 12rpx; position: relative; z-index: 1; flex-wrap: wrap; }
+.retro-label { font-size: var(--font-caption); color: var(--text-whisper); }
+.retro-chip { font-size: var(--font-caption); color: var(--text-dust); padding: 8rpx 20rpx; background: var(--surface-card); border: 1rpx solid var(--border-void); border-radius: var(--radius-full); }
 .retro-chip:active { border-color: var(--cosmic-cyan); }
 
-/* 计时器 Hero */
+/* 计时器 */
 .timer-hero { display: flex; flex-direction: column; align-items: center; padding: 40rpx 0; position: relative; z-index: 1; }
-.timer-elapsed { font-size: 72rpx; font-weight: 800; color: var(--text-starlight); margin-top: 24rpx; line-height: 1; letter-spacing: 4rpx; }
-.timer-action-label { font-size: var(--font-subtitle); color: var(--cosmic-cyan); margin-top: 8rpx; font-weight: 600; }
-.stop-btn { margin-top: 36rpx; padding: 24rpx 64rpx; background: transparent; border: 2rpx solid var(--cosmic-red); border-radius: var(--radius-full); color: var(--cosmic-red); font-size: var(--font-body); font-weight: 600; }
-.stop-btn:active { background: rgba(255,77,106,0.1); }
-
-.other-baby { text-align: center; padding: 24rpx 0; position: relative; z-index: 1; }
+.timer-elapsed { font-size: 80rpx; font-weight: 200; color: var(--text-starlight); margin-top: 32rpx; letter-spacing: 4rpx; line-height: 1; }
+.timer-type { font-size: var(--font-body-lg); color: var(--text-dust); margin-top: 8rpx; }
+.stop-btn { margin-top: 40rpx; padding: 20rpx 56rpx; background: transparent; border: 2rpx solid var(--cosmic-red); border-radius: var(--radius-full); color: var(--cosmic-red); font-size: var(--font-body); }
+.stop-btn:active { background: rgba(255,77,106,0.08); }
 
 /* 双计时 */
-.dual-timers { display: flex; gap: var(--space-md); margin-bottom: 20rpx; position: relative; z-index: 1; }
+.dual-zone { display: flex; gap: 24rpx; margin-bottom: 20rpx; position: relative; z-index: 1; }
 .dual-card { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 16rpx; padding: 28rpx 12rpx; background: var(--surface-card); border: 2rpx solid var(--border-void); border-radius: var(--radius-xl); }
-.dual-elapsed { font-size: 48rpx; font-weight: 700; color: var(--text-starlight); }
-.dual-type { font-size: var(--font-caption); color: var(--text-dust); }
-.stop-btn-sm { padding: 12rpx 32rpx; background: transparent; border: 2rpx solid var(--cosmic-red); border-radius: var(--radius-full); font-size: var(--font-caption); color: var(--cosmic-red); }
-.stop-btn-sm:active { background: rgba(255,77,106,0.1); }
-.stop-all-btn { width: 100%; padding: 24rpx; background: transparent; border: 2rpx solid var(--cosmic-red); border-radius: var(--radius-full); font-size: var(--font-body); font-weight: 600; color: var(--cosmic-red); margin-top: 12rpx; position: relative; z-index: 1; }
+.dual-elapsed { font-size: 40rpx; font-weight: 200; color: var(--text-starlight); letter-spacing: 2rpx; }
+.stop-sm { padding: 10rpx 28rpx; background: transparent; border: 2rpx solid var(--cosmic-red); border-radius: var(--radius-full); font-size: var(--font-caption); color: var(--cosmic-red); }
+.stop-sm:active { background: rgba(255,77,106,0.08); }
+.stop-all { width: 100%; padding: 20rpx; margin-top: 12rpx; background: transparent; border: 2rpx solid var(--cosmic-red); border-radius: var(--radius-full); font-size: var(--font-body); color: var(--cosmic-red); position: relative; z-index: 1; }
 
 /* 时间线 */
 .timeline { padding-top: 24rpx; position: relative; z-index: 1; }
-.tl-item { display: flex; align-items: center; gap: 16rpx; padding: 14rpx 0; }
-.tl-dot { width: 10rpx; height: 10rpx; border-radius: 50%; flex-shrink: 0; }
+.tl-item { display: flex; align-items: center; gap: 16rpx; padding: 12rpx 0; }
+.tl-dot { width: 8rpx; height: 8rpx; border-radius: 50%; flex-shrink: 0; }
 .tl-text { flex: 1; font-size: var(--font-body); color: var(--text-starlight); }
-.tl-time { flex-shrink: 0; }
+.tl-time { font-size: var(--font-caption); color: var(--text-whisper); flex-shrink: 0; }
 </style>
