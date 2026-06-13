@@ -30,14 +30,14 @@
 
         <view class="twin-system">
           <view class="planet-stage" @click="goRecord">
-            <PlanetOrb :size="110" color="var(--twin-a)" :initial-text="(babyA?.nickname || babyA?.name || 'A').charAt(0)"
+            <PlanetOrb :size="110" color="#FF6B35" :initial-text="(babyA?.nickname || babyA?.name || 'A').charAt(0)"
               :label="babyA?.nickname || babyA?.name || '大宝'"
               :running="babyA ? recordsStore.isBabyRunning(babyA.id) : false" :glowing="true" twin="a" />
             <text class="planet-status">{{ babyStatus(babyA) }}</text>
           </view>
           <view class="bridge-stage"><LightBridge :state="bridgeState" :height="64" :animated="true" /></view>
           <view class="planet-stage" @click="goRecord">
-            <PlanetOrb :size="110" color="var(--twin-b)" :initial-text="(babyB?.nickname || babyB?.name || 'B').charAt(0)"
+            <PlanetOrb :size="110" color="#A855F7" :initial-text="(babyB?.nickname || babyB?.name || 'B').charAt(0)"
               :label="babyB?.nickname || babyB?.name || '二宝'"
               :running="babyB ? recordsStore.isBabyRunning(babyB.id) : false" :glowing="true" twin="b" />
             <text class="planet-status">{{ babyStatus(babyB) }}</text>

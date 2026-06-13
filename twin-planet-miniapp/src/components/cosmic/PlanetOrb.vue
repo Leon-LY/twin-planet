@@ -86,12 +86,21 @@ defineEmits<{ click: [] }>()
 const totalSize = computed(() => props.size + 48)
 const showOrbitRing = computed(() => props.orbitRing !== undefined && props.orbitRing > 0)
 
+/** hex → rgba，WeChat WXSS 不支持 8 位 hex */
+function hexToRgba(hex: string, alpha: number): string {
+  const clean = hex.replace('#', '')
+  const r = parseInt(clean.substring(0, 2), 16)
+  const g = parseInt(clean.substring(2, 4), 16)
+  const b = parseInt(clean.substring(4, 6), 16)
+  return `rgba(${r},${g},${b},${alpha})`
+}
+
 const planetStyle = computed(() => ({
   width: props.size + 'rpx',
   height: props.size + 'rpx',
-  background: `radial-gradient(circle at 35% 35%, ${props.color}66, ${props.color} 70%, ${props.color}88 100%)`,
+  background: `radial-gradient(circle at 35% 35%, ${hexToRgba(props.color, 0.4)}, ${props.color} 70%, ${hexToRgba(props.color, 0.53)} 100%)`,
   boxShadow: props.glowing
-    ? `0 0 ${props.size * 0.3}rpx ${props.color}44, 0 0 ${props.size * 0.15}rpx ${props.color}22`
+    ? `0 0 ${props.size * 0.3}rpx ${hexToRgba(props.color, 0.27)}, 0 0 ${props.size * 0.15}rpx ${hexToRgba(props.color, 0.13)}`
     : 'none',
 }))
 
