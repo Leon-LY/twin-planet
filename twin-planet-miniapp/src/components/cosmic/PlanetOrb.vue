@@ -1,59 +1,38 @@
 <!--
-  星球组件 · PlanetOrb
-  可复用的天体渲染器。
-
-  轨道环用分段圆点技术 — 36 个圆点均匀分布在圆周上，
-  按进度点亮。每个圆点 = transform: rotate + translateY。
-  只用了 border-radius + background + transform。
-  微信 WXSS 完全兼容。
-
-  Props:
-    color      - 星球颜色
-    size       - 星球直径 (rpx)
-    label      - 星球标签文字
-    running    - 计时器运行中
-    atmosphere - 大气层脉冲环
-    orbitRing  - 轨道环进度 0-1
-    biome      - 表面生物群系类型
-    interactive - 是否可交互
+  PlanetOrb · 专业级天体渲染
+  - 6层 radial-gradient 真实感球体（高光→漫反射→次表面散射→边缘光）
+  - 8层 box-shadow 大气光晕（1/r² 衰减）
+  - 4层微渐变表面纹理（Moire 噪点）
+  - 多层 text-shadow 发光排版
+  - 轨道环 36 段圆点（进度可视化）
 -->
 <template>
-  <view
-    class="planet-wrapper"
-    :class="{ interactive }"
+  <view class="planet-wrapper" :class="{ interactive }"
     :style="{ width: totalSize + 'rpx', height: totalSize + 'rpx' }"
     @click="$emit('click')"
   >
-    <!--
-      轨道环 — 分段圆点
-      36 个圆点，每个占 10°，按 orbitRing 进度亮起
-    -->
+    <!-- 大气光晕（box-shadow 替代 border） -->
+    <view class="planet-atmo" :class="[`atmo-${twin}`, { 'atmo-pulse': atmosphere }]" />
+
+    <!-- 轨道环 -->
     <view v-if="showOrbitRing" class="orbit-segments">
-      <view
-        v-for="seg in 36"
-        :key="seg"
-        class="orbit-dot"
-        :style="orbitDotStyle(seg)"
-      />
+      <view v-for="seg in 36" :key="seg" class="orbit-dot" :style="orbitDotStyle(seg)" />
     </view>
 
     <!-- 主球体 -->
-    <view
-      class="planet-orb"
-      :class="[{ 'anim-breathe': running }, biomeClass]"
-      :style="planetStyle"
-    >
-      <view v-if="biome" class="planet-surface" />
-      <text v-if="label" class="planet-label">{{ label }}</text>
+    <view class="planet-orb" :class="[{ 'anim-breathe': running }]" :style="sphereStyle">
+      <!-- 高光新月 (::before 等效层) -->
+      <view class="orb-specular" />
+      <!-- 表面纹理 -->
+      <view class="orb-grain" />
+      <!-- 暗面阴影 -->
+      <view class="orb-shadow" />
+      <!-- 标签 -->
+      <text v-if="label" class="planet-label" :class="`label-${twin}`">{{ label }}</text>
       <slot>
-        <text v-if="!label && initialText" class="planet-initial">{{ initialText }}</text>
+        <text v-if="!label && initialText" class="planet-initial" :class="`initial-${twin}`">{{ initialText }}</text>
       </slot>
     </view>
-
-    <!-- 计时脉冲光环 -->
-    <view v-if="running" class="planet-halo" :class="runningClass" />
-    <!-- 大气层脉冲 -->
-    <view v-if="atmosphere" class="planet-atmosphere" :class="atmosphereClass" />
   </view>
 </template>
 
@@ -61,229 +40,185 @@
 import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
-  color?: string
-  size?: number
-  label?: string
-  initialText?: string
-  glowing?: boolean
-  running?: boolean
-  atmosphere?: boolean
-  atmosphereType?: 'a' | 'b' | 'green'
-  orbitRing?: number
+  color?: string; size?: number; label?: string; initialText?: string
+  glowing?: boolean; running?: boolean; atmosphere?: boolean
+  atmosphereType?: 'a' | 'b' | 'green'; orbitRing?: number
   biome?: 'ocean' | 'mountain' | 'forest' | 'cloud' | 'barren'
-  level?: number
-  interactive?: boolean
-  twin?: 'a' | 'b'
-}>(), {
-  color: 'var(--twin-a)',
-  size: 120,
-  interactive: true,
-  twin: 'a',
-})
+  level?: number; interactive?: boolean; twin?: 'a' | 'b'
+}>(), { color: '#FF6B35', size: 120, interactive: true, twin: 'a' })
 
 defineEmits<{ click: [] }>()
 
-const totalSize = computed(() => props.size + 48)
+const totalSize = computed(() => props.size + 56)
 const showOrbitRing = computed(() => props.orbitRing !== undefined && props.orbitRing > 0)
 
-/** hex → rgba，WeChat WXSS 不支持 8 位 hex */
 function hexToRgba(hex: string, alpha: number): string {
-  const clean = hex.replace('#', '')
-  const r = parseInt(clean.substring(0, 2), 16)
-  const g = parseInt(clean.substring(2, 4), 16)
-  const b = parseInt(clean.substring(4, 6), 16)
-  return `rgba(${r},${g},${b},${alpha})`
+  const c = hex.replace('#', '')
+  return `rgba(${parseInt(c.substring(0,2),16)},${parseInt(c.substring(2,4),16)},${parseInt(c.substring(4,6),16)},${alpha})`
 }
 
-const planetStyle = computed(() => {
-  const s = props.size
+/** 6 层光照模型基色 */
+const sphereStyle = computed(() => {
+  const s = props.size; const c = props.color
   return {
-    width: s + 'rpx',
-    height: s + 'rpx',
-    // 3D 球体效果：高光点 + 中间色 + 暗边缘 + 底部反光
+    width: s + 'rpx', height: s + 'rpx',
     background: `
-      radial-gradient(circle at 30% 25%, ${hexToRgba(props.color, 0.6)} 0%, ${hexToRgba(props.color, 0.25)} 25%, transparent 50%),
-      radial-gradient(circle at 70% 75%, ${hexToRgba(props.color, 0.15)} 0%, transparent 40%),
-      radial-gradient(circle at 50% 50%, ${props.color} 0%, ${hexToRgba(props.color, 0.5)} 60%, ${hexToRgba(props.color, 0.15)} 100%)
+      radial-gradient(circle at 32% 28%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.4) 4%, rgba(255,255,255,0.08) 10%, transparent 20%),
+      radial-gradient(circle at 38% 34%, ${hexToRgba(c,0.85)} 0%, ${c} 40%, ${hexToRgba(c,0.35)} 75%, ${hexToRgba(c,0.1)} 100%),
+      radial-gradient(circle at 68% 72%, ${hexToRgba(c,0.25)} 0%, transparent 55%)
     `,
-    boxShadow: props.glowing
-      ? `0 0 ${s * 0.5}rpx ${hexToRgba(props.color, 0.35)}, 0 0 ${s * 0.25}rpx ${hexToRgba(props.color, 0.2)}, inset 0 -${s * 0.05}rpx ${s * 0.15}rpx ${hexToRgba('#000000', 0.3)}`
-      : `inset 0 -${s * 0.04}rpx ${s * 0.1}rpx rgba(0,0,0,0.25)`,
   }
 })
 
-/**
- * 轨道环分段圆点
- * 36 段 = 每段 10°
- * 圆点定位：先旋转到对应角度，再沿 Y 轴负方向平移半径距离
- */
 function orbitDotStyle(seg: number) {
-  const total = 36
   const progress = Math.min(props.orbitRing || 0, 1)
-  const litCount = Math.floor(progress * total)
-  const isLit = seg <= litCount
-  const angle = ((seg - 1) / total) * 360
-  const radius = props.size / 2 + 14
-
+  const lit = seg <= Math.floor(progress * 36)
+  const angle = ((seg - 1) / 36) * 360
+  const radius = props.size / 2 + 16
   return {
     transform: `rotate(${angle}deg) translateY(${-radius}rpx)`,
-    background: isLit ? props.color : 'transparent',
-    borderColor: isLit ? props.color : 'var(--border-void)',
-    opacity: isLit ? 1 : 0.3,
+    background: lit ? props.color : 'transparent',
+    borderColor: lit ? props.color : 'var(--border-void)',
+    opacity: lit ? 0.9 : 0.2,
+    boxShadow: lit ? `0 0 6rpx ${hexToRgba(props.color, 0.5)}` : 'none',
   }
 }
-
-const biomeClass = computed(() => props.biome ? `biome-${props.biome}` : '')
-const runningClass = computed(() => props.twin === 'a' ? 'running-a' : 'running-b')
-const atmosphereClass = computed(() => {
-  if (props.atmosphereType === 'green') return 'pulse-green'
-  return props.twin === 'a' ? 'pulse-a' : 'pulse-b'
-})
 </script>
 
 <style scoped>
-.planet-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+.planet-wrapper { position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.planet-wrapper.interactive:active { transform: scale(0.94); transition: transform 0.15s ease; }
+
+/* ================================================================
+   大气光晕 — 零尺寸元素 + 8 层 box-shadow (1/r² 衰减)
+   ================================================================ */
+.planet-atmo {
+  position: absolute; top: 50%; left: 50%; width: 0; height: 0;
+  border-radius: 50%; transform: translate(-50%, -50%);
+  pointer-events: none; z-index: 0;
+  transition: box-shadow 0.6s var(--ease-pulse);
 }
-.planet-wrapper.interactive:active {
-  transform: scale(0.94);
-  transition: transform 0.15s ease;
+.atmo-a {
+  box-shadow:
+    0 0 8rpx 6rpx    rgba(255,140,90,0.45),
+    0 0 18rpx 10rpx  rgba(255,120,70,0.28),
+    0 0 32rpx 18rpx  rgba(255,107,53,0.16),
+    0 0 50rpx 28rpx  rgba(255,100,50,0.09),
+    0 0 72rpx 40rpx  rgba(255,90,45,0.05),
+    0 0 98rpx 56rpx  rgba(255,80,40,0.025),
+    0 0 130rpx 76rpx rgba(255,70,35,0.012),
+    0 0 170rpx 100rpx rgba(255,60,30,0.006);
+}
+.atmo-b {
+  box-shadow:
+    0 0 8rpx 6rpx    rgba(180,130,255,0.45),
+    0 0 18rpx 10rpx  rgba(170,110,250,0.28),
+    0 0 32rpx 18rpx  rgba(168,85,247,0.16),
+    0 0 50rpx 28rpx  rgba(155,70,240,0.09),
+    0 0 72rpx 40rpx  rgba(140,60,230,0.05),
+    0 0 98rpx 56rpx  rgba(130,50,220,0.025),
+    0 0 130rpx 76rpx rgba(120,40,210,0.012),
+    0 0 170rpx 100rpx rgba(110,30,200,0.006);
+}
+.atmo-green {
+  box-shadow:
+    0 0 8rpx 6rpx    rgba(50,255,180,0.45),
+    0 0 18rpx 10rpx  rgba(30,240,160,0.28),
+    0 0 32rpx 18rpx  rgba(0,255,163,0.16),
+    0 0 50rpx 28rpx  rgba(0,230,145,0.09),
+    0 0 72rpx 40rpx  rgba(0,200,130,0.05),
+    0 0 98rpx 56rpx  rgba(0,180,115,0.025),
+    0 0 130rpx 76rpx rgba(0,160,100,0.012),
+    0 0 170rpx 100rpx rgba(0,140,85,0.006);
 }
 
-/* ============================================
-   轨道环 — 分段圆点
-   每个圆点绝对定位于圆心，rotate + translateY 送出到圆周
-   ============================================ */
-.orbit-segments {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
+/* 脉冲大气（计时器运行时） */
+.atmo-pulse.atmo-a { animation: atmoBreatheA 3s var(--ease-pulse) infinite; }
+.atmo-pulse.atmo-b { animation: atmoBreatheB 3s var(--ease-pulse) infinite 0.5s; }
+.atmo-pulse.atmo-green { animation: atmoBreatheGreen 3s var(--ease-pulse) infinite; }
+
+@keyframes atmoBreatheA {
+  0%,100% { box-shadow: 0 0 8rpx 6rpx rgba(255,140,90,0.45),0 0 18rpx 10rpx rgba(255,120,70,0.28),0 0 32rpx 18rpx rgba(255,107,53,0.16),0 0 50rpx 28rpx rgba(255,100,50,0.09),0 0 72rpx 40rpx rgba(255,90,45,0.05),0 0 98rpx 56rpx rgba(255,80,40,0.025),0 0 130rpx 76rpx rgba(255,70,35,0.012),0 0 170rpx 100rpx rgba(255,60,30,0.006); }
+  50%     { box-shadow: 0 0 12rpx 8rpx rgba(255,150,100,0.6),0 0 26rpx 14rpx rgba(255,130,80,0.4),0 0 42rpx 24rpx rgba(255,110,60,0.26),0 0 62rpx 36rpx rgba(255,105,55,0.16),0 0 86rpx 50rpx rgba(255,95,48,0.09),0 0 114rpx 68rpx rgba(255,85,42,0.05),0 0 148rpx 90rpx rgba(255,75,38,0.025),0 0 190rpx 116rpx rgba(255,65,32,0.012); }
+}
+@keyframes atmoBreatheB {
+  0%,100% { box-shadow: 0 0 8rpx 6rpx rgba(180,130,255,0.45),0 0 18rpx 10rpx rgba(170,110,250,0.28),0 0 32rpx 18rpx rgba(168,85,247,0.16),0 0 50rpx 28rpx rgba(155,70,240,0.09),0 0 72rpx 40rpx rgba(140,60,230,0.05),0 0 98rpx 56rpx rgba(130,50,220,0.025),0 0 130rpx 76rpx rgba(120,40,210,0.012),0 0 170rpx 100rpx rgba(110,30,200,0.006); }
+  50%     { box-shadow: 0 0 12rpx 8rpx rgba(200,150,255,0.6),0 0 26rpx 14rpx rgba(185,125,255,0.4),0 0 42rpx 24rpx rgba(175,95,250,0.26),0 0 62rpx 36rpx rgba(165,80,245,0.16),0 0 86rpx 50rpx rgba(155,65,235,0.09),0 0 114rpx 68rpx rgba(145,50,225,0.05),0 0 148rpx 90rpx rgba(135,40,215,0.025),0 0 190rpx 116rpx rgba(125,30,205,0.012); }
+}
+@keyframes atmoBreatheGreen {
+  0%,100% { box-shadow: 0 0 8rpx 6rpx rgba(50,255,180,0.45),0 0 18rpx 10rpx rgba(30,240,160,0.28),0 0 32rpx 18rpx rgba(0,255,163,0.16),0 0 50rpx 28rpx rgba(0,230,145,0.09),0 0 72rpx 40rpx rgba(0,200,130,0.05),0 0 98rpx 56rpx rgba(0,180,115,0.025),0 0 130rpx 76rpx rgba(0,160,100,0.012),0 0 170rpx 100rpx rgba(0,140,85,0.006); }
+  50%     { box-shadow: 0 0 12rpx 8rpx rgba(80,255,200,0.6),0 0 26rpx 14rpx rgba(50,250,170,0.4),0 0 42rpx 24rpx rgba(20,255,165,0.26),0 0 62rpx 36rpx rgba(10,240,150,0.16),0 0 86rpx 50rpx rgba(5,220,135,0.09),0 0 114rpx 68rpx rgba(0,200,120,0.05),0 0 148rpx 90rpx rgba(0,180,105,0.025),0 0 190rpx 116rpx rgba(0,160,90,0.012); }
 }
 
+/* ================================================================
+   轨道环
+   ================================================================ */
+.orbit-segments { position: absolute; inset: 0; z-index: 0; }
 .orbit-dot {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 6rpx;
-  height: 6rpx;
-  margin-left: -3rpx;
-  margin-top: -3rpx;
-  border-radius: 50%;
-  border: 1rpx solid var(--border-void);
-  transition: background 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
+  position: absolute; top: 50%; left: 50%;
+  width: 6rpx; height: 6rpx; margin-left: -3rpx; margin-top: -3rpx;
+  border-radius: 50%; border: 1rpx solid var(--border-void);
+  transition: background 0.4s ease, border-color 0.4s ease, opacity 0.4s ease, box-shadow 0.4s ease;
 }
 
-/* ============================================
-   主球体
-   ============================================ */
+/* ================================================================
+   主球体 — 6 层光照模型
+   ================================================================ */
 .planet-orb {
-  position: relative;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1;
-  transition: transform var(--dur-flow) var(--ease-orbit),
-              box-shadow var(--dur-flow) var(--ease-orbit);
-  overflow: hidden;
+  position: relative; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1; overflow: hidden;
+  transition: transform 0.5s var(--ease-spring), box-shadow 0.6s var(--ease-pulse);
+  /* Layer 1-3: Specular + Body + Subsurface (set by inline style) */
+  /* Layer 4: Ambient occlusion (inset shadow) */
+  box-shadow:
+    inset 0 -8rpx 24rpx rgba(0,0,0,0.45),
+    inset 0 0 48rpx rgba(0,0,0,0.12);
 }
 
-.planet-surface {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  pointer-events: none;
-  opacity: 0.2;
+/* 高光新月 */
+.orb-specular {
+  position: absolute; inset: 0; border-radius: 50%; pointer-events: none; z-index: 3;
+  background: radial-gradient(circle at 28% 24%,
+    rgba(255,255,255,0.65) 0%,
+    rgba(255,255,255,0.2) 5%,
+    transparent 14%
+  );
+}
+/* 表面纹理 — Moire 噪点 */
+.orb-grain {
+  position: absolute; inset: 0; border-radius: 50%; pointer-events: none; z-index: 2; opacity: 0.05;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 2rpx, rgba(255,255,255,0.3) 2rpx, rgba(255,255,255,0.3) 3rpx),
+    repeating-linear-gradient(37deg, transparent, transparent 2rpx, rgba(0,0,0,0.2) 2rpx, rgba(0,0,0,0.2) 3rpx),
+    repeating-linear-gradient(73deg, transparent, transparent 3rpx, rgba(255,255,255,0.15) 3rpx, rgba(255,255,255,0.15) 4rpx),
+    repeating-linear-gradient(110deg, transparent, transparent 2rpx, rgba(0,0,0,0.15) 2rpx, rgba(0,0,0,0.15) 3rpx);
+}
+/* 暗面阴影 + 边缘光 */
+.orb-shadow {
+  position: absolute; inset: 0; border-radius: 50%; pointer-events: none; z-index: 1;
+  background:
+    radial-gradient(circle at 70% 74%, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.1) 45%, transparent 70%),
+    radial-gradient(circle at 74% 70%, transparent 88%, rgba(255,255,255,0.03) 94%, transparent 100%);
 }
 
-/* 生物群系 */
-.biome-ocean .planet-surface {
-  background:
-    radial-gradient(circle at 20% 30%, rgba(0,229,255,0.35) 0%, transparent 50%),
-    radial-gradient(circle at 70% 60%, rgba(0,229,255,0.15) 0%, transparent 40%);
-}
-.biome-mountain .planet-surface {
-  background:
-    radial-gradient(circle at 50% 30%, rgba(255,255,255,0.12) 0%, transparent 40%),
-    radial-gradient(circle at 30% 50%, rgba(255,255,255,0.08) 0%, transparent 30%);
-}
-.biome-forest .planet-surface {
-  background:
-    radial-gradient(circle at 40% 50%, rgba(0,255,163,0.25) 0%, transparent 45%),
-    radial-gradient(circle at 60% 40%, rgba(0,255,163,0.12) 0%, transparent 35%);
-}
-.biome-cloud .planet-surface {
-  background:
-    radial-gradient(circle at 30% 40%, rgba(255,255,255,0.18) 0%, transparent 50%),
-    radial-gradient(circle at 60% 50%, rgba(255,255,255,0.08) 0%, transparent 40%);
-}
-.biome-barren .planet-surface {
-  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.04) 0%, transparent 60%);
-}
-
+/* ================================================================
+   排版 — 多层发光
+   ================================================================ */
 .planet-label {
-  font-size: var(--font-body);
-  font-weight: 700;
-  color: #FFFFFF;
-  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.5);
-  z-index: 1;
-  max-width: 80%;
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  position: relative; z-index: 4;
+  font-size: var(--font-body); font-weight: 700; color: #FFFFFF;
+  letter-spacing: 2rpx; max-width: 75%; text-align: center;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+.label-a { text-shadow: 0 0 4rpx rgba(255,255,255,0.9),0 0 8rpx rgba(255,140,90,0.5),0 0 16rpx rgba(255,107,53,0.3),0 2rpx 6rpx rgba(0,0,0,0.5); }
+.label-b { text-shadow: 0 0 4rpx rgba(255,255,255,0.9),0 0 8rpx rgba(180,130,255,0.5),0 0 16rpx rgba(168,85,247,0.3),0 2rpx 6rpx rgba(0,0,0,0.5); }
 
 .planet-initial {
-  font-size: 48rpx;
-  font-weight: 800;
-  color: #FFFFFF;
-  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.5);
-  z-index: 1;
+  position: relative; z-index: 4;
+  font-size: 52rpx; font-weight: 900; color: #FFFFFF;
+  letter-spacing: -1rpx;
 }
-
-/* 计时脉冲光环 */
-.planet-halo {
-  position: absolute;
-  inset: -8rpx;
-  border-radius: 50%;
-  border: 4rpx solid;
-  pointer-events: none;
-  z-index: 0;
-}
-.planet-halo.running-a {
-  border-color: var(--twin-a);
-  animation: planetBreathe var(--dur-breathe) var(--ease-pulse) infinite;
-}
-.planet-halo.running-b {
-  border-color: var(--twin-b);
-  animation: planetBreathe var(--dur-breathe) var(--ease-pulse) infinite;
-}
-
-/* 大气层脉冲 */
-.planet-atmosphere {
-  position: absolute;
-  inset: -16rpx;
-  border-radius: 50%;
-  border: 3rpx solid;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-.planet-atmosphere.pulse-a {
-  border-color: var(--twin-a);
-  animation: haloExpand 1.5s var(--ease-pulse) infinite;
-}
-.planet-atmosphere.pulse-b {
-  border-color: var(--twin-b);
-  animation: haloExpand 1.5s var(--ease-pulse) infinite;
-}
-.planet-atmosphere.pulse-green {
-  border-color: var(--cosmic-green);
-  animation: haloExpand 1.5s var(--ease-pulse) infinite;
-}
+.initial-a { text-shadow: 0 0 4rpx rgba(255,255,255,0.9),0 0 10rpx rgba(255,140,90,0.5),0 0 20rpx rgba(255,107,53,0.3),0 0 36rpx rgba(255,107,53,0.12),0 2rpx 8rpx rgba(0,0,0,0.5); }
+.initial-b { text-shadow: 0 0 4rpx rgba(255,255,255,0.9),0 0 10rpx rgba(180,130,255,0.5),0 0 20rpx rgba(168,85,247,0.3),0 0 36rpx rgba(168,85,247,0.12),0 2rpx 8rpx rgba(0,0,0,0.5); }
 </style>
