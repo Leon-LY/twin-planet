@@ -1,7 +1,26 @@
 # 并蒂星球 · Twin Planet
 
 > 中国首款双胞胎育儿伴侣 —— 微信小程序
-> 文档最后更新：2026-06-12（多角色论证后修复版 v0.2.0）
+> 文档最后更新：2026-06-14（双宝手帐 v4 · 三角色论证后）
+
+---
+
+## 🎨 设计方向：双宝手帐 (Twin Journal)
+
+> **核心理念**：一本可以玩的实体手帐本。有贴纸、盖章、手绘涂鸦的触感。
+> **三角色论证**：设计师 + 双胞胎妈妈 + 前端工程师 共识通过（2026-06-14）
+
+| 设计维度 | 值 |
+|---------|-----|
+| **色调** | 暖纸 `#FEF9F0` + 姜黄 `#E07B3E` (大宝) + 豆沙 `#D48068` (二宝) + 鼠尾草绿 `#5C9A6E` (完成) |
+| **字体** | 标题 Georgia/KaiTi 衬线，正文 PingFang SC 无衬线 |
+| **动效** | 3s 呼吸节拍系。交错入场 stagger。无抖动、无无限旋转。 |
+| **交互** | 大圆形玩具按钮（320rpx，3D 内阴影，按压 0.86x 缩放）。贴纸卡片微微旋转 (-0.5°/1°)，重叠排列。 |
+| **组件** | LightBridge 动态连接双胞胎（bright/steady/faint/one-sided 五态），数据驱动文案 |
+
+**关键约束**（微信 WXSS）：
+- ❌ 禁用：`conic-gradient`, `clip-path`, `filter`, `mask`, `font-variant-numeric`, `*` 通用选择器
+- ✅ 可用：`radial-gradient` 多层, `box-shadow` 多层, `transform`/`opacity` 动效, `::before`/`::after`
 
 ---
 
@@ -9,44 +28,21 @@
 
 ### WeChat 基础库兼容性
 
-- **问题**：uni-app v3 alpha（2026-04）与 WeChat 基础库 ≥3.16.1（2026-06-10 发布）不兼容，启动时报 `SystemError timeout`
-- **根因**：v3 alpha 发布时最新的基础库是 3.10.x，未适配 3.16+ 的 API 变更
-- **解决**：微信开发者工具 → 详情 → 本地设置 → 调试基础库 → **锁定 3.10.3**（或其他 3.8~3.11 稳定版本）
-- **后续**：待 uni-app v3 发布 stable 后升级基础库
-- **配置文件**：`dist/build/mp-weixin/project.private.config.json` → `"libVersion": "3.10.3"`（注意每次 `uni build` 可能重置此值）
-
-### ECharts 懒加载
-
-- **问题**：npm ECharts 会被 uni-app Vite 打包进 `common/vendor.js`（1.15MB），导致启动超时
-- **修复**：ECharts 改为 `static/echarts/echarts.min.js`（500KB），ec-canvas.vue 用 `require.async` 按需加载
-- **vendor.js 从 1.15MB → 71KB**（↓94%）
-- **注意**：升级 echarts 版本时需重新复制 `node_modules/echarts/dist/echarts.simple.min.js` → `src/static/echarts/echarts.min.js`
-
-### Pinia 版本兼容性
-
-- **问题**：Pinia ≥2.1.0 在 uni-app v3 alpha 编译为微信小程序时，`createPinia` 导出不可用，启动报 `t.createPinia is not a function`
-- **根因**：uni-app v3 alpha 的 Vite 构建对 Pinia 2.1.x 的 ESM/CJS 导出处理有问题
-- **解决**：**锁定 `pinia@2.0.36`**（最后已知兼容版本）
-- **安装**：`npm install pinia@2.0.36 --legacy-peer-deps`
+- **解决**：微信开发者工具 → 详情 → 本地设置 → 调试基础库 → **锁定 3.10.3**（3.8~3.11 稳定版本）
 
 ### 微信 WXSS 编译器不兼容的 CSS 特性
 
-> 以下 CSS 特性在微信基础库 3.9.x / 3.10.x 的 WXSS 编译器中会导致 `SystemError (appServiceSDKScriptError)` 崩溃。
-
 | 特性 | 状态 | 说明 |
 |------|:--:|------|
-| `font-variant-numeric: tabular-nums` | ❌ 禁用 | 微信 WXSS 不支持此属性 |
-| `.stagger-reveal > *` 通用子选择器 + `animation` | ❌ 禁用 | `> *` 选择器配合 animation 触发编译器崩溃 |
-| `@keyframes` 配合 `transform` / `opacity` | ✅ 可用 | 基础动画正常 |
-| `page[data-theme="dark"]` 属性选择器 | ✅ 可用 | 正常 |
-| `::before` / `::after` 伪元素 | ✅ 可用 | 在 `.brand-mark` 上正常工作 |
-| `gap` 属性 (flexbox) | ✅ 可用 | 基础库 3.9+ 支持 |
-| CSS 变量中 `cubic-bezier()` 值 | ✅ 可用 | `var(--ease-spring)` 正常工作 |
-| `box-shadow` 多值逗号分隔 | ✅ 可用 | 正常工作 |
-
-**替代方案**：
-- 交错入场动画用页面专属 `nth-child` 选择器（`.helix-item:nth-child(1)`），**不要**用 `> *` 通用选择器
-- 等宽数字用等宽字体替代 `font-variant-numeric`
+| `conic-gradient` | ❌ | 用 border + 分段圆点替代 |
+| `clip-path` | ❌ | 用 overflow:hidden + 内圆覆盖替代 |
+| `filter`, `mask`, `backdrop-filter` | ❌ | 不支持 |
+| `*` 通用选择器 | ❌ | 2026-06-14 验证：触发 `appServiceSDKScriptError` |
+| `font-variant-numeric: tabular-nums` | ❌ | 用 letter-spacing 替代等宽 |
+| `.stagger-reveal > *` + `animation` | ❌ | 用 nth-child 选择器替代 |
+| `radial-gradient` 多层 | ✅ | 球体光照模型用 3 层 |
+| `box-shadow` 多层 | ✅ | 大气光晕、3D 按钮 |
+| `transform: rotate/scale` 动效 | ✅ | 所有入场动画和呼吸动画 |
 
 ---
 
@@ -130,31 +126,31 @@ twin-planet-miniapp/src/
 
 ---
 
-## 四、设计系统 (twin-design)
+## 四、设计系统：双宝手帐 (Twin Journal v4)
 
-### 颜色
+### 颜色（暖纸手帐）
 
-> **V3 推翻蓝粉体系。** 同色系、不同明度——绝对不在用户潜意识里制造"蓝=男、粉=女"的性别暗示。
-> 大宝=深陶土 `#A45C40`，二宝=浅陶土 `#C7866A`。两男/两女/龙凤胎全部适用。
+> **V4 暖纸体系**：温暖、手工、编辑级质感。双胞胎按出生顺序用不同暖色，消除性别刻板印象。
 
-| 用途 | Hex | 适用 |
+| 用途 | Hex | 说明 |
 |------|------|------|
-| 出生顺序 1 (大宝) | `#A45C40` | 任何性别 · 深陶土 |
-| 出生顺序 2 (二宝) | `#C7866A` | 任何性别 · 浅陶土 |
-| 页面背景 | `#FAF7F2` | 暖奶油色 |
-| 卡片背景 | `#FFFFFF` | 纯白 |
-| 主文字 | `#2D2B28` | 深褐 |
-| 次文字 | `#9C9892` | 暖灰 |
-| 强调/健康 | `#7BA882` | 鼠尾草绿 |
-| 警告 | `#D4956B` | 暖杏 |
+| 页面背景 | `#FEF9F0` | 暖白纸 |
+| 卡片背景 | `#FFF7ED` (`--cream`) | 暖奶油 |
+| 大宝 | `#E07B3E` (`--amber`) | 姜黄/暖橙 |
+| 二宝 | `#D48068` (`--rose`) | 豆沙/暖粉 |
+| 主文字 | `#2D2318` | 墨色 |
+| 次文字 | `#9C8E7C` | 中灰 |
+| 强调/完成 | `#5C9A6E` (`--mint`) | 鼠尾草绿 |
+| 成就 | `#C8993E` (`--gold`) | 暖金 |
+| 边框/虚线 | `#E8DCC8` (`--dot`) | 暖灰虚线 |
 
-### 奶奶无障碍标准（5 条）
+**铁律**：大宝=姜黄 `#E07B3E`，二宝=豆沙 `#D48068`。按出生顺序，不按性别。
 
-1. **一就是一定制**：首页 ≤3 个大按钮，间距 ≥40rpx
-2. **能听不看**：提醒支持 TTS（未实现）
-3. **图画替代数字**：小苗苗状态图代替数字（未实现）
-4. **防误触**：操作间距 ≥40rpx
-5. **大字模式**：默认 ≥18px（奶奶/爷爷角色自动启用）
+### 奶奶无障碍标准
+
+1. 首页 ≤3 个大按钮，间距 ≥40rpx
+2. 大字模式：默认 ≥18px（奶奶/爷爷角色自动启用）
+3. 防误触：操作间距 ≥40rpx
 
 ### 颜色分配铁律
 
