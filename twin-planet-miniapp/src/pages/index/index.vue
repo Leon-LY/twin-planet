@@ -1,4 +1,4 @@
-<!-- 宇宙苗圃 · Cosmic Nursery — 双星系统 + 并蒂光桥 + 一个核心按钮 -->
+<!-- 宇宙苗圃 · Cosmic Nursery v2 -->
 <template>
   <view :class="[themeClass, { 'font-large': isGrandma }]">
     <template v-if="loading">
@@ -7,7 +7,7 @@
 
     <template v-else-if="isGrandma">
       <view class="page-shell granny-shell">
-        <view class="brand-mark brand-mark-lg" style="margin:0 auto 48rpx" />
+        <view class="brand-mark brand-mark-lg converge" style="margin:0 auto 48rpx" />
         <text class="heading-xl" style="text-align:center;display:block;margin-bottom:8rpx">并蒂星球</text>
         <text class="body-text" style="text-align:center;display:block;margin-bottom:64rpx">{{ greeting }}</text>
         <view class="granny-actions">
@@ -20,45 +20,83 @@
 
     <template v-else-if="!loading">
       <view class="page-shell cosmic-nursery">
-        <view class="top-bar">
+        <!-- 星场 -->
+        <CosmicStarfield />
+
+        <!-- 顶栏 -->
+        <view class="top-bar anim-orbit-in anim-d1">
           <view>
-            <text class="heading-lg">{{ greeting }}</text>
-            <text class="caption" v-if="streakDays > 0" style="color:var(--cosmic-gold);margin-top:4rpx">✦ 轨道连续 {{ streakDays }} 天</text>
+            <text class="greeting-text">{{ greeting }}</text>
+            <text class="caption" v-if="streakDays > 0" style="color:var(--cosmic-gold);margin-top:4rpx">
+              ✦ 轨道连续 {{ streakDays }} 天
+            </text>
           </view>
-          <view class="brand-mark brand-mark-sm" />
+          <view class="brand-mark brand-mark-sm converge" />
         </view>
 
+        <!-- 双星系统 -->
         <view class="twin-system">
-          <view class="planet-stage" @click="goRecord">
-            <PlanetOrb :size="110" color="#FF6B35" :initial-text="(babyA?.nickname || babyA?.name || 'A').charAt(0)"
+          <!-- 大宝 -->
+          <view class="planet-stage anim-orbit-in anim-d2" @click="goRecord">
+            <PlanetOrb
+              :size="140" color="#FF6B35"
+              :initial-text="(babyA?.nickname || babyA?.name || '大宝').charAt(0)"
               :label="babyA?.nickname || babyA?.name || '大宝'"
-              :running="babyA ? recordsStore.isBabyRunning(babyA.id) : false" :glowing="true" twin="a" />
-            <text class="planet-status">{{ babyStatus(babyA) }}</text>
+              :running="babyA ? recordsStore.isBabyRunning(babyA.id) : false"
+              :atmosphere="babyA ? recordsStore.isBabyRunning(babyA.id) : false"
+              :glowing="true" twin="a" biome="ocean"
+            />
+            <text class="planet-status" v-if="babyStatus(babyA)">{{ babyStatus(babyA) }}</text>
+            <text class="planet-status muted" v-else>轻触记录 ✦</text>
           </view>
-          <view class="bridge-stage"><LightBridge :state="bridgeState" :height="64" :animated="true" /></view>
-          <view class="planet-stage" @click="goRecord">
-            <PlanetOrb :size="110" color="#A855F7" :initial-text="(babyB?.nickname || babyB?.name || 'B').charAt(0)"
+
+          <!-- 光桥 -->
+          <view class="bridge-stage anim-orbit-in anim-d3">
+            <LightBridge :state="bridgeState" :height="72" :animated="true" />
+          </view>
+
+          <!-- 二宝 -->
+          <view class="planet-stage anim-orbit-in anim-d4" @click="goRecord">
+            <PlanetOrb
+              :size="140" color="#A855F7"
+              :initial-text="(babyB?.nickname || babyB?.name || '二宝').charAt(0)"
               :label="babyB?.nickname || babyB?.name || '二宝'"
-              :running="babyB ? recordsStore.isBabyRunning(babyB.id) : false" :glowing="true" twin="b" />
-            <text class="planet-status">{{ babyStatus(babyB) }}</text>
+              :running="babyB ? recordsStore.isBabyRunning(babyB.id) : false"
+              :atmosphere="babyB ? recordsStore.isBabyRunning(babyB.id) : false"
+              :glowing="true" twin="b" biome="cloud"
+            />
+            <text class="planet-status" v-if="babyStatus(babyB)">{{ babyStatus(babyB) }}</text>
+            <text class="planet-status muted" v-else>轻触记录 ✦</text>
           </view>
         </view>
 
-        <view class="streak-bar" v-if="streakDays > 0">
-          <text class="caption" style="color:var(--cosmic-gold)">{{ streakDays >= 7 ? '✦ 轨道坚如磐石 ' + streakDays + ' 天 ✦' : '✦ 轨道环 ' + streakDays + '/7 ✦' }}</text>
+        <!-- 轨道连胜 -->
+        <view class="streak-bar anim-orbit-in anim-d5" v-if="streakDays > 0">
+          <view class="streak-dots">
+            <view v-for="i in 7" :key="i" class="streak-dot" :class="{ lit: i <= Math.min(streakDays, 7) }" />
+          </view>
+          <text class="caption" style="color:var(--cosmic-gold);margin-top:8rpx">
+            {{ streakDays >= 7 ? '轨道坚如磐石 · ' + streakDays + ' 天' : '轨道环 ' + streakDays + '/7' }}
+          </text>
         </view>
 
-        <view class="primary-action-zone">
-          <button class="cosmic-main-btn" @click="goRecord"><text class="cosmic-btn-text">⚡ 宇宙记录</text></button>
+        <!-- 宇宙记录 按钮 -->
+        <view class="primary-action-zone anim-orbit-in anim-d5">
+          <button class="cosmic-main-btn" @click="goRecord">
+            <text class="cosmic-btn-icon">⚡</text>
+            <text class="cosmic-btn-text">宇宙记录</text>
+          </button>
         </view>
 
-        <view class="quick-dual" v-if="babyA && babyB">
+        <!-- 快捷双宝 -->
+        <view class="quick-dual anim-orbit-in anim-d6" v-if="babyA && babyB">
           <view class="quick-chip" @click="dualRecord('feeding')"><text>🍼 两个都喂了</text></view>
           <view class="quick-chip" @click="dualRecord('sleep')"><text>😴 都睡了</text></view>
           <view class="quick-chip" @click="dualRecord('diaper')"><text>🧷 都换了</text></view>
         </view>
 
-        <view class="nav-zone">
+        <!-- 底部 -->
+        <view class="nav-zone anim-orbit-in anim-d7">
           <view class="nav-item" @click="goGrowth"><text class="nav-icon">🌱</text><text class="nav-label">生长</text></view>
           <view class="nav-item" @click="goSnapshot"><text class="nav-icon">📊</text><text class="nav-label">快照</text></view>
           <view class="nav-item" @click="goMore"><text class="nav-icon">✦</text><text class="nav-label">探索</text></view>
@@ -74,10 +112,13 @@ import { useUserStore } from '@/stores/user'
 import { useBabiesStore } from '@/stores/babies'
 import { useRecordsStore } from '@/stores/records'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
+import CosmicStarfield from '@/components/cosmic/CosmicStarfield.vue'
 import PlanetOrb from '@/components/cosmic/PlanetOrb.vue'
 import LightBridge from '@/components/cosmic/LightBridge.vue'
 
-// Inline useTheme to avoid lazy-load module issue
+const loading = ref(true)
+const userStore = useUserStore()
+
 const themeClass = computed(() => {
   const classes = ['page-root']
   const h = new Date().getHours()
@@ -85,10 +126,9 @@ const themeClass = computed(() => {
   if (userStore.isGrandmaMode) classes.push('font-large')
   return classes.join(' ')
 })
-const loading = ref(true)
-onMounted(() => { setTimeout(() => { loading.value = false }, 400) })
 
-const userStore = useUserStore()
+onMounted(() => { setTimeout(() => { loading.value = false }, 500) })
+
 const babiesStore = useBabiesStore()
 const recordsStore = useRecordsStore()
 
@@ -99,21 +139,25 @@ const streakDays = computed(() => recordsStore.streakDays)
 
 const greeting = computed(() => {
   const h = new Date().getHours()
-  if (h < 6) return '凌晨好，宇宙守护者'; if (h < 9) return '早上好'
-  if (h < 12) return '上午好'; if (h < 14) return '中午好'
-  if (h < 18) return '下午好'; if (h < 22) return '晚上好'
+  if (h < 6) return '凌晨好，宇宙守护者'
+  if (h < 9) return '早上好'
+  if (h < 12) return '上午好'
+  if (h < 14) return '中午好'
+  if (h < 18) return '下午好'
+  if (h < 22) return '晚上好'
   return '夜深了，星星很亮'
 })
 
 function babyStatus(baby: any): string {
   if (!baby) return ''
   const logs = recordsStore.recentLogsByBaby[baby.id]
-  if (!logs?.length) return '轻触记录'
+  if (!logs?.length) return ''
   const last = logs[logs.length - 1]
   if (recordsStore.isBabyRunning(baby.id)) return '计时中…'
   const mins = Math.floor((Date.now() - last.createdAt) / 60000)
   const action = last.type === 'feeding' ? '喂奶' : last.type === 'sleep' ? '睡觉' : last.type === 'diaper' ? '换尿布' : '记录'
-  if (mins < 1) return `刚刚${action}`; if (mins < 60) return `${mins}分钟前${action}`
+  if (mins < 1) return `刚刚${action}`
+  if (mins < 60) return `${mins}分钟前${action}`
   return `${Math.floor(mins / 60)}小时前${action}`
 }
 
@@ -131,7 +175,8 @@ const bridgeState = computed(() => {
 function dualRecord(type: 'feeding' | 'sleep' | 'diaper') {
   if (babyA.value) recordsStore.quickLog(babyA.value.id, type)
   if (babyB.value) recordsStore.quickLog(babyB.value.id, type)
-  uni.showToast({ title: type === 'feeding' ? '两个都喂了 ✦' : type === 'sleep' ? '两个都睡了 ✦' : '两个都换了 ✦', icon: 'success' })
+  const labels: Record<string, string> = { feeding: '两个都喂了 ✦', sleep: '两个都睡了 ✦', diaper: '两个都换了 ✦' }
+  uni.showToast({ title: labels[type], icon: 'success' })
 }
 
 const navigate = (url: string) => uni.navigateTo({ url })
@@ -150,23 +195,56 @@ const goHelp = () => uni.showModal({ title: '需要帮忙？', content: '打电�
 </script>
 
 <style scoped>
-.cosmic-nursery { position: relative; }
-.top-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-lg); }
-.twin-system { display: flex; flex-direction: column; align-items: center; gap: 0; margin-bottom: var(--space-md); }
-.planet-stage { display: flex; flex-direction: column; align-items: center; gap: 12rpx; padding: 8rpx 0; }
-.planet-status { font-size: var(--font-caption); color: var(--text-dust); text-align: center; }
-.bridge-stage { display: flex; justify-content: center; padding: 8rpx 0; }
-.streak-bar { text-align: center; padding: 8rpx 0 16rpx; }
-.primary-action-zone { margin-bottom: var(--space-md); }
-.cosmic-main-btn { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 96rpx; padding: 28rpx; background: var(--surface-card); border: 3rpx solid rgba(0,229,255,0.2); border-radius: var(--radius-full); box-shadow: 0 0 20rpx rgba(0,229,255,0.08); }
-.quick-dual { display: flex; gap: var(--space-sm); margin-bottom: var(--space-xl); }
-.quick-chip { flex: 1; text-align: center; padding: 20rpx 8rpx; background: var(--surface-card); border: 1rpx solid var(--border-void); border-radius: var(--radius-lg); font-size: var(--font-caption); color: var(--text-dust); transition: transform 0.1s; }
-.quick-chip:active { transform: scale(0.94); }
-.nav-zone { display: flex; justify-content: space-around; padding-top: var(--space-md); border-top: 1rpx solid var(--border-void); }
-.nav-item { display: flex; flex-direction: column; align-items: center; gap: 6rpx; padding: 12rpx 24rpx; }
-.nav-item:active { transform: scale(0.92); }
-.nav-icon { font-size: 32rpx; }
+.cosmic-nursery { position: relative; padding-top: 40rpx; padding-bottom: 100rpx; }
+
+/* 顶栏 */
+.top-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 48rpx; position: relative; z-index: 1; }
+.greeting-text { font-size: var(--font-title); font-weight: 700; color: var(--text-starlight); display: block; }
+
+/* 双星系统 */
+.twin-system { display: flex; flex-direction: column; align-items: center; gap: 0; margin-bottom: 24rpx; position: relative; z-index: 1; }
+.planet-stage { display: flex; flex-direction: column; align-items: center; gap: 16rpx; padding: 12rpx 0; }
+.planet-status { font-size: var(--font-body); color: var(--text-dust); text-align: center; }
+.planet-status.muted { color: var(--text-whisper); font-style: italic; }
+.bridge-stage { display: flex; justify-content: center; padding: 4rpx 0; }
+
+/* 轨道连胜 */
+.streak-bar { text-align: center; padding: 12rpx 0 24rpx; position: relative; z-index: 1; }
+.streak-dots { display: flex; justify-content: center; gap: 12rpx; }
+.streak-dot { width: 12rpx; height: 12rpx; border-radius: 50%; background: var(--border-void); transition: all 0.3s ease; }
+.streak-dot.lit { background: var(--cosmic-gold); box-shadow: 0 0 8rpx rgba(255,210,63,0.4); }
+
+/* 主按钮 */
+.primary-action-zone { margin-bottom: 28rpx; position: relative; z-index: 1; }
+.cosmic-main-btn {
+  display: flex; align-items: center; justify-content: center; gap: 12rpx;
+  width: 100%; min-height: 104rpx; padding: 32rpx;
+  background: var(--surface-card); border: 3rpx solid rgba(0,229,255,0.25);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 32rpx rgba(0,229,255,0.1), 0 0 64rpx rgba(0,229,255,0.04);
+  transition: transform 0.15s, box-shadow 0.3s;
+}
+.cosmic-main-btn:active { transform: scale(0.96); box-shadow: 0 0 48rpx rgba(0,229,255,0.2); }
+.cosmic-btn-icon { font-size: 36rpx; }
+.cosmic-btn-text { font-size: var(--font-subtitle); font-weight: 800; color: var(--text-starlight); letter-spacing: 3rpx; }
+
+/* 快捷 */
+.quick-dual { display: flex; gap: var(--space-sm); margin-bottom: 40rpx; position: relative; z-index: 1; }
+.quick-chip {
+  flex: 1; text-align: center; padding: 24rpx 8rpx;
+  background: var(--surface-card); border: 1rpx solid var(--border-void);
+  border-radius: var(--radius-lg); font-size: var(--font-caption); color: var(--text-dust);
+}
+.quick-chip:active { transform: scale(0.94); background: rgba(255,255,255,0.06); }
+
+/* 底部 */
+.nav-zone { display: flex; justify-content: space-around; padding-top: 28rpx; border-top: 1rpx solid var(--border-void); position: relative; z-index: 1; }
+.nav-item { display: flex; flex-direction: column; align-items: center; gap: 8rpx; padding: 14rpx 28rpx; }
+.nav-item:active { transform: scale(0.92); opacity: 0.7; }
+.nav-icon { font-size: 36rpx; }
 .nav-label { font-size: var(--font-caption); color: var(--text-dust); }
+
+/* 奶奶模式 */
 .granny-shell { display: flex; flex-direction: column; justify-content: center; min-height: 100vh; padding: 80rpx 48rpx !important; }
 .granny-actions { display: flex; flex-direction: column; gap: var(--space-md); }
 .granny-btn { text-align: center; padding: 56rpx; background: var(--surface-card); border-radius: var(--radius-xl); border: 4rpx solid var(--border-void); display: flex; flex-direction: column; align-items: center; gap: var(--space-sm); }
