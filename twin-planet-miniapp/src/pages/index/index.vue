@@ -77,10 +77,17 @@
 
         <!-- 中央玩具按钮 -->
         <view class="toy-zone">
-          <button class="toy-btn" @click="goRecord">
-            <text class="toy-icon">✋</text>
-            <text class="toy-label">记 一 笔</text>
-          </button>
+          <view class="toy-stage">
+            <view class="orbit-ring" />
+            <text class="float-star s1">⭐</text>
+            <text class="float-star s2">💫</text>
+            <text class="float-star s3">🌸</text>
+            <text class="float-star s4">✨</text>
+            <button class="toy-btn" @click="goRecord">
+              <text class="toy-icon">✋</text>
+              <text class="toy-label">记 一 笔</text>
+            </button>
+          </view>
         </view>
 
         <!-- 快捷 -->
@@ -172,7 +179,12 @@ const goHelp = () => uni.showModal({ title:'需要帮忙？', content:'打电话
 </script>
 
 <style scoped>
-.journal { padding-top: 44rpx; }
+.journal {
+  padding-top: 44rpx;
+  background-image:
+    radial-gradient(circle at 15% 85%, rgba(232,130,74,0.04) 0%, transparent 45%),
+    radial-gradient(circle at 85% 15%, rgba(212,133,107,0.04) 0%, transparent 45%);
+}
 
 /* 页眉 */
 .j-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24rpx; padding-bottom:16rpx; border-bottom:1.5px dashed var(--dot-line); }
@@ -195,15 +207,22 @@ const goHelp = () => uni.showModal({ title:'需要帮忙？', content:'打电话
 .sticker-card.card-rose { background:var(--rose-lt); }
 
 /* 撕边 */
-.sticker-tear { position:absolute; top:0; left:20rpx; right:20rpx; height:4rpx; background:repeating-linear-gradient(90deg,transparent,transparent 4rpx,var(--paper) 4rpx,var(--paper) 6rpx); opacity:0.5; }
+.sticker-tear { position:absolute; top:-4rpx; left:16rpx; right:16rpx; height:5rpx; background:repeating-linear-gradient(90deg,transparent,transparent 3rpx,var(--paper) 3rpx,var(--paper) 5rpx); opacity:0.55; }
 
-.sticker-face { width:64rpx;height:64rpx;border-radius:50%; display:flex;align-items:center;justify-content:center; margin-bottom:14rpx; transition:transform var(--dur-normal) var(--ease-bounce); }
-.sticker-card:active .sticker-face { transform:scale(1.2); }
+.sticker-face { width:72rpx;height:72rpx;border-radius:50%; display:flex;align-items:center;justify-content:center; margin-bottom:14rpx; transition:transform 0.3s var(--ease-bounce); }
+.sticker-card:active .sticker-face { transform:scale(1.15); }
 .face-a { background:var(--amber-lt); }
 .face-b { background:var(--rose-lt); }
-.face-emoji { font-size:36rpx; }
-.sticker-card.running .face-emoji { animation: faceWiggle 0.6s ease-in-out infinite; }
+.face-emoji { font-size:40rpx; transition:transform 0.3s ease; }
+.sticker-card.running .face-emoji { animation:faceWiggle 0.6s ease-in-out infinite; }
 @keyframes faceWiggle { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-6deg)} 75%{transform:rotate(6deg)} }
+
+.sticker-name { font-family:var(--font-journal); font-size:var(--font-card); font-weight:700; color:var(--ink); display:block; margin-bottom:6rpx; }
+.sticker-status { font-size:var(--font-caption); color:var(--ink-md); }
+.tag { display:inline; }
+.tag.running { color:var(--mint); font-weight:600; }
+.tag.running::before { content:''; display:inline-block; width:6rpx;height:6rpx;border-radius:50%;background:var(--mint);margin-right:6rpx;animation:dotPulse 1.5s ease-in-out infinite; }
+@keyframes dotPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(1.6)} }
 
 .sticker-name { font-family:var(--font-journal); font-size:var(--font-card); font-weight:700; color:var(--ink); display:block; margin-bottom:4rpx; }
 .sticker-status { font-size:var(--font-caption); color:var(--ink-md); }
@@ -218,17 +237,43 @@ const goHelp = () => uni.showModal({ title:'需要帮忙？', content:'打电话
 .connect-heart { margin:0 16rpx;font-size:24rpx; animation:heartBeat 1s ease-in-out infinite; }
 @keyframes heartBeat { 0%,100%{transform:scale(1)} 15%{transform:scale(1.3)} 30%{transform:scale(1)} }
 
-/* 玩具按钮 */
-.toy-zone { flex:1; display:flex; align-items:center; justify-content:center; margin-bottom:20rpx; }
+/* 玩具按钮区 */
+.toy-zone { flex:1; display:flex; align-items:center; justify-content:center; margin-bottom:16rpx; }
+
+.toy-stage { position:relative; width:360rpx; height:360rpx; display:flex; align-items:center; justify-content:center; }
+
+/* 轨道装饰圈 */
+.orbit-ring {
+  position:absolute; inset:-8rpx; border-radius:50%;
+  border:2rpx dashed var(--dot-line); animation:ringSpin 30s linear infinite;
+}
+@keyframes ringSpin { to{transform:rotate(360deg);} }
+
+/* 浮动星星 */
+.float-star { position:absolute; font-size:28rpx; pointer-events:none; }
+.float-star.s1 { top:10rpx; left:-5rpx;  animation:floatA 3s ease-in-out infinite; }
+.float-star.s2 { top:-10rpx;right:15rpx; animation:floatB 3.5s ease-in-out infinite 0.5s; }
+.float-star.s3 { bottom:10rpx;right:-5rpx;animation:floatA 4s ease-in-out infinite 1s; }
+.float-star.s4 { bottom:25rpx;left:-10rpx;animation:floatB 2.8s ease-in-out infinite 0.3s; }
+@keyframes floatA {
+  0%,100%{transform:translateY(0) rotate(0);opacity:0.5;}
+  50%{transform:translateY(-12rpx) rotate(10deg);opacity:0.9;}
+}
+@keyframes floatB {
+  0%,100%{transform:translateY(0) rotate(0);opacity:0.4;}
+  50%{transform:translateY(-8rpx) rotate(-8deg);opacity:0.85;}
+}
+
 .toy-btn {
-  width:320rpx;height:320rpx;border-radius:50%; background:var(--amber); border:none;
+  width:300rpx;height:300rpx;border-radius:50%;position:relative;z-index:1;
+  background:var(--amber); border:none;
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8rpx;
   box-shadow:0 16rpx 48rpx rgba(232,130,74,0.25),0 6rpx 12rpx rgba(232,130,74,0.12);
-  transition:transform var(--dur-fast) var(--ease-bounce),box-shadow var(--dur-fast);
+  transition:transform 0.15s var(--ease-bounce),box-shadow 0.15s;
   transform:rotate(-2deg);
 }
-.toy-btn:active { transform:rotate(-2deg) scale(0.9); box-shadow:0 4rpx 12rpx rgba(232,130,74,0.15); }
-.toy-icon { font-size:60rpx; }
+.toy-btn:active { transform:rotate(-2deg) scale(0.88); box-shadow:0 4rpx 12rpx rgba(232,130,74,0.15); }
+.toy-icon { font-size:56rpx; }
 .toy-label { font-family:var(--font-journal); font-size:var(--font-card); color:#FFF; font-weight:700; letter-spacing:4rpx; }
 
 /* 快捷 */
