@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 interface VoiceMessage {
   id: string; author: string; durationSec: number

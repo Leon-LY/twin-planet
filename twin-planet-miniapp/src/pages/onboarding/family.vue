@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useFamilyStore } from '@/stores/family'
 import { useUserStore, type UserProfile } from '@/stores/user'
 

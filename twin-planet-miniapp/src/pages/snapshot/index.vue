@@ -84,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useBabiesStore, type Baby } from '@/stores/babies'
 import { useRecordsStore } from '@/stores/records'
 import { useInteractionsStore } from '@/stores/interactions'

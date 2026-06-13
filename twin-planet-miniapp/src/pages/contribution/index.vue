@@ -89,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useInteractionsStore, CONTRIBUTION_TYPES, type ContributionCategory } from '@/stores/interactions'
 
 const store = useInteractionsStore()
