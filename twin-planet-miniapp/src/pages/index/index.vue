@@ -25,7 +25,10 @@
 
         <!-- 页眉 -->
         <view class="header reveal-1">
-          <text class="date-tag">{{ dateStr }}</text>
+          <view class="header-left">
+            <text class="date-tag">{{ dateStr }}</text>
+            <text class="role-tag" @click="switchRole">{{ roleEmoji }} {{ roleLabel }}</text>
+          </view>
           <view class="streak-stamp">
              <text v-if="streakDays > 0">✦ 连续 {{ streakDays }} 天</text><text v-else>✦ 今天开始</text>
           </view>
@@ -139,6 +142,8 @@ const isRunningB=computed(()=>babyB.value?recordsStore.isBabyRunning(babyB.value
 
 const greeting=computed(()=>{const h=new Date().getHours();if(h<6)return'凌晨好';if(h<9)return'早上好';if(h<12)return'上午好';if(h<14)return'中午好';if(h<18)return'下午好';if(h<22)return'晚上好';return'夜深了'})
 const moodEmoji=computed(()=>{const h=new Date().getHours();if(h>=2&&h<6)return'😵';if(h>=22||h<2)return'🌙';return'👾'})
+const roleEmoji=computed(()=>{const r=userStore.profile?.role;return r==='dad'?'👨':r==='grandma'?'👵':r==='grandpa'?'👴':r==='nanny'?'👩‍🍼':'👩'})
+const roleLabel=computed(()=>{const r=userStore.profile?.role;return r==='dad'?'爸爸':r==='grandma'?'奶奶':r==='grandpa'?'爷爷':r==='nanny'?'育儿嫂':'妈妈'})
 const dateStr=computed(()=>{const d=new Date();const days=['日','一','二','三','四','五','六'];return `${d.getMonth()+1}月${d.getDate()}日 · 星期${days[d.getDay()]}`})
 
 function babyStatus(b:any):string{if(!b)return'';const logs=recordsStore.recentLogsByBaby[b.id];if(!logs?.length)return'';const last=logs[logs.length-1];const m=Math.floor((Date.now()-last.createdAt)/60000);const a=last.type==='feeding'?'喂奶':last.type==='sleep'?'睡觉':'记录';if(m<1)return`刚刚${a}`;if(m<60)return`${m}分钟前${a}`;return`${Math.floor(m/60)}小时前${a}`}
@@ -155,6 +160,7 @@ const goGrowth=()=>navigate('/pages/growth/index')
 const goSnapshot=()=>navigate('/pages/snapshot/index')
 const goMore=()=>uni.showActionSheet({itemList:['萌芽日记','星尘日志','指挥官控制台','星光监测站','星际通讯','轨道决策','星座日志'],success:(res)=>uni.navigateTo({url:['/pages/sprout/index','/pages/contribution/index','/pages/duty/index','/pages/guardian/index','/pages/handover/index','/pages/school/index','/pages/milestones/index'][res.tapIndex]})})
 const goHelp=()=>uni.showModal({title:'需要帮忙？',content:'打电话给家里人，或者打开记录页点最大的按钮就行。',confirmText:'我知道了',showCancel:false})
+const switchRole=()=>{const roles=['👩 妈妈','👨 爸爸','👵 奶奶','👴 爷爷','👩‍🍼 育儿嫂'];uni.showActionSheet({itemList:roles,success:(res)=>{const r=['mom','dad','grandma','grandpa','nanny'][res.tapIndex];userStore.setRole(r);uni.showToast({title:`已切换为${roles[res.tapIndex]}模式`,icon:'success',duration:1500})}})}
 </script>
 
 <style scoped>
@@ -167,7 +173,10 @@ const goHelp=()=>uni.showModal({title:'需要帮忙？',content:'打电话给家
 
 /* 页眉 */
 .header{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:36rpx}
+.header-left{display:flex;flex-direction:column;gap:6rpx}
 .date-tag{font-family:var(--font-journal);font-size:24rpx;color:var(--ink-md);letter-spacing:1rpx;padding-bottom:4rpx;border-bottom:1.5px solid var(--dot)}
+.role-tag{font-size:20rpx;color:var(--ink-lt);padding:4rpx 12rpx;background:var(--cream);border-radius:8rpx;align-self:flex-start}
+.role-tag:active{background:var(--amber-lt);color:var(--amber)}
 .streak-stamp{background:var(--gold-lt);color:var(--gold);font-weight:700;font-size:22rpx;padding:8rpx 18rpx;border-radius:16rpx;letter-spacing:3rpx;font-family:var(--font-journal);box-shadow:0 2rpx 8rpx rgba(200,153,62,0.12);transform:rotate(3deg);animation:badgePop 0.5s var(--ease-bounce)}@keyframes badgePop{0%{transform:rotate(3deg)scale(0);opacity:0}70%{transform:rotate(-2deg)scale(1.15)}100%{transform:rotate(3deg)scale(1);opacity:1}}
 
 /* 问候 */
