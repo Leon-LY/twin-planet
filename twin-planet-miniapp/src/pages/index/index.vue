@@ -127,7 +127,7 @@ import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
 import LightBridge from '@/components/cosmic/LightBridge.vue'
 
 const loading=ref(true);const userStore=useUserStore()
-const themeClass=computed(()=>{const c=['page-root'];const h=new Date().getHours();if(h>=22||h<6)c.push('theme-dark');if(userStore.isGrandmaMode)c.push('font-large');return c.join(' ')})
+const themeClass=computed(()=>{const c=['page-root'];const h=new Date().getHours();if(h>=22||h<6)c.push('theme-dark');if(userStore.isGrandmaMode)c.push('font-large','role-granny');else if(userStore.isDad)c.push('role-dad');return c.join(' ')})
 onMounted(()=>{setTimeout(()=>{loading.value=false},400)})
 
 const babiesStore=useBabiesStore();const recordsStore=useRecordsStore()
@@ -264,4 +264,23 @@ const goHelp=()=>uni.showModal({title:'需要帮忙？',content:'打电话给家
 .granny-help{border-color:var(--gold)}
 .granny-emoji{font-size:72rpx}
 .granny-label{font-size:48rpx;font-weight:700;color:var(--ink)}
+
+/* === 角色：爸爸模式 — 去装饰、提效率 === */
+.role-dad .float-el,.role-dad .av-sparkle,.role-dad .orbit-ring{display:none}
+.role-dad .twin-card.card-b{margin-left:0}
+.role-dad .bg-a,.role-dad .bg-b{transform:none!important}
+.role-dad .main-btn{transform:none;width:280rpx;height:280rpx;border-radius:24rpx}
+.role-dad .greet-emoji,.role-dad .greet-quote{display:none}
+.role-dad .highlight::after{display:none}
+.role-dad .egg{display:none}
+.role-dad .greet-hand{font-size:40rpx}
+.role-dad .main-btn::after{display:none}
+.role-dad .btn-icon{font-size:40rpx}
+.role-dad .btn-text{font-size:28rpx;letter-spacing:2rpx}
+
+/* === 角色：奶奶模式增强 === */
+.role-granny .float-el,.role-granny .av-sparkle,.role-granny .orbit-ring{display:none}
+.role-granny .greet-emoji,.role-granny .greet-quote,.role-granny .egg{display:none}
+.role-granny .bridge-wrap{display:none}
+.role-granny .twin-card{flex:none;width:100%}
 </style>
