@@ -1,4 +1,4 @@
-<!-- 双宝手帐 · 首页 -->
+<!-- 双宝手帐 v4 -->
 <template>
   <view :class="[themeClass, { 'font-large': isGrandma }]">
     <template v-if="loading">
@@ -19,99 +19,102 @@
 
     <template v-else-if="!loading">
       <view class="page-shell journal">
+        <!-- 暖色光斑 -->
+        <view class="bg-spot spot-a" />
+        <view class="bg-spot spot-b" />
 
         <!-- 页眉 -->
-        <view class="j-header">
-          <text class="j-date">{{ dateStr }}</text>
-          <view class="j-badge" v-if="streakDays > 0">
+        <view class="header">
+          <text class="date-tag">{{ dateStr }}</text>
+          <view class="streak-stamp" v-if="streakDays > 0">
             <text>✦ 连续 {{ streakDays }} 天</text>
           </view>
         </view>
 
         <!-- 问候 -->
-        <view class="greeting-zone">
-          <text class="greeting-main">{{ greeting }}</text>
-          <text class="greeting-main" style="margin-top:-4rpx">今天的两个<text style="font-family:var(--font-ui)">小怪兽</text></text>
-          <text class="greeting-sub"><text class="greeting-mood">{{ moodEmoji }}</text> 又为同一个玩具打起来了</text>
-        </view>
-
-        <!-- 双宝贴纸 -->
-        <view class="sticker-row">
-          <view class="sticker-card card-a" :class="{ running: isRunningA }" @click="goRecord">
-            <!-- 装饰星星 -->
-            <text class="card-deco dl">⭐</text>
-            <text class="card-deco dr">✨</text>
-            <!-- 大头像 -->
-            <view class="sticker-face face-a">
-              <text class="face-emoji">{{ isRunningA ? '😋' : '😊' }}</text>
-            </view>
-            <text class="sticker-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
-            <text class="sticker-sub">大宝</text>
-            <view class="sticker-status">
-              <text v-if="isRunningA" class="tag running"><text class="tag-dot"></text>喂奶中</text>
-              <text v-else-if="babyStatus(babyA)" class="tag idle">{{ babyStatus(babyA) }}</text>
-              <text v-else class="tag idle">轻触记录 ✦</text>
-            </view>
-          </view>
-
-          <view class="sticker-card card-b" :class="{ running: isRunningB }" @click="goRecord">
-            <text class="card-deco dl">🌸</text>
-            <text class="card-deco dr">💫</text>
-            <view class="sticker-face face-b">
-              <text class="face-emoji">{{ isRunningB ? '😴' : '😊' }}</text>
-            </view>
-            <text class="sticker-name">{{ babyB?.nickname || babyB?.name || '二宝' }}</text>
-            <text class="sticker-sub">二宝</text>
-            <view class="sticker-status">
-              <text v-if="isRunningB" class="tag running"><text class="tag-dot"></text>计时中</text>
-              <text v-else-if="babyStatus(babyB)" class="tag idle">{{ babyStatus(babyB) }}</text>
-              <text v-else class="tag idle">轻触记录 ✦</text>
-            </view>
+        <view class="greet-zone">
+          <text class="greet-hand">{{ greeting }}</text>
+          <text class="greet-hand"><text class="highlight">两个小怪兽</text></text>
+          <view class="greet-quote">
+            <text class="greet-emoji">{{ moodEmoji }}</text>
+            <text>今天的打架战绩：平局</text>
           </view>
         </view>
 
-        <!-- 连接 -->
-        <view class="connect-row">
-          <view class="connect-dots">
-            <view class="c-dot" v-for="i in 5" :key="i" :style="{ animationDelay: (i*0.12) + 's' }" />
+        <!-- 双宝卡片 — 重叠 -->
+        <view class="twins-zone">
+          <view class="twin-card card-a" @click="goRecord">
+            <view class="card-bg bg-a" />
+            <view class="avatar-wrap">
+              <view class="avatar av-a" :class="{ running: isRunningA }">
+                <text class="av-emoji">{{ isRunningA ? '😋' : '😊' }}</text>
+              </view>
+              <text class="av-sparkle s1">⭐</text>
+              <text class="av-sparkle s2">✨</text>
+            </view>
+            <text class="twin-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
+            <text class="twin-role">大宝</text>
+            <view class="twin-status">
+              <text v-if="isRunningA" class="status-running"><text class="st-dot green"></text>喂奶中</text>
+              <text v-else-if="babyStatus(babyA)" class="status-idle">{{ babyStatus(babyA) }}</text>
+              <text v-else class="status-idle">轻触记录</text>
+            </view>
           </view>
-          <text class="connect-heart">💛</text>
-          <view class="connect-dots">
-            <view class="c-dot" v-for="i in 5" :key="i+10" :style="{ animationDelay: (i*0.12) + 's' }" />
+
+          <view class="twin-card card-b" @click="goRecord">
+            <view class="card-bg bg-b" />
+            <view class="avatar-wrap">
+              <view class="avatar av-b" :class="{ running: isRunningB }">
+                <text class="av-emoji">{{ isRunningB ? '😴' : '😊' }}</text>
+              </view>
+              <text class="av-sparkle s1">🌸</text>
+              <text class="av-sparkle s2">💫</text>
+            </view>
+            <text class="twin-name">{{ babyB?.nickname || babyB?.name || '二宝' }}</text>
+            <text class="twin-role">二宝</text>
+            <view class="twin-status">
+              <text v-if="isRunningB" class="status-running"><text class="st-dot green"></text>计时中</text>
+              <text v-else-if="babyStatus(babyB)" class="status-idle">{{ babyStatus(babyB) }}</text>
+              <text v-else class="status-idle">轻触记录</text>
+            </view>
           </view>
         </view>
 
-        <!-- 中央玩具按钮 -->
-        <view class="toy-zone">
-          <view class="toy-stage">
+        <!-- 连接线 -->
+        <view class="thread-zone">
+          <view class="thread-line" />
+          <text class="thread-knot">💛</text>
+        </view>
+
+        <!-- 中央按钮 -->
+        <view class="center-zone">
+          <view class="btn-stage">
             <view class="orbit-ring" />
-            <text class="float-star s1">⭐</text>
-            <text class="float-star s2">💫</text>
-            <text class="float-star s3">🌸</text>
-            <text class="float-star s4">✨</text>
-            <button class="toy-btn" @click="goRecord">
-              <text class="toy-icon">✋</text>
-              <text class="toy-label">记 一 笔</text>
+            <text class="float-el f1">⭐</text><text class="float-el f2">💫</text>
+            <text class="float-el f3">🌸</text><text class="float-el f4">✨</text>
+            <text class="float-el f5">🪐</text><text class="float-el f6">🌟</text>
+            <button class="main-btn" @click="goRecord">
+              <text class="btn-icon">✋</text>
+              <text class="btn-text">记 一 笔</text>
             </button>
           </view>
         </view>
 
         <!-- 快捷 -->
         <view class="quick-row" v-if="babyA && babyB">
-          <view class="quick-chip" @click="dualRecord('feeding')"><text>🍼 都喂了</text></view>
-          <view class="quick-chip" @click="dualRecord('sleep')"><text>😴 都睡了</text></view>
-          <view class="quick-chip" @click="dualRecord('diaper')"><text>🧷 都换了</text></view>
+          <view class="q-chip" @click="dualRecord('feeding')"><text>🍼 都喂了</text></view>
+          <view class="q-chip" @click="dualRecord('sleep')"><text>😴 都睡了</text></view>
+          <view class="q-chip" @click="dualRecord('diaper')"><text>🧷 都换了</text></view>
         </view>
 
-        <!-- 彩蛋 -->
-        <text class="easter-egg" v-if="streakDays > 0">1+1=11 · 端水失败的第 {{ streakDays }} 天</text>
+        <text class="egg" v-if="streakDays > 0">1+1=11 · 端水失败的第 {{ streakDays }} 天</text>
 
         <!-- 底部 -->
-        <view class="bottom-row">
-          <text class="b-item now" @click="goRecord">记录</text>
-          <text class="b-item" @click="goGrowth">生长</text>
-          <text class="b-item" @click="goSnapshot">快照</text>
-          <text class="b-item" @click="goMore">发现</text>
+        <view class="footer">
+          <text class="f-item active">记录</text>
+          <text class="f-item" @click="goGrowth">生长</text>
+          <text class="f-item" @click="goSnapshot">快照</text>
+          <text class="f-item" @click="goMore">发现</text>
         </view>
       </view>
     </template>
@@ -119,197 +122,146 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed,ref,onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useBabiesStore } from '@/stores/babies'
 import { useRecordsStore } from '@/stores/records'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
 
-const loading = ref(true); const userStore = useUserStore()
-const themeClass = computed(() => {
-  const c = ['page-root']; const h = new Date().getHours()
-  if (h >= 22 || h < 6) c.push('theme-dark')
-  if (userStore.isGrandmaMode) c.push('font-large')
-  return c.join(' ')
-})
-onMounted(() => { setTimeout(() => { loading.value = false }, 400) })
+const loading=ref(true);const userStore=useUserStore()
+const themeClass=computed(()=>{const c=['page-root'];const h=new Date().getHours();if(h>=22||h<6)c.push('theme-dark');if(userStore.isGrandmaMode)c.push('font-large');return c.join(' ')})
+onMounted(()=>{setTimeout(()=>{loading.value=false},400)})
 
-const babiesStore = useBabiesStore(); const recordsStore = useRecordsStore()
-const isGrandma = computed(() => userStore.isGrandmaMode)
-const babyA = computed(() => babiesStore.babyA); const babyB = computed(() => babiesStore.babyB)
-const streakDays = computed(() => recordsStore.streakDays)
-const selectedBaby = ref('a')
-const isRunningA = computed(() => babyA.value ? recordsStore.isBabyRunning(babyA.value.id) : false)
-const isRunningB = computed(() => babyB.value ? recordsStore.isBabyRunning(babyB.value.id) : false)
+const babiesStore=useBabiesStore();const recordsStore=useRecordsStore()
+const isGrandma=computed(()=>userStore.isGrandmaMode)
+const babyA=computed(()=>babiesStore.babyA);const babyB=computed(()=>babiesStore.babyB)
+const streakDays=computed(()=>recordsStore.streakDays)
+const isRunningA=computed(()=>babyA.value?recordsStore.isBabyRunning(babyA.value.id):false)
+const isRunningB=computed(()=>babyB.value?recordsStore.isBabyRunning(babyB.value.id):false)
 
-const greeting = computed(() => {
-  const h = new Date().getHours()
-  if (h < 6) return '凌晨好'; if (h < 9) return '早上好'; if (h < 12) return '上午好'
-  if (h < 14) return '中午好'; if (h < 18) return '下午好'; if (h < 22) return '晚上好'
-  return '夜深了'
-})
-const moodEmoji = computed(() => {
-  const h = new Date().getHours()
-  if (h >= 2 && h < 6) return '😵'; if (h >= 22 || h < 2) return '🌙'
-  return '👾'
-})
-const dateStr = computed(() => {
-  const d = new Date(); const days = ['日','一','二','三','四','五','六']
-  return `${d.getMonth()+1}月${d.getDate()}日 · 星期${days[d.getDay()]}`
-})
+const greeting=computed(()=>{const h=new Date().getHours();if(h<6)return'凌晨好';if(h<9)return'早上好';if(h<12)return'上午好';if(h<14)return'中午好';if(h<18)return'下午好';if(h<22)return'晚上好';return'夜深了'})
+const moodEmoji=computed(()=>{const h=new Date().getHours();if(h>=2&&h<6)return'😵';if(h>=22||h<2)return'🌙';return'👾'})
+const dateStr=computed(()=>{const d=new Date();const days=['日','一','二','三','四','五','六'];return `${d.getMonth()+1}月${d.getDate()}日 · 星期${days[d.getDay()]}`})
 
-function babyStatus(b: any): string {
-  if (!b) return ''; const logs = recordsStore.recentLogsByBaby[b.id]
-  if (!logs?.length) return ''; const last = logs[logs.length-1]
-  const m = Math.floor((Date.now()-last.createdAt)/60000)
-  const a = last.type==='feeding'?'喂奶':last.type==='sleep'?'睡觉':'记录'
-  if (m<1) return `刚刚${a}`; if (m<60) return `${m}分钟前${a}`
-  return `${Math.floor(m/60)}小时前${a}`
-}
+function babyStatus(b:any):string{if(!b)return'';const logs=recordsStore.recentLogsByBaby[b.id];if(!logs?.length)return'';const last=logs[logs.length-1];const m=Math.floor((Date.now()-last.createdAt)/60000);const a=last.type==='feeding'?'喂奶':last.type==='sleep'?'睡觉':'记录';if(m<1)return`刚刚${a}`;if(m<60)return`${m}分钟前${a}`;return`${Math.floor(m/60)}小时前${a}`}
 
-function dualRecord(t: 'feeding'|'sleep'|'diaper') {
-  if (babyA.value) recordsStore.quickLog(babyA.value.id,t)
-  if (babyB.value) recordsStore.quickLog(babyB.value.id,t)
-  uni.showToast({ title: t==='feeding'?'都喂了 ✦':t==='sleep'?'都睡了 ✦':'都换了 ✦', icon:'success' })
-}
+function dualRecord(t:'feeding'|'sleep'|'diaper'){if(babyA.value)recordsStore.quickLog(babyA.value.id,t);if(babyB.value)recordsStore.quickLog(babyB.value.id,t);uni.showToast({title:t==='feeding'?'都喂了 ✦':t==='sleep'?'都睡了 ✦':'都换了 ✦',icon:'success'})}
 
-const navigate = (url:string) => uni.navigateTo({url})
-const goRecord = () => navigate('/pages/record/index')
-const goGrowth = () => navigate('/pages/growth/index')
-const goSnapshot = () => navigate('/pages/snapshot/index')
-const goMore = () => uni.showActionSheet({
-  itemList: ['萌芽日记','星尘日志','指挥官控制台','星光监测站','星际通讯','轨道决策','星座日志'],
-  success: (res) => uni.navigateTo({ url: ['/pages/sprout/index','/pages/contribution/index','/pages/duty/index','/pages/guardian/index','/pages/handover/index','/pages/school/index','/pages/milestones/index'][res.tapIndex] })
-})
-const goHelp = () => uni.showModal({ title:'需要帮忙？', content:'打电话给家里人，或者打开记录页点最大的按钮就行。', confirmText:'我知道了', showCancel:false })
+const navigate=(url:string)=>uni.navigateTo({url})
+const goRecord=()=>navigate('/pages/record/index')
+const goGrowth=()=>navigate('/pages/growth/index')
+const goSnapshot=()=>navigate('/pages/snapshot/index')
+const goMore=()=>uni.showActionSheet({itemList:['萌芽日记','星尘日志','指挥官控制台','星光监测站','星际通讯','轨道决策','星座日志'],success:(res)=>uni.navigateTo({url:['/pages/sprout/index','/pages/contribution/index','/pages/duty/index','/pages/guardian/index','/pages/handover/index','/pages/school/index','/pages/milestones/index'][res.tapIndex]})})
+const goHelp=()=>uni.showModal({title:'需要帮忙？',content:'打电话给家里人，或者打开记录页点最大的按钮就行。',confirmText:'我知道了',showCancel:false})
 </script>
 
 <style scoped>
-.journal {
-  padding-top: 44rpx;
-  background-image:
-    radial-gradient(circle at 15% 85%, rgba(232,130,74,0.04) 0%, transparent 45%),
-    radial-gradient(circle at 85% 15%, rgba(212,133,107,0.04) 0%, transparent 45%);
-}
+.journal{position:relative}
+
+/* 暖色光斑 */
+.bg-spot{position:absolute;pointer-events:none;z-index:0;border-radius:50%}
+.spot-a{width:500rpx;height:500rpx;top:80rpx;left:-200rpx;background:radial-gradient(circle,rgba(224,123,62,0.04) 0%,transparent 60%)}
+.spot-b{width:400rpx;height:400rpx;bottom:200rpx;right:-160rpx;background:radial-gradient(circle,rgba(92,154,110,0.03) 0%,transparent 60%)}
 
 /* 页眉 */
-.j-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24rpx; padding-bottom:16rpx; border-bottom:1.5px dashed var(--dot-line); }
-.j-date { font-family:var(--font-journal); font-size:var(--font-caption); color:var(--ink-md); }
-.j-badge { background:var(--gold-lt); padding:6rpx 16rpx; border-radius:16rpx; font-size:var(--font-caption); color:var(--gold); font-weight:700; }
+.header{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:36rpx}
+.date-tag{font-family:var(--font-journal);font-size:24rpx;color:var(--ink-md);letter-spacing:1rpx;padding-bottom:4rpx;border-bottom:1.5px solid var(--dot)}
+.streak-stamp{background:var(--gold-lt);color:var(--gold);font-weight:700;font-size:22rpx;padding:8rpx 18rpx;border-radius:16rpx;letter-spacing:3rpx;font-family:var(--font-journal);box-shadow:0 2rpx 8rpx rgba(200,153,62,0.12)}
 
 /* 问候 */
-.greeting-zone { margin-bottom:32rpx; }
-.greeting-main { font-family:var(--font-journal); font-size:var(--font-hero); color:var(--ink); font-weight:400; display:block; letter-spacing:-0.5px; }
-.greeting-sub { font-size:var(--font-body); color:var(--ink-md); margin-top:4rpx; display:block; }
-.greeting-mood { font-size:36rpx; margin-top:8rpx; display:block; animation: moodFloat 2s ease-in-out infinite; }
-@keyframes moodFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5rpx)} }
+.greet-zone{position:relative;z-index:1;margin-bottom:40rpx}
+.greet-hand{font-family:var(--font-journal);font-size:56rpx;font-weight:400;color:var(--ink);letter-spacing:-1rpx;line-height:1.15;display:block}
+.highlight{display:inline-block;position:relative}
+.highlight::after{content:'';position:absolute;bottom:2rpx;left:-4rpx;right:-4rpx;height:12rpx;background:var(--amber-lt);z-index:-1;border-radius:4rpx;opacity:0.6}
+.greet-quote{display:flex;align-items:center;gap:10rpx;margin-top:12rpx;font-size:28rpx;color:var(--ink-md)}
+.greet-emoji{font-size:40rpx;animation:gentleBob 2.5s ease-in-out infinite}
+@keyframes gentleBob{0%,100%{transform:translateY(0)rotate(0)}30%{transform:translateY(-6rpx)rotate(3deg)}60%{transform:translateY(2rpx)rotate(-2deg)}}
 
-/* 贴纸卡片 */
-.sticker-row { display:flex; gap:18rpx; margin-bottom:20rpx; }
-.sticker-card {
-  flex:1; border-radius:28rpx; padding:28rpx 16rpx 20rpx;
-  position:relative; overflow:visible;
-  box-shadow:0 4rpx 16rpx rgba(44,36,22,0.05);
-  border:2rpx solid transparent;
-  transition:transform 0.2s var(--ease-bounce),border-color 0.2s,box-shadow 0.2s;
-}
-.sticker-card:active { transform:scale(0.95); }
-.sticker-card.card-a { background:var(--amber-lt); border-color:rgba(232,130,74,0.12); }
-.sticker-card.card-b { background:var(--rose-lt); border-color:rgba(212,133,107,0.12); }
+/* 双宝卡片 */
+.twins-zone{position:relative;z-index:1;display:flex;gap:0;margin-bottom:28rpx}
+.twin-card{flex:1;position:relative;padding:28rpx 16rpx 20rpx}
+.twin-card:active{transform:scale(0.96);transition:transform 0.2s var(--ease-bounce)}
+.twin-card.card-b{margin-left:-10rpx;z-index:0}
+.twin-card.card-a{z-index:1}
+.card-bg{position:absolute;inset:0;border-radius:28rpx;transition:box-shadow 0.3s,transform 0.2s var(--ease-bounce)}
+.bg-a{background:var(--amber-lt);border:1.5px solid rgba(224,123,62,0.12);box-shadow:0 4rpx 16rpx rgba(224,123,62,0.06);transform:rotate(-0.5deg)}
+.bg-b{background:var(--rose-lt);border:1.5px solid rgba(212,128,104,0.12);box-shadow:0 4rpx 16rpx rgba(212,128,104,0.06);transform:rotate(1deg)}
 
-/* 装饰星星 */
-.card-deco { position:absolute; font-size:24rpx; pointer-events:none; }
-.card-deco.dl { top:8rpx; left:10rpx; animation:floatA 3s ease-in-out infinite; }
-.card-deco.dr { top:6rpx; right:10rpx; animation:floatB 3.5s ease-in-out infinite 0.5s; }
+/* 头像 */
+.avatar-wrap{position:relative;display:flex;justify-content:center;margin-bottom:16rpx}
+.avatar{width:96rpx;height:96rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;transition:transform 0.3s var(--ease-bounce)}
+.twin-card:active .avatar{transform:scale(1.1)}
+.av-a{background:var(--amber-md)}
+.av-b{background:var(--rose-md)}
+.av-emoji{font-size:48rpx;line-height:1}
+.avatar.running::before{content:'';position:absolute;inset:-8rpx;border-radius:50%;border:2rpx solid var(--mint);opacity:0.5;animation:ringPulse 2s ease-in-out infinite}
+@keyframes ringPulse{0%,100%{transform:scale(1);opacity:0.35}50%{transform:scale(1.12);opacity:0.85}}
+.avatar.running .av-emoji{animation:wiggle 0.5s ease-in-out infinite}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
 
-/* 大头像 */
-.sticker-face { width:88rpx;height:88rpx;border-radius:50%; display:flex;align-items:center;justify-content:center; margin:0 auto 16rpx; transition:transform 0.3s var(--ease-bounce); }
-.sticker-card:active .sticker-face { transform:scale(1.12); }
-.face-a { background:rgba(232,130,74,0.2); }
-.face-b { background:rgba(212,133,107,0.2); }
-.face-emoji { font-size:48rpx; transition:transform 0.3s ease; }
-.sticker-card.running .face-emoji { animation:faceWiggle 0.6s ease-in-out infinite; }
-@keyframes faceWiggle { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-6deg)} 75%{transform:rotate(6deg)} }
+.av-sparkle{position:absolute;font-size:22rpx;pointer-events:none;z-index:2}
+.av-sparkle.s1{top:-6rpx;right:-8rpx;animation:sparkleFloat 3s ease-in-out infinite}
+.av-sparkle.s2{bottom:-6rpx;left:-8rpx;animation:sparkleFloat 3.5s ease-in-out infinite 0.8s}
+@keyframes sparkleFloat{0%,100%{transform:translateY(0)scale(1);opacity:0.4}50%{transform:translateY(-8rpx)scale(1.3);opacity:1}}
 
-.sticker-name { font-family:var(--font-journal); font-size:var(--font-card); font-weight:700; color:var(--ink); display:block; text-align:center; margin-bottom:2rpx; }
-.sticker-sub { font-size:var(--font-caption); color:var(--ink-lt); display:block; text-align:center; margin-bottom:8rpx; }
-.sticker-status { font-size:var(--font-caption); color:var(--ink-md); text-align:center; }
-.tag { display:inline-flex; align-items:center; gap:6rpx; }
-.tag-dot { width:7rpx;height:7rpx;border-radius:50%;background:var(--mint);display:inline-block;animation:dotPulse 1.5s ease-in-out infinite; }
-.tag.running { color:var(--mint); font-weight:600; }
-@keyframes dotPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(1.6)} }
+.twin-name{font-family:var(--font-journal);font-size:var(--font-card);font-weight:700;color:var(--ink);text-align:center;display:block;margin-bottom:2rpx}
+.twin-role{font-size:22rpx;color:var(--ink-lt);text-align:center;display:block;margin-bottom:8rpx}
+.twin-status{font-size:24rpx;text-align:center;display:flex;align-items:center;justify-content:center;gap:6rpx}
 
-.sticker-name { font-family:var(--font-journal); font-size:var(--font-card); font-weight:700; color:var(--ink); display:block; margin-bottom:4rpx; }
-.sticker-status { font-size:var(--font-caption); color:var(--ink-md); }
-.tag { display:inline; }
-.tag.running { color:var(--mint); font-weight:600; }
+/* 状态 */
+.st-dot{width:6rpx;height:6rpx;border-radius:50%;display:inline-block}
+.st-dot.green{background:var(--mint);animation:dotPulse 1.5s ease-in-out infinite}
+@keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.25;transform:scale(1.8)}}
+.status-running{color:var(--mint);font-weight:600}
+.status-idle{color:var(--ink-md)}
 
-/* 连接 */
-.connect-row { display:flex; align-items:center; justify-content:center; margin-bottom:36rpx; }
-.connect-dots { display:flex; gap:8rpx; }
-.c-dot { width:5rpx;height:5rpx;border-radius:50%;background:var(--dot-line); animation:connPulse 1.2s ease-in-out infinite; }
-@keyframes connPulse { 0%,100%{opacity:0.3;transform:scale(1)} 50%{opacity:1;transform:scale(1.8);background:var(--amber)} }
-.connect-heart { margin:0 16rpx;font-size:24rpx; animation:heartBeat 1s ease-in-out infinite; }
-@keyframes heartBeat { 0%,100%{transform:scale(1)} 15%{transform:scale(1.3)} 30%{transform:scale(1)} }
+/* 连接线 */
+.thread-zone{display:flex;align-items:center;justify-content:center;position:relative;z-index:1;margin-bottom:28rpx;height:24rpx}
+.thread-line{width:55%;height:0;border-top:1.5px dashed var(--dot)}
+.thread-knot{position:absolute;font-size:24rpx;background:var(--paper);padding:0 10rpx;animation:heartBeat 1.2s ease-in-out infinite}
+@keyframes heartBeat{0%,100%{transform:scale(1)}15%{transform:scale(1.35)}30%{transform:scale(1)}}
 
-/* 玩具按钮区 */
-.toy-zone { flex:1; display:flex; align-items:center; justify-content:center; margin-bottom:16rpx; }
+/* 中央按钮 */
+.center-zone{flex:1;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;margin-bottom:20rpx}
+.btn-stage{position:relative;width:440rpx;height:440rpx;display:flex;align-items:center;justify-content:center}
+.orbit-ring{position:absolute;inset:0;border-radius:50%;border:2rpx dashed var(--dot);animation:spin 35s linear infinite;opacity:0.45}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-.toy-stage { position:relative; width:360rpx; height:360rpx; display:flex; align-items:center; justify-content:center; }
+.float-el{position:absolute;font-size:28rpx;pointer-events:none}
+.f1{top:10rpx;left:30rpx;animation:orbA 4s ease-in-out infinite}
+.f2{top:30rpx;right:20rpx;animation:orbB 3.5s ease-in-out infinite 0.6s}
+.f3{bottom:40rpx;right:10rpx;animation:orbA 5s ease-in-out infinite 1.2s}
+.f4{bottom:10rpx;left:20rpx;animation:orbB 4.5s ease-in-out infinite 0.3s}
+.f5{top:45%;right:-10rpx;animation:orbA 3s ease-in-out infinite 1.8s}
+.f6{top:45%;left:-10rpx;animation:orbB 3.8s ease-in-out infinite 0.9s}
+@keyframes orbA{0%,100%{transform:translate(0,0)rotate(0);opacity:0.35}25%{transform:translate(8rpx,-12rpx)rotate(12deg);opacity:0.85}50%{transform:translate(-4rpx,-18rpx)rotate(-5deg);opacity:0.5}75%{transform:translate(-12rpx,-6rpx)rotate(-12deg);opacity:0.75}}
+@keyframes orbB{0%,100%{transform:translate(0,0)rotate(0);opacity:0.3}33%{transform:translate(-8rpx,-10rpx)rotate(-10deg);opacity:0.8}66%{transform:translate(6rpx,-6rpx)rotate(8deg);opacity:0.45}}
 
-/* 轨道装饰圈 */
-.orbit-ring {
-  position:absolute; inset:-8rpx; border-radius:50%;
-  border:2rpx dashed var(--dot-line); animation:ringSpin 30s linear infinite;
-}
-@keyframes ringSpin { to{transform:rotate(360deg);} }
-
-/* 浮动星星 */
-.float-star { position:absolute; font-size:28rpx; pointer-events:none; }
-.float-star.s1 { top:10rpx; left:-5rpx;  animation:floatA 3s ease-in-out infinite; }
-.float-star.s2 { top:-10rpx;right:15rpx; animation:floatB 3.5s ease-in-out infinite 0.5s; }
-.float-star.s3 { bottom:10rpx;right:-5rpx;animation:floatA 4s ease-in-out infinite 1s; }
-.float-star.s4 { bottom:25rpx;left:-10rpx;animation:floatB 2.8s ease-in-out infinite 0.3s; }
-@keyframes floatA {
-  0%,100%{transform:translateY(0) rotate(0);opacity:0.5;}
-  50%{transform:translateY(-12rpx) rotate(10deg);opacity:0.9;}
-}
-@keyframes floatB {
-  0%,100%{transform:translateY(0) rotate(0);opacity:0.4;}
-  50%{transform:translateY(-8rpx) rotate(-8deg);opacity:0.85;}
-}
-
-.toy-btn {
-  width:300rpx;height:300rpx;border-radius:50%;position:relative;z-index:1;
-  background:var(--amber); border:none;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8rpx;
-  box-shadow:0 16rpx 48rpx rgba(232,130,74,0.25),0 6rpx 12rpx rgba(232,130,74,0.12);
-  transition:transform 0.15s var(--ease-bounce),box-shadow 0.15s;
-  transform:rotate(-2deg);
-}
-.toy-btn:active { transform:rotate(-2deg) scale(0.88); box-shadow:0 4rpx 12rpx rgba(232,130,74,0.15); }
-.toy-icon { font-size:56rpx; }
-.toy-label { font-family:var(--font-journal); font-size:var(--font-card); color:#FFF; font-weight:700; letter-spacing:4rpx; }
+.main-btn{width:320rpx;height:320rpx;border-radius:50%;position:relative;z-index:2;background:var(--amber);border:none;color:#FFF;font-family:var(--font-journal);box-shadow:0 24rpx 64rpx rgba(224,123,62,0.22),0 8rpx 16rpx rgba(224,123,62,0.12),inset 0 3rpx 0 rgba(255,255,255,0.2),inset 0 -6rpx 12rpx rgba(0,0,0,0.08);transform:rotate(-3deg);transition:transform 0.18s var(--ease-bounce),box-shadow 0.18s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10rpx}
+.main-btn::after{content:'';position:absolute;top:14rpx;left:22%;right:22%;height:35%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.28) 0%,transparent 70%);border-radius:50%;pointer-events:none}
+.main-btn:active{transform:rotate(-3deg)scale(0.86);box-shadow:0 6rpx 20rpx rgba(224,123,62,0.18),0 2rpx 4rpx rgba(224,123,62,0.1)}
+.btn-icon{font-size:64rpx;position:relative;z-index:1}
+.btn-text{font-size:36rpx;font-weight:700;letter-spacing:6rpx;position:relative;z-index:1}
 
 /* 快捷 */
-.quick-row { display:flex; gap:var(--space-sm); justify-content:center; margin-bottom:24rpx; }
-.quick-chip { padding:16rpx 24rpx; border-radius:var(--radius-full); font-size:var(--font-caption); font-weight:600; background:var(--paper-warm); border:1.5px solid var(--dot-line); color:var(--ink-md); transition:transform var(--dur-fast) var(--ease-bounce); }
-.quick-chip:active { transform:scale(0.9); background:var(--amber-lt); border-color:var(--amber); }
+.quick-row{display:flex;gap:12rpx;justify-content:center;position:relative;z-index:1;margin-bottom:24rpx}
+.q-chip{padding:18rpx 28rpx;border-radius:20rpx;font-size:24rpx;font-weight:600;background:var(--cream);border:1.5px solid var(--dot);color:var(--ink-md);transition:transform 0.15s var(--ease-bounce),background 0.2s,border-color 0.2s}
+.q-chip:active{transform:scale(0.88);background:var(--amber-lt);border-color:var(--amber);color:var(--amber)}
 
-/* 彩蛋 */
-.easter-egg { text-align:center; font-size:20rpx; color:var(--ink-lt); font-style:italic; margin-bottom:16rpx; }
+.egg{text-align:center;font-size:20rpx;color:var(--ink-lt);font-style:italic;margin-bottom:16rpx;opacity:0.4;position:relative;z-index:1}
 
 /* 底部 */
-.bottom-row { display:flex; justify-content:center; gap:48rpx; padding-top:20rpx; border-top:1px solid var(--dot-line); }
-.b-item { font-family:var(--font-journal); font-size:var(--font-body); color:var(--ink-lt); letter-spacing:2rpx; }
-.b-item.now { color:var(--amber); font-weight:700; }
+.footer{display:flex;justify-content:center;gap:56rpx;padding-top:20rpx;border-top:1.5px solid var(--dot);position:relative;z-index:1}
+.f-item{font-family:var(--font-journal);font-size:28rpx;color:var(--ink-lt);letter-spacing:3rpx}
+.f-item.active{color:var(--amber);font-weight:700;position:relative}
+.f-item.active::after{content:'';position:absolute;bottom:-22rpx;left:50%;transform:translateX(-50%);width:6rpx;height:6rpx;border-radius:50%;background:var(--amber)}
 
 /* 奶奶模式 */
-.granny-shell { display:flex; flex-direction:column; justify-content:center; min-height:100vh; padding:80rpx 48rpx !important; }
-.granny-actions { display:flex; flex-direction:column; gap:var(--space-md); }
-.granny-btn { text-align:center; padding:56rpx; background:var(--paper-warm); border-radius:var(--radius-lg); border:4rpx solid var(--dot-line); display:flex; flex-direction:column; align-items:center; gap:var(--space-sm); }
-.granny-btn:active { border-color:var(--amber); transform:scale(0.97); }
-.granny-help { border-color:var(--gold); }
-.granny-emoji { font-size:72rpx; }
-.granny-label { font-size:48rpx; font-weight:700; color:var(--ink); }
+.granny-shell{display:flex;flex-direction:column;justify-content:center;min-height:100vh;padding:80rpx 48rpx!important}
+.granny-actions{display:flex;flex-direction:column;gap:var(--space-md)}
+.granny-btn{text-align:center;padding:56rpx;background:var(--cream);border-radius:var(--radius-lg);border:4rpx solid var(--dot);display:flex;flex-direction:column;align-items:center;gap:var(--space-sm)}
+.granny-btn:active{border-color:var(--amber);transform:scale(0.97)}
+.granny-help{border-color:var(--gold)}
+.granny-emoji{font-size:72rpx}
+.granny-label{font-size:48rpx;font-weight:700;color:var(--ink)}
 </style>

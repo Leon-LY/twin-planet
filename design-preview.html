@@ -2,448 +2,527 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=390,initial-scale=1,maximum-scale=1">
+<meta name="viewport" content="width=390,initial-scale=1">
 <title>并蒂星球 · 双宝手帐</title>
 <style>
 /* ================================================================
-   双宝手帐 v3 · Final Design
-   设计哲学：温暖的星座 (Warm Constellations)
-   关键词：手绘感·玩具触感·排版驱动·留白即关系
+   双宝手帐 v4 · Premium Indie Edition
+   设计方向：手绘手帐 × 玩具般的触感 × 编辑级排版
+   关键词：不对称、重叠、手工感、戏剧性留白
    ================================================================ */
 :root {
-  --paper:      #FFFBF2;
-  --paper-warm: #FFF7ED;
-  --ink:        #2C2416;
-  --ink-md:     #8C7E6B;
-  --ink-lt:     #C4B8A8;
-  --amber:      #E8824A;
-  --amber-lt:   #FFF1E5;
-  --amber-bg:   #FEF5EE;
-  --rose:       #D4856B;
-  --rose-lt:    #FFF0EA;
-  --mint:       #6BAF7E;
-  --mint-lt:    #EDF6EF;
-  --gold:       #D4A843;
-  --gold-lt:    #FFF8E8;
-  --dot:        #E8E0D4;
+  --paper:  #FEF9F0;
+  --cream:  #FFF5E8;
+  --ink:    #2D2318;
+  --ink-md: #9C8E7C;
+  --ink-lt: #D4C8B8;
+  --amber:  #E07B3E;
+  --amber-lt: rgba(224,123,62,0.08);
+  --amber-md: rgba(224,123,62,0.18);
+  --rose:   #D48068;
+  --rose-lt: rgba(212,128,104,0.08);
+  --rose-md: rgba(212,128,104,0.18);
+  --mint:   #5C9A6E;
+  --mint-lt: rgba(92,154,110,0.1);
+  --gold:   #C8993E;
+  --gold-lt: rgba(200,153,62,0.12);
+  --dot:    #E8DCC8;
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
+
 body{
   font-family:'PingFang SC','Microsoft YaHei',sans-serif;
-  background:#F0EBE3;display:flex;justify-content:center;
-  align-items:center;min-height:100vh;padding:20px;
+  background:#EDE4D8; display:flex; justify-content:center; align-items:center;
+  min-height:100vh; padding:20px;
   -webkit-font-smoothing:antialiased;
 }
 
+/* ================================================================
+   Phone Frame
+   ================================================================ */
 .phone{
-  width:390px;min-height:844px;background:var(--paper);
-  border-radius:40px;overflow:hidden;position:relative;
-  padding:48px 24px 36px;display:flex;flex-direction:column;
-  box-shadow:0 24px 64px rgba(44,36,22,0.1),0 0 0 1px rgba(0,0,0,0.03);
-  background-image:
-    radial-gradient(circle at 15% 80%, rgba(232,130,74,0.04) 0%, transparent 45%),
-    radial-gradient(circle at 85% 20%, rgba(212,133,107,0.04) 0%, transparent 45%),
-    radial-gradient(circle at 50% 50%, rgba(107,175,126,0.02) 0%, transparent 60%);
-  user-select:none;-webkit-user-select:none;
+  width:390px; min-height:844px; background:var(--paper);
+  border-radius:44px; overflow:hidden; position:relative;
+  padding:52px 28px 40px; display:flex; flex-direction:column;
+  box-shadow:
+    0 30px 80px rgba(45,35,24,0.12),
+    0 0 0 1px rgba(0,0,0,0.03),
+    inset 0 0 0 1px rgba(255,255,255,0.6);
+  user-select:none; -webkit-user-select:none;
+}
+/* Paper grain — subtle noise through layered gradients */
+.phone::after{
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:999;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(45,35,24,0.008) 2px, rgba(45,35,24,0.008) 3px),
+    repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(45,35,24,0.005) 3px, rgba(45,35,24,0.005) 4px);
+  opacity:0.5; border-radius:44px;
 }
 
-/* ---- 页眉 ---- */
+/* ================================================================
+   Warm light spots on the paper
+   ================================================================ */
+.phone::before{
+  content:''; position:absolute; pointer-events:none; z-index:0;
+  width:300px; height:300px; top:80px; left:-60px; border-radius:50%;
+  background:radial-gradient(circle, rgba(224,123,62,0.05) 0%, transparent 60%);
+}
+.bg-spot2{
+  position:absolute; pointer-events:none; z-index:0;
+  width:250px; height:250px; bottom:120px; right:-80px; border-radius:50%;
+  background:radial-gradient(circle, rgba(92,154,110,0.04) 0%, transparent 60%);
+}
+
+/* ================================================================
+   Header — asymmetric, hand-stamped feel
+   ================================================================ */
 .header{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:24px;padding-bottom:14px;
-  border-bottom:1.5px dashed var(--dot);
+  position:relative; z-index:1; margin-bottom:36px;
+  display:flex; justify-content:space-between; align-items:flex-end;
 }
-.date{
-  font-family:'Georgia','KaiTi',serif;font-size:13px;color:var(--ink-md);
-  letter-spacing:0.5px;
+.date-tag{
+  font-family:'Georgia','KaiTi',serif; font-size:13px; color:var(--ink-md);
+  letter-spacing:1px; padding-bottom:4px;
+  border-bottom:1.5px solid var(--dot);
 }
-.badge{
-  display:flex;align-items:center;gap:6px;background:var(--gold-lt);
-  padding:6px 14px;border-radius:14px;font-size:12px;
-  color:var(--gold);font-weight:700;letter-spacing:1px;
-  box-shadow:0 1px 3px rgba(0,0,0,0.04);
-  animation:badgeIn 0.5s cubic-bezier(0.34,1.3,0.64,1);
+.streak-stamp{
+  background:var(--gold-lt); color:var(--gold); font-weight:700;
+  font-size:11px; padding:5px 14px; border-radius:12px;
+  letter-spacing:2px; transform:rotate(3deg);
+  box-shadow:0 2px 8px rgba(200,153,62,0.15);
+  font-family:'Georgia','KaiTi',serif;
+  animation: popIn 0.5s cubic-bezier(0.34,1.3,0.64,1);
 }
-@keyframes badgeIn{
-  0%{transform:scale(0) rotate(-5deg)}
-  60%{transform:scale(1.15) rotate(2deg)}
-  100%{transform:scale(1) rotate(0)}
-}
-.badge-dot{width:7px;height:7px;border-radius:50%;background:var(--gold)}
-
-/* ---- 问候 ---- */
-.greeting{margin-bottom:32px}
-.greet-main{
-  font-family:'Georgia','KaiTi',serif;font-size:34px;color:var(--ink);
-  font-weight:400;letter-spacing:-0.5px;line-height:1.25;
-}
-.greet-sub{
-  font-size:14px;color:var(--ink-md);margin-top:6px;
-  display:flex;align-items:center;gap:8px;
-}
-.greet-emoji{font-size:24px;animation:float 2s ease-in-out infinite}
-@keyframes float{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-6px)}
+@keyframes popIn{
+  0%{transform:rotate(3deg) scale(0);opacity:0}
+  70%{transform:rotate(-2deg) scale(1.15)}
+  100%{transform:rotate(3deg) scale(1);opacity:1}
 }
 
-/* ---- 双宝贴纸 ---- */
-.stickers{display:flex;gap:14px;margin-bottom:22px}
-.sticker-card{
-  flex:1;border-radius:20px;padding:20px 16px 18px;position:relative;
-  border:2px solid transparent;cursor:pointer;
-  transition:transform 0.2s cubic-bezier(0.34,1.3,0.64,1),
-             border-color 0.2s,box-shadow 0.2s;
+/* ================================================================
+   Greeting — dramatic scale contrast
+   ================================================================ */
+.greet-zone{position:relative;z-index:1;margin-bottom:40px}
+.greet-hand{
+  font-family:'Georgia','KaiTi',serif;
+  font-size:44px; font-weight:400; color:var(--ink);
+  letter-spacing:-1px; line-height:1.15;
 }
-.sticker-card:active{transform:scale(0.96)}
-.sticker-card.a{background:var(--amber-lt);border-color:rgba(232,130,74,0.15)}
-.sticker-card.b{background:var(--rose-lt);border-color:rgba(212,133,107,0.15)}
-.sticker-card.selected{border-color:var(--amber)!important;box-shadow:0 2px 16px rgba(232,130,74,0.12)}
-
-/* 撕边 */
-.sticker-card::before{
-  content:'';position:absolute;top:-5px;left:18px;right:18px;height:4px;
-  background:repeating-linear-gradient(90deg,
-    transparent,transparent 3px,var(--paper) 3px,var(--paper) 5px);
-  opacity:0.6;
+.greet-hand .highlight{
+  display:inline-block; position:relative;
+}
+.greet-hand .highlight::after{
+  content:''; position:absolute; bottom:2px; left:-4px; right:-4px; height:10px;
+  background:var(--amber-lt); z-index:-1; border-radius:4px; opacity:0.6;
+}
+.greet-quote{
+  display:flex; align-items:center; gap:10px; margin-top:12px;
+  font-size:15px; color:var(--ink-md); letter-spacing:0.5px;
+}
+.greet-emoji{font-size:28px; animation: gentleBob 2.5s ease-in-out infinite}
+@keyframes gentleBob{
+  0%,100%{transform:translateY(0) rotate(0)}
+  30%{transform:translateY(-6px) rotate(3deg)}
+  60%{transform:translateY(2px) rotate(-2deg)}
 }
 
-.face{
-  width:60px;height:60px;border-radius:50%;display:flex;
-  align-items:center;justify-content:center;margin-bottom:12px;
+/* ================================================================
+   Twin Cards — overlapping, hand-drawn borders
+   ================================================================ */
+.twins-zone{
+  position:relative; z-index:1; display:flex; gap:0;
+  margin-bottom:32px;
+}
+.twin-card{
+  flex:1; position:relative; padding:24px 16px 18px;
+  cursor:pointer; transition:transform 0.25s cubic-bezier(0.34,1.3,0.64,1);
+}
+.twin-card:active{transform:scale(0.95)}
+/* Overlapping — card B slightly under card A */
+.twin-card.b{margin-left:-8px; z-index:0}
+.twin-card.a{z-index:1}
+
+/* Hand-drawn card background — wobbly rectangle via border-radius + shadow */
+.card-bg{
+  position:absolute; inset:0; border-radius:24px;
+  transition:box-shadow 0.3s, transform 0.25s cubic-bezier(0.34,1.3,0.64,1);
+}
+.card-bg.amber{background:var(--amber-lt); box-shadow:0 4px 16px rgba(224,123,62,0.08)}
+.card-bg.rose{background:var(--rose-lt); box-shadow:0 4px 16px rgba(212,128,104,0.08)}
+.twin-card.a .card-bg{border:1.5px solid rgba(224,123,62,0.15); transform:rotate(-0.5deg)}
+.twin-card.b .card-bg{border:1.5px solid rgba(212,128,104,0.15); transform:rotate(1deg)}
+.twin-card:active .card-bg{transform:scale(0.96)}
+
+/* Avatar */
+.avatar-wrap{position:relative; display:flex; justify-content:center; margin-bottom:16px}
+.avatar{
+  width:76px; height:76px; border-radius:50%; display:flex;
+  align-items:center; justify-content:center; position:relative; z-index:1;
   transition:transform 0.3s cubic-bezier(0.34,1.3,0.64,1);
 }
-.sticker-card:active .face{transform:scale(1.18)}
-.face.a{background:rgba(232,130,74,0.2)}
-.face.b{background:rgba(212,133,107,0.2)}
-.face-emoji{font-size:32px}
-.running .face-emoji{animation:wiggle 0.6s ease-in-out infinite}
+.twin-card:active .avatar{transform:scale(1.12)}
+.avatar.amber{background:var(--amber-md)}
+.avatar.rose{background:var(--rose-md)}
+.avatar-emoji{font-size:40px; line-height:1}
+/* Running indicator ring */
+.avatar.running::before{
+  content:''; position:absolute; inset:-6px; border-radius:50%;
+  border:2px solid var(--mint); opacity:0.6;
+  animation: ringPulse 2s ease-in-out infinite;
+}
+@keyframes ringPulse{
+  0%,100%{transform:scale(1);opacity:0.4}
+  50%{transform:scale(1.12);opacity:0.9}
+}
+.avatar.running .avatar-emoji{animation: wiggle 0.5s ease-in-out infinite}
 @keyframes wiggle{
   0%,100%{transform:rotate(0)}
-  25%{transform:rotate(-6deg)}
-  75%{transform:rotate(6deg)}
+  25%{transform:rotate(-8deg)}
+  75%{transform:rotate(8deg)}
 }
 
-.sticker-name{
-  font-family:'Georgia','KaiTi',serif;font-size:17px;
-  font-weight:700;color:var(--ink);margin-bottom:4px;
+/* Sparkle decorations around avatar */
+.avatar-sparkle{
+  position:absolute; font-size:14px; pointer-events:none; z-index:2;
 }
-.sticker-status{font-size:12px;color:var(--ink-md)}
-
-.tag{display:inline-flex;align-items:center;gap:5px}
-.tag .dot{width:5px;height:5px;border-radius:50%;display:inline-block}
-.tag .dot.green{background:var(--mint);animation:pulse 1.5s ease-in-out infinite}
-.tag .dot.amber{background:var(--amber)}
-.tag.running{color:var(--mint);font-weight:600}
-@keyframes pulse{
-  0%,100%{opacity:1;transform:scale(1)}
-  50%{opacity:0.3;transform:scale(1.6)}
+.avatar-sparkle.s1{top:-5px;right:-8px;animation:sparkleFloat 3s ease-in-out infinite}
+.avatar-sparkle.s2{bottom:-5px;left:-8px;animation:sparkleFloat 3.5s ease-in-out infinite 0.8s}
+@keyframes sparkleFloat{
+  0%,100%{transform:translateY(0) scale(1);opacity:0.5}
+  50%{transform:translateY(-6px) scale(1.3);opacity:1}
 }
 
-/* ---- 连接 ---- */
-.connect{
-  display:flex;align-items:center;justify-content:center;
-  margin-bottom:28px;gap:0;
+/* Name + Status */
+.twin-name{
+  font-family:'Georgia','KaiTi',serif; font-size:16px; font-weight:700;
+  color:var(--ink); text-align:center; display:block; margin-bottom:2px;
 }
-.c-dots{display:flex;gap:8px}
-.c-dot{
-  width:4px;height:4px;border-radius:50%;background:var(--dot);
-  animation:flow 1.2s ease-in-out infinite;
+.twin-role{font-size:11px; color:var(--ink-lt); text-align:center; display:block; margin-bottom:8px}
+.twin-status{font-size:12px; text-align:center; display:flex; align-items:center; justify-content:center; gap:5px}
+.status-dot{width:5px;height:5px;border-radius:50%;display:inline-block}
+.status-dot.green{background:var(--mint); animation:dotPulse 1.5s ease-in-out infinite}
+.status-dot.amber{background:var(--amber)}
+@keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.3;transform:scale(1.8)}}
+.status-running{color:var(--mint);font-weight:600}
+.status-idle{color:var(--ink-md)}
+
+/* ================================================================
+   Connection — dotted thread
+   ================================================================ */
+.thread-zone{
+  display:flex; align-items:center; justify-content:center;
+  position:relative; z-index:1; margin-bottom:26px; height:20px;
 }
-.c-dot:nth-child(2){animation-delay:0.15s}
-.c-dot:nth-child(3){animation-delay:0.3s}
-.c-dot:nth-child(4){animation-delay:0.45s}
-.c-dot:nth-child(5){animation-delay:0.6s}
-@keyframes flow{
-  0%,100%{opacity:0.3;transform:scale(1)}
-  50%{opacity:1;transform:scale(1.8);background:var(--amber)}
+.thread-line{
+  width:60%; height:0;
+  border-top:1.5px dashed var(--dot);
 }
-.c-heart{
-  margin:0 12px;font-size:17px;
-  animation:heartbeat 1s ease-in-out infinite;
+.thread-knot{
+  position:absolute; font-size:14px; background:var(--paper); padding:0 8px;
+  animation: heartBeat 1.2s ease-in-out infinite;
 }
-@keyframes heartbeat{
+@keyframes heartBeat{
   0%,100%{transform:scale(1)}
-  15%{transform:scale(1.3)}
+  15%{transform:scale(1.35)}
   30%{transform:scale(1)}
 }
 
-/* ---- 中央 ---- */
-.center{
-  flex:1;display:flex;align-items:center;justify-content:center;
-  margin-bottom:16px;
+/* ================================================================
+   Center — the Big Button
+   ================================================================ */
+.center-zone{
+  flex:1; display:flex; align-items:center; justify-content:center;
+  position:relative; z-index:1; margin-bottom:20px;
 }
-.stage{position:relative;width:360px;height:360px;display:flex;align-items:center;justify-content:center}
+.btn-stage{position:relative; width:340px; height:340px; display:flex; align-items:center; justify-content:center}
 
-/* 轨道 */
-.orbit{
-  position:absolute;inset:-6px;border-radius:50%;
-  border:2px dashed var(--dot);animation:spin 30s linear infinite;
+/* Orbital ring — wider, more dramatic */
+.orbit-ring{
+  position:absolute; inset:-16px; border-radius:50%;
+  border:2px dashed var(--dot); animation:spin 35s linear infinite;
+  opacity:0.5;
+}
+.orbit-ring::after{
+  content:''; position:absolute; inset:-8px; border-radius:50%;
+  border:1px dashed var(--dot); animation:spin 20s linear infinite reverse;
+  opacity:0.3;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* 浮动装饰 */
-.fl-star{
-  position:absolute;font-size:18px;pointer-events:none;
+/* Floating decorations */
+.float-el{
+  position:absolute; font-size:20px; pointer-events:none;
 }
-.fl-star:nth-child(2){top:8px;left:-5px;animation:floatA 3s ease-in-out infinite}
-.fl-star:nth-child(3){top:-10px;right:10px;animation:floatB 3.5s ease-in-out infinite 0.5s}
-.fl-star:nth-child(4){bottom:8px;right:-8px;animation:floatA 4s ease-in-out infinite 1s}
-.fl-star:nth-child(5){bottom:20px;left:-12px;animation:floatB 2.8s ease-in-out infinite 0.3s}
-@keyframes floatA{
-  0%,100%{transform:translateY(0) rotate(0);opacity:0.5}
-  50%{transform:translateY(-10px) rotate(10deg);opacity:0.9}
+.float-el:nth-child(3){top:0;left:10px;animation:orbA 4s ease-in-out infinite}
+.float-el:nth-child(4){top:10px;right:0;animation:orbB 3.5s ease-in-out infinite 0.6s}
+.float-el:nth-child(5){bottom:15px;right:-5px;animation:orbA 5s ease-in-out infinite 1.2s}
+.float-el:nth-child(6){bottom:0;left:0;animation:orbB 4.5s ease-in-out infinite 0.3s}
+.float-el:nth-child(7){top:40%;right:-20px;animation:orbA 3s ease-in-out infinite 1.8s}
+.float-el:nth-child(8){top:40%;left:-20px;animation:orbB 3.8s ease-in-out infinite 0.9s}
+@keyframes orbA{
+  0%,100%{transform:translate(0,0) rotate(0);opacity:0.4}
+  25%{transform:translate(8px,-10px) rotate(12deg);opacity:0.9}
+  50%{transform:translate(-4px,-16px) rotate(-5deg);opacity:0.6}
+  75%{transform:translate(-10px,-6px) rotate(-12deg);opacity:0.8}
 }
-@keyframes floatB{
-  0%,100%{transform:translateY(0) rotate(0);opacity:0.4}
-  50%{transform:translateY(-8px) rotate(-8deg);opacity:0.85}
+@keyframes orbB{
+  0%,100%{transform:translate(0,0) rotate(0);opacity:0.35}
+  33%{transform:translate(-6px,-8px) rotate(-10deg);opacity:0.85}
+  66%{transform:translate(6px,-4px) rotate(8deg);opacity:0.5}
 }
 
-/* 大按钮 */
-.big-btn{
-  width:280px;height:280px;border-radius:50%;position:relative;z-index:1;
-  background:var(--amber);border:none;color:#FFF;cursor:pointer;
-  box-shadow:0 16px 48px rgba(232,130,74,0.25),0 6px 12px rgba(232,130,74,0.12);
-  transition:transform 0.15s cubic-bezier(0.34,1.3,0.64,1),
-             box-shadow 0.15s;
-  transform:rotate(-2deg);
-  display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:8px;
+/* The Button */
+.main-btn{
+  width:260px; height:260px; border-radius:50%; position:relative; z-index:2;
+  background:var(--amber); border:none; color:#FFF; cursor:pointer;
   font-family:'Georgia','KaiTi',serif;
+  box-shadow:
+    0 20px 60px rgba(224,123,62,0.25),
+    0 8px 16px rgba(224,123,62,0.15),
+    inset 0 2px 0 rgba(255,255,255,0.2),
+    inset 0 -4px 8px rgba(0,0,0,0.1);
+  transform:rotate(-3deg);
+  transition:transform 0.18s cubic-bezier(0.34,1.3,0.64,1),
+             box-shadow 0.18s;
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:8px;
 }
-.big-btn:active{
-  transform:rotate(-2deg) scale(0.88);
-  box-shadow:0 4px 12px rgba(232,130,74,0.15);
+/* 3D highlight — top inner glow */
+.main-btn::after{
+  content:''; position:absolute; top:12px; left:20%; right:20%; height:40%;
+  background:radial-gradient(ellipse at center, rgba(255,255,255,0.3) 0%, transparent 70%);
+  border-radius:50%; pointer-events:none;
 }
-.big-btn-icon{font-size:52px}
-.big-btn-text{font-size:19px;font-weight:700;letter-spacing:4px}
+.main-btn:active{
+  transform:rotate(-3deg) scale(0.86);
+  box-shadow:
+    0 6px 20px rgba(224,123,62,0.2),
+    0 2px 4px rgba(224,123,62,0.1);
+}
+.btn-icon{font-size:56px; position:relative; z-index:1}
+.btn-text{font-size:18px; font-weight:700; letter-spacing:5px; position:relative; z-index:1}
 
-/* ---- 快捷 ---- */
-.quicks{
-  display:flex;gap:10px;justify-content:center;margin-top:16px;
+/* ================================================================
+   Quick chips
+   ================================================================ */
+.quick-row{
+  display:flex; gap:10px; justify-content:center;
+  position:relative; z-index:1; margin-bottom:20px;
 }
 .q-chip{
-  padding:12px 18px;border-radius:16px;font-size:12px;font-weight:600;
-  letter-spacing:0.5px;cursor:pointer;
-  background:var(--paper-warm);border:1.5px solid var(--dot);color:var(--ink-md);
+  padding:12px 18px; border-radius:16px; font-size:12px; font-weight:600;
+  letter-spacing:0.5px; cursor:pointer;
+  background:var(--cream); border:1.5px solid var(--dot); color:var(--ink-md);
   transition:transform 0.15s cubic-bezier(0.34,1.3,0.64,1),
-             background 0.2s,border-color 0.2s;
+             background 0.2s, border-color 0.2s, color 0.2s;
 }
 .q-chip:active{
-  transform:scale(0.9);background:var(--amber-lt);border-color:var(--amber);
+  transform:scale(0.88); background:var(--amber-lt); border-color:var(--amber); color:var(--amber);
 }
 
-/* ---- 彩蛋 ---- */
-.easter{
-  text-align:center;font-size:11px;color:var(--ink-lt);
-  font-style:italic;margin-top:16px;opacity:0.5;
+/* ================================================================
+   Footer
+   ================================================================ */
+.footer{
+  display:flex; justify-content:center; gap:44px;
+  padding-top:18px; border-top:1.5px solid var(--dot);
+  position:relative; z-index:1;
 }
-
-/* ---- 底部 ---- */
-.bottom{
-  display:flex;justify-content:center;gap:40px;
-  padding-top:18px;border-top:1px solid var(--dot);
-}
-.b-item{
-  font-family:'Georgia','KaiTi',serif;font-size:14px;
-  color:var(--ink-lt);letter-spacing:2px;cursor:pointer;
+.f-item{
+  font-family:'Georgia','KaiTi',serif; font-size:14px;
+  color:var(--ink-lt); letter-spacing:2px; cursor:pointer;
   transition:color 0.2s;
 }
-.b-item.now{color:var(--amber);font-weight:700}
+.f-item.active{color:var(--amber); font-weight:700; position:relative}
+.f-item.active::after{
+  content:''; position:absolute; bottom:-20px; left:50%; transform:translateX(-50%);
+  width:4px; height:4px; border-radius:50%; background:var(--amber);
+}
 
-/* ---- 记录浮层 ---- */
+/* Easter egg */
+.egg{text-align:center; font-size:10px; color:var(--ink-lt); font-style:italic; margin-top:12px; opacity:0.4; position:relative; z-index:1}
+
+/* ================================================================
+   Recording Sheet (bottom drawer)
+   ================================================================ */
 .overlay{
-  display:none;position:fixed;inset:0;background:rgba(44,36,22,0.35);
-  z-index:100;justify-content:center;align-items:flex-end;padding:16px;
+  display:none; position:fixed; inset:0; background:rgba(45,35,24,0.3);
+  z-index:1000; justify-content:center; align-items:flex-end; padding:16px;
 }
 .overlay.show{display:flex}
 .sheet{
-  width:100%;max-width:390px;background:var(--paper);
-  border-radius:28px 28px 0 0;padding:28px 22px 38px;
-  animation:sheetUp 0.4s cubic-bezier(0.16,1,0.3,1);
-  box-shadow:0 -12px 40px rgba(0,0,0,0.12);
+  width:100%; max-width:390px; background:var(--paper);
+  border-radius:32px 32px 0 0; padding:32px 24px 44px;
+  animation:slideUp 0.45s cubic-bezier(0.16,1,0.3,1);
+  box-shadow:0 -20px 60px rgba(0,0,0,0.15);
+  position:relative;
 }
-@keyframes sheetUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+/* Sheet paper grain */
+.sheet::before{
+  content:''; position:absolute; inset:0; border-radius:32px 32px 0 0; pointer-events:none;
+  background:repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(45,35,24,0.005) 2px, rgba(45,35,24,0.005) 3px);
+}
+@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
 
-.sheet-head{
-  display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;
+.sheet-handle{width:40px;height:4px;border-radius:2px;background:var(--dot);margin:0 auto 24px}
+.sheet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.sheet-btn{
+  aspect-ratio:1; border-radius:20px; border:2px solid var(--dot);
+  background:var(--cream); display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:6px;
+  cursor:pointer; transition:transform 0.15s cubic-bezier(0.34,1.3,0.64,1);
 }
-.sheet-title{
-  font-family:'Georgia','KaiTi',serif;font-size:20px;color:var(--ink);
-  display:flex;align-items:center;gap:8px;
-}
-.sheet-close{
-  width:30px;height:30px;border-radius:50%;background:var(--ink-lt);
-  border:none;color:#FFF;font-size:14px;cursor:pointer;
-  transition:transform 0.15s;
-}
-.sheet-close:active{transform:scale(0.9) rotate(90deg)}
-
-.actions{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;
-}
-.act-btn{
-  aspect-ratio:1;border-radius:18px;border:2px solid var(--dot);
-  background:var(--paper-warm);display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:6px;
-  cursor:pointer;transition:transform 0.15s cubic-bezier(0.34,1.3,0.64,1),
-             border-color 0.2s,box-shadow 0.2s;
-}
-.act-btn:active{
-  transform:scale(0.88);border-color:var(--amber);
-  box-shadow:0 0 0 6px rgba(232,130,74,0.08);
-}
-.act-emoji{font-size:32px}
-.act-label{font-size:13px;font-weight:600;color:var(--ink)}
-
-.dual-row{display:flex;gap:10px}
-.dual-btn{
-  flex:1;padding:14px;border-radius:14px;text-align:center;
-  background:var(--amber-bg);border:1.5px solid var(--amber);
-  font-size:13px;color:var(--amber);cursor:pointer;font-weight:700;
+.sheet-btn:active{transform:scale(0.88); border-color:var(--amber); background:var(--amber-lt)}
+.s-emoji{font-size:34px; transition:transform 0.3s cubic-bezier(0.34,1.3,0.64,1)}
+.sheet-btn:active .s-emoji{transform:scale(1.2)}
+.s-label{font-size:13px; font-weight:600; color:var(--ink)}
+.sheet-dual{display:flex; gap:10px}
+.s-dual{
+  flex:1; padding:14px; border-radius:14px; text-align:center;
+  background:var(--amber-lt); border:1.5px solid var(--amber);
+  font-size:13px; color:var(--amber); cursor:pointer; font-weight:700;
   transition:transform 0.15s cubic-bezier(0.34,1.3,0.64,1);
 }
-.dual-btn:active{transform:scale(0.94);background:var(--amber);color:#FFF}
-
-/* ---- 点击波纹 ---- */
-.ripple{
-  position:absolute;border-radius:50%;
-  background:rgba(255,255,255,0.4);
-  animation:rippleOut 0.6s ease-out forwards;pointer-events:none;
-}
-@keyframes rippleOut{
-  from{width:20px;height:20px;opacity:1}
-  to{width:200px;height:200px;opacity:0}
-}
+.s-dual:active{transform:scale(0.93); background:var(--amber); color:#FFF}
 </style>
 </head>
 <body>
 
 <div class="phone" id="app">
-  <!-- 页眉 -->
+  <div class="bg-spot2"></div>
+
+  <!-- Header -->
   <div class="header">
-    <span class="date">📅 6月14日 · 星期日</span>
-    <div class="badge"><div class="badge-dot"></div>连续 7 天</div>
+    <span class="date-tag">6月14日 · 星期日</span>
+    <div class="streak-stamp">✦ 连续 7 天</div>
   </div>
 
-  <!-- 问候 -->
-  <div class="greeting">
-    <div class="greet-main">下午好，</div>
-    <div class="greet-main">今天的两个<br>小怪兽</div>
-    <div class="greet-sub">
-      <span class="greet-emoji">👾</span> 又为同一个玩具打起来了
+  <!-- Greeting -->
+  <div class="greet-zone">
+    <div class="greet-hand">下午好，<br><span class="highlight">两个小怪兽</span></div>
+    <div class="greet-quote">
+      <span class="greet-emoji">👾</span> 今天的打架战绩：平局
     </div>
   </div>
 
-  <!-- 贴纸 -->
-  <div class="stickers">
-    <div class="sticker-card a selected running" onclick="document.querySelectorAll('.sticker-card').forEach(c=>c.classList.remove('selected'));this.classList.add('selected')">
-      <div class="face a"><span class="face-emoji">😋</span></div>
-      <div class="sticker-name">安宁</div>
-      <div class="sticker-status">
-        <span class="tag running"><span class="dot green"></span>喂奶中</span>
+  <!-- Twin Cards -->
+  <div class="twins-zone">
+    <!-- 安宁 / Baby A -->
+    <div class="twin-card a" onclick="this.classList.toggle('selected')">
+      <div class="card-bg amber"></div>
+      <div class="avatar-wrap">
+        <div class="avatar amber running">
+          <span class="avatar-emoji">😋</span>
+        </div>
+        <span class="avatar-sparkle s1">⭐</span>
+        <span class="avatar-sparkle s2">✨</span>
+      </div>
+      <span class="twin-name">宁宁</span>
+      <span class="twin-role">大宝</span>
+      <div class="twin-status">
+        <span class="status-dot green"></span>
+        <span class="status-running">喂奶中</span>
       </div>
     </div>
-    <div class="sticker-card b" onclick="document.querySelectorAll('.sticker-card').forEach(c=>c.classList.remove('selected'));this.classList.add('selected')">
-      <div class="face b"><span class="face-emoji">😴</span></div>
-      <div class="sticker-name">安然</div>
-      <div class="sticker-status">
-        <span class="tag"><span class="dot amber"></span>12 分钟前</span>
+
+    <!-- 安然 / Baby B -->
+    <div class="twin-card b">
+      <div class="card-bg rose"></div>
+      <div class="avatar-wrap">
+        <div class="avatar rose">
+          <span class="avatar-emoji">😴</span>
+        </div>
+        <span class="avatar-sparkle s1">🌸</span>
+        <span class="avatar-sparkle s2">💫</span>
+      </div>
+      <span class="twin-name">然然</span>
+      <span class="twin-role">二宝</span>
+      <div class="twin-status">
+        <span class="status-dot amber"></span>
+        <span class="status-idle">12 分钟前</span>
       </div>
     </div>
   </div>
 
-  <!-- 连接 -->
-  <div class="connect">
-    <div class="c-dots">
-      <div class="c-dot"></div><div class="c-dot"></div><div class="c-dot"></div>
-      <div class="c-dot"></div><div class="c-dot"></div>
-    </div>
-    <span class="c-heart">💛</span>
-    <div class="c-dots">
-      <div class="c-dot"></div><div class="c-dot"></div><div class="c-dot"></div>
-      <div class="c-dot"></div><div class="c-dot"></div>
-    </div>
+  <!-- Thread -->
+  <div class="thread-zone">
+    <div class="thread-line"></div>
+    <span class="thread-knot">💛</span>
   </div>
 
-  <!-- 中央 -->
-  <div class="center">
-    <div class="stage">
-      <div class="orbit"></div>
-      <span class="fl-star">⭐</span>
-      <span class="fl-star">💫</span>
-      <span class="fl-star">🌸</span>
-      <span class="fl-star">✨</span>
-      <button class="big-btn" id="bigBtn" onclick="showSheet()">
-        <span class="big-btn-icon">✋</span>
-        <span class="big-btn-text">记 一 笔</span>
+  <!-- Center Button -->
+  <div class="center-zone">
+    <div class="btn-stage">
+      <div class="orbit-ring"></div>
+      <span class="float-el">⭐</span>
+      <span class="float-el">💫</span>
+      <span class="float-el">🌸</span>
+      <span class="float-el">✨</span>
+      <span class="float-el">🪐</span>
+      <span class="float-el">🌟</span>
+      <button class="main-btn" id="mainBtn" onclick="showSheet()">
+        <span class="btn-icon">✋</span>
+        <span class="btn-text">记 一 笔</span>
       </button>
     </div>
   </div>
 
-  <!-- 快捷 -->
-  <div class="quicks">
-    <div class="q-chip" onclick="quick('🍼')">🍼 都喂了</div>
-    <div class="q-chip" onclick="quick('😴')">😴 都睡了</div>
-    <div class="q-chip" onclick="quick('🧷')">🧷 都换了</div>
+  <!-- Quick -->
+  <div class="quick-row">
+    <div class="q-chip" onclick="quickChip(this)">🍼 都喂了</div>
+    <div class="q-chip" onclick="quickChip(this)">😴 都睡了</div>
+    <div class="q-chip" onclick="quickChip(this)">🧷 都换了</div>
   </div>
 
-  <!-- 彩蛋 -->
-  <div class="easter">1 + 1 = 11 · 端水失败的第 147 天</div>
-
-  <!-- 底部 -->
-  <div class="bottom">
-    <span class="b-item now">记录</span>
-    <span class="b-item">生长</span>
-    <span class="b-item">快照</span>
-    <span class="b-item">发现</span>
+  <!-- Footer -->
+  <div class="footer">
+    <span class="f-item active">记录</span>
+    <span class="f-item">生长</span>
+    <span class="f-item">快照</span>
+    <span class="f-item">发现</span>
   </div>
+
+  <div class="egg">1 + 1 = 11 · 端水失败的第 147 天</div>
 </div>
 
-<!-- 记录浮层 -->
+<!-- Recording Sheet -->
 <div class="overlay" id="overlay" onclick="if(event.target===this)hideSheet()">
   <div class="sheet">
-    <div class="sheet-head">
-      <span class="sheet-title">🖐️ 给谁盖章？</span>
-      <button class="sheet-close" onclick="hideSheet()">✕</button>
+    <div class="sheet-handle"></div>
+    <div class="sheet-grid">
+      <div class="sheet-btn" onclick="stamp(this)"><span class="s-emoji">🍼</span><span class="s-label">喂奶</span></div>
+      <div class="sheet-btn" onclick="stamp(this)"><span class="s-emoji">😴</span><span class="s-label">睡觉</span></div>
+      <div class="sheet-btn" onclick="stamp(this)"><span class="s-emoji">🧷</span><span class="s-label">尿布</span></div>
+      <div class="sheet-btn" onclick="stamp(this)"><span class="s-emoji">🌡️</span><span class="s-label">体温</span></div>
+      <div class="sheet-btn" onclick="stamp(this)"><span class="s-emoji">💊</span><span class="s-label">用药</span></div>
+      <div class="sheet-btn" onclick="stamp(this)"><span class="s-emoji">🛁</span><span class="s-label">洗澡</span></div>
     </div>
-    <div class="actions">
-      <div class="act-btn" onclick="stamp(this,'🍼')"><span class="act-emoji">🍼</span><span class="act-label">喂奶</span></div>
-      <div class="act-btn" onclick="stamp(this,'😴')"><span class="act-emoji">😴</span><span class="act-label">睡觉</span></div>
-      <div class="act-btn" onclick="stamp(this,'🧷')"><span class="act-emoji">🧷</span><span class="act-label">尿布</span></div>
-      <div class="act-btn" onclick="stamp(this,'🌡️')"><span class="act-emoji">🌡️</span><span class="act-label">体温</span></div>
-      <div class="act-btn" onclick="stamp(this,'💊')"><span class="act-emoji">💊</span><span class="act-label">用药</span></div>
-      <div class="act-btn" onclick="stamp(this,'🛁')"><span class="act-emoji">🛁</span><span class="act-label">洗澡</span></div>
-    </div>
-    <div class="dual-row">
-      <div class="dual-btn" onclick="stamp(this,'🍼')">🍼 两个都喂了</div>
-      <div class="dual-btn" onclick="stamp(this,'😴')">😴 两个都睡了</div>
+    <div class="sheet-dual">
+      <div class="s-dual" onclick="stamp(this)">🍼 两个都喂了</div>
+      <div class="s-dual" onclick="stamp(this)">😴 两个都睡了</div>
     </div>
   </div>
 </div>
 
 <script>
 function showSheet(){
-  const btn=document.getElementById('bigBtn');
-  btn.style.transform='rotate(-2deg) scale(0.88)';
-  btn.style.boxShadow='0 4px 12px rgba(232,130,74,0.15)';
+  const btn=document.getElementById('mainBtn');
+  btn.style.transform='rotate(-3deg) scale(0.86)';
   setTimeout(()=>{
-    btn.style.transform='rotate(-2deg) scale(1)';
-    btn.style.boxShadow='0 16px 48px rgba(232,130,74,0.25),0 6px 12px rgba(232,130,74,0.12)';
+    btn.style.transform='rotate(-3deg) scale(1)';
     document.getElementById('overlay').classList.add('show');
-  },150);
+  },160);
 }
 function hideSheet(){document.getElementById('overlay').classList.remove('show')}
-function stamp(el,emoji){
-  el.style.transform='scale(0.85)';el.style.background='var(--mint-lt)';el.style.borderColor='var(--mint)';
-  setTimeout(()=>{el.style.transform='scale(1)';el.style.background='var(--paper-warm)';el.style.borderColor='var(--dot)'},200);
-  setTimeout(hideSheet,300);
+function stamp(el){
+  el.style.transform='scale(0.82)';el.style.background='var(--mint-lt)';el.style.borderColor='var(--mint)';
+  setTimeout(()=>{el.style.transform='scale(1)';el.style.background='';el.style.borderColor=''},200);
+  setTimeout(hideSheet,350);
 }
-function quick(emoji){
-  const chips=document.querySelectorAll('.q-chip');
-  chips.forEach(c=>{c.style.transform='scale(0.9)';c.style.background='var(--mint-lt)';c.style.borderColor='var(--mint)'});
-  setTimeout(()=>{chips.forEach(c=>{c.style.transform='scale(1)';c.style.background='var(--paper-warm)';c.style.borderColor='var(--dot)'})},200);
+function quickChip(el){
+  el.style.transform='scale(0.88)';el.style.background='var(--mint-lt)';el.style.borderColor='var(--mint)';el.style.color='var(--mint)';
+  setTimeout(()=>{el.style.transform='scale(1)';el.style.background='';el.style.borderColor='';el.style.color=''},250);
 }
 </script>
 </body>
