@@ -69,6 +69,10 @@ function openPrivacy(type: string) {
 
 onMounted(() => {
   uni.setNavigationBarTitle({ title: '欢迎' })
+  // 已登录且有家庭 → 直接进首页
+  if (userStore.isLoggedIn && uni.getStorageSync('tp_family')) {
+    uni.reLaunch({ url: '/pages/index/index' })
+  }
 })
 </script>
 
