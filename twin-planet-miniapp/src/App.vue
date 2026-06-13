@@ -117,5 +117,104 @@ page {
 .btn-outline { display: flex; align-items: center; justify-content: center; min-height: 88rpx; padding: 20rpx 32rpx; background: transparent; color: var(--text-starlight); border: 2rpx solid var(--border-void); border-radius: var(--radius-full); font-size: var(--font-body); }
 .btn-outline:active { transform: scale(0.96); }
 
+/* ================================================================
+   @keyframes 动画库 — 并蒂宇宙
+   全部使用 transform/opacity，微信 WXSS 完全兼容
+   ================================================================ */
+@keyframes convergeLeft {
+  0% { transform: translateX(-56rpx); opacity: 0; }
+  60% { opacity: 1; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes convergeRight {
+  0% { transform: translateX(56rpx); opacity: 0; }
+  60% { opacity: 1; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes convergeScale {
+  0% { opacity: 0; transform: scale(0.1); }
+  50% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes orbitRise {
+  0% { opacity: 0; transform: translateY(56rpx); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes planetBreathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+@keyframes bridgePulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+@keyframes textReveal {
+  0% { opacity: 0; transform: translateY(16rpx); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.5); }
+}
+@keyframes drawLine {
+  0% { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+@keyframes haloExpand {
+  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+}
+@keyframes stardustArc {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--arc-x, 60rpx), var(--arc-y, -80rpx)) scale(0); opacity: 0; }
+}
+@keyframes warpFlash {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.03); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes supernova {
+  0% { transform: scale(0); opacity: 0; }
+  30% { transform: scale(1.5); opacity: 1; }
+  100% { transform: scale(3); opacity: 0; }
+}
+@keyframes shootingStar {
+  0% { transform: translate(0, 0); opacity: 1; }
+  100% { transform: translate(-120rpx, 160rpx); opacity: 0; }
+}
+@keyframes orbitalRotation {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes zeroGFloat {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-6rpx); }
+  75% { transform: translateY(6rpx); }
+}
+@keyframes neonFlicker {
+  0%, 100% { box-shadow: 0 0 8rpx var(--cosmic-cyan), 0 0 16rpx rgba(0,229,255,0.3); }
+  50% { box-shadow: 0 0 12rpx var(--cosmic-cyan), 0 0 24rpx rgba(0,229,255,0.5); }
+}
+
+/* 动画工具类 */
+.anim-converge-s { animation: convergeScale 0.9s var(--ease-spring) both; }
+.anim-orbit-in { animation: orbitRise 0.7s var(--ease-orbit) both; }
+.anim-d1 { animation-delay: 0.00s; } .anim-d2 { animation-delay: 0.08s; }
+.anim-d3 { animation-delay: 0.16s; } .anim-d4 { animation-delay: 0.24s; }
+.anim-d5 { animation-delay: 0.32s; } .anim-d6 { animation-delay: 0.40s; }
+.anim-d7 { animation-delay: 0.48s; } .anim-d8 { animation-delay: 0.56s; }
+.anim-text-in { animation: textReveal 0.7s var(--ease-orbit) both; }
+.anim-breathe { animation: planetBreathe 3s var(--ease-pulse) infinite; }
+.anim-bridge { animation: bridgePulse 3s var(--ease-pulse) infinite; }
+.anim-draw-line { animation: drawLine 0.6s var(--ease-orbit) both; transform-origin: left center; }
+.anim-warp { animation: warpFlash 0.4s ease both; }
+.anim-float { animation: zeroGFloat 6s ease infinite; }
+.anim-neon { animation: neonFlicker 2s var(--ease-pulse) infinite; }
+
+/* 品牌标记汇聚入场 */
+.brand-mark.converge::before { animation: convergeLeft 0.9s cubic-bezier(0.05,0.7,0.15,1) both; }
+.brand-mark.converge::after  { animation: convergeRight 0.9s cubic-bezier(0.05,0.7,0.15,1) 0.1s both; }
+
+/* 亮色模式 */
 .theme-light { --cosmic-void: #FFFBF5; --cosmic-matter: #FFFFFF; --twin-a: #E85D26; --twin-b: #9333EA; --text-starlight: #1A1A2E; --text-dust: #6B6880; --text-whisper: #A09CB5; --surface-card: #FFFFFF; --border-void: #E5E0D8; --shadow-sm: 0 2rpx 8rpx rgba(0,0,0,0.04); }
 </style>
