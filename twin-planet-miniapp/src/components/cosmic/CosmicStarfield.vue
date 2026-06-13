@@ -1,119 +1,80 @@
 <!--
   宇宙星场背景 · Cosmic Starfield
-  纯 CSS 实现 — 不用 Canvas，WeChat 小程序兼容。
-  多层星星以不同速度闪烁，营造深邃太空感。
+  纯 CSS box-shadow 实现 — 零额外 DOM 元素，微信小程序高性能。
 -->
 <template>
   <view class="starfield-bg" aria-hidden="true">
-    <!-- 远处的星星：小而慢 -->
-    <view class="starfield-layer stars-distant">
-      <view
-        v-for="star in distantStars"
-        :key="'d'+star.id"
-        class="star-dot"
-        :style="{
-          left: star.x + 'rpx',
-          top: star.y + 'rpx',
-          width: star.size + 'rpx',
-          height: star.size + 'rpx',
-          animationDelay: star.delay + 's',
-          animationDuration: star.duration + 's',
-          opacity: star.opacity,
-        }"
-      />
-    </view>
-    <!-- 近处的星星：大而亮 -->
-    <view class="starfield-layer stars-near">
-      <view
-        v-for="star in nearStars"
-        :key="'n'+star.id"
-        class="star-dot star-near"
-        :style="{
-          left: star.x + 'rpx',
-          top: star.y + 'rpx',
-          width: star.size + 'rpx',
-          height: star.size + 'rpx',
-          animationDelay: star.delay + 's',
-          animationDuration: star.duration + 's',
-          opacity: star.opacity,
-        }"
-      />
-    </view>
+    <view class="stars-layer" />
   </view>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-
-interface Star {
-  id: number
-  x: number
-  y: number
-  size: number
-  delay: number
-  duration: number
-  opacity: number
-}
-
-/**
- * 生成伪随机星星分布。用确定的 seed 保证每次渲染一致，
- * 避免 Vue 重渲染造成的闪烁。
- */
-function generateStars(count: number, maxX: number, maxY: number, seed: number): Star[] {
-  const stars: Star[] = []
-  let s = seed
-  for (let i = 0; i < count; i++) {
-    s = (s * 16807) % 2147483647
-    const x = (s % maxX)
-    s = (s * 16807) % 2147483647
-    const y = (s % maxY)
-    s = (s * 16807) % 2147483647
-    stars.push({
-      id: i,
-      x,
-      y,
-      size: 1 + (s % 3),
-      delay: (s % 500) / 100,
-      duration: 2 + (s % 4),
-      opacity: 0.15 + ((s % 40) / 100),
-    })
-  }
-  return stars
-}
-
-// 用 750rpx 设计稿宽度，高度取典型屏幕 ~1200rpx
-const distantStars = computed(() => generateStars(60, 750, 1200, 42))
-const nearStars = computed(() => generateStars(20, 750, 1200, 137))
+// 纯 CSS 组件，无 JS 逻辑
 </script>
 
 <style scoped>
 .starfield-bg {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 0;
+  position: fixed; inset: 0;
+  pointer-events: none; overflow: hidden; z-index: 0;
 }
 
-.starfield-layer {
-  position: absolute;
-  inset: 0;
-}
-
-.star-dot {
-  position: absolute;
+.stars-layer {
+  position: absolute; top: 0; left: 0;
+  width: 4rpx; height: 4rpx;
   border-radius: 50%;
-  background: var(--text-starlight);
-  animation: starTwinkle var(--dur-breathe) var(--ease-pulse) infinite;
-}
-
-.star-near {
-  background: var(--cosmic-chrome);
-  box-shadow: 0 0 4rpx rgba(232,213,255,0.3);
-}
-
-@keyframes starTwinkle {
-  0%, 100% { opacity: inherit; transform: scale(1); }
-  50%      { opacity: calc(inherit * 3); transform: scale(1.6); }
+  background: transparent;
+  animation: starTwinkle 3s var(--ease-pulse) infinite;
+  /* 用 box-shadow 生成 50 颗星星 — 零额外 DOM */
+  box-shadow:
+    40rpx 60rpx   #F0ECFF,
+    120rpx 30rpx  #F0ECFF,
+    200rpx 80rpx  #E8D5FF,
+    300rpx 20rpx  #F0ECFF,
+    380rpx 100rpx #8B86A3,
+    460rpx 40rpx  #F0ECFF,
+    550rpx 90rpx  #E8D5FF,
+    630rpx 30rpx  #F0ECFF,
+    700rpx 70rpx  #8B86A3,
+    80rpx 150rpx  #F0ECFF,
+    180rpx 200rpx #E8D5FF,
+    280rpx 140rpx #8B86A3,
+    360rpx 220rpx #F0ECFF,
+    450rpx 160rpx #E8D5FF,
+    540rpx 200rpx #F0ECFF,
+    640rpx 180rpx #8B86A3,
+    710rpx 150rpx #F0ECFF,
+    20rpx 280rpx  #8B86A3,
+    150rpx 320rpx #F0ECFF,
+    250rpx 260rpx #E8D5FF,
+    350rpx 350rpx #F0ECFF,
+    480rpx 300rpx #8B86A3,
+    580rpx 340rpx #F0ECFF,
+    680rpx 280rpx #E8D5FF,
+    60rpx 420rpx  #F0ECFF,
+    190rpx 460rpx #8B86A3,
+    310rpx 400rpx #F0ECFF,
+    420rpx 480rpx #E8D5FF,
+    530rpx 420rpx #F0ECFF,
+    650rpx 500rpx #8B86A3,
+    100rpx 550rpx #F0ECFF,
+    230rpx 600rpx #E8D5FF,
+    370rpx 540rpx #8B86A3,
+    500rpx 580rpx #F0ECFF,
+    610rpx 620rpx #E8D5FF,
+    40rpx 680rpx  #F0ECFF,
+    170rpx 720rpx #8B86A3,
+    290rpx 660rpx #F0ECFF,
+    430rpx 750rpx #E8D5FF,
+    560rpx 700rpx #F0ECFF,
+    690rpx 760rpx #8B86A3,
+    80rpx 820rpx  #F0ECFF,
+    210rpx 860rpx #E8D5FF,
+    340rpx 800rpx #8B86A3,
+    470rpx 880rpx #F0ECFF,
+    600rpx 840rpx #E8D5FF,
+    720rpx 900rpx #F0ECFF,
+    130rpx 940rpx #8B86A3,
+    260rpx 980rpx #F0ECFF,
+    400rpx 920rpx #E8D5FF;
 }
 </style>
