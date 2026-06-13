@@ -39,11 +39,13 @@
               :running="babyA ? recordsStore.isBabyRunning(babyA.id) : false"
               :atmosphere="babyA ? recordsStore.isBabyRunning(babyA.id) : false"
               :glowing="!!(babyA && recordsStore.isBabyRunning(babyA.id))"
+              :orbit-ring="babyA ? orbitRingFor(babyA.id) : undefined"
               twin="a"
             />
             <view class="twin-info">
               <text class="twin-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
-              <text class="twin-status" v-if="babyStatus(babyA)">{{ babyStatus(babyA) }}</text>
+              <text class="twin-status poetic" v-if="poeticFor(babyA)">{{ poeticFor(babyA) }}</text>
+              <text class="twin-status" v-else-if="babyStatus(babyA)">{{ babyStatus(babyA) }}</text>
               <text class="twin-status muted" v-else>轻触记录</text>
             </view>
           </view>
@@ -58,11 +60,13 @@
               :running="babyB ? recordsStore.isBabyRunning(babyB.id) : false"
               :atmosphere="babyB ? recordsStore.isBabyRunning(babyB.id) : false"
               :glowing="!!(babyB && recordsStore.isBabyRunning(babyB.id))"
+              :orbit-ring="babyB ? orbitRingFor(babyB.id) : undefined"
               twin="b"
             />
             <view class="twin-info">
               <text class="twin-name">{{ babyB?.nickname || babyB?.name || '二宝' }}</text>
-              <text class="twin-status" v-if="babyStatus(babyB)">{{ babyStatus(babyB) }}</text>
+              <text class="twin-status poetic" v-if="poeticFor(babyB)">{{ poeticFor(babyB) }}</text>
+              <text class="twin-status" v-else-if="babyStatus(babyB)">{{ babyStatus(babyB) }}</text>
               <text class="twin-status muted" v-else>轻触记录</text>
             </view>
           </view>
@@ -143,6 +147,27 @@ function babyStatus(baby: any): string {
   return `${Math.floor(mins / 60)}小时前`
 }
 
+/** 定时器轨道环进度 */
+function orbitRingFor(babyId: string): number | undefined {
+  const t = recordsStore.getTimer(babyId)
+  if (!t) return undefined
+  const target = t.type === 'sleep' ? 60 : 20
+  return (t.elapsed / 60) % target / target
+}
+
+/** 定时器诗意标签 */
+function poeticFor(baby: any): string {
+  if (!baby) return ''
+  const t = recordsStore.getTimer(baby.id)
+  if (!t) return ''
+  const min = t.elapsed / 60
+  const phases = t.type === 'sleep'
+    ? [{ m: 2, l: '刚刚入眠' },{ m: 5, l: '星尘落下' },{ m: 10, l: '梦乡深处' },{ m: 20, l: '星际漫游' },{ m: 999, l: '继续守护' }]
+    : [{ m: 2, l: '刚刚开始' },{ m: 5, l: '星光降临' },{ m: 10, l: '航行中' },{ m: 20, l: '渐入佳境' },{ m: 999, l: '星光已满' }]
+  for (const p of phases) { if (min < p.m) return p.l }
+  return phases[phases.length - 1].l
+}
+
 const navigate = (url: string) => uni.navigateTo({ url })
 const goRecord = () => navigate('/pages/record/index')
 const goGrowth = () => navigate('/pages/growth/index')
@@ -173,6 +198,24 @@ const goHelp = () => uni.showModal({ title: '需要帮忙？', content: '打电�
 .twin-status { font-size: var(--font-caption); color: var(--text-dust); }
 .twin-status.muted { color: var(--text-whisper); }
 .twins-space { width: 40rpx; flex-shrink: 0; }
+
+/* 引力焦散桥 — 两颗星球大气重叠处自然产生金色 */
+.twins-zone::before {
+  content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 360rpx; height: 300rpx; border-radius: 50%; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 40% 55% at 25% 50%, rgba(255,107,53,0.08) 0%, rgba(255,107,53,0.02) 35%, transparent 65%),
+    radial-gradient(ellipse 40% 55% at 75% 50%, rgba(168,85,247,0.08) 0%, rgba(168,85,247,0.02) 35%, transparent 65%),
+    radial-gradient(ellipse 20% 30% at 50% 50%, rgba(255,210,63,0.06) 0%, transparent 60%);
+  animation: causticDrift 7s ease-in-out infinite;
+}
+@keyframes causticDrift {
+  0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.5; }
+  33%     { transform: translate(-50%,-50%) scale(1.1); opacity: 0.7; }
+  66%     { transform: translate(-50%,-50%) scale(0.95); opacity: 0.35; }
+}
+
+.twin-status.poetic { color: var(--cosmic-cyan); font-style: italic; }
 
 /* 连胜 */
 .streak-line { text-align: center; margin-bottom: 40rpx; position: relative; z-index: 1; }
