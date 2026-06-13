@@ -4,14 +4,14 @@
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "并蒂星球",
-				"navigationBarBackgroundColor": "#FFFBF5"
+				"navigationBarBackgroundColor": "#0A0A14"
 			}
 		},
 		{
 			"path": "pages/login/index",
 			"style": {
 				"navigationBarTitleText": "进入宇宙",
-				"navigationBarBackgroundColor": "#FFFBF5",
+				"navigationBarBackgroundColor": "#0A0A14",
 				"navigationStyle": "custom"
 			}
 		},
@@ -19,63 +19,63 @@
 			"path": "pages/onboarding/family",
 			"style": {
 				"navigationBarTitleText": "命名你的星系",
-				"navigationBarBackgroundColor": "#FFFBF5"
+				"navigationBarBackgroundColor": "#0A0A14"
 			}
 		},
 		{
 			"path": "pages/onboarding/babies",
 			"style": {
 				"navigationBarTitleText": "遇见你的星球",
-				"navigationBarBackgroundColor": "#FFFBF5"
+				"navigationBarBackgroundColor": "#0A0A14"
 			}
 		},
 		{
 			"path": "pages/record/index",
 			"style": {
 				"navigationBarTitleText": "宇宙记录",
-				"navigationBarBackgroundColor": "#FFFBF5"
+				"navigationBarBackgroundColor": "#0A0A14"
 			}
 		},
 		{
 			"path": "pages/sprout/index",
 			"style": {
 				"navigationBarTitleText": "光桥编年史",
-				"navigationBarBackgroundColor": "#FFFBF5"
+				"navigationBarBackgroundColor": "#0A0A14"
 			}
 		},
 		{
 			"path": "pages/contribution/index",
 			"style": {
 				"navigationBarTitleText": "星尘日志",
-				"navigationBarBackgroundColor": "#FFFBF5"
+				"navigationBarBackgroundColor": "#0A0A14"
 			}
 		},
 		{
 			"path": "pages/snapshot/index",
 			"style": {
 				"navigationBarTitleText": "星图快照",
-				"navigationBarBackgroundColor": "#FFFBF5"
+				"navigationBarBackgroundColor": "#0A0A14"
 			}
 		},
 		{
 			"path": "pages/handover/index",
 			"style": {
 				"navigationBarTitleText": "星际通讯",
-				"navigationBarBackgroundColor": "#FFFBF5"
+				"navigationBarBackgroundColor": "#0A0A14"
 			}
 		},
 		{
 			"path": "pages/duty/index",
 			"style": {
 				"navigationBarTitleText": "指挥官控制台",
-				"navigationBarBackgroundColor": "#FFFBF5"
+				"navigationBarBackgroundColor": "#0A0A14"
 			}
 		},
 		{
 			"path": "pages/guardian/index",
 			"style": {
 				"navigationBarTitleText": "星光监测站",
-				"navigationBarBackgroundColor": "#FFFBF5"
+				"navigationBarBackgroundColor": "#0A0A14"
 			}
 		}
 	],
@@ -87,7 +87,7 @@
 					"path": "index",
 					"style": {
 						"navigationBarTitleText": "星球档案",
-						"navigationBarBackgroundColor": "#FFFBF5"
+						"navigationBarBackgroundColor": "#0A0A14"
 					}
 				}
 			]
@@ -99,7 +99,7 @@
 					"path": "index",
 					"style": {
 						"navigationBarTitleText": "轨道决策",
-						"navigationBarBackgroundColor": "#FFFBF5"
+						"navigationBarBackgroundColor": "#0A0A14"
 					}
 				}
 			]
@@ -111,16 +111,16 @@
 					"path": "index",
 					"style": {
 						"navigationBarTitleText": "星座日志",
-						"navigationBarBackgroundColor": "#FFFBF5"
+						"navigationBarBackgroundColor": "#0A0A14"
 					}
 				}
 			]
 		}
 	],
 	"globalStyle": {
-		"navigationBarTextStyle": "black",
+		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "并蒂星球",
-		"navigationBarBackgroundColor": "#FFFBF5",
-		"backgroundColor": "#FFFBF5"
+		"navigationBarBackgroundColor": "#0A0A14",
+		"backgroundColor": "#0A0A14"
 	}
 }
