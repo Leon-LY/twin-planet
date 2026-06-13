@@ -109,19 +109,26 @@ onMounted(()=>{uni.setNavigationBarTitle({title:'手帐记录'});if(twins.value[
 <style scoped>
 .record-page { min-height:100vh; background:var(--paper); padding:40rpx 28rpx calc(80rpx + env(safe-area-inset-bottom)); }
 
-.select-zone { display:flex; justify-content:center; gap:40rpx; margin-bottom:36rpx; }
-.sel-card { display:flex; flex-direction:column; align-items:center; gap:10rpx; padding:24rpx 28rpx; border-radius:var(--radius-lg); border:2rpx solid transparent; opacity:0.5; transition:opacity var(--dur-fast),border-color var(--dur-fast),transform var(--dur-fast) var(--ease-bounce); }
+.select-zone { display:flex; justify-content:center; gap:32rpx; margin-bottom:36rpx; }
+.sel-card {
+  display:flex; flex-direction:column; align-items:center; gap:12rpx;
+  padding:32rpx 28rpx; border-radius:28rpx; border:2rpx solid transparent;
+  opacity:0.5; transition:opacity 0.2s,border-color 0.2s,transform 0.2s var(--ease-bounce);
+  position:relative; overflow:visible;
+}
 .sel-card:active { transform:scale(0.94); }
-.sel-card.active { opacity:1; border-color:var(--amber); }
+.sel-card.active { opacity:1; border-color:var(--amber); box-shadow:0 4rpx 16rpx rgba(232,130,74,0.1); }
 .sel-card.bg-a { background:var(--amber-lt); }
 .sel-card.bg-b { background:var(--rose-lt); }
-.sel-face { font-size:44rpx; }
+.sel-face { font-size:52rpx; transition:transform 0.3s var(--ease-bounce); }
+.sel-card:active .sel-face { transform:scale(1.15); }
 .sel-name { font-family:var(--font-journal); font-size:var(--font-body); font-weight:700; color:var(--ink); }
 
 .act-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14rpx; margin-bottom:24rpx; }
-.act-card { display:flex; flex-direction:column; align-items:center; gap:6rpx; padding:28rpx 10rpx; background:var(--paper-warm); border:2rpx solid var(--dot-line); border-radius:var(--radius-md); transition:transform var(--dur-fast) var(--ease-bounce),border-color var(--dur-fast); }
-.act-card:active { transform:scale(0.92); border-color:var(--amber); background:var(--amber-lt); }
-.act-emoji { font-size:36rpx; }
+.act-card { display:flex; flex-direction:column; align-items:center; gap:8rpx; padding:32rpx 10rpx; background:var(--paper-warm); border:2rpx solid var(--dot-line); border-radius:24rpx; transition:transform 0.15s var(--ease-bounce),border-color 0.2s,background 0.2s; }
+.act-card:active { transform:scale(0.9); border-color:var(--amber); background:var(--amber-lt); box-shadow:0 0 0 6rpx rgba(232,130,74,0.06); }
+.act-emoji { font-size:40rpx; transition:transform 0.3s var(--ease-bounce); }
+.act-card:active .act-emoji { transform:scale(1.2); }
 .act-label { font-size:var(--font-body); font-weight:600; color:var(--ink); }
 
 .quick-dual { display:flex; gap:var(--space-sm); margin-bottom:24rpx; }
@@ -134,10 +141,11 @@ onMounted(()=>{uni.setNavigationBarTitle({title:'手帐记录'});if(twins.value[
 .r-chip:active { border-color:var(--amber); }
 
 .timer-hero { display:flex; flex-direction:column; align-items:center; padding:48rpx 0; }
-.hero-face { width:180rpx;height:180rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24rpx; }
-.hero-face.face-a { background:var(--amber-lt); }
-.hero-face.face-b { background:var(--rose-lt); }
-.face-big { font-size:80rpx; }
+.hero-face { width:200rpx;height:200rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24rpx; }
+.hero-face.face-a { background:rgba(232,130,74,0.2); }
+.hero-face.face-b { background:rgba(212,133,107,0.2); }
+.face-big { font-size:96rpx; animation:faceWiggle 0.6s ease-in-out infinite; }
+@keyframes faceWiggle { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-5deg)} 75%{transform:rotate(5deg)} }
 .hero-name { font-family:var(--font-journal); font-size:var(--font-title); color:var(--ink); }
 .hero-label { font-size:var(--font-body-lg,31rpx); color:var(--mint); margin-top:6rpx; font-weight:600; }
 .hero-time { font-size:var(--font-caption); color:var(--ink-lt); margin-top:4rpx; letter-spacing:3rpx; }
@@ -146,9 +154,9 @@ onMounted(()=>{uni.setNavigationBarTitle({title:'手帐记录'});if(twins.value[
 
 .dual-zone { display:flex; gap:16rpx; margin-bottom:16rpx; }
 .dual-card { flex:1; display:flex; flex-direction:column; align-items:center; gap:12rpx; padding:24rpx 10rpx; background:var(--paper-warm); border:2rpx solid var(--dot-line); border-radius:var(--radius-lg); }
-.dual-face { width:100rpx;height:100rpx;border-radius:50%;display:flex;align-items:center;justify-content:center; }
-.dual-face.face-a { background:var(--amber-lt); }
-.dual-face.face-b { background:var(--rose-lt); }
+.dual-face { width:120rpx;height:120rpx;border-radius:50%;display:flex;align-items:center;justify-content:center; }
+.dual-face.face-a { background:rgba(232,130,74,0.2); }
+.dual-face.face-b { background:rgba(212,133,107,0.2); }
 .dual-name { font-family:var(--font-journal); font-size:var(--font-body); font-weight:700; color:var(--ink); }
 .dual-time { font-family:var(--font-journal); font-size:40rpx; color:var(--ink); letter-spacing:2rpx; }
 .stop-sm { padding:10rpx 28rpx; background:transparent; border:2rpx solid var(--twin-danger); border-radius:var(--radius-full); font-size:var(--font-caption); color:var(--twin-danger); }
