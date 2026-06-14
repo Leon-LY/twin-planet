@@ -42,6 +42,7 @@
             <text class="middle-label">次记录</text>
           </view>
         </view>
+        <text class="middle-recorder" v-if="recorderBreakdown">{{ recorderBreakdown }}</text>
       </view>
 
       <!-- 二宝 -->
@@ -113,6 +114,19 @@ const todayRecords = computed(() => {
   return recordsStore.logs.filter(l => new Date(l.createdAt).toISOString().slice(0, 10) === today).length
 })
 const todayContribs = computed(() => interactionsStore.todayContributions.length)
+
+// 今日记录者分布（谁记了多少条）
+const recorderBreakdown = computed(() => {
+  const t0 = new Date().setHours(0, 0, 0, 0)
+  const todayLogs = recordsStore.logs.filter(l => l.createdAt >= t0)
+  const map: Record<string, number> = {}
+  for (const l of todayLogs) {
+    const role = l.recordedBy || 'unknown'
+    map[role] = (map[role] || 0) + 1
+  }
+  const labels: Record<string, string> = { mom: '👩妈妈', dad: '👨爸爸', grandma: '👵奶奶', grandpa: '👴爷爷', nanny: '👩‍🍼育儿嫂' }
+  return Object.entries(map).map(([k, v]) => `${labels[k] || '👤家人'} ${v}条`).join(' · ')
+})
 
 function getBabyStatus(baby: Baby | null): string {
   if (!baby) return '—'
@@ -191,6 +205,7 @@ onShareAppMessage(()=>({title:'双宝快照 · 一眼看完两个娃',path:'/pag
 .middle-row { display: flex; justify-content: space-around; }
 .middle-item { text-align: center; }
 .middle-num { font-size: 40rpx; font-weight: 700; color: var(--twin-accent); }
+.middle-recorder { display: block; text-align: center; font-size: 22rpx; color: var(--ink-md); margin-top: 10rpx; }
 .middle-label { display: block; font-size: 22rpx; color: var(--twin-text-secondary); margin-top: 4rpx; }
 
 /* 快速操作 */

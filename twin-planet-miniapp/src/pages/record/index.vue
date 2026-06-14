@@ -51,11 +51,11 @@
       <view class="retro-note">
         <text class="retro-dash">--</text>
         <text class="retro-label">刚才忘了？</text>
-        <view class="retro-type-row">
-          <text v-for="a in retroActions" :key="a.type" class="retro-type-dot" :class="{ on: retroType===a.type }" @click="retroType=a.type">{{ a.emoji }}</text>
-        </view>
-        <view class="retro-times">
-          <text v-for="m in [5,10,20,30]" :key="m" class="retro-min" @click="retro(m)">{{ m }}分前</text>
+        <view class="retro-presets">
+          <text class="retro-chip" @click="retro(5,'feeding')">🍼 5分前</text>
+          <text class="retro-chip" @click="retro(10,'feeding')">🍼 10分前</text>
+          <text class="retro-chip" @click="retro(20,'diaper')">🧷 20分前</text>
+          <text class="retro-chip" @click="retro(15,'sleep')">😴 15分前</text>
         </view>
       </view>
     </template>
@@ -118,7 +118,6 @@ import {useStickerSync} from '@/composables/useStickerSync'
 const babiesStore=useBabiesStore();const recordsStore=useRecordsStore();const stickersStore=useStickersStore();const {syncStickers}=useStickerSync();const sel=ref('')
 const twins=computed(()=>[babiesStore.babyA,babiesStore.babyB].filter(Boolean))
 const actions=[{type:'feeding',emoji:'🍼',label:'喂奶'},{type:'sleep',emoji:'😴',label:'睡觉'},{type:'diaper',emoji:'🧷',label:'尿布'},{type:'temperature',emoji:'🌡️',label:'体温'},{type:'medicine',emoji:'💊',label:'用药'},{type:'bath',emoji:'🛁',label:'洗澡'}]
-const retroActions=actions.slice(0,4)
 const haptic=useHaptic()
 const isNight=computed(()=>{const h=new Date().getHours();return h>=22||h<6})
 
@@ -141,8 +140,7 @@ function getName(id:string){return twins.value.find(b=>b.id===id)?.nickname||''}
 function doAction(t:RecordType){const id=sel.value||twins.value[0]?.id;if(!id){uni.showToast({title:'请先在首页创建宝宝',icon:'none'});return}if(t==='feeding'||t==='sleep'){recordsStore.startTimer(id,t);haptic.thump();popSticker(t==='feeding'?'🍼':'😴')}else{recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();const m:Record<string,string>={diaper:'🧷',temperature:'🌡️',medicine:'💊',bath:'🛁'};popSticker(m[t]||'⭐')}}
 function quickNight(t:RecordType='feeding'){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();const m:Record<string,string>={feeding:'🍼',diaper:'🧷',sleep:'😴'};popSticker(m[t]||'🌙')}
 function dualLog(t:RecordType){const a=twins.value[0],b=twins.value[1];if(a)recordsStore.quickLog(a.id,t);if(b)recordsStore.quickLog(b.id,t);haptic.doubleBeat();syncStickers();popSticker('🔗')}
-const retroType=ref<RecordType>('feeding')
-function retro(m:number){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,retroType.value,undefined,m*60000);haptic.sparkle();syncStickers();popSticker('⏰')}
+function retro(m:number,t:RecordType='feeding'){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,t,undefined,m*60000);haptic.sparkle();syncStickers();const em:Record<string,string>={feeding:'🍼',diaper:'🧷',sleep:'😴'};popSticker(em[t]||'⏰')}
 	const todayStart=computed(()=>new Date().setHours(0,0,0,0))
 	const recentLogs=computed(()=>{const t0=todayStart.value;return recordsStore.logs.filter(l=>l.createdAt>=t0).sort((a,b)=>b.createdAt-a.createdAt)})
 	onMounted(()=>{uni.setNavigationBarTitle({title:"记录"});if(twins.value[0])sel.value=twins.value[0].id})
@@ -176,11 +174,11 @@ const stopAll=()=>{recordsStore.stopTimer()}
 .night-chip{flex:1;max-width:180rpx;text-align:center;padding:16rpx 8rpx;background:linear-gradient(135deg,rgba(45,35,24,0.03),rgba(45,35,24,0.06));border:2rpx solid var(--dot);border-radius:20rpx;font-size:24rpx;color:var(--ink-md);font-weight:600;transition:transform .15s var(--ease-bounce)}
 .night-chip:active{transform:scale(.9);background:var(--amber-lt);border-color:var(--amber);color:var(--amber)}
 
-.retro-note{display:flex;align-items:center;gap:10rpx;flex-wrap:wrap;justify-content:center;position:relative;z-index:1;padding:8rpx 0}.retro-dash{color:var(--ink-lt);font-size:20rpx;opacity:.5}.retro-label{font-size:22rpx;color:var(--ink-lt)}.retro-type-row{display:flex;gap:6rpx}.retro-type-dot{width:44rpx;height:44rpx;display:flex;align-items:center;justify-content:center;font-size:24rpx;border-radius:50%;background:var(--cream);border:1.5px solid var(--dot);transition:border-color .2s,background .2s}.retro-type-dot:active{transform:scale(.85)}.retro-type-dot.on{border-color:var(--amber);background:var(--amber-lt)}.retro-times{display:flex;gap:6rpx}.retro-min{padding:6rpx 14rpx;font-size:20rpx;color:var(--ink-lt);background:var(--cream);border:1px solid var(--dot);border-radius:16rpx;transition:transform .15s var(--ease-bounce)}.retro-min:active{transform:scale(.9);border-color:var(--amber)}
+.retro-note{display:flex;align-items:center;gap:12rpx;flex-wrap:wrap;justify-content:center;position:relative;z-index:1;padding:8rpx 0}.retro-dash{color:var(--ink-lt);font-size:20rpx;opacity:.5}.retro-label{font-size:22rpx;color:var(--ink-lt)}.retro-presets{display:flex;gap:8rpx}.retro-chip{padding:10rpx 18rpx;font-size:22rpx;color:var(--ink-md);background:var(--cream);border:1.5px solid var(--dot);border-radius:18rpx;font-weight:500;transition:transform .15s var(--ease-bounce),border-color .2s}.retro-chip:active{transform:scale(.9);border-color:var(--amber);color:var(--amber)}
 
 .timer-hero{display:flex;flex-direction:column;align-items:center;padding:48rpx 0;position:relative;z-index:1}.hero-face{width:220rpx;height:220rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:20rpx}.hero-face.bg-a{background:var(--amber-md)}.hero-face.bg-b{background:var(--rose-md)}.hero-emoji{font-size:108rpx;animation:faceRock 3s ease-in-out infinite}@keyframes faceRock{0%,100%{transform:rotate(0)}50%{transform:rotate(2deg)}}.hero-baby-name{font-family:var(--font-journal);font-size:40rpx;color:var(--ink)}.hero-phase{font-size:28rpx;color:var(--mint);margin-top:4rpx;font-weight:600}.hero-clock{display:flex;align-items:baseline;margin-top:8rpx;gap:0}.clock-min{font-family:var(--font-journal);font-size:72rpx;color:var(--ink);letter-spacing:4rpx}.clock-sep{font-size:40rpx;color:var(--ink-lt);margin:0 4rpx;animation:sepBlink 1s step-end infinite}@keyframes sepBlink{0%,100%{opacity:1}50%{opacity:.2}}.clock-sec{font-family:var(--font-journal);font-size:48rpx;color:var(--ink-md)}.end-btn{margin-top:28rpx;padding:18rpx 48rpx;background:transparent;border:2rpx solid var(--twin-danger);border-radius:28rpx;color:var(--twin-danger);font-size:28rpx;font-weight:600;transition:transform .15s var(--ease-bounce)}.end-btn:active{transform:scale(.94);background:rgba(212,112,107,.06)}
 
-.dual-zone{display:flex;gap:12rpx;margin-bottom:12rpx;position:relative;z-index:1}.dual-card{flex:1;display:flex;flex-direction:column;align-items:center;gap:10rpx;padding:20rpx 8rpx;border-radius:24rpx}.dual-card.dc-a{background:var(--amber-lt);border:2rpx solid rgba(224,123,62,.1)}.dual-card.dc-b{background:var(--rose-lt);border:2rpx solid rgba(212,128,104,.1)}.dc-face{width:96rpx;height:96rpx;border-radius:50%;display:flex;align-items:center;justify-content:center}.dc-face.bg-a{background:var(--amber-md)}.dc-face.bg-b{background:var(--rose-md)}.dc-emoji{font-size:48rpx;animation:faceRock 3s ease-in-out infinite}.dc-name{font-family:var(--font-journal);font-size:24rpx;font-weight:700;color:var(--ink)}.dc-time{font-family:var(--font-journal);font-size:36rpx;color:var(--ink);letter-spacing:2rpx}.dc-stop{padding:6rpx 20rpx;border-radius:16rpx;border:1.5px solid var(--twin-danger);font-size:20rpx;color:var(--twin-danger)}.dc-stop:active{background:rgba(212,112,107,.06)}.stop-all{width:100%;padding:16rpx;background:transparent;border:2rpx solid var(--twin-danger);border-radius:24rpx;font-size:28rpx;font-weight:600;color:var(--twin-danger);position:relative;z-index:1}
+.dual-zone{display:flex;gap:12rpx;margin-bottom:12rpx;position:relative;z-index:1}.dual-card{flex:1;display:flex;flex-direction:column;align-items:center;gap:10rpx;padding:20rpx 8rpx;border-radius:24rpx}.dual-card.dc-a{background:var(--amber-lt);border:2rpx solid rgba(224,123,62,.1)}.dual-card.dc-b{background:var(--rose-lt);border:2rpx solid rgba(212,128,104,.1)}.dc-face{width:96rpx;height:96rpx;border-radius:50%;display:flex;align-items:center;justify-content:center}.dc-face.bg-a{background:var(--amber-md)}.dc-face.bg-b{background:var(--rose-md)}.dc-emoji{font-size:48rpx;animation:faceRock 3s ease-in-out infinite}.dc-name{font-family:var(--font-journal);font-size:24rpx;font-weight:700;color:var(--ink)}.dc-time{font-family:var(--font-journal);font-size:36rpx;color:var(--ink);letter-spacing:2rpx}.dc-stop{padding:16rpx 28rpx;border-radius:20rpx;border:2px solid var(--twin-danger);font-size:26rpx;color:var(--twin-danger);font-weight:600;min-width:88rpx;text-align:center}.dc-stop:active{background:rgba(212,112,107,.06);transform:scale(.92)}.stop-all{width:100%;padding:16rpx;background:transparent;border:2rpx solid var(--twin-danger);border-radius:24rpx;font-size:28rpx;font-weight:600;color:var(--twin-danger);position:relative;z-index:1}
 
 .timeline{padding-top:16rpx;position:relative;z-index:1}.tl-section{display:block;font-family:var(--font-journal);font-size:22rpx;color:var(--ink-lt);font-weight:600;margin-bottom:10rpx;padding-left:2rpx}.tl-item{display:flex;align-items:center;gap:12rpx;padding:10rpx 0}.tl-dot{width:7rpx;height:7rpx;border-radius:50%;flex-shrink:0}.tl-text{flex:1;font-size:26rpx;color:var(--ink)}.tl-when{flex-shrink:0;font-size:20rpx;color:var(--ink-lt)}
 </style>
