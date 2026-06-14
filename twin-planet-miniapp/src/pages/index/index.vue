@@ -436,7 +436,7 @@ const isRunningB=computed(()=>babyB.value?recordsStore.isBabyRunning(babyB.value
 const alertCount=computed(()=>alertsStore.unreadCount)
 
 const greeting=computed(()=>{const h=new Date().getHours();if(h<6)return'凌晨好';if(h<9)return'早上好';if(h<12)return'上午好';if(h<14)return'中午好';if(h<18)return'下午好';if(h<22)return'晚上好';return'夜深了'})
-const greetLine2=computed(()=>{const h=new Date().getHours();const r=userStore.profile?.role;const g=greeting.value;if(r==='dad'){if(h>=22||h<6)return'值班中，撑住 💪';if(h<9)return'早上好，今天你是超级奶爸';return'数据看板已就绪 📊'}if(r==='grandma'||r==='grandpa')return'';if(h>=22||h<6)return'夜深了，辛苦啦 🌙';if(h<9)return'新的一天，两个小怪兽醒了没';if(h<14)return'上午过半，奶茶续命时间 🧋';return`${g}，小怪兽们在干嘛呢`})
+const greetLine2=computed(()=>{const h=new Date().getHours();const r=userStore.profile?.role;const g=greeting.value;if(r==='dad'){if(h>=22||h<6)return'值班中，撑住 💪';if(h<9)return'早上好，今天你是超级奶爸';return'数据看板已就绪 📊'}if(r==='grandma'||r==='grandpa')return'';if(h>=22||h<6)return'辛苦啦，早点休息 🌙';if(h<9)return'新的一天，两个小怪兽醒了没';if(h<14)return'上午过半，奶茶续命时间 🧋';return`${g}，小怪兽们在干嘛呢`})
 const roleEmoji=computed(()=>userStore.roleEmoji)
 const roleLabel=computed(()=>userStore.roleLabel)
 const dateStr=computed(()=>{const d=new Date();const days=['日','一','二','三','四','五','六'];return `${d.getMonth()+1}月${d.getDate()}日 星期${days[d.getDay()]}`})
