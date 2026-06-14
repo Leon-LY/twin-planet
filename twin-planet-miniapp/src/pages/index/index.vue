@@ -2,7 +2,7 @@
 <template>
   <view :class="[themeClass, { 'font-large': isGrandma }]">
     <template v-if="loading">
-      <view class="page-shell"><TwinSkeleton type="brand" /><TwinSkeleton type="twins" /></view>
+      <view class="page-shell"><text class="heading-xl">加载中...</text></view>
     </template>
 
     <template v-else-if="isGrandma">
@@ -113,12 +113,12 @@
 
         <!-- LightBridge connection -->
         <view class="bridge-wrap reveal-4">
-          <LightBridge :state="bridgeState" :height="36" :animated="true" />
+          <view style="height:36rpx" />
         </view>
 
         <!-- 贴纸条 — only for full layout (mom) -->
         <view class="sticker-zone reveal-4" v-if="userStore.roleConfig.homeLayout==='full'">
-          <StickerStrip :stickers="stickersStore.todayStickers" :showMore="true" @viewAll="navigate('/pages/stickers/index')" />
+          <text class="body-text" style="text-align:center">{{ stickersStore.todayCount }} 张贴纸</text>
         </view>
 
         <!-- 今日摘要 -->
@@ -290,10 +290,10 @@ import { getDiscoverFeatures } from '@/config/roles'
 import { saveExportData, syncRecords, pullRecords } from '@/utils/syncService'
 import { createInvite, joinFamily } from '@/api/family'
 import { trackCelebration, trackShare } from '@/utils/analytics'
-import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
-import LightBridge from '@/components/cosmic/LightBridge.vue'
-import StickerStrip from '@/components/journal/StickerStrip.vue'
-// import TwinMascot from '@/components/journal/TwinMascot.vue'
+// RM TwinSkeleton '@/components/twin-skeleton/twin-skeleton.vue'
+// RM LightBridge '@/components/cosmic/LightBridge.vue'
+// RM StickerStrip '@/components/journal/StickerStrip.vue'
+// RM TwinMascot '@/components/journal/TwinMascot.vue'
 
 const loading=ref(true);const userStore=useUserStore()
 const themeClass=computed(()=>{const c=['page-root'];const h=new Date().getHours();if(h>=22||h<6)c.push('theme-dark');if(userStore.isGrandmaMode)c.push('font-large','role-granny');else if(userStore.isDad)c.push('role-dad');return c.join(' ')})
