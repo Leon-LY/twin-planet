@@ -2,63 +2,16 @@
 <template>
   <view class="record-page">
     <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
-    <!-- 贴纸解锁动画 -->
-    <view v-if="stickerShow" class="sticker-pop">
-      <text class="sticker-pop-emoji">{{ stickerEmoji }}</text>
-      <text class="sticker-pop-label" v-if="stickerLabel">{{ stickerLabel }}</text>
-      <text class="sticker-pop-progress" v-if="stickerProgress">{{ stickerProgress }}</text>
-    </view>
+    <view v-if="stickerShow" class="sticker-pop"><text class="sticker-pop-emoji">{{ stickerEmoji }}</text></view>
 
-    <!-- IDLE: 奶奶模式 — 极简3按钮 -->
-    <template v-if="!recordsStore.isRunning && isGrandma">
-      <view class="granny-record">
-        <text class="granny-record-title">记录 {{ selBabyName || '宝宝' }}</text>
-        <view class="granny-baby-switch" v-if="twins.length >= 2">
-          <view class="granny-switch-btn" :class="{ on: sel===twins[0]?.id }" @click="sel=twins[0]?.id">
-            {{ twins[0]?.nickname || '大宝' }}
-          </view>
-          <view class="granny-switch-btn" :class="{ on: sel===twins[1]?.id }" @click="sel=twins[1]?.id">
-            {{ twins[1]?.nickname || '二宝' }}
-          </view>
-        </view>
-        <view class="granny-actions">
-          <view class="granny-record-btn" @click="doAction('feeding')">
-            <text class="granny-btn-emoji">🍼</text>
-            <text class="granny-btn-label">吃奶了</text>
-          </view>
-          <view class="granny-record-btn" @click="doAction('sleep')">
-            <text class="granny-btn-emoji">😴</text>
-            <text class="granny-btn-label">睡觉了</text>
-          </view>
-          <view class="granny-record-btn" @click="doAction('diaper')">
-            <text class="granny-btn-emoji">🧷</text>
-            <text class="granny-btn-label">换尿布</text>
-          </view>
-        </view>
-      </view>
-    </template>
-
-    <!-- IDLE: 标准模式 -->
-    <template v-if="!recordsStore.isRunning && !isGrandma">
+    <!-- IDLE -->
+    <template v-if="!recordsStore.isRunning">
       <view class="baby-tabs">
         <view class="baby-tab" v-for="(t,i) in twins" :key="t.id"
           :class="{ active: sel===t.id, 'tab-a':i===0, 'tab-b':i===1 }" @click="sel=t.id">
           <text class="tab-emoji">{{ i===0 ? '😋' : '😴' }}</text>
           <text class="tab-name">{{ t.nickname || t.name }}</text>
           <text class="tab-check" v-if="sel===t.id">✓</text>
-        </view>
-      </view>
-
-      <!-- 智能推荐：根据时间+历史推荐最可能的操作（1 tap 直达） -->
-      <view class="smart-bar" v-if="smartSuggestions.length">
-        <text class="smart-hint">💡 试试一键记录：</text>
-        <view class="smart-chips">
-          <view v-for="s in smartSuggestions" :key="s.babyId+s.type" class="smart-chip"
-            @click="recordsStore.quickLog(s.babyId, s.type); haptic.sparkle()">
-            <text class="sc-emoji">{{ s.emoji }}</text>
-            <text class="sc-text">{{ s.babyName }} · {{ s.type==='feeding'?'喂奶':'睡觉' }}</text>
-            <text class="sc-reason">{{ s.reason }}</text>
-          </view>
         </view>
       </view>
 
@@ -146,34 +99,26 @@ import {onShow} from '@dcloudio/uni-app'
 import { onShareAppMessage } from '@dcloudio/uni-app'
 import {useBabiesStore} from '@/stores/babies'
 import {useRecordsStore,type RecordType} from '@/stores/records'
-import {useUserStore} from '@/stores/user'
 import {timeAgo, formatElapsed} from '@/utils/format'
 import {useHaptic} from '@/composables/useHaptic'
 import {usePoeticTime} from '@/composables/usePoeticTime'
 import {useStickersStore} from '@/stores/stickers'
 import {useStickerSync} from '@/composables/useStickerSync'
-const babiesStore=useBabiesStore();const recordsStore=useRecordsStore();const stickersStore=useStickersStore();const userStore=useUserStore();const {syncStickers}=useStickerSync();const sel=ref('')
-const twins=computed(()=>{const a=babiesStore.babyA,b=babiesStore.babyB;return [a,b].filter(Boolean)})
-// 奶奶模式
-const isGrandma=computed(()=>userStore.isGrandmaMode)
-const selBabyName=computed(()=>{const id=sel.value;const b=twins.value.find(t=>t.id===id);return b?.nickname||b?.name||''})
+const babiesStore=useBabiesStore();const recordsStore=useRecordsStore();const stickersStore=useStickersStore();const {syncStickers}=useStickerSync();const sel=ref('')
+const twins=computed(()=>[babiesStore.babyA,babiesStore.babyB].filter(Boolean))
 const actions=[{type:'feeding',emoji:'🍼',label:'喂奶'},{type:'sleep',emoji:'😴',label:'睡觉'},{type:'diaper',emoji:'🧷',label:'尿布'},{type:'temperature',emoji:'🌡️',label:'体温'},{type:'medicine',emoji:'💊',label:'用药'},{type:'bath',emoji:'🛁',label:'洗澡'}]
 const retroActions=actions.slice(0,4)
 const haptic=useHaptic()
 const isNight=computed(()=>{const h=new Date().getHours();return h>=22||h<6})
 
-const stickerShow=ref(false);const stickerEmoji=ref('🌟');const stickerLabel=ref('');const stickerProgress=ref('')
+const stickerShow=ref(false);const stickerEmoji=ref('⭐')
 let stickerTimer:ReturnType<typeof setTimeout>|null=null
-function popSticker(emoji:string,label?:string){if(stickerTimer)clearTimeout(stickerTimer);stickerEmoji.value=emoji;stickerLabel.value=label||'';stickerProgress.value='';stickerShow.value=true;stickerTimer=setTimeout(()=>{stickerShow.value=false},1200)}
-const showStickerUnlock=(s:{emoji:string;label:string})=>{popSticker(s.emoji,s.label);stickerProgress.value='收集进度 '+stickersStore.completionRate+'%'}
-watch(()=>stickersStore.lastUnlocked,(ns:any)=>{if(ns&&ns.length>0)showStickerUnlock(ns[ns.length-1])},{deep:true})
-const stopOne=(id?:string)=>{recordsStore.stopTimer(id)}
-const stopAll=()=>{recordsStore.stopTimer()}
+function popSticker(emoji:string){if(stickerTimer)clearTimeout(stickerTimer);stickerEmoji.value=emoji;stickerShow.value=true;stickerTimer=setTimeout(()=>{stickerShow.value=false},750)}
 
-// 🔧 tick 由 recordsStore._tick 全局管理，页面不再维护独立 interval
-watch(()=>recordsStore.isRunning,r=>{if(r){haptic.heartbeatStart()}else{haptic.heartbeatStop()}},{immediate:true})
-onUnmounted(()=>{haptic.heartbeatStop();if(stickerTimer)clearTimeout(stickerTimer)})
-const runningElapsed=computed(()=>recordsStore.runningTimer?.elapsed??0)
+const tick=ref(0);let h:ReturnType<typeof setInterval>|null=null
+watch(()=>recordsStore.isRunning,r=>{if(r){haptic.heartbeatStart();h=setInterval(()=>tick.value++,1000)}else{haptic.heartbeatStop();if(h){clearInterval(h);h=null}}},{immediate:true})
+onUnmounted(()=>{if(h)clearInterval(h);haptic.heartbeatStop();if(stickerTimer)clearTimeout(stickerTimer)})
+const runningElapsed=computed(()=>{tick.value;return recordsStore.runningTimer?.elapsed??0})
 const runningName=computed(()=>{const t=recordsStore.runningTimer;return t?getName(t.babyId):''})
 const runningTwin=computed(()=>(recordsStore.runningTimer?.babyId===twins.value[0]?.id?'a':'b')as'a'|'b')
 const timerType=computed(()=>recordsStore.runningTimer?.type as 'feeding'|'sleep'|undefined)
@@ -188,21 +133,10 @@ const retroType=ref<RecordType>('feeding')
 function retro(m:number){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,retroType.value,undefined,m*60000);haptic.sparkle();syncStickers();popSticker('⏰')}
 	const todayStart=computed(()=>new Date().setHours(0,0,0,0))
 	const recentLogs=computed(()=>{const t0=todayStart.value;return recordsStore.logs.filter(l=>l.createdAt>=t0).sort((a,b)=>b.createdAt-a.createdAt)})
-		// 智能推荐：根据历史记录+时间间隔，推荐最可能的操作（1 tap 直达）
-		const smartSuggestions=computed(()=>{
-		  const now=Date.now();const FEED_GAP=2.5*3600000;const SLEEP_GAP=3*3600000
-		  const result=[]
-		  for(const t of twins.value){
-		    const logs=recordsStore.logs.filter(function(l){return l.babyId===t.id})
-		    const lastFeed=logs.filter(function(l){return l.type==="feeding"}).sort(function(a,b){return b.createdAt-a.createdAt})[0]
-		    if(!lastFeed||now-lastFeed.createdAt>FEED_GAP)result.push({babyId:t.id,babyName:t.nickname||t.name,type:"feeding",emoji:"🍼",reason:!lastFeed?"还没有喂奶记录":Math.floor((now-lastFeed.createdAt)/3600000)+"小时前"})
-		    const lastSleep=logs.filter(function(l){return l.type==="sleep"}).sort(function(a,b){return b.createdAt-a.createdAt})[0]
-		    if(!lastSleep||now-lastSleep.createdAt>SLEEP_GAP)result.push({babyId:t.id,babyName:t.nickname||t.name,type:"sleep",emoji:"😴",reason:!lastSleep?"还没有睡眠记录":Math.floor((now-lastSleep.createdAt)/3600000)+"小时前"})
-		  }
-		  return result.slice(0,2)
-		})
 	onMounted(()=>{uni.setNavigationBarTitle({title:"记录"});if(twins.value[0])sel.value=twins.value[0].id})
 onShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id})
+const stopOne=(id?:string)=>{recordsStore.stopTimer(id)}
+const stopAll=()=>{recordsStore.stopTimer()}
 </script>
 
 <style scoped>
@@ -210,25 +144,13 @@ onShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id})
 .bg-spot{position:absolute;pointer-events:none;z-index:0;border-radius:50%}
 .spot-a{width:420rpx;height:420rpx;top:80rpx;right:-160rpx;background:radial-gradient(circle,rgba(212,128,104,0.03) 0%,transparent 60%)}
 .spot-b{width:360rpx;height:360rpx;bottom:180rpx;left:-140rpx;background:radial-gradient(circle,rgba(224,123,62,0.03) 0%,transparent 60%)}
-.sticker-pop{position:fixed;top:38%;left:50%;transform:translate(-50%,-50%);z-index:99;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:4rpx}
-.sticker-pop-emoji{font-size:144rpx;animation:stampPop 1.2s var(--ease-bounce) forwards}
-.sticker-pop-label{font-family:var(--font-journal);font-size:36rpx;color:var(--ink);font-weight:700;animation:stampPop 1.2s var(--ease-bounce) .15s forwards}
-.sticker-pop-progress{font-size:24rpx;color:var(--ink-md);margin-top:8rpx;animation:stampPop 1.2s var(--ease-bounce) .25s forwards}
-@keyframes stampPop{0%{transform:scale(.2)rotate(-12deg);opacity:0}50%{transform:scale(1.3)rotate(3deg);opacity:1}80%{transform:scale(1)rotate(0);opacity:1}100%{transform:scale(1)rotate(0);opacity:0}}
+.sticker-pop{position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);z-index:99;pointer-events:none}
+.sticker-pop-emoji{font-size:128rpx;animation:stampPop .75s var(--ease-bounce) forwards}
+@keyframes stampPop{0%{transform:scale(.2)rotate(-12deg);opacity:0}55%{transform:scale(1.25)rotate(3deg);opacity:1}100%{transform:scale(1)rotate(0);opacity:0}}
 
 .baby-tabs{display:flex;gap:0;margin-bottom:32rpx;position:relative;z-index:1}
 .baby-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:8rpx;padding:20rpx;border-radius:20rpx 20rpx 0 0;opacity:.45;transition:opacity .2s,border-color .2s;border-bottom:3rpx solid transparent}
 .baby-tab.active{opacity:1}.baby-tab.tab-a.active{border-bottom-color:var(--amber);background:linear-gradient(to top,var(--amber-lt),transparent 60%)}.baby-tab.tab-b.active{border-bottom-color:var(--rose);background:linear-gradient(to top,var(--rose-lt),transparent 60%)}.tab-emoji{font-size:40rpx;transition:transform .3s var(--ease-bounce)}.baby-tab:active .tab-emoji{transform:scale(1.2)}.tab-name{font-family:var(--font-journal);font-size:26rpx;font-weight:700;color:var(--ink)}.tab-check{font-size:20rpx;color:var(--mint)}
-
-/* 智能推荐 */
-.smart-bar{display:flex;flex-direction:column;gap:12rpx;margin-bottom:24rpx;position:relative;z-index:1}
-.smart-hint{font-size:22rpx;color:var(--ink-lt)}
-.smart-chips{display:flex;gap:12rpx}
-.smart-chip{flex:1;display:flex;align-items:center;gap:10rpx;padding:18rpx 20rpx;background:linear-gradient(135deg,var(--amber-lt),var(--mint-lt));border:2rpx solid var(--amber);border-radius:var(--radius-md);transition:transform .15s var(--ease-bounce)}
-.smart-chip:active{transform:scale(.95)}
-.sc-emoji{font-size:36rpx}
-.sc-text{font-family:var(--font-journal);font-size:26rpx;font-weight:700;color:var(--ink)}
-.sc-reason{font-size:20rpx;color:var(--ink-md);margin-left:auto}
 
 .stamp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10rpx;margin-bottom:20rpx;position:relative;z-index:1}
 .stamp-btn{display:flex;flex-direction:column;align-items:center;gap:6rpx;padding:28rpx 8rpx;background:var(--cream);border:2rpx solid var(--dot);border-radius:20rpx;transition:transform .15s var(--ease-bounce),border-color .2s,background .2s}
@@ -245,74 +167,4 @@ onShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id})
 .dual-zone{display:flex;gap:12rpx;margin-bottom:12rpx;position:relative;z-index:1}.dual-card{flex:1;display:flex;flex-direction:column;align-items:center;gap:10rpx;padding:20rpx 8rpx;border-radius:24rpx}.dual-card.dc-a{background:var(--amber-lt);border:2rpx solid rgba(224,123,62,.1)}.dual-card.dc-b{background:var(--rose-lt);border:2rpx solid rgba(212,128,104,.1)}.dc-face{width:96rpx;height:96rpx;border-radius:50%;display:flex;align-items:center;justify-content:center}.dc-face.bg-a{background:var(--amber-md)}.dc-face.bg-b{background:var(--rose-md)}.dc-emoji{font-size:48rpx;animation:faceRock 3s ease-in-out infinite}.dc-name{font-family:var(--font-journal);font-size:24rpx;font-weight:700;color:var(--ink)}.dc-time{font-family:var(--font-journal);font-size:36rpx;color:var(--ink);letter-spacing:2rpx}.dc-stop{padding:6rpx 20rpx;border-radius:16rpx;border:1.5px solid var(--twin-danger);font-size:20rpx;color:var(--twin-danger)}.dc-stop:active{background:rgba(212,112,107,.06)}.stop-all{width:100%;padding:16rpx;background:transparent;border:2rpx solid var(--twin-danger);border-radius:24rpx;font-size:28rpx;font-weight:600;color:var(--twin-danger);position:relative;z-index:1}
 
 .timeline{padding-top:16rpx;position:relative;z-index:1}.tl-section{display:block;font-family:var(--font-journal);font-size:22rpx;color:var(--ink-lt);font-weight:600;margin-bottom:10rpx;padding-left:2rpx}.tl-item{display:flex;align-items:center;gap:12rpx;padding:10rpx 0}.tl-dot{width:7rpx;height:7rpx;border-radius:50%;flex-shrink:0}.tl-text{flex:1;font-size:26rpx;color:var(--ink)}.tl-when{flex-shrink:0;font-size:20rpx;color:var(--ink-lt)}
-
-/* 奶奶模式 — 极简3按钮 */
-.granny-record {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 60rpx 0;
-  position: relative;
-  z-index: 1;
-}
-.granny-record-title {
-  font-family: var(--font-journal);
-  font-size: 56rpx;
-  font-weight: 700;
-  color: var(--ink);
-  margin-bottom: 32rpx;
-}
-.granny-baby-switch {
-  display: flex;
-  gap: 24rpx;
-  margin-bottom: 64rpx;
-}
-.granny-switch-btn {
-  padding: 24rpx 48rpx;
-  border-radius: var(--radius-md);
-  font-size: 40rpx;
-  font-weight: 700;
-  background: var(--cream);
-  color: var(--ink-md);
-  border: 4rpx solid var(--dot);
-  transition: all .2s;
-}
-.granny-switch-btn.on {
-  border-color: var(--amber);
-  color: var(--amber);
-  background: var(--amber-lt);
-}
-.granny-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 56rpx;
-  width: 100%;
-  max-width: 560rpx;
-}
-.granny-record-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16rpx;
-  padding: 56rpx 0;
-  background: var(--cream);
-  border: 4rpx solid var(--dot);
-  border-radius: var(--radius-lg);
-  transition: transform .15s;
-}
-.granny-record-btn:active {
-  transform: scale(.95);
-  border-color: var(--amber);
-  background: var(--amber-lt);
-}
-.granny-btn-emoji {
-  font-size: 96rpx;
-}
-.granny-btn-label {
-  font-family: var(--font-journal);
-  font-size: 48rpx;
-  font-weight: 700;
-  color: var(--ink);
-}
 </style>
