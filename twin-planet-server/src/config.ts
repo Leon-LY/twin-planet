@@ -1,14 +1,22 @@
 /**
  * 配置加载 — 从环境变量读取，提供默认值
  */
+// 🔒 配置从环境变量读取，生产环境不提供 fallback 敏感值
+function requireEnv(key: string): string {
+  const val = process.env[key]
+  if (!val) {
+    throw new Error(`缺少必需的环境变量: ${key}`)
+  }
+  return val
+}
+
 export const config = {
-  port: parseInt(process.env.PORT || '3000', 10),
-  databaseUrl: process.env.DATABASE_URL || 'postgresql://twin_planet_user:tp_dev_2026@localhost:5432/twin_planet',
-  redisUrl: process.env.REDIS_URL || 'redis://localhost:6379/2',
-  jwtSecret: process.env.JWT_SECRET || 'dev-secret-change-in-production',
-  jwtExpiresIn: '24h',
+  port: parseInt(process.env.PORT || '3003', 10),
+  databaseUrl: process.env.DATABASE_URL || '',
+  jwtSecret: process.env.JWT_SECRET || '',
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '30d',
   wechat: {
-    appid: process.env.WECHAT_APPID || 'wxee2ef767a77058db',
+    appid: process.env.WECHAT_APPID || '',
     secret: process.env.WECHAT_SECRET || '',
   },
 }

@@ -29,6 +29,15 @@ recordsRouter.post('/', async (req: Request, res: Response) => {
     const { babyId, type, startedAt, endedAt, durationMin, detail, feedingSide, amountMl, sleepQuality, diaperType } = req.body
     if (!babyId || !type) return fail(res, '缺少必要字段：babyId, type')
 
+    // 🔒 验证 baby 归属当前用户
+    const ownerCheck = await query(
+      'SELECT id FROM babies WHERE id = $1 AND user_id = $2',
+      [babyId, req.user!.userId]
+    )
+    if (ownerCheck.rows.length === 0) {
+      return fail(res, '无权操作此宝宝的数据', 'FORBIDDEN', 403)
+    }
+
     const id = 'log-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6)
     const result = await query(
       `INSERT INTO records (id, baby_id, user_id, type, started_at, ended_at, duration_min, detail, feeding_side, amount_ml, sleep_quality, diaper_type)
@@ -66,8 +75,26 @@ recordsRouter.post('/batch', async (req: Request, res: Response) => {
     if (!Array.isArray(records) || records.length === 0) {
       return fail(res, '请提供要同步的记录数组')
     }
+    // 🔒 限制每批最多 200 条
+    if (records.length > 200) {
+      return fail(res, '每批最多同步 200 条记录')
+    }
+
+    // 🔒 验证所有 baby 归属当前用户
+    const babyIds = [...new Set(records.map((r: any) => r.babyId))]
+    const ownerCheck = await query(
+      'SELECT id FROM babies WHERE id = ANY($1) AND user_id = $2',
+      [babyIds, req.user!.userId]
+    )
+    const validBabyIds = new Set(ownerCheck.rows.map((r: any) => r.id))
+    const validRecords = records.filter((r: any) => validBabyIds.has(r.babyId))
+    if (validRecords.length === 0) {
+      return fail(res, '没有有效的宝宝记录', 'FORBIDDEN', 403)
+    }
+
     let synced = 0
-    for (const r of records) {
+    let skipped = records.length - validRecords.length
+    for (const r of validRecords) {
       const result = await query(
         `INSERT INTO records (id, baby_id, user_id, type, started_at, ended_at, duration_min, detail, feeding_side, amount_ml, sleep_quality, diaper_type, created_at)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
@@ -81,7 +108,7 @@ recordsRouter.post('/batch', async (req: Request, res: Response) => {
       )
       if (result.rows.length > 0) synced++
     }
-    return ok(res, { synced })
+    return ok(res, { synced, skipped })
   } catch (err: any) {
     return fail(res, '批量同步失败', 'BATCH_FAILED', 500)
   }

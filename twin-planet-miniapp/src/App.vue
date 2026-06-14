@@ -1,34 +1,42 @@
 <script>
 export default {
   onLaunch() {
-    try {
-      const app = getApp()
-      if (app) {
-        const hour = new Date().getHours()
-        const isNight = hour >= 22 || hour < 6
-        app.globalData = app.globalData || {}
-        app.globalData.__theme = isNight ? 'dark' : 'light'
-      }
-    } catch (_) {}
+    this._syncTheme()
+    // 每小时检查一次暗色模式切换
+    this._themeTimer = setInterval(() => this._syncTheme(), 60 * 60 * 1000)
   },
   onShow() {
-    try {
-      const app = getApp()
-      if (app && app.globalData) {
-        const hour = new Date().getHours()
-        const isNight = hour >= 22 || hour < 6
-        app.globalData.__theme = isNight ? 'dark' : 'light'
-      }
-    } catch (_) {}
+    this._syncTheme()
   },
-  onHide() {},
+  onHide() {
+    // keep timer running while app is in background
+  },
+  methods: {
+    _syncTheme() {
+      try {
+        const app = getApp()
+        if (app) {
+          const hour = new Date().getHours()
+          const isNight = hour >= 22 || hour < 6
+          app.globalData = app.globalData || {}
+          app.globalData.__theme = isNight ? 'dark' : 'light'
+        }
+      } catch (_) {}
+    },
+  },
+  beforeDestroy() {
+    if (this._themeTimer) {
+      clearInterval(this._themeTimer)
+      this._themeTimer = null
+    }
+  },
 }
 </script>
 
 <style>
 /* ================================================================
    双宝星球 v5 · Twin Planet
-   设计方向：星球探险 × 玩具触感 × 手帐记录
+   设计方向：星球探险 × 玩具触感 × 手帳记录
    ================================================================ */
 page {
   --paper:  #FEF9F0;
@@ -49,7 +57,7 @@ page {
   --dot:    #E8DCC8;
 
   --font-journal: Georgia, KaiTi, STKaiti, serif;
-  --font-ui: PingFang SC, Microsoft YaHei, sans-serif;
+  --font-ui: 'PingFang SC', 'Microsoft YaHei', sans-serif;
 
   --radius-sm:12rpx;--radius-md:20rpx;--radius-lg:28rpx;--radius-full:9999rpx;
   --space-xs:8rpx;--space-sm:14rpx;--space-md:28rpx;--space-lg:48rpx;
@@ -84,7 +92,7 @@ page {
 
   background:var(--paper);
   color:var(--ink);
-  font-family:PingFang SC,Microsoft YaHei,sans-serif;
+  font-family:'PingFang SC','Microsoft YaHei',sans-serif;
 }
 
 .page-shell{min-height:100vh;background:var(--paper);padding:48rpx 28rpx calc(64rpx + env(safe-area-inset-bottom))}
@@ -103,8 +111,8 @@ page {
 
 /* 全局暖光斑 */
 .bg-spot{position:absolute;pointer-events:none;z-index:0;border-radius:50%;animation:spot-drift 30s ease-in-out infinite alternate}
-.spot-a{width:360rpx;height:360rpx;top:100rpx;right:-120rpx;background:radial-gradient(circle,rgba(212,128,104,0.03) 0%,transparent 60%)}
-.spot-b{width:300rpx;height:300rpx;bottom:240rpx;left:-100rpx;background:radial-gradient(circle,rgba(224,123,62,0.03) 0%,transparent 60%)}
+.spot-a{width:360rpx;height:360rpx;top:100rpx;right:-120rpx;background:radial-gradient(circle,var(--rose-lt) 0%,transparent 60%)}
+.spot-b{width:300rpx;height:300rpx;bottom:240rpx;left:-100rpx;background:radial-gradient(circle,var(--amber-lt) 0%,transparent 60%)}
 @keyframes spot-drift{from{transform:translate(0,0)}to{transform:translate(20rpx,-15rpx)}}
 
 /* 全局手写体页头 */
@@ -117,6 +125,27 @@ page {
 .page-enter{animation:revealUp .5s var(--ease-soft) both}
 @keyframes revealUp{from{opacity:0;transform:translateY(18rpx)}to{opacity:1;transform:translateY(0)}}
 
+/* 奶奶模式 — 全局大字 */
+.font-large {
+  --font-caption:28rpx;
+  --font-body:36rpx;
+  --font-card:40rpx;
+  --font-title:52rpx;
+  --font-hero:64rpx;
+  --font-xs:28rpx;
+  --font-sm:32rpx;
+  --font-base:36rpx;
+  --font-md:44rpx;
+  --font-lg:56rpx;
+  --touch-min:108rpx;
+  --space-md:40rpx;
+  --space-lg:60rpx;
+}
+/* 奶奶模式 — 禁用动画 */
+.font-large .bg-spot { animation: none !important; }
+.font-large .page-enter { animation: none !important; }
+.font-large * { animation-duration: 0s !important; transition-duration: 0s !important; }
+
 /* 奶奶模式高对比度 */
 .role-granny {
   --amber: #C06A2E;
@@ -128,11 +157,14 @@ page {
 /* 暗色模式 */
 .theme-dark{
   --paper:#1E1C18;--cream:#282520;--ink:#EBE5D8;--ink-md:#9C9488;--ink-lt:#6B6558;--dot:#3D3830;
-  --amber-lt:rgba(224,123,62,0.1);--amber-md:rgba(224,123,62,0.2);
-  --rose-lt:rgba(212,128,104,0.1);--rose-md:rgba(212,128,104,0.2);
-  --mint-lt:rgba(92,154,110,0.08);--gold-lt:rgba(200,153,62,0.1);
+  --amber:#E8915A;--rose:#E09A80;--mint:#6DAE7C;--gold:#D4A84E;
+  --amber-lt:rgba(232,145,90,0.12);--amber-md:rgba(232,145,90,0.22);
+  --rose-lt:rgba(224,154,128,0.12);--rose-md:rgba(224,154,128,0.22);
+  --mint-lt:rgba(109,174,124,0.1);--gold-lt:rgba(212,168,78,0.12);
+  --twin-shadow-sm:0 2rpx 8rpx rgba(0,0,0,0.2);--twin-shadow-md:0 4rpx 16rpx rgba(0,0,0,0.3);
+  --twin-hover:rgba(235,229,216,0.1);
   --surface-card:var(--cream);--border-void:var(--dot);
-  --twin-a-glow:rgba(224,123,62,0.25);--twin-b-glow:rgba(212,128,104,0.25);
-  --twin-text-tertiary:var(--ink-lt);--twin-hover:rgba(235,229,216,0.1);
+  --twin-a-glow:rgba(232,145,90,0.2);--twin-b-glow:rgba(224,154,128,0.2);
+  --twin-text-tertiary:var(--ink-lt);
 }
 </style>

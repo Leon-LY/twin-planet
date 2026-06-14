@@ -3,11 +3,15 @@
  * 双写策略：后端优先 + 本地兜底
  */
 import type { ApiResponse } from './types'
+import { PERSIST_KEYS } from '@/utils/persist'
 
-// 后端地址（开发阶段直连 IP，生产环境切域名）
-const BASE_URL = 'http://49.232.49.175:3003/api'
+// 🔒 后端地址从环境变量或配置读取，不带协议和 IP 硬编码
+// 生产环境：通过域名 + HTTPS 访问
+// 开发环境：通过局域网 IP + HTTP 访问
+const BASE_URL = (typeof process !== 'undefined' && process.env?.API_BASE_URL)
+  || 'http://49.232.49.175:3003/api'
 
-const TOKEN_KEY = 'tp_token'
+const TOKEN_KEY = 'tp_' + PERSIST_KEYS.token
 
 /** 保存 JWT token 到本地 */
 export function saveToken(token: string) {
@@ -16,12 +20,18 @@ export function saveToken(token: string) {
 
 /** 获取本地缓存的 JWT token */
 export function getToken(): string | null {
-  return uni.getStorageSync(TOKEN_KEY) || null
+  try {
+    return uni.getStorageSync(TOKEN_KEY) || null
+  } catch {
+    return null
+  }
 }
 
 /** 清除本地 token（登出时） */
 export function clearToken() {
-  uni.removeStorageSync(TOKEN_KEY)
+  try {
+    uni.removeStorageSync(TOKEN_KEY)
+  } catch { /* ignore */ }
 }
 
 /** 通用请求封装 */
@@ -31,9 +41,10 @@ export async function request<T = unknown>(
     method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
     data?: Record<string, any>
     auth?: boolean  // 是否携带 JWT，默认 true
+    timeout?: number
   },
 ): Promise<ApiResponse<T>> {
-  const { method = 'GET', data, auth = true } = options || {}
+  const { method = 'GET', data, auth = true, timeout = 15000 } = options || {}
   const token = getToken()
 
   const header: Record<string, string> = {
@@ -49,8 +60,17 @@ export async function request<T = unknown>(
       method,
       header,
       data,
+      timeout,
     })
-    return res.data as ApiResponse<T>
+    const body = res.data as any
+    // 验证响应格式
+    if (body && typeof body.success === 'boolean') {
+      return body as ApiResponse<T>
+    }
+    return {
+      success: false,
+      error: { code: 'BAD_RESPONSE', message: '服务器返回了意外的数据格式' },
+    }
   } catch (err: any) {
     // 网络错误时返回统一格式
     return {

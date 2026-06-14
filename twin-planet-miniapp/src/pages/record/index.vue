@@ -95,6 +95,7 @@
 
 <script setup lang="ts">
 import {computed,ref,onMounted,onUnmounted,watch} from 'vue'
+import {onShow} from '@dcloudio/uni-app'
 import {useBabiesStore} from '@/stores/babies'
 import {useRecordsStore,type RecordType} from '@/stores/records'
 import {timeAgo, formatElapsed} from '@/utils/format'
@@ -129,11 +130,10 @@ function quickNight(){const id=sel.value||twins.value[0]?.id;if(!id)return;recor
 function dualLog(t:RecordType){const a=twins.value[0],b=twins.value[1];if(a)recordsStore.quickLog(a.id,t);if(b)recordsStore.quickLog(b.id,t);haptic.doubleBeat();syncStickers();popSticker('🔗')}
 const retroType=ref<RecordType>('feeding')
 function retro(m:number){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,retroType.value,undefined,m*60000);haptic.sparkle();syncStickers();popSticker('⏰')}
-function stopOne(id:string|undefined){if(!id)return;const l=recordsStore.stopTimer(id);haptic.thump();syncStickers();if(l){popSticker(l.type==='feeding'?'🍼':l.type==='sleep'?'😴':'✅')}}
-function stopAll(){let c=0;for(const t of recordsStore.runningTimers){if(recordsStore.stopTimer(t.babyId))c++};haptic.thump();syncStickers();if(c>0)popSticker('✅')}
-const t0=new Date().setHours(0,0,0,0)
-const recentLogs=computed(()=>recordsStore.logs.filter(l=>l.createdAt>=t0).sort((a,b)=>b.createdAt-a.createdAt))
-onMounted(()=>{uni.setNavigationBarTitle({title:'记录'});if(twins.value[0])sel.value=twins.value[0].id})
+	const todayStart=computed(()=>new Date().setHours(0,0,0,0))
+	const recentLogs=computed(()=>{const t0=todayStart.value;return recordsStore.logs.filter(l=>l.createdAt>=t0).sort((a,b)=>b.createdAt-a.createdAt)})
+	onMounted(()=>{uni.setNavigationBarTitle({title:"记录"});if(twins.value[0])sel.value=twins.value[0].id})
+tonShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id})
 </script>
 
 <style scoped>
