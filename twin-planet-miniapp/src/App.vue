@@ -144,7 +144,7 @@ page {
 /* 奶奶模式 — 禁用动画 */
 
 
-.font-large .bg-spot,.font-large .page-enter{animation:none!important}
+.font-large .bg-spot,.font-large .page-enter{animation:none!important}.font-large * { animation-duration: 0s !important; transition-duration: 0s !important; }
 
 /* 奶奶模式高对比度 */
 .role-granny {
