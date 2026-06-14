@@ -132,10 +132,18 @@ const CHART_W=345;const CHART_H=320
 const chartWidth=computed(()=>Math.min(uni.getSystemInfoSync().windowWidth-30,375))
 const chartHeight=ref(CHART_H)
 
-// 获取宝宝月龄
-function calcAgeMonths(birthDate:string):number{
+// 获取宝宝月龄（早产儿 <37 周使用矫正月龄）
+const TERM_WEEKS = 37
+function calcAgeMonths(birthDate:string, gestationalWeeks?:number):number{
   const b=new Date(birthDate);const n=new Date()
-  return(n.getFullYear()-b.getFullYear())*12+(n.getMonth()-b.getMonth())
+  const chronAge=(n.getFullYear()-b.getFullYear())*12+(n.getMonth()-b.getMonth())
+  // 早产儿矫正：矫正月龄 = 实际月龄 - (40 - 胎龄) / 4
+  if (gestationalWeeks && gestationalWeeks < TERM_WEEKS) {
+    const prematurityMonths = (40 - gestationalWeeks) / 4
+    const corrected = chronAge - prematurityMonths
+    return Math.max(0, Math.round(corrected))
+  }
+  return chronAge
 }
 
 // 真实测量数据
@@ -148,7 +156,7 @@ const latestB=computed(()=>babyB.value?growthStore.latestForBaby(babyB.value.id)
 function calcPercentile(baby:any,latest:any):number{
   if(!baby||!latest)return 0
   const gender:Gender=baby.gender==='male'?'male':'female'
-  const ageMonths=calcAgeMonths(baby.birthDate)
+  const ageMonths=calcAgeMonths(baby.birthDate, (baby as any).gestationalWeeks)
   const lms=getLMS(gender,indicator.value,Math.min(ageMonths,60))
   if(!lms)return 0
   const val=indicator.value==='weight'?latest.weight:latest.height
@@ -178,8 +186,8 @@ const chartOption=computed(()=>{
   const baby=babyA.value||babyB.value
   const gender:Gender=baby?.gender==='male'?'male':'female'
   const maxAge=Math.max(
-    babyA.value?calcAgeMonths(babyA.value.birthDate):24,
-    babyB.value?calcAgeMonths(babyB.value.birthDate):24
+    babyA.value?calcAgeMonths(babyA.value.birthDate, (babyA.value as any).gestationalWeeks):24,
+    babyB.value?calcAgeMonths(babyB.value.birthDate, (babyB.value as any).gestationalWeeks):24
   )
   const p3=getPercentileCurve(gender,indicator.value,3)
   const p50=getPercentileCurve(gender,indicator.value,50)
@@ -217,13 +225,13 @@ const chartOption=computed(()=>{
 })
 
 // 添加测量表单
-	// 百分位白话解释
+	// 百分位说明 — 纯描述性语言，不做健康判断（安全红线 #1）
 	function percentileHint(p:number):string{
-	  if(p<3)return '(可以咨询儿科医生了解详情)'
-	  if(p<15)return '(正在以自己的节奏成长)'
-	  if(p<85)return '(在健康范围内，长得很好)'
-	  if(p<97)return '(长得很好，每个宝宝节奏不同)'
-	  return '(可以咨询儿科医生了解详情)'
+	  if(p<3)return '(低于 WHO 标准第 3 百分位，建议与儿科医生保持定期随访)'
+	  if(p<15)return '(在 WHO 标准第 3-15 百分位区间)'
+	  if(p<85)return '(在 WHO 标准第 15-85 百分位区间)'
+	  if(p<97)return '(在 WHO 标准第 85-97 百分位区间)'
+		return '(高于 WHO 标准第 97 百分位，建议与儿科医生保持定期随访)'
 	}
 
 const showAdd=ref(false)
@@ -241,7 +249,7 @@ function submitMeasurement(){
   growthStore.addMeasurement({
     babyId:addBabyId.value,
     date:addDate.value,
-    ageMonths:calcAgeMonths(baby.birthDate),
+    ageMonths:calcAgeMonths(baby.birthDate, (baby as any).gestationalWeeks),
     weight:parseFloat(addWeight.value)||0,
     height:parseFloat(addHeight.value)||0,
   })

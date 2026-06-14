@@ -21,12 +21,24 @@ export function useQuickRef() {
 
   const quickRef = computed<QuickRef>(() => {
     const logs = recordsStore.logs
-    const now = Date.now()
 
-    function lastOf(type: string): string {
-      const log = logs.find(l => l.type === type && l.endedAt > 0)
-      if (!log) return '—'
-      return timeAgo(log.endedAt || log.createdAt)
+    /** 获取某个类型最近一条记录的宝宝名 + 相对时间 */
+    function lastOf(type: string, babyId?: string): { babyName: string; time: string } | null {
+      const filtered = logs
+        .filter(l => l.type === type && l.endedAt > 0 && (!babyId || l.babyId === babyId))
+        .sort((a, b) => (b.endedAt || b.createdAt) - (a.endedAt || a.createdAt))
+      if (!filtered.length) return null
+      const log = filtered[0]
+      return {
+        babyName: log.babyName || (log.babyId === babiesStore.babyA?.id ? (babiesStore.babyA?.nickname || '大宝') : (babiesStore.babyB?.nickname || '二宝')),
+        time: timeAgo(log.endedAt || log.createdAt),
+      }
+    }
+
+    /** 格式化「宝宝名 X分钟前」 */
+    function fmt(r: { babyName: string; time: string } | null): string {
+      if (!r) return '—'
+      return `${r.babyName} ${r.time}`
     }
 
     // 运行中的计时器
@@ -42,9 +54,9 @@ export function useQuickRef() {
     }
 
     return {
-      lastFeeding: lastOf('feeding'),
-      lastSleep: lastOf('sleep'),
-      lastDiaper: lastOf('diaper'),
+      lastFeeding: fmt(lastOf('feeding')),
+      lastSleep: fmt(lastOf('sleep')),
+      lastDiaper: fmt(lastOf('diaper')),
       activeTimer,
     }
   })

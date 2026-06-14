@@ -26,7 +26,7 @@ recordsRouter.get('/', async (req: Request, res: Response) => {
 // POST /api/records
 recordsRouter.post('/', async (req: Request, res: Response) => {
   try {
-    const { babyId, type, startedAt, endedAt, durationMin, detail, feedingSide, amountMl, sleepQuality, diaperType } = req.body
+    const { babyId, type, startedAt, endedAt, durationMin, detail, feedingSide, amountMl, sleepQuality, diaperType, recordedBy } = req.body
     if (!babyId || !type) return fail(res, '缺少必要字段：babyId, type')
 
     // 🔒 验证 baby 归属当前用户
@@ -40,13 +40,14 @@ recordsRouter.post('/', async (req: Request, res: Response) => {
 
     const id = 'log-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6)
     const result = await query(
-      `INSERT INTO records (id, baby_id, user_id, type, started_at, ended_at, duration_min, detail, feeding_side, amount_ml, sleep_quality, diaper_type)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *`,
+      `INSERT INTO records (id, baby_id, user_id, type, started_at, ended_at, duration_min, detail, feeding_side, amount_ml, sleep_quality, diaper_type, recorded_by)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) RETURNING *`,
       [id, babyId, req.user!.userId, type,
        startedAt ? new Date(startedAt) : new Date(),
        endedAt ? new Date(endedAt) : null,
        durationMin || 0, detail || '',
-       feedingSide || null, amountMl || null, sleepQuality || null, diaperType || null]
+       feedingSide || null, amountMl || null, sleepQuality || null, diaperType || null,
+       recordedBy || req.user!.role || 'mom']
     )
     return ok(res, result.rows[0])
   } catch (err: any) {
@@ -100,19 +101,20 @@ recordsRouter.post('/batch', async (req: Request, res: Response) => {
       const params: any[] = []
       let idx = 1
       for (const r of validRecords) {
-        values.push(`($${idx},$${idx+1},$${idx+2},$${idx+3},$${idx+4},$${idx+5},$${idx+6},$${idx+7},$${idx+8},$${idx+9},$${idx+10},$${idx+11},$${idx+12})`)
+        values.push(`($${idx},$${idx+1},$${idx+2},$${idx+3},$${idx+4},$${idx+5},$${idx+6},$${idx+7},$${idx+8},$${idx+9},$${idx+10},$${idx+11},$${idx+12},$${idx+13})`)
         params.push(
           r.id, r.babyId, req.user!.userId, r.type,
           r.startedAt ? new Date(r.startedAt) : new Date(),
           r.endedAt ? new Date(r.endedAt) : null,
           r.durationMin || 0, r.detail || '',
           r.feedingSide || null, r.amountMl || null, r.sleepQuality || null, r.diaperType || null,
-          r.createdAt ? new Date(r.createdAt) : new Date()
+          r.createdAt ? new Date(r.createdAt) : new Date(),
+          r.recordedBy || req.user!.role || 'mom'
         )
-        idx += 13
+        idx += 14
       }
       const result = await query(
-        `INSERT INTO records (id, baby_id, user_id, type, started_at, ended_at, duration_min, detail, feeding_side, amount_ml, sleep_quality, diaper_type, created_at)
+        `INSERT INTO records (id, baby_id, user_id, type, started_at, ended_at, duration_min, detail, feeding_side, amount_ml, sleep_quality, diaper_type, created_at, recorded_by)
          VALUES ${values.join(',')}
          ON CONFLICT (id) DO NOTHING`,
         params

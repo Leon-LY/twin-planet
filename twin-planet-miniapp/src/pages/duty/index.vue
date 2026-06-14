@@ -118,7 +118,7 @@ onMounted(() => {
   if (store.tasks.length === 0) startDuty()
 })
 
-tonShareAppMessage(() => ({ title: "🦸 双宝记 · 值班清单", path: "/pages/index/index", imageUrl: "/static/share-brand.png" }))
+onShareAppMessage(() => ({ title: "🦸 双宝记 · 值班清单", path: "/pages/index/index", imageUrl: "/static/share-brand.png" }))
 onShow(() => {
   alertsStore.checkAlerts()
 })

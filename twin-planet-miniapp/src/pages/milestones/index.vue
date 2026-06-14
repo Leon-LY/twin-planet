@@ -8,10 +8,10 @@
 
     <!-- 宝宝切换 -->
     <view class="baby-tabs">
-      <view class="baby-tab" :class="{ active: activeBabyId === babyA?.id, blue: true }" @click="activeBabyId = babyA?.id ?? ''">
+      <view class="baby-tab" :class="{ active: activeBabyId === babyA?.id, amber: true }" @click="activeBabyId = babyA?.id ?? ''">
         <text>{{ babyA?.nickname || '大宝' }}</text>
       </view>
-      <view class="baby-tab" :class="{ active: activeBabyId === babyB?.id, pink: true }" @click="activeBabyId = babyB?.id ?? ''">
+      <view class="baby-tab" :class="{ active: activeBabyId === babyB?.id, rose: true }" @click="activeBabyId = babyB?.id ?? ''">
         <text>{{ babyB?.nickname || '二宝' }}</text>
       </view>
     </view>

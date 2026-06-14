@@ -48,12 +48,16 @@
             "minified" : true
         },
         "usingComponents" : true,
-        "lazyCodeLoading" : "requiredComponents",
         "optimization" : {
             "subPackages" : true
         },
-        "permission": {},
-        "requiredPrivateInfos" : [],
+        "permission": {
+            "scope.record": {
+                "desc": "用于录制交接班语音便签"
+            }
+        },
+        "requiredPrivateInfos" : ["chooseAvatar", "chooseAddress"],
+        "__usePrivacyCheck__": true,
         "plugins" : {}
     },
     "mp-alipay" : {

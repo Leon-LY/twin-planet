@@ -34,7 +34,7 @@
     <view class="compare-section">
       <text class="card-title">⚖️ 同班 vs 分班</text>
       <view class="compare-cols">
-        <view class="compare-col blue">
+        <view class="compare-col amber">
           <text class="col-title">同班</text>
           <text class="col-item">✅ 接送方便，只去一个教室</text>
           <text class="col-item">✅ 家长会、作业同步</text>
@@ -42,7 +42,7 @@
           <text class="col-item risk">⚠️ 老师不自觉会比较</text>
           <text class="col-item risk">⚠️ 可能与对方"绑定"影响社交</text>
         </view>
-        <view class="compare-col pink">
+        <view class="compare-col rose">
           <text class="col-title">分班</text>
           <text class="col-item">✅ 各自独立空间，不被标签化</text>
           <text class="col-item">✅ 发展独立朋友圈</text>

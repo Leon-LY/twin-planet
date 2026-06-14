@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS babies (
   avatar VARCHAR(512) DEFAULT '',
   birth_weight REAL DEFAULT 0,
   birth_height REAL DEFAULT 0,
+  gestational_weeks INT,
   is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -74,6 +75,7 @@ CREATE TABLE IF NOT EXISTS records (
   amount_ml INT,
   sleep_quality INT CHECK (sleep_quality BETWEEN 1 AND 5),
   diaper_type VARCHAR(10) CHECK (diaper_type IN ('wet','dirty','both')),
+  recorded_by VARCHAR(20) DEFAULT 'mom' CHECK (recorded_by IN ('mom','dad','grandma','grandpa','nanny','other')),
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

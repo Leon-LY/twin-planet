@@ -24,7 +24,7 @@ export default {
       } catch (_) {}
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this._themeTimer) {
       clearInterval(this._themeTimer)
       this._themeTimer = null

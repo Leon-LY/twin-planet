@@ -7,6 +7,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useBabiesStore, type Baby } from './babies'
 import { useStickersStore, type StickerContext } from './stickers'
+import { useUserStore } from './user'
 import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 
 export type RecordType = 'feeding' | 'sleep' | 'diaper' | 'temperature' | 'medicine' | 'bath'
@@ -38,6 +39,8 @@ export interface RecordLog {
   durationMin: number
   detail: string          // "母乳左 120ml 20分钟" / "午睡 45分钟" / "湿尿布"
   createdAt: number
+  /** 记录者角色：mom/dad/grandma/grandpa/nanny，用于判断信息可靠性 */
+  recordedBy?: string
   // 扩展字段
   diaperType?: 'wet' | 'dirty' | 'both'
 }
@@ -53,23 +56,42 @@ export const useRecordsStore = defineStore('records', () => {
   const logs = ref<RecordLog[]>(_p.load() ?? [])
   const selectedBabyId = ref<string | null>(null)
 
-  // 恢复持久化的计时器（App 被杀后恢复）
+  // 恢复持久化的计时器（App 被杀后恢复）—— 支持双计时器
   try {
-    const raw = uni.getStorageSync('tp_active_timer')
+    const raw = uni.getStorageSync('tp_active_timers')
     if (raw) {
-      const saved = JSON.parse(raw)
-      if (saved.babyId && saved.type && saved.startedAt) {
-        const elapsed = Math.floor((Date.now() - saved.startedAt) / 1000)
-        const handle = setInterval(() => {
-          if (_timers.value[saved.babyId]) {
-            _timers.value = { ..._timers.value, [saved.babyId]: { ..._timers.value[saved.babyId], elapsed: _timers.value[saved.babyId].elapsed + 1 } }
-          }
-        }, 1000)
-        _timers.value = { [saved.babyId]: { babyId: saved.babyId, type: saved.type, startedAt: saved.startedAt, elapsed, timerHandle: handle } }
-        console.log('[records] Restored active timer for', saved.babyId)
+      const savedList: Array<{ babyId: string; type: RecordType; startedAt: number }> = JSON.parse(raw)
+      if (Array.isArray(savedList) && savedList.length) {
+        const restored: Record<string, TimerState> = {}
+        for (const saved of savedList) {
+          if (!saved.babyId || !saved.type || !saved.startedAt) continue
+          const elapsed = Math.floor((Date.now() - saved.startedAt) / 1000)
+          const handle = setInterval(() => {
+            if (_timers.value[saved.babyId]) {
+              _timers.value = { ..._timers.value, [saved.babyId]: { ..._timers.value[saved.babyId], elapsed: _timers.value[saved.babyId].elapsed + 1 } }
+            }
+          }, 1000)
+          restored[saved.babyId] = { babyId: saved.babyId, type: saved.type, startedAt: saved.startedAt, elapsed, timerHandle: handle }
+          console.log('[records] Restored active timer for', saved.babyId)
+        }
+        _timers.value = restored
       }
     }
   } catch {}
+
+  /** 持久化所有活跃计时器（支持双计时器同时运行） */
+  function _saveActiveTimers() {
+    try {
+      const activeTimers = Object.values(_timers.value).map(t => ({
+        babyId: t.babyId, type: t.type, startedAt: t.startedAt,
+      }))
+      if (activeTimers.length) {
+        uni.setStorageSync('tp_active_timers', JSON.stringify(activeTimers))
+      } else {
+        uni.removeStorageSync('tp_active_timers')
+      }
+    } catch {}
+  }
 
   function _saveLogs() {
     _p.save(logs.value.slice(-200)) // 只保留最近 200 条，控制存储体积
@@ -159,6 +181,7 @@ export const useRecordsStore = defineStore('records', () => {
       const newTimers = { ..._timers.value }
       delete newTimers[babyId]
       _timers.value = newTimers
+      _saveActiveTimers()
       return null
     }
 
@@ -167,6 +190,7 @@ export const useRecordsStore = defineStore('records', () => {
       const newTimers = { ..._timers.value }
       delete newTimers[babyId]
       _timers.value = newTimers
+      _saveActiveTimers()
       return null
     }
 
@@ -200,6 +224,7 @@ export const useRecordsStore = defineStore('records', () => {
       detail,
       createdAt: endedAt,
       diaperType: timer.diaperType,
+      recordedBy: useUserStore().profile?.role,
     }
 
     logs.value = [...logs.value, log]
@@ -210,10 +235,8 @@ export const useRecordsStore = defineStore('records', () => {
     const newTimers = { ..._timers.value }
     delete newTimers[babyId]
     _timers.value = newTimers
-    // 清除持久化的计时器
-    if (Object.keys(newTimers).length === 0) {
-      try { uni.removeStorageSync('tp_active_timer') } catch {}
-    }
+    // 更新持久化的计时器列表
+    _saveActiveTimers()
 
     return log
   }
@@ -247,8 +270,8 @@ export const useRecordsStore = defineStore('records', () => {
         timerHandle: handle,
       },
     }
-    // 持久化计时器状态，防止 App 被杀后丢失
-    try { uni.setStorageSync('tp_active_timer', JSON.stringify({ babyId, type, startedAt: Date.now() })) } catch {}
+    // 持久化所有活跃计时器，防止 App 被杀后丢失
+    _saveActiveTimers()
     selectedBabyId.value = babyId
   }
 
@@ -292,11 +315,37 @@ export const useRecordsStore = defineStore('records', () => {
       durationMin: 0,
       detail,
       createdAt: now,
+      recordedBy: useUserStore().profile?.role,
     }
     logs.value = [...logs.value, log]
     _saveLogs()
     _syncStickersAuto()  // 自动检查贴纸解锁
   }
+
+  /** 从服务器合并日志（保留本地唯一记录，避免外部直接赋值绕过持久化） */
+  function mergeServerLogs(serverLogs: Array<{
+    id: string; baby_id: string; type: RecordType; started_at: string
+    duration_min: number; detail: string; created_at: string
+  }>) {
+    const existingIds = new Set(logs.value.map(l => l.id))
+    const newLogs: RecordLog[] = []
+    for (const r of serverLogs) {
+      if (existingIds.has(r.id)) continue
+      newLogs.push({
+        id: r.id, babyId: r.baby_id, babyName: '', babyColor: '',
+        type: r.type, startedAt: new Date(r.started_at).getTime(),
+        endedAt: 0, durationMin: r.duration_min, detail: r.detail,
+        createdAt: new Date(r.created_at).getTime(),
+        recordedBy: (r as any).recorded_by,
+      })
+    }
+    if (newLogs.length) {
+      logs.value = [...logs.value, ...newLogs]
+      _saveLogs()
+    }
+    return newLogs.length
+  }
+
   const journalInsight = computed(() => {
     const todayLogs = logs.value.filter(l => l.createdAt >= new Date().setHours(0,0,0,0))
     const total = todayLogs.length
@@ -336,11 +385,13 @@ export const useRecordsStore = defineStore('records', () => {
     const dates = [...new Set(logs.value.map(l => new Date(l.createdAt).toISOString().slice(0,10)))].sort().reverse()
     const today = new Date().toISOString().slice(0,10)
     const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10)
+    // 最近记录日必须是今天或昨天，否则连续已断
     if (dates[0] !== today && dates[0] !== yesterday) return 0
-    let streak = dates[0] === today ? 1 : 0
+    // 修复 off-by-one：最近记录日是今天或昨天，都应该从 1 开始计数
+    let streak = 1
     for (let i = 1; i < dates.length; i++) {
-      const d = new Date(dates[i-1]); d.setDate(d.getDate() - 1)
-      if (dates[i] === d.toISOString().slice(0,10)) streak++
+      const prev = new Date(dates[i-1]); prev.setDate(prev.getDate() - 1)
+      if (dates[i] === prev.toISOString().slice(0,10)) streak++
       else break
     }
     return streak
@@ -350,7 +401,7 @@ export const useRecordsStore = defineStore('records', () => {
     _timers, logs, selectedBabyId,
     isRunning, runningTimer, runningTimers, recentLogsByBaby,
     isBabyRunning, getTimer,
-    startTimer, stopTimer, quickLog,
+    startTimer, stopTimer, quickLog, mergeServerLogs,
     journalInsight, twinSyncRate, streakDays,
   }
 })

@@ -104,7 +104,7 @@
 
 <script setup lang="ts">
 import {computed,ref,onMounted,onUnmounted,watch} from 'vue'
-import {onShow} from '@dcloudio/uni-app'
+import {onShow,onHide} from '@dcloudio/uni-app'
 import { onShareAppMessage } from '@dcloudio/uni-app'
 import {useBabiesStore} from '@/stores/babies'
 import {useRecordsStore,type RecordType} from '@/stores/records'
@@ -127,6 +127,7 @@ function popSticker(emoji:string){if(stickerTimer)clearTimeout(stickerTimer);sti
 const tick=ref(0);let h:ReturnType<typeof setInterval>|null=null
 watch(()=>recordsStore.isRunning,r=>{if(r){haptic.heartbeatStart();h=setInterval(()=>tick.value++,1000)}else{haptic.heartbeatStop();if(h){clearInterval(h);h=null}}},{immediate:true})
 onUnmounted(()=>{if(h)clearInterval(h);haptic.heartbeatStop();if(stickerTimer)clearTimeout(stickerTimer)})
+onHide(()=>{if(h){clearInterval(h);h=null};haptic.heartbeatStop()})
 const runningElapsed=computed(()=>{tick.value;return recordsStore.runningTimer?.elapsed??0})
 const runningName=computed(()=>{const t=recordsStore.runningTimer;return t?getName(t.babyId):''})
 const runningTwin=computed(()=>(recordsStore.runningTimer?.babyId===twins.value[0]?.id?'a':'b')as'a'|'b')

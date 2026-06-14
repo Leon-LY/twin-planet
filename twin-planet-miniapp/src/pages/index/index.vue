@@ -307,17 +307,7 @@ async function initSync(){
   try {
     const server = await pullRecords()
     if (server.length) {
-      const existingIds = new Set(recordsStore.logs.map(l => l.id))
-      const newLogs = server.filter((r: any) => !existingIds.has(r.id))
-      if (newLogs.length) {
-        const merged = [...recordsStore.logs, ...newLogs.map((r: any) => ({
-          id: r.id, babyId: r.baby_id, babyName: '', babyColor: '',
-          type: r.type, startedAt: new Date(r.started_at).getTime(),
-          endedAt: 0, durationMin: r.duration_min, detail: r.detail,
-          createdAt: new Date(r.created_at).getTime()
-        }))]
-        recordsStore.logs = merged
-      }
+      recordsStore.mergeServerLogs(server)
     }
     syncRecords(recordsStore.logs.slice(-20))
   } catch { /* 静默 */ }
@@ -370,10 +360,20 @@ onMounted(()=>{const tick=setInterval(()=>{nowTick.value=Date.now()},30000);setT
 onShareAppMessage(() => {
   const aName=babyA.value?.nickname||'大宝';const bName=babyB.value?.nickname||'二宝'
   const token = inviteToken.value
-  const path = token ? `/pages/index/index?invite=${token}` : '/pages/index/index'
+  const days = streakDays.value
+  const stickers = stickersStore.todayCount
+  // 动态标题：包含今日数据和连续天数
+  const parts = [`${aName}和${bName}的成长手帳`]
+  if (days > 0) parts.push(`连续${days}天`)
+  if (stickers > 0) parts.push(`🌟×${stickers}`)
+  const title = parts.join(' · ') + ' · 一起来记录吧 🪐'
+  // 附带邀请令牌和分享来源
+  let path = token ? `/pages/index/index?invite=${token}` : '/pages/index/index'
+  path += `${path.includes('?') ? '&' : '?'}from=share`
   return {
-    title:`${aName}和${bName}的成长手帐 · 一起来记录吧 🪐`,
+    title,
     path,
+    // 🔧 TODO: 接入 shareCard.ts 动态生成双宝对比卡片替代静态图
     imageUrl:'/static/share-brand.png',
   }
 })

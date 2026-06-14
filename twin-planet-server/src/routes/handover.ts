@@ -18,11 +18,15 @@ handoverRouter.post('/', async (req: Request, res: Response) => {
       return fail(res, '请提供语音或文字内容')
     }
 
+    // 获取用户所在家庭
+    const userResult = await query('SELECT family_id FROM users WHERE id = $1', [req.user!.userId])
+    const familyId = userResult.rows[0]?.family_id
+
     const id = 'voice-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6)
     await query(
-      `INSERT INTO handover_messages (id, user_id, baby_id, audio_url, duration_sec, text)
-       VALUES ($1, $2, $3, $4, $5, $6)`,
-      [id, req.user!.userId, babyId || null, audioUrl || null, durationSec || 0, text || null]
+      `INSERT INTO handover_messages (id, user_id, family_id, baby_id, audio_url, duration_sec, text)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [id, req.user!.userId, familyId || null, babyId || null, audioUrl || null, durationSec || 0, text || null]
     )
     return ok(res, { id, message: "已保存" })
   } catch (err: any) {
@@ -31,17 +35,21 @@ handoverRouter.post('/', async (req: Request, res: Response) => {
   }
 })
 
-// GET /api/handover — 获取交接记录
+// GET /api/handover — 获取交接记录（同一家庭内所有成员可见，支持跨设备共享）
 handoverRouter.get('/', async (req: Request, res: Response) => {
   try {
-    const { babyId, limit = '20' } = req.query
+    const { babyId, limit = '30' } = req.query
+    // 获取用户所在家庭
+    const userResult = await query('SELECT family_id FROM users WHERE id = $1', [req.user!.userId])
+    const familyId = userResult.rows[0]?.family_id
+
     let sql = `
-      SELECT hm.*, u.nickname as author_name
+      SELECT hm.*, u.nickname as author_name, u.role as author_role
       FROM handover_messages hm
       LEFT JOIN users u ON u.id = hm.user_id
-      WHERE hm.user_id = $1
+      WHERE hm.family_id = $1
     `
-    const params: any[] = [req.user!.userId]
+    const params: any[] = [familyId || null]
     let idx = 2
     if (babyId) {
       sql += ` AND hm.baby_id = $${idx++}`
@@ -57,19 +65,21 @@ handoverRouter.get('/', async (req: Request, res: Response) => {
   }
 })
 
-// GET /api/handover/since?timestamp= — 拉取新消息（换手机恢复）
+// GET /api/handover/since?timestamp= — 拉取新消息（跨设备恢复）
 handoverRouter.get('/since', async (req: Request, res: Response) => {
   try {
+    const userResult = await query('SELECT family_id FROM users WHERE id = $1', [req.user!.userId])
+    const familyId = userResult.rows[0]?.family_id
     const since = req.query.timestamp
       ? new Date(parseInt(req.query.timestamp as string))
       : new Date(0)
     const result = await query(
-      `SELECT hm.*, u.nickname as author_name
+      `SELECT hm.*, u.nickname as author_name, u.role as author_role
        FROM handover_messages hm
        LEFT JOIN users u ON u.id = hm.user_id
-       WHERE hm.user_id = $1 AND hm.created_at > $2
+       WHERE hm.family_id = $1 AND hm.created_at > $2
        ORDER BY hm.created_at ASC LIMIT 100`,
-      [req.user!.userId, since]
+      [familyId || null, since]
     )
     return ok(res, result.rows)
   } catch (err: any) {

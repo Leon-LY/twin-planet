@@ -1,52 +1,7 @@
-# 双宝星球 · Twin Planet
+# 双宝记 · Twin Journal
 
-> 两个小怪兽的成长记录本 🪐 —— 微信小程序
-> 文档最后更新：2026-06-14（双宝星球 v5 · 三角色论证后）
->
-> **⚠️ 应用名称说明**：「并蒂星球」为开发期暂定名。最终名称将根据产品风格和功能方向确定。当前设计方向为"双宝手帐"（Twin Journal）— 温暖手工纸质感 × 贴纸游戏互动。
-
----
-
-## 🎨 设计方向：双宝手帐 (Twin Journal)
-
-> **核心理念**：一本可以玩的实体手帐本。有贴纸、盖章、手绘涂鸦的触感。
-> **三角色论证**：设计师 + 双胞胎妈妈 + 前端工程师 共识通过（2026-06-14）
-
-| 设计维度 | 值 |
-|---------|-----|
-| **色调** | 暖纸 `#FEF9F0` + 姜黄 `#E07B3E` (大宝) + 豆沙 `#D48068` (二宝) + 鼠尾草绿 `#5C9A6E` (完成) |
-| **字体** | 标题 Georgia/KaiTi 衬线，正文 PingFang SC 无衬线 |
-| **动效** | 3s 呼吸节拍系。交错入场 stagger。无抖动、无无限旋转。 |
-| **交互** | 大圆形玩具按钮（320rpx，3D 内阴影，按压 0.86x 缩放）。贴纸卡片微微旋转 (-0.5°/1°)，重叠排列。 |
-| **组件** | LightBridge 动态连接双胞胎（bright/steady/faint/one-sided 五态），数据驱动文案 |
-
-**关键约束**（微信 WXSS）：
-- ❌ 禁用：`conic-gradient`, `clip-path`, `filter`, `mask`, `font-variant-numeric`, `*` 通用选择器
-- ✅ 可用：`radial-gradient` 多层, `box-shadow` 多层, `transform`/`opacity` 动效, `::before`/`::after`
-
----
-
-## ⚠️ 已知关键问题
-
-### WeChat 基础库兼容性
-
-- **解决**：微信开发者工具 → 详情 → 本地设置 → 调试基础库 → **锁定 3.10.3**（3.8~3.11 稳定版本）
-
-### 微信 WXSS 编译器不兼容的 CSS 特性
-
-| 特性 | 状态 | 说明 |
-|------|:--:|------|
-| `conic-gradient` | ❌ | 用 border + 分段圆点替代 |
-| `clip-path` | ❌ | 用 overflow:hidden + 内圆覆盖替代 |
-| `filter`, `mask`, `backdrop-filter` | ❌ | 不支持 |
-| `*` 通用选择器 | ❌ | 2026-06-14 验证：触发 `appServiceSDKScriptError` |
-| `font-variant-numeric: tabular-nums` | ❌ | 用 letter-spacing 替代等宽 |
-| `.stagger-reveal > *` + `animation` | ❌ | 用 nth-child 选择器替代 |
-| `radial-gradient` 多层 | ✅ | 球体光照模型用 3 层 |
-| `box-shadow` 多层 | ✅ | 大气光晕、3D 按钮 |
-| `transform: rotate/scale` 动效 | ✅ | 所有入场动画和呼吸动画 |
-
----
+> 两个小怪兽的成长手帳 🪐 —— 微信小程序 + Express 后端
+> 文档最后更新：2026-06-14（十角色论证 + 前后端同步修复后）
 
 ---
 
@@ -54,276 +9,486 @@
 
 | 项目 | 详情 |
 |------|------|
-| **名称** | 并蒂星球 (Twin Planet) |
+| **名称** | 双宝记 (Twin Journal) |
 | **Slogan** | 并蒂而生，同步成长 |
 | **产品哲学** | 看见每一个人 (See Every Person) |
-| **形态** | 微信小程序 (uni-app Vue3) |
+| **形态** | 微信小程序 (uni-app Vue3) + Express API 后端 |
 | **AppID** | `wxee2ef767a77058db` |
 | **GitHub** | https://github.com/Leon-LY/twin-planet |
 | **开发者** | Leon（全栈独立，龙凤胎爸爸） |
-| **目标用户** | 0-6 岁双胞胎家庭（妈妈/爸爸/奶奶/育儿嫂/医生/老师） |
-| **MVP 周期** | 12 周 (已完成 Sprint 1-4，约 50% 进度) |
-| **年龄覆盖** | 0-6 岁全周期 — 0-3 岁同步管理 + 3-6 岁差异化陪伴 |
-| **最新论证** | 2026-06-12 六角色论证发现 3-6 岁缺口 → 新增 Sprint 4.5 |
+| **目标用户** | 0-6 岁双胞胎家庭（妈妈/爸爸/奶奶/育儿嫂） |
+| **当前进度** | Sprint 1-4 完成 · CRITICAL 9/12 修复 · Sprint 4.5 待启动 |
 
 ---
 
-## 二、技术栈
+## 二、仓库结构
 
 ```
-前端：uni-app (Vue3 Composition API + <script setup> + TypeScript)
-状态：Pinia
-图表：ECharts（按需懒加载，不在首页阻塞）
+E:/ly/project/twin-planet/
+├── twin-planet-miniapp/        # 前端：微信小程序 (uni-app Vue3)
+├── twin-planet-server/         # 后端：Express API (Node.js + PostgreSQL + Redis)
+├── docs/                       # 论证报告 + 设计文档
+│   └── 论证/                   # 多角色论证报告存档
+└── CLAUDE.md                   # 本文件
+```
+
+---
+
+## 三、技术栈
+
+### 前端 (`twin-planet-miniapp/`)
+
+```
+框架：uni-app 3.0.0-alpha (Vue3 Composition API + <script setup> + TypeScript)
+状态：Pinia (9 个 Store)
+图表：ECharts（懒加载，growth 子包）
 构建：Vite → npx uni build -p mp-weixin
-后端：未启动（将用现有服务器 49.232.49.175）
-数据库：未启动（服务器已有 PostgreSQL + Redis）
-AI：DeepSeek V4 Pro（通过 API 代理）
+```
+
+### 后端 (`twin-planet-server/`)
+
+```
+运行时：Node.js + Express
+语言：TypeScript
+数据库：PostgreSQL (端口 5432)
+缓存：Redis (端口 6379)
+ORM：无（直接用 pg Pool + 参数化查询）
+认证：JWT (jsonwebtoken)
+部署：Docker Compose (Nginx + Node + PostgreSQL + Redis)
 ```
 
 ---
 
-## 三、目录结构
+## 四、前端目录结构
 
 ```
 twin-planet-miniapp/src/
-├── App.vue              # 根组件（Options API，App 级生命周期）
-├── main.js              # 入口，createSSRApp + Pinia
-├── manifest.json        # uni-app 配置，AppID + 微信设置
-├── pages.json           # 路由表（14 pages 当前）
-├── uni.scss             # 全局 SCSS 变量
-├── shime-uni.d.ts       # TS 类型声明
+├── App.vue                    # 根组件（Options API）— CSS 变量 + 暗色模式 + 奶奶模式
+├── main.js                    # createSSRApp + Pinia（⚠️ 必须用 createSSRApp）
+├── manifest.json              # AppID + 微信设置 + 隐私合规
+├── pages.json                 # 路由表（14 pages + 3 subPackages）
+├── uni.scss                   # 全局 SCSS 变量
 │
-├── components/
-│   └── ec-canvas/
-│       └── ec-canvas.vue      # ECharts Canvas 包装（懒加载）
+├── components/                # 5 个组件
+│   ├── cosmic/LightBridge.vue       # 双胞胎连接桥（5 态）
+│   ├── journal/StickerStrip.vue     # 贴纸条（横向滑动）
+│   ├── journal/TwinMascot.vue       # 双宝吉祥物（⚠️ 当前未使用）
+│   ├── twin-skeleton/twin-skeleton.vue  # 骨架屏
+│   └── ec-canvas/ec-canvas.vue      # ECharts 包装
 │
-├── stores/              # Pinia 状态管理（7 个 Store）
-│   ├── user.ts          # 用户登录/角色/奶奶模式/大字模式
-│   ├── family.ts        # 双胞胎组（家庭）
-│   ├── babies.ts        # 宝宝 CRUD + 大宝二宝 + 性别检测
-│   ├── records.ts       # 喂养/睡眠双轨计时器 + 日志
-│   ├── interactions.ts  # 萌芽日记 + 今天我做了什么
-│   ├── duty.ts          # 爸爸值班 SOP 清单引擎
-│   ├── alerts.ts        # 照顾者中断通知（纯统计规则）
-│   └── guardian.ts      # 电量表 + 一人时光守护者
+├── stores/                    # 9 个 Pinia Store
+│   ├── user.ts                # 登录/角色/奶奶模式/大字模式
+│   ├── family.ts              # 家庭（双胞胎组）
+│   ├── babies.ts              # 宝宝 CRUD + 大宝/二宝 + 早产儿胎龄
+│   ├── records.ts             # 双轨计时器 + 日志 + recordedBy
+│   ├── stickers.ts            # 贴纸收集系统（18 条规则）
+│   ├── growth.ts              # 生长测量数据
+│   ├── interactions.ts        # 萌芽日记 + 今天我做了什么
+│   ├── duty.ts                # 爸爸值班 SOP 清单
+│   ├── alerts.ts              # 照顾者中断通知（纯统计规则）
+│   └── guardian.ts            # 电量表 + 一人时光
+│
+├── composables/               # 4 个 Composable
+│   ├── useHaptic.ts           # 触觉反馈
+│   ├── usePoeticTime.ts       # 诗意计时标签
+│   ├── useQuickRef.ts         # 快速参考（按宝宝区分）
+│   └── useStickerSync.ts      # 统一贴纸同步逻辑
 │
 ├── utils/
-│   └── whoGrowth.ts     # WHO LMS 参数 + Z值/百分位 + 差异率计算
+│   ├── format.ts              # 时间格式化
+│   ├── persist.ts             # 本地持久化封装
+│   ├── whoGrowth.ts           # WHO LMS 参数 + Z 值/百分位 + 差异率
+│   ├── clinicCard.ts          # 就诊速查卡 Canvas 生成
+│   ├── shareCard.ts           # 分享卡片 Canvas 生成
+│   └── syncService.ts         # 数据同步服务（含重试队列）
+│
+├── api/
+│   ├── client.ts              # HTTP 客户端（JWT + 错误处理）
+│   └── types.ts               # API 类型定义
+│
+├── config/
+│   └── roles.ts               # 角色自适应配置（5 角色）
+│
+├── constants/
+│   └── design.ts              # TS 颜色常量（唯一权威源）
 │
 └── pages/
-    ├── index/index.vue          # 品牌首页（双宝卡片 + 功能入口）
-    ├── login/index.vue          # 登录页（微信一键登录）
-    ├── onboarding/
-    │   ├── family.vue           # 家庭创建 + 角色选择
-    │   └── babies.vue           # 双胞胎注册（大宝→二宝）
-    ├── record/index.vue         # 双轨记录（一屏双宝，≤2tap）
-    ├── growth/index.vue         # 生长曲线对比（WHO + ECharts）
-    ├── sprout/index.vue         # 萌芽日记（7种互动类型时间线）
-    ├── contribution/index.vue   # 今天我做了什么（8种贡献类别）
-    ├── snapshot/index.vue       # 爸爸的快照（三明治卡片布局）
-    ├── handover/index.vue       # 交接班语音便签
-    ├── duty/index.vue           # 爸爸值班模式（SOP 清单）
-    └── guardian/index.vue       # 守护中心（电量表 + 一人时光）
+    ├── index/index.vue              # 品牌首页（886行 ⚠️ 待拆分）
+    ├── login/index.vue              # 微信一键登录
+    ├── onboarding/                  # 家庭创建 + 双胞胎注册
+    ├── record/index.vue             # 双轨记录（盖章机）
+    ├── growth/index.vue             # 生长曲线（WHO + ECharts，子包）
+    ├── sprout/index.vue             # 萌芽日记
+    ├── contribution/index.vue       # 今天我做了什么
+    ├── snapshot/index.vue           # 爸爸的快照
+    ├── handover/index.vue           # 交接班语音便签
+    ├── duty/index.vue               # 爸爸值班清单
+    ├── guardian/index.vue           # 守护中心
+    ├── stickers/index.vue           # 贴纸收集册
+    ├── privacy/index.vue            # 隐私政策
+    ├── school/index.vue             # 入园助手（子包）
+    └── milestones/index.vue         # 能力观察（子包）
 ```
 
 ---
 
-## 四、设计系统：双宝手帐 (Twin Journal v4)
+## 五、后端目录结构
 
-### 颜色（暖纸手帐）
+```
+twin-planet-server/
+├── .env                          # 环境变量（不提交 git）
+├── .env.example                  # 环境变量模板
+├── package.json
+├── tsconfig.json
+├── Dockerfile
+├── docker-compose.yml            # Nginx + Node + PostgreSQL + Redis
+├── nginx.conf                    # 反向代理配置
+├── deploy.sh                     # 部署脚本
+├── drizzle.config.ts
+│
+└── src/
+    ├── index.ts                  # Express 入口（CORS + Helmet + Rate Limit）
+    ├── config.ts                 # 环境变量加载
+    ├── config/
+    │   ├── database.ts           # PostgreSQL Pool + query 封装
+    │   └── migrate.ts            # 数据库建表迁移（10 张表）
+    ├── middleware/
+    │   ├── auth.ts               # JWT 认证中间件
+    │   └── errorHandler.ts       # 全局错误处理
+    ├── routes/
+    │   ├── auth.ts               # 微信登录 + 个人资料更新
+    │   ├── babies.ts             # 宝宝 CRUD
+    │   ├── family.ts             # 家庭管理 + 邀请
+    │   ├── records.ts            # 记录 CRUD + 批量同步
+    │   ├── growth.ts             # 生长测量 CRUD
+    │   ├── handover.ts           # 交接班语音/文字便签
+    │   └── user.ts               # 用户设置
+    ├── utils/
+    │   ├── jwt.ts                # JWT 签发/验证
+    │   ├── response.ts           # 统一 API 响应格式
+    │   └── wechat.ts             # 微信 code2Session
+    ├── models/                   # 数据模型（待实现）
+    ├── repositories/             # 数据访问层（待实现）
+    └── services/                 # 业务逻辑层（待实现）
+```
 
-> **V4 暖纸体系**：温暖、手工、编辑级质感。双胞胎按出生顺序用不同暖色，消除性别刻板印象。
+### 后端 API 一览
 
-| 用途 | Hex | 说明 |
+| 方法 | 路径 | 说明 | 认证 |
+|------|------|------|:--:|
+| GET | `/api/health` | 健康检查 | ❌ |
+| POST | `/api/auth/wechat-login` | 微信登录 | ❌ |
+| PUT | `/api/auth/profile` | 更新用户资料 | ✅ |
+| GET | `/api/babies` | 获取宝宝列表 | ✅ |
+| POST | `/api/babies` | 添加宝宝 | ✅ |
+| PUT | `/api/babies/:id` | 更新宝宝 | ✅ |
+| GET | `/api/records?babyId=&limit=&offset=` | 获取记录 | ✅ |
+| POST | `/api/records` | 创建单条记录 | ✅ |
+| GET | `/api/records/since?timestamp=` | 增量拉取 | ✅ |
+| POST | `/api/records/batch` | 批量同步（≤200条） | ✅ |
+| GET | `/api/growth?babyId=` | 获取生长数据 | ✅ |
+| POST | `/api/growth` | 添加测量 | ✅ |
+| GET | `/api/handover` | 获取交接消息（家庭范围） | ✅ |
+| POST | `/api/handover` | 上传语音/文字便签 | ✅ |
+| GET | `/api/handover/since?timestamp=` | 增量拉取（跨设备） | ✅ |
+| DELETE | `/api/handover/:id` | 删除消息 | ✅ |
+| POST | `/api/family` | 创建家庭 | ✅ |
+| POST | `/api/family/join` | 加入家庭（邀请令牌） | ✅ |
+| GET | `/api/user/profile` | 获取个人资料 | ✅ |
+
+### 数据库表（10 张）
+
+`families` · `family_invites` · `users` · `twin_groups` · `babies` · `records` · `growth_measurements` · `sprout_entries` · `contribution_entries` · `duty_tasks` · `school_decisions` · `handover_messages`
+
+---
+
+## 六、设计系统：双宝手帳 v5
+
+### 核心理念
+
+> 一本可以玩的实体手帳本。有贴纸、盖章、手绘涂鸦的触感。
+
+### 颜色（暖纸体系）
+
+| 用途 | Hex | CSS 变量 |
 |------|------|------|
-| 页面背景 | `#FEF9F0` | 暖白纸 |
-| 卡片背景 | `#FFF7ED` (`--cream`) | 暖奶油 |
-| 大宝 | `#E07B3E` (`--amber`) | 姜黄/暖橙 |
-| 二宝 | `#D48068` (`--rose`) | 豆沙/暖粉 |
-| 主文字 | `#2D2318` | 墨色 |
-| 次文字 | `#9C8E7C` | 中灰 |
-| 强调/完成 | `#5C9A6E` (`--mint`) | 鼠尾草绿 |
-| 成就 | `#C8993E` (`--gold`) | 暖金 |
-| 边框/虚线 | `#E8DCC8` (`--dot`) | 暖灰虚线 |
+| 页面背景 | `#FEF9F0` | `--paper` |
+| 卡片背景 | `#FFF5E8` | `--cream` |
+| 大宝 | `#E07B3E` | `--amber` |
+| 二宝 | `#D48068` | `--rose` |
+| 主文字 | `#2D2318` | `--ink` |
+| 次文字 | `#9C8E7C` | `--ink-md` |
+| 强调/完成 | `#5C9A6E` | `--mint` |
+| 成就 | `#C8993E` | `--gold` |
+| 边框/虚线 | `#E8DCC8` | `--dot` |
+| 危险 | `#D4706B` | `--twin-danger` |
 
-**铁律**：大宝=姜黄 `#E07B3E`，二宝=豆沙 `#D48068`。按出生顺序，不按性别。
+**铁律**：大宝=姜黄，二宝=豆沙。按出生顺序，不按性别。
+**唯一颜色权威源**：`src/constants/design.ts` (TS) + `src/App.vue` (CSS 变量)。
 
-### 奶奶无障碍标准
+### 动效规范
 
-1. 首页 ≤3 个大按钮，间距 ≥40rpx
-2. 大字模式：默认 ≥18px（奶奶/爷爷角色自动启用）
-3. 防误触：操作间距 ≥40rpx
+| 类别 | 时长 | 适用场景 |
+|------|:--:|------|
+| 呼吸系 | 3s | 背景光斑、头像环脉冲、LightBridge |
+| 反馈系 | 0.5-1s | 贴纸弹出、按钮按压、盖章 |
+| 入场系 | 0.5s + stagger 0.06s | 页面 .reveal-1 ~ .reveal-6 |
 
-### 颜色分配铁律
+### 微信 WXSS 约束
 
-> **V3 推翻蓝粉。颜色按出生顺序，同色系不同明度。** 大宝=深陶土 `#A45C40`，二宝=浅陶土 `#C7866A`。
-> 两个男孩不会看到粉色、两个女孩不会看到蓝色——彻底消灭性别暗示。
-> 颜色是身份标识（一眼认出是谁的数据），性别通过头像/名字区分。
-
-### 交互原则
-
-- **一手操作**：核心按钮在下半屏，≥44×44px 触摸区
-- **零思考记录**：≤2 tap 完成喂养/睡眠记录
-- **夜间模式**：22:00-06:00 自动暗色
-- **宝宝即主角**：每个宝宝独立颜色 + 头像，绝不混淆
+- ❌ `conic-gradient`, `clip-path`, `filter`, `mask`, `backdrop-filter`, `*` 通用选择器
+- ✅ `radial-gradient` 多层, `box-shadow` 多层, `transform`/`opacity` 动效, `::before`/`::after`
 
 ---
 
-## 五、6 条安全红线（上线必检）
+## 七、角色自适应系统
 
-| # | 红线 | 规则 |
-|:--:|------|------|
-| 1 | 不做医疗判断 | 不输出"建议就医""可能是XX病" |
-| 2 | 不做疫苗决策 | 只展示事实，不判断能不能打 |
-| 3 | 不做症状分析 | 异常日志是纯文本便签，不做 AI 分析 |
-| 4 | 颜色 ≠ 诊断 | 差异率颜色必须附免责声明 |
-| 5 | AI 内容免责 | "仅供参考，不构成医疗建议" |
-| 6 | 照片加密 | 异常照片 SSE-COS 加密，仅缩略图，原图 7 天删除 |
+| 角色 | 首页布局 | 功能列表 |
+|------|:--:|------|
+| 妈妈 | full — 完整手帳 | record/growth/sprout/contribution/handover/guardian/snapshot/stickers |
+| 爸爸 | compact — 战术面板 | record/growth/duty/handover/snapshot/stickers |
+| 奶奶 | granny — 3 大按钮 | record/growth |
+| 爷爷 | granny — 同奶奶 | record/growth |
+| 育儿嫂 | compact — 同爸爸 | record/growth/handover/snapshot |
+
+**配置源**：`src/config/roles.ts`
 
 ---
 
-## 六、开发规范
+## 八、6 条安全红线
+
+| # | 红线 | 状态 |
+|:--:|------|:--:|
+| 1 | 不做医疗判断 | ✅ percentileHint 已修复为纯 WHO 描述 |
+| 2 | 不做疫苗决策 | ✅ |
+| 3 | 不做症状分析 | ✅ |
+| 4 | 颜色 ≠ 诊断 | ⚠️ 差异率标签仍需去焦虑化 |
+| 5 | AI 内容免责 | ✅ 生长曲线页已标注 |
+| 6 | 照片加密 | 🟡 照片功能未上线 |
+
+---
+
+## 九、⚠️ 已知缺陷
+
+### CRITICAL（9/12 已修复，3 待处理）
+
+| # | 状态 | 缺陷 |
+|:--:|:--:|------|
+| C1 | ✅ | 双计时器持久化改用数组 |
+| C2 | ✅ | 语音录制 0 秒竞态修复 |
+| C3 | 🟡 | 计时器恢复丢失 feedingSide/amountMl（需 UI 重新输入） |
+| C4 | 🟡 | 存储配额监控欠缺（静默 catch） |
+| C5 | ✅ | tonShareAppMessage 拼写修复 |
+| C6 | ✅ | 交接班接入了后端 API（文字跨设备可用，语音待 COS） |
+| C7 | ✅ | school CSS class 修复 |
+| C8 | ✅ | milestones CSS class 修复 |
+| C9 | ✅ | lazyCodeLoading 移除 |
+| C10 | ✅ | beforeDestroy → beforeUnmount |
+| C11 | ✅ | build:mp-weixin 绑定后构建脚本 |
+| C12 | ✅ | 隐私合规配置添加 |
+
+### HIGH（8/18 已修复，10 待架构改造）
+
+| # | 状态 | 问题 |
+|:--:|:--:|------|
+| H1 | ✅ | streakDays off-by-one 修复 |
+| H3 | ✅ | mergeServerLogs 替代直接赋值 |
+| H5 | ✅ | RecordLog 加 recordedBy 字段 |
+| H7 | ✅ | 早产儿矫正月龄 |
+| H11 | ✅ | quickRef 按宝宝区分 |
+| H12 | ✅ | 分享标题动态化 |
+| H15 | ✅ | record 页 onHide 清理 setInterval |
+| H4 | ✅ | syncService 加重试队列 |
+| H2 | 🟡 | interactionsStore 待拆分 |
+| H6 | 🟡 | head_circumference 无 WHO 数据 |
+| H8 | 🟡 | 首页 886 行待拆分为三角色组件 |
+| H9 | 🟡 | 妈妈模式信息密度过高 |
+| H10 | 🟡 | 角色切换用原生 ActionSheet |
+| H13 | 🟡 | 7 天周报钩子断链 |
+| H14 | 🟡 | 缺少埋点体系 |
+| H16 | 🟡 | 跨 Store 循环耦合 |
+| H17 | ✅ | percentileHint 安全语言 |
+| H18 | 🟡 | 差异率标签去焦虑化 |
+
+---
+
+## 十、开发规范
 
 ### 不可变性（CRITICAL）
 
 ```typescript
-// ❌ 错误
+// ❌ 错误 — 直接修改 state
 profile.value.role = role
 babies.value.push(baby)
 
-// ✅ 正确
+// ✅ 正确 — 不可变更新
 profile.value = { ...profile.value, role }
 babies.value = [...babies.value, baby]
 ```
 
 ### uni-app 特殊规则
 
-- **App.vue**：必须用 Options API (`export default { onLaunch() {} }`)，不能用 `<script setup>`
-- **页面组件**：`<script setup lang="ts">` 中，Vue 生命周期（onMounted/onUnmounted）从 `vue` 导入，页面生命周期（onShow/onLoad）从 `@dcloudio/uni-app` 导入
-- **单位**：使用 `rpx`（750rpx 基准），不要用 `px`
+- **App.vue**：必须用 Options API (`export default { onLaunch() {} }`)，**不能用 `<script setup>`**
+- **生命周期**：Vue 生命周期（onMounted/onUnmounted）从 `vue` 导入；页面生命周期（onShow/onLoad/onHide）从 `@dcloudio/uni-app` 导入
+- **App.vue 生命周期**：Vue 3 中 `beforeDestroy` → `beforeUnmount`
+- **入口**：`main.js` 必须用 `createSSRApp`，不能用 `createApp`（否则 `$vm` 错误）
+- **单位**：`rpx`（750rpx 基准），勿用 `px`
 - **底部安全区**：`padding-bottom: calc(XXrpx + env(safe-area-inset-bottom))`
 
-### Git
+### 文件规模红线
 
-- 仓库：`E:/ly/project/twin-planet`
-- 分支：`master`
-- 推送：`git push` 即可
+- 单文件 ≤800 行（当前首页 886 行超标）
+- 函数 ≤50 行
+- 嵌套 ≤4 层
+
+### Store 规范
+
+- 所有 state 更新用不可变模式
+- 持久化通过 `createPersistence<T>(key)` 封装
+- 跨 Store 引用在函数内部惰性获取
+- **禁止外部直接赋值 Store 的 ref**（绕过持久化）
+
+### 后端规范
+
+- 所有 SQL 用参数化查询（`$1, $2, ...`），杜绝 SQL 注入
+- API 响应统一 `{ success: boolean, data?: T, error?: { code, message } }`
+- JWT 密钥从环境变量读取，无硬编码 fallback
+- 数据库迁移通过 `npx tsx src/config/migrate.ts` 执行
+- 速率限制：全局 200/15min，登录接口 20/15min
 
 ---
 
-## 七、构建与调试
+## 十一、构建、部署与 Git
+
+### 日常开发流程
 
 ```bash
-# 编译微信小程序
+# 1. 前端编译
 cd twin-planet-miniapp
-npx uni build -p mp-weixin
+npm run build:mp    # uni build + strip-wxss + copy-echarts
+# 或：npm run build:mp-weixin
 
-# 输出
-dist/build/mp-weixin/
+# 2. 后端类型检查
+cd ../twin-planet-server
+npx tsc --noEmit
 
-# 微信开发者工具
-# 导入目录：dist/build/mp-weixin
-# 填入 AppID: wxee2ef767a77058db
+# 3. 提交并推送（每次修改后必须执行）
+cd ..
+git add -A
+git commit -m "feat: XXX"   # 或 fix/refactor/docs/chore
+git push
+```
+
+### Git 提交规范
+
+```
+类型: feat, fix, refactor, docs, test, chore, perf, ci
+格式: <type>: <中文描述>
+示例:
+  fix: 修复双计时器持久化只保存一个的竞态
+  feat: 后端 handover API 改为家庭范围跨设备共享
+  docs: 更新 CLAUDE.md 添加后端和部署章节
+```
+
+### 部署到服务器
+
+**服务器信息**：
+- IP：`49.232.49.175`
+- 系统：Linux (CentOS/Ubuntu)
+- ⚠️ **服务器上运行着其他项目，部署时注意端口冲突和资源竞争**
+- 容器化部署，通过 Docker Compose 隔离
+
+**部署步骤**：
+
+```bash
+# 1. SSH 到服务器
+ssh root@49.232.49.175
+
+# 2. 进入项目目录
+cd /opt/twin-planet  # 或实际部署路径
+
+# 3. 拉取最新代码
+git pull
+
+# 4. 后端部署（Docker Compose）
+cd twin-planet-server
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
+
+# 5. 运行数据库迁移
+docker exec twin-planet-api npx tsx src/config/migrate.ts
+
+# 6. 检查服务健康
+curl http://localhost:3003/api/health
+
+# 7. 查看日志
+docker-compose logs -f api
+```
+
+**Docker Compose 服务端口**：
+
+| 服务 | 容器端口 | 宿主机端口 | 说明 |
+|------|:--:|:--:|------|
+| Nginx | 80/443 | 80/443 | 反向代理 + HTTPS |
+| Node API | 3003 | 3003 | Express 后端 |
+| PostgreSQL | 5432 | 5432 | 数据库 |
+| Redis | 6379 | 6379 | 缓存 |
+
+**⚠️ 部署注意事项**：
+- 部署前检查端口占用：`netstat -tlnp | grep -E ':(80|443|3003|5432|6379)'`
+- 如果端口冲突，修改 `docker-compose.yml` 中的宿主机端口映射
+- `.env` 文件不上传 GitHub，需在服务器上手动创建
+- JWT_SECRET 和微信 AppSecret 生产环境必须更换
+- 首次部署需先配置 Nginx SSL 证书（Let's Encrypt）
+
+### 微信开发者工具
+
+```
+导入目录：twin-planet-miniapp/dist/build/mp-weixin
+AppID: wxee2ef767a77058db
+调试基础库：锁定 3.10.3
 ```
 
 ---
 
-## 八、已完成功能（Sprint 1-4）
+## 十二、论证与文档
 
-| Sprint | 功能 | 文件 | 论证 |
-|:--:|------|------|:--:|
-| Phase 0 | WHO 生长曲线工具 | src/utils/whoGrowth.ts | — |
-| Phase 0 | 生长曲线 Demo | src/pages/growth/index.vue | — |
-| Sprint 1 | 登录→家庭→双胞胎注册 | login + onboarding/* | 5 角色 ✅ |
-| Sprint 2 | 极简双轨记录 | record/index.vue | 2 角色 ✅ |
-| Sprint 2.5 | 萌芽日记 | sprout/index.vue | — |
-| Sprint 2.5 | 今天我做了什么 | contribution/index.vue | — |
-| Sprint 3 | 爸爸的快照 | snapshot/index.vue | — |
-| Sprint 3 | 交接班语音便签 | handover/index.vue | — |
-| Sprint 3.5 | 爸爸值班模式 | duty/index.vue | — |
-| Sprint 3.5 | 照顾者中断通知 | stores/alerts.ts | — |
-| Sprint 4 | 电量表 + 一人时光 | guardian/index.vue | — |
-| Sprint 4.5 | 🆕 入园助手 + 能力观察 + 社交版 | (待开发) | 6 角色 ✅ |
+| 文档 | 路径 |
+|------|------|
+| 十角色论证报告 | `docs/论证/2026-06-14-十角色论证报告.md` |
+| 四角色论证第四轮 | `docs/论证/2026-06-14-四角色论证-第四轮.md` |
+| Logo 设计哲学 | `docs/logo-design-philosophy.md` |
+| 项目建设方案 | Obsidian: `并蒂星球-项目建设方案.md` |
 
-## 九、🆕 3-6 岁延伸功能（Sprint 4.5，当前优先）
-
-> **2026-06-12 六角色论证结论**：当前 22 个 MVP 功能中 80% 面向 0-3 岁婴儿。3 岁后用户会流失。
-> 核心转型：从「两个婴儿的同步管理」→「两个独立人格的差异化陪伴」。
-
-### 新增 3 个 P0 功能（已论证，待开发）
-
-| # | 功能 | 工期 | 说明 | 票数 |
-|:--:|------|:--:|------|:--:|
-| 1 | **入园助手** | 3d | 分班决策辅助：双生耦合度雷达图 + 同班/分班利弊分析 | 🏆 5/6 |
-| 2 | **双宝能力观察** | 3d | 两个独立成长时间线，非对比型，优势标记而非薄弱标记 | 🏆 5/6 |
-| 3 | **萌芽日记社交版** | 2d | 新增社交分化维度：与各自朋友/与彼此的关系 + context 字段 | 🏆 4/6 |
-
-### 爸爸值班 4 岁版（清单替换）
-
-现有清单 `喂奶/换尿布/哄睡` → 替换为 `专属聊天10min/拍照/搭积木+画画/自己吃饭/让他们打架(自己解决)`
-
-### 技术实现
-
-- 全部可纯前端完成，零后端依赖
-- records Store 的 RecordType 扩展为两级分类：`routine | event | milestone`
-- 新增 milestones Store（认知/体能/社交/语言 CDC 标准分类 + ageNorm 区间预警）
-- 本地持久化：`uni.setStorageSync` + 启动 hydrate（后迁 SQLite）
+**论证机制**：每个 Sprint 完成后启动多角色论证，结果保存为 `docs/论证/YYYY-MM-DD-论证主题.md`。
 
 ---
 
-## 十、待开发（Sprint 5-6，需要后端支持）
-
-### Sprint 5：留存闭环
-
-| 功能 | 说明 | 前置依赖 |
-|------|------|------|
-| 智能提醒 | 喂养/疫苗提醒 + 微信订阅消息 | 后端 API + 微信模板消息 |
-| 7 天语音陪伴 | 7 条真人录音陪伴新手期 | 录音资源 + COS 存储 |
-| 就诊速查卡 | 双胞胎对比摘要导出 | 数据结构 |
-
-### Sprint 6：上线准备
-
-| 功能 | 说明 | 前置依赖 |
-|------|------|------|
-| 对比照自动配对 | 上传→AI 配对→并排展示 | COS + AI API |
-| 异常事件日志 | 纯文本便签 | 数据库 |
-| 知识库 (20+ 文章) | 双胞胎专属育儿内容 | 数据库 |
-
-### 基础设施待办
-
-| 事项 | 状态 |
-|------|:--:|
-| 域名注册 twinplanet.cn | ⏳ |
-| ICP 备案 | ⏳ |
-| 服务器后端搭建 | ⏳ |
-| 微信小程序后台注册"并蒂星球" | ⏳ |
-| 后端数据库建表 | ⏳ |
-
----
-
-## 十一、项目文档
-
-完整建设方案和论证报告在 Obsidian vault：
+## 十三、当前优先级路线图
 
 ```
-E:/ly/Obsidian/work/知识库/项目/私活/并蒂星球/
-├── 并蒂星球-项目建设方案.md          # V3.2 建设方案（~1200行）
-├── 并蒂星球-十角色终局论证.md         # 终局论证
-├── 并蒂星球-Phase0-执行手册.md         # Phase 0 手册
-└── ... (共 7 份文档)
-```
-
-AI Skill 配置：
-```
-E:/ly/Obsidian/work/.claude/skills/
-├── twin-design/SKILL.md    # 设计系统
-├── twin-data/SKILL.md      # 数据层 (WHO/DDL/API)
-└── twin-rules/SKILL.md     # 项目规则 (Sprint/验收/停机)
+Phase 0 (本轮完成): CRITICAL 9/12 + HIGH 8/18 修复
+Phase 1 (当前): 剩余 CRITICAL (C3/C4) + 架构 HIGH (H2/H8/H10/H12 Canvas)
+Phase 2: Sprint 4.5 — 3-6 岁衔接
+  ├── 入园助手完善
+  ├── 能力观察完善
+  ├── RecordType 扩展到 3-6 岁
+  └── 爸爸值班 4 岁版清单
+Phase 3: 架构优化
+  ├── 首页拆分为 IndexMom/IndexDad/IndexGranny
+  ├── shareCard.ts Canvas 动态生成 + 接入分享流程
+  ├── interactionsStore → sproutStore + contributionStore
+  └── guardianStore → energyStore + oneOnOneStore
+Phase 4: 后端依赖功能
+  ├── 智能提醒（微信订阅消息）
+  ├── COS 语音文件上传
+  └── 知识库
 ```
 
 ---
 
-## 十二、给下一个 AI 的快速启动命令
+## 十四、给下一个 AI 的快速启动
 
 ```bash
 # 1. 进入项目
@@ -331,124 +496,28 @@ cd E:/ly/project/twin-planet
 
 # 2. 安装依赖（首次）
 cd twin-planet-miniapp && npm install
+cd ../twin-planet-server && npm install
+cd ..
 
-# 3. 编译
-npx uni build -p mp-weixin
+# 3. 前端编译
+cd twin-planet-miniapp && npm run build:mp
 
-# 4. 提交代码
-git add -A && git commit -m "feat: XXX" && git push
+# 4. 后端类型检查
+cd ../twin-planet-server && npx tsc --noEmit
+
+# 5. 提交代码（每次修改后必须执行）
+git add -A
+git commit -m "feat: XXX"
+git push
 ```
 
 **关键原则**：
-- 每个 Sprint 完成后必须启动多角色论证
-- 所有代码修改后立即编译验证
-- 绝对不可变更新 Pinia state
-- 所有 AI 内容必须标注免责声明
-- 颜色/间距严格遵循 twin-design
+- ⚠️ **每次修改后必须 `git add -A && git commit && git push`**
+- 所有代码修改后立即编译验证（前端 `npm run build:mp` + 后端 `npx tsc --noEmit`）
+- 严格遵守不可变更新 Pinia state
+- 颜色/间距引用 `src/constants/design.ts` + CSS 变量
+- AI 内容标注「仅供参考，不构成医疗建议」
 - 用中文写注释和 commit message
-
----
-
-## 十三、核心技术图表
-
-### 13.1 系统架构图
-
-见 draw.io 导出或 Mermaid 源码（`docs/` 目录）。
-
-```
-微信小程序 (uni-app Vue3 + Pinia + ECharts懒加载)
-    │ HTTPS JSON
-    ▼
-Nginx (49.232.49.175 · 反向代理 · HTTPS · 限流)
-    │
-    ▼
-Docker: Node.js API (Express + JWT + DAL)
-    ├── PostgreSQL (9表: users/babies/records/...)
-    ├── Redis (缓存 · 队列 · Session)
-    ├── COS (照片 · 语音 · 缩略图)
-    └── AI Proxy → DeepSeek V4 Pro
-外部: 微信服务端 (wx.login · 订阅消息)
-```
-
-### 13.2 功能矩阵
-
-| # | 功能 | 0-3岁 | 3-6岁 | 状态 |
-|:--:|------|:--:|:--:|:--:|
-| 1 | 宝宝档案 | ✅ | ✅ | ✅ |
-| 2 | 双轨记录(喂养/睡眠/换尿布) | ✅ | ✅ | ✅ |
-| 3 | WHO生长曲线对比 | ✅ | ✅ | ✅ |
-| 4 | 萌芽日记 | ✅ | ✅ | 🟡 |
-| 5 | 今天我做了什么 | ✅ | ✅ | ✅ |
-| 6 | 爸爸的快照 | ✅ | ✅ | ✅ |
-| 7 | 交接班语音 | ✅ | ✅ | ✅ |
-| 8 | 爸爸值班SOP | ✅ | ❌ | ✅ |
-| 9 | 照顾者中断通知 | ✅ | ❌ | ✅ |
-| 10 | 电量表+一人时光 | ✅ | ✅ | ✅ |
-| 11 | 🆕 入园助手 | ❌ | ✅ | ✅ |
-| 12 | 🆕 双宝能力观察 | ❌ | ✅ | ✅ |
-| 13 | 智能提醒(订阅消息) | ✅ | ✅ | 🔴 |
-| 14 | 就诊速查卡 | ✅ | ✅ | 🔴 |
-| 15 | 对比照配对 | ❌ | ✅ | 🔴 |
-| 16 | 知识库(20+文) | ✅ | ✅ | 🔴 |
-
-✅ 已完成  🟡 部分实现  🔴 需后端
-
-### 13.3 用户旅程（0-6 岁全周期）
-
-```
-注册 ──→ 0-3岁日常记录 ──→ 3岁转折(入园) ──→ 3-6岁持续成长 ──→ 6岁+
-😊好奇   😐习惯偶尔焦虑    😟焦虑峰值        😌平稳安心        😊/😞留存/流失
-```
-
-关键触点：第一次记录（激活）→ 第一个里程碑（aha）→ 第一次入园评估（付费转化）
-
----
-
-## 十四、品牌 VI 与 Logo 方案
-
-
-### 品牌色板
-
-| 用途 | 色值 | 场景 |
-|------|------|------|
-| 出生顺序1(大宝) | `#A45C40` | 深陶土 · 身份标记 · 实测曲线 · 主按钮 |
-| 出生顺序2(二宝) | `#C7866A` | 浅陶土 · 身份标记 · 次按钮 · 辅助卡片 |
-| 背景 | `#FFFBF5` | 全局页面底色 |
-| 卡片 | `#FFFFFF` | 内容区底色 |
-| 主文字 | `#2D3748` | 标题、正文 |
-| 次文字 | `#A0AEC0` | 描述、时间戳 |
-| AI/强调 | `#48BB78` | CTA按钮、完成状态 |
-| 警告 | `#ED8936` | 中断通知、全部停止 |
-
----
-
-## 十五、核心页面布局速查
-
-### 首页三角色自适应
-
-| 角色 | 品牌区 | 双宝卡片 | 功能入口 |
-|------|------|------|------|
-| 妈妈 | Logo+全称+slogan | 状态+最近记录 | 8个功能卡片 |
-| 爸爸 | 品牌名(紧凑) | 三明治快照 | 今天统计+5入口网格 |
-| 奶奶 | 品牌名52rpx | 不显示 | 3个大按钮竖排 |
-
-### 双轨记录三态切换
-
-| 状态 | 触发 | 界面 |
-|------|------|------|
-| 空闲态 | 无计时器 | 6操作按钮网格(喂奶/睡觉/换尿布 × 2宝宝) |
-| 单计时态 | 1个宝宝运行中 | 大屏计时器+红色停止按钮 |
-| 双计时态 | 2个宝宝运行中 | 并排计时器卡片+全部停止按钮 |
-
-### 生长曲线关键约束
-
-- 龙凤胎用不同性别的 WHO LMS 参数
-- 新生儿 <14 天不显示 WHO 对比线
-- 早产儿 (<37周) 使用矫正月龄
-- 差异率颜色必须附免责声明
-
-### 入园助手设计哲学
-
-> 呈现参考维度，不替家长做决定。
-> 耦合度条形图(情绪依赖/社交重叠/身份认同) + 同班v分班利弊双栏 + 学期评估历史。
-> 底部必须标注"不构成教育建议"。
+- ⚠️ 不要重新引入 `lazyCodeLoading`（已知引发 `$vm` 崩溃）
+- ⚠️ App.vue 用 Vue 3 生命周期名：`beforeUnmount` 不是 `beforeDestroy`
+- ⚠️ 服务器 `49.232.49.175` 上运行着其他项目，注意端口隔离

@@ -67,7 +67,7 @@
       <button class="share-btn" open-type="share">
         <text>📤 转发给换班的家人</text>
       </button>
-      <text class="share-hint">语音需同台设备播放，文字便签可通过分享传达</text>
+      <text class="share-hint">语音暂需同台设备播放 · 文字便签已支持跨设备同步</text>
     </view>
   </view>
 </template>
@@ -77,6 +77,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { onShareAppMessage } from '@dcloudio/uni-app'
 import { timeAgo, formatDuration } from '@/utils/format'
 import { useHaptic } from '@/composables/useHaptic'
+import { syncHandoverMessage, pullHandoverMessages } from '@/utils/syncService'
 
 interface VoiceMessage {
   id: string; author: string; authorEmoji: string; durationSec: number
@@ -96,6 +97,8 @@ function addTextNote() {
     localPath: '', text: txt,
   }, ...messages.value]
   saveMessages(); textNote.value = ''
+  // 同步到服务器，供其他家庭成员查看
+  syncHandoverMessage({ text: txt }).catch(() => {})
   uni.showToast({ title: '✅ 已保存', icon: 'success' })
 }
 
@@ -132,7 +135,7 @@ function startRecord() {
     // 如果仍在录音状态（由 finishRecord 触发），保存消息
     if (saveAfterStop) {
       saveAfterStop = false
-      const duration = recordSeconds.value
+      const duration = capturedDuration || recordSeconds.value
       if (duration >= 2) {
         messages.value = [{
           id: `voice-${Date.now()}`, author: '我', authorEmoji: '👤',
@@ -140,6 +143,8 @@ function startRecord() {
           createdAt: Date.now(), localPath: tempFilePath,
         }, ...messages.value]
         saveMessages()
+        // 同步到服务器（音频URL暂时用本地路径占位，后续接入COS后替换）
+        syncHandoverMessage({ durationSec: duration, audioUrl: tempFilePath }).catch(() => {})
         uni.showToast({ title: '✅ 已保存', icon: 'success' })
       } else {
         uni.showToast({ title: '录音太短，请重录', icon: 'none' })
@@ -162,6 +167,8 @@ function startRecord() {
 
 // 标志：finishRecord 触发 stop 后，onStop 回调应该保存消息
 let saveAfterStop = false
+// 预捕获的录音时长（修复 finishRecord 先重置 recordSeconds 再异步 stop 的竞态）
+let capturedDuration = 0
 
 function cancelRecord() {
   isRecording.value = false
@@ -179,6 +186,8 @@ function cancelRecord() {
 function finishRecord() {
   isRecording.value = false
   if (timerHandle) { clearInterval(timerHandle); timerHandle = null }
+  // 🔧 在重置前捕获录音时长，避免 onStop 异步回调读取到 0
+  capturedDuration = recordSeconds.value
   recordSeconds.value = 0
   haptic.heartbeatStop(); haptic.thump()
 
@@ -192,7 +201,7 @@ function finishRecord() {
   // #endif
 
   // #ifndef MP-WEIXIN
-  const duration = recordSeconds.value
+  const duration = capturedDuration
   if (duration < 2) {
     uni.showToast({ title: '录音太短，请重录', icon: 'none' }); return
   }
@@ -255,7 +264,34 @@ onUnmounted(() => {
 onMounted(() => {
   uni.setNavigationBarTitle({ title: '语音便签' })
   loadMessages()
+  // 从服务器拉取其他家庭成员的消息并合并
+  pullHandoverMessages().then(serverMsgs => {
+    if (serverMsgs.length) {
+      const localIds = new Set(messages.value.map(m => m.id))
+      const newMsgs = serverMsgs
+        .filter((m: any) => !localIds.has(m.id))
+        .map((m: any) => ({
+          id: m.id,
+          author: m.author_name || '家人',
+          authorEmoji: roleEmoji(m.author_role),
+          durationSec: m.duration_sec || 0,
+          read: false,
+          createdAt: new Date(m.created_at).getTime(),
+          localPath: m.audio_url || '',
+          text: m.text || '',
+        }))
+      if (newMsgs.length) {
+        messages.value = [...newMsgs, ...messages.value]
+        saveMessages()
+      }
+    }
+  }).catch(() => {})
 })
+
+function roleEmoji(role: string): string {
+  const map: Record<string, string> = { mom: '👩', dad: '👨', grandma: '👵', grandpa: '👴', nanny: '👩‍🍼' }
+  return map[role] || '👤'
+}
 
 onShareAppMessage(() => ({
   title: '📋 双宝交接班便签 — 换班前看一眼',

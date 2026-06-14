@@ -23,6 +23,8 @@ export interface Baby {
   avatar: string
   birthWeight: number
   birthHeight: number
+  /** 胎龄（周），<37 为早产儿，用于 WHO 生长曲线矫正月龄 */
+  gestationalWeeks?: number
   isActive: boolean
 }
 
