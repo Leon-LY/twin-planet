@@ -195,6 +195,19 @@
         <!-- 免责声明 -->
         <text class="disclaimer-note reveal-6" v-if="userStore.roleConfig.homeLayout==='full'">本应用不提供医疗建议，所有数据仅供参考</text>
 
+        <!-- 邀请接受弹窗 -->
+        <view class="celebrate-overlay" v-if="showInvitePrompt" @click="showInvitePrompt=false">
+          <view class="celebrate-card" @click.stop>
+            <text class="celebrate-emoji">👨‍👩‍👧‍👦</text>
+            <text class="celebrate-title">有人邀请你一起记录！</text>
+            <text class="celebrate-desc">加入家庭后，你们可以一起记录双宝的日常</text>
+            <view class="invite-actions">
+              <button class="invite-accept" @click="acceptInvite">加入家庭</button>
+              <button class="invite-decline" @click="showInvitePrompt=false">以后再说</button>
+            </view>
+          </view>
+        </view>
+
         <!-- 里程碑庆祝弹窗 -->
         <view class="celebrate-overlay" v-if="showCelebrate" @click="showCelebrate=false">
           <view class="celebrate-card">
@@ -233,6 +246,7 @@ import { useStickerSync } from '@/composables/useStickerSync'
 import { useQuickRef } from '@/composables/useQuickRef'
 import { getDiscoverFeatures } from '@/config/roles'
 import { saveExportData, syncRecords, pullRecords } from '@/utils/syncService'
+import { createInvite, joinFamily } from '@/api/family'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
 import LightBridge from '@/components/cosmic/LightBridge.vue'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
@@ -259,12 +273,58 @@ async function initSync(){
     syncRecords(recordsStore.logs.slice(-20))
   } catch { /* 静默 */ }
 }
-onMounted(()=>{setTimeout(()=>{loading.value=false;syncStickers();initSync().catch(()=>{});checkCelebrate()},400)})
-onShareAppMessage(()=>{
+// 邀请令牌 — 预生成用于分享，从 globalData 检测被邀请
+const inviteToken = ref('')
+const showInvitePrompt = ref(false)
+
+async function checkInviteAndAccept() {
+  // 检测是否有邀请令牌
+  try {
+    const app = getApp()
+    const token = app?.globalData?.__inviteToken
+    if (token && userStore.isLoggedIn) {
+      showInvitePrompt.value = true
+      inviteToken.value = token
+      // 清除，避免重复弹窗
+      app.globalData.__inviteToken = null
+    }
+  } catch {}
+}
+async function acceptInvite() {
+  try {
+    const res = await joinFamily(inviteToken.value)
+    if (res.success) {
+      uni.showToast({ title: '成功加入家庭！', icon: 'success' })
+      showInvitePrompt.value = false
+    } else {
+      uni.showToast({ title: res.error?.message || '加入失败', icon: 'none' })
+    }
+  } catch {
+    uni.showToast({ title: '网络问题，稍后再试吧', icon: 'none' })
+  }
+}
+
+// 预生成邀请令牌用于分享
+async function ensureInviteToken() {
+  if (inviteToken.value) return inviteToken.value
+  try {
+    const res = await createInvite()
+    if (res.success && res.data) {
+      inviteToken.value = res.data.token
+      return res.data.token
+    }
+  } catch { /* 离线或无家庭时静默失败 */ }
+  return ''
+}
+
+onMounted(()=>{setTimeout(()=>{loading.value=false;syncStickers();initSync().catch(()=>{});checkCelebrate();checkInviteAndAccept();ensureInviteToken().catch(()=>{})},400)})
+onShareAppMessage(() => {
   const aName=babyA.value?.nickname||'大宝';const bName=babyB.value?.nickname||'二宝'
+  const token = inviteToken.value
+  const path = token ? `/pages/index/index?invite=${token}` : '/pages/index/index'
   return {
     title:`${aName}和${bName}的成长手帐 · 一起来记录吧 🪐`,
-    path:'/pages/index/index',
+    path,
     imageUrl:'/static/share-brand.png',
   }
 })
@@ -678,6 +738,34 @@ const switchRole = () => {
   0%, 100% { transform: rotate(0) scale(1); }
   50% { transform: rotate(15deg) scale(1.2); }
 }
+
+/* 邀请弹窗按钮 */
+.invite-actions {
+  margin-top: 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+.invite-accept {
+  width: 100%;
+  padding: 24rpx 0;
+  background: var(--amber);
+  color: #FFF;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 30rpx;
+  font-weight: 700;
+}
+.invite-accept::after { border: none; }
+.invite-decline {
+  width: 100%;
+  padding: 16rpx 0;
+  background: transparent;
+  color: var(--ink-md);
+  border: none;
+  font-size: 24rpx;
+}
+.invite-decline::after { border: none; }
 
 /* 入场 */
 .reveal-1{animation:revealUp .5s var(--ease-soft) both}

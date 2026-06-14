@@ -7,6 +7,8 @@ import { authRouter } from './routes/auth'
 import { babiesRouter } from './routes/babies'
 import { recordsRouter } from './routes/records'
 import { growthRouter } from './routes/growth'
+import { familyRouter } from './routes/family'
+import { handoverRouter } from './routes/handover'
 import { errorHandler } from './middleware/errorHandler'
 
 dotenv.config()
@@ -69,6 +71,8 @@ app.use('/api/auth', authRouter)
 app.use('/api/babies', babiesRouter)
 app.use('/api/records', recordsRouter)
 app.use('/api/growth', growthRouter)
+app.use('/api/family', familyRouter)
+app.use('/api/handover', handoverRouter)
 
 // Error handler
 app.use(errorHandler)

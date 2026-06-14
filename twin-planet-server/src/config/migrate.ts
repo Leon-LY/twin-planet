@@ -1,6 +1,24 @@
 import { pool } from './database'
 
 const SCHEMA = `
+CREATE TABLE IF NOT EXISTS families (
+  id VARCHAR(64) PRIMARY KEY,
+  name VARCHAR(128) NOT NULL DEFAULT '我们的家',
+  created_by VARCHAR(64) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS family_invites (
+  token VARCHAR(64) PRIMARY KEY,
+  family_id VARCHAR(64) NOT NULL REFERENCES families(id),
+  created_by VARCHAR(64) NOT NULL,
+  used BOOLEAN DEFAULT false,
+  used_by VARCHAR(64),
+  used_at TIMESTAMPTZ,
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS users (
   id VARCHAR(64) PRIMARY KEY,
   openid VARCHAR(128) UNIQUE NOT NULL,
@@ -8,6 +26,7 @@ CREATE TABLE IF NOT EXISTS users (
   avatar VARCHAR(512) DEFAULT '',
   phone VARCHAR(20) DEFAULT '',
   role VARCHAR(20) DEFAULT 'mom' CHECK (role IN ('mom','dad','grandma','grandpa','nanny','other')),
+  family_id VARCHAR(64) REFERENCES families(id),
   preferred_ui_mode VARCHAR(10) DEFAULT 'normal' CHECK (preferred_ui_mode IN ('normal','large')),
   ui_config JSONB DEFAULT '{"fontSize":14,"showTTS":false,"simplifiedHome":false,"autoNightMode":true}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -17,6 +36,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS twin_groups (
   id VARCHAR(64) PRIMARY KEY,
   user_id VARCHAR(64) NOT NULL REFERENCES users(id),
+  family_id VARCHAR(64) REFERENCES families(id),
   name VARCHAR(64) NOT NULL DEFAULT '',
   baby_ids TEXT[] DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -25,6 +45,7 @@ CREATE TABLE IF NOT EXISTS twin_groups (
 CREATE TABLE IF NOT EXISTS babies (
   id VARCHAR(64) PRIMARY KEY,
   user_id VARCHAR(64) NOT NULL REFERENCES users(id),
+  family_id VARCHAR(64) REFERENCES families(id),
   twin_group_id VARCHAR(64) REFERENCES twin_groups(id),
   name VARCHAR(32) NOT NULL,
   nickname VARCHAR(32) DEFAULT '',
@@ -43,6 +64,7 @@ CREATE TABLE IF NOT EXISTS records (
   id VARCHAR(64) PRIMARY KEY,
   baby_id VARCHAR(64) NOT NULL REFERENCES babies(id),
   user_id VARCHAR(64) NOT NULL REFERENCES users(id),
+  family_id VARCHAR(64) REFERENCES families(id),
   type VARCHAR(20) NOT NULL CHECK (type IN ('feeding','sleep','diaper','temperature','medicine','bath')),
   started_at TIMESTAMPTZ NOT NULL,
   ended_at TIMESTAMPTZ,
@@ -71,6 +93,7 @@ CREATE TABLE IF NOT EXISTS sprout_entries (
   id VARCHAR(64) PRIMARY KEY,
   twin_group_id VARCHAR(64) NOT NULL REFERENCES twin_groups(id),
   user_id VARCHAR(64) NOT NULL REFERENCES users(id),
+  family_id VARCHAR(64) REFERENCES families(id),
   type VARCHAR(20) NOT NULL CHECK (type IN ('share','fight','imitate','comfort','compete','cooperate','first')),
   baby_a_name VARCHAR(32) NOT NULL,
   baby_b_name VARCHAR(32) NOT NULL,
@@ -81,6 +104,7 @@ CREATE TABLE IF NOT EXISTS sprout_entries (
 CREATE TABLE IF NOT EXISTS contribution_entries (
   id VARCHAR(64) PRIMARY KEY,
   user_id VARCHAR(64) NOT NULL REFERENCES users(id),
+  family_id VARCHAR(64) REFERENCES families(id),
   category VARCHAR(20) NOT NULL,
   note TEXT DEFAULT '',
   recorded_at TIMESTAMPTZ DEFAULT NOW()
@@ -89,6 +113,7 @@ CREATE TABLE IF NOT EXISTS contribution_entries (
 CREATE TABLE IF NOT EXISTS duty_tasks (
   id VARCHAR(64) PRIMARY KEY,
   user_id VARCHAR(64) NOT NULL REFERENCES users(id),
+  family_id VARCHAR(64) REFERENCES families(id),
   category VARCHAR(20) NOT NULL,
   title VARCHAR(128) NOT NULL,
   baby_a_need BOOLEAN DEFAULT true,
@@ -101,11 +126,23 @@ CREATE TABLE IF NOT EXISTS duty_tasks (
 CREATE TABLE IF NOT EXISTS school_decisions (
   id VARCHAR(64) PRIMARY KEY,
   user_id VARCHAR(64) NOT NULL REFERENCES users(id),
+  family_id VARCHAR(64) REFERENCES families(id),
   twin_group_id VARCHAR(64) REFERENCES twin_groups(id),
   term VARCHAR(20) NOT NULL,
   same_class BOOLEAN NOT NULL,
   coupling_score JSONB NOT NULL DEFAULT '{"emotional":0,"social":0,"identity":0}',
   note TEXT DEFAULT '',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS handover_messages (
+  id VARCHAR(64) PRIMARY KEY,
+  user_id VARCHAR(64) NOT NULL REFERENCES users(id),
+  family_id VARCHAR(64) REFERENCES families(id),
+  baby_id VARCHAR(64),
+  audio_url TEXT,
+  duration_sec INT DEFAULT 0,
+  text TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

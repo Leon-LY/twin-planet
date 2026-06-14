@@ -1,12 +1,15 @@
 <script>
 export default {
-  onLaunch() {
+  onLaunch(options) {
     this._syncTheme()
     // 每小时检查一次暗色模式切换
     this._themeTimer = setInterval(() => this._syncTheme(), 60 * 60 * 1000)
+    // 处理邀请令牌
+    this._checkInvite(options)
   },
-  onShow() {
+  onShow(options) {
     this._syncTheme()
+    this._checkInvite(options)
   },
   onHide() {
     // keep timer running while app is in background
@@ -20,6 +23,20 @@ export default {
           const isNight = hour >= 22 || hour < 6
           app.globalData = app.globalData || {}
           app.globalData.__theme = isNight ? 'dark' : 'light'
+        }
+      } catch (_) {}
+    },
+    _checkInvite(options) {
+      try {
+        // 从启动参数中提取邀请令牌
+        const token = options?.query?.invite
+        if (token) {
+          const app = getApp()
+          if (app) {
+            app.globalData = app.globalData || {}
+            app.globalData.__inviteToken = token
+          }
+          console.log('[App] Invite token detected:', token.slice(0, 8) + '...')
         }
       } catch (_) {}
     },
