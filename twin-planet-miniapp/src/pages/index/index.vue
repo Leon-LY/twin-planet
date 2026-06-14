@@ -289,7 +289,7 @@ const switchRole=()=>{const roles=['👩 妈妈','👨 爸爸','👵 奶奶','�
 .twin-card:active .avatar-ring{transform:scale(1.08)}
 .card-a .avatar-ring{background:var(--amber-md)}
 .card-b .avatar-ring{background:var(--rose-md)}
-.avatar-ring.pulsing::before{content:'';position:absolute;inset:-6rpx;border-radius:50%;border:2rpx solid var(--mint);opacity:.45;animation:ringPulse 2.5s ease-in-out infinite}
+.avatar-ring.pulsing::before{content:'';position:absolute;top:-6rpx;right:-6rpx;bottom:-6rpx;left:-6rpx;border-radius:50%;border:2rpx solid var(--mint);opacity:.45;animation:ringPulse 2.5s ease-in-out infinite}
 @keyframes ringPulse{0%,100%{transform:scale(1);opacity:.35}50%{transform:scale(1.1);opacity:.8}}
 .avatar-emoji{font-size:44rpx}
 
@@ -312,7 +312,7 @@ const switchRole=()=>{const roles=['👩 妈妈','👨 爸爸','👵 奶奶','�
 /* 中央按钮 */
 .action-center{display:flex;align-items:center;justify-content:center;position:relative;z-index:1;margin-bottom:28rpx}
 .btn-stage{position:relative;width:420rpx;height:420rpx;display:flex;align-items:center;justify-content:center}
-.orbit-ring{position:absolute;inset:0;border-radius:50%;border:2rpx dashed var(--dot);opacity:.35}
+.orbit-ring{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:50%;border:2rpx dashed var(--dot);opacity:.35}
 .main-btn{
   width:300rpx;height:300rpx;border-radius:50%;
   position:relative;z-index:2;

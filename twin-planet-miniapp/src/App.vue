@@ -102,9 +102,10 @@ page {
 .btn-outline:active{transform:scale(0.94);border-color:var(--amber)}
 
 /* 全局暖光斑 */
-.bg-spot{position:absolute;pointer-events:none;z-index:0;border-radius:50%}
+.bg-spot{position:absolute;pointer-events:none;z-index:0;border-radius:50%;animation:spot-drift 30s ease-in-out infinite alternate}
 .spot-a{width:360rpx;height:360rpx;top:100rpx;right:-120rpx;background:radial-gradient(circle,rgba(212,128,104,0.03) 0%,transparent 60%)}
 .spot-b{width:300rpx;height:300rpx;bottom:240rpx;left:-100rpx;background:radial-gradient(circle,rgba(224,123,62,0.03) 0%,transparent 60%)}
+@keyframes spot-drift{from{transform:translate(0,0)}to{transform:translate(20rpx,-15rpx)}}
 
 /* 全局手写体页头 */
 .page-header{position:relative;z-index:1;margin-bottom:36rpx;padding-bottom:20rpx;border-bottom:2rpx dashed var(--dot)}
