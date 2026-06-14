@@ -133,7 +133,7 @@ function stopOne(id:string|undefined){if(!id)return;const l=recordsStore.stopTim
 function stopAll(){let c=0;for(const t of recordsStore.runningTimers){if(recordsStore.stopTimer(t.babyId))c++};haptic.thump();syncStickers();if(c>0)popSticker('✅')}
 const t0=new Date().setHours(0,0,0,0)
 const recentLogs=computed(()=>recordsStore.logs.filter(l=>l.createdAt>=t0).sort((a,b)=>b.createdAt-a.createdAt))
-onMounted(()=>{uni.setNavigationBarTitle({title:'手帐记录'});if(twins.value[0])sel.value=twins.value[0].id})
+onMounted(()=>{uni.setNavigationBarTitle({title:'记录'});if(twins.value[0])sel.value=twins.value[0].id})
 </script>
 
 <style scoped>

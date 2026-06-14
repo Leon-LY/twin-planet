@@ -209,7 +209,7 @@ onUnmounted(() => {
 })
 
 onMounted(() => {
-  uni.setNavigationBarTitle({ title: '交接班语音' })
+  uni.setNavigationBarTitle({ title: '语音便签' })
   loadMessages()
 })
 </script>

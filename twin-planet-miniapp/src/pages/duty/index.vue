@@ -106,7 +106,7 @@ function finishDuty() {
 }
 
 onMounted(() => {
-  uni.setNavigationBarTitle({ title: '指挥官控制台' })
+  uni.setNavigationBarTitle({ title: '值班清单' })
   if (store.tasks.length === 0) startDuty()
   alertsStore.checkAlerts()
 })
