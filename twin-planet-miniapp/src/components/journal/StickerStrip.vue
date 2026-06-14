@@ -40,9 +40,27 @@ function isNew(s: Sticker): boolean {
   position: relative;
   z-index: 1;
 }
+/* 贴纸区底部衬一条"胶带撕痕" */
+.sticker-strip::before {
+  content: '';
+  position: absolute;
+  bottom: 8rpx;
+  left: 0;
+  right: 0;
+  height: 4rpx;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 16rpx,
+    var(--dot) 16rpx,
+    var(--dot) 18rpx
+  );
+  opacity: 0.5;
+}
 .sticker-strip.empty {
   text-align: center;
 }
+.sticker-strip.empty::before { display: none; }
 .strip-empty-text {
   font-size: var(--font-caption);
   color: var(--ink-lt);
@@ -69,11 +87,16 @@ function isNew(s: Sticker): boolean {
   gap: 4rpx;
   padding: 12rpx 16rpx;
   background: var(--cream);
-  border-radius: var(--radius-sm);
+  border-radius: 4rpx 12rpx 4rpx 12rpx;
   border: 2rpx solid var(--dot);
   min-width: 100rpx;
   transition: transform .3s var(--ease-bounce), border-color .3s;
+  transform: rotate(-0.8deg);
+  box-shadow: 0 2rpx 6rpx rgba(45,35,24,0.04);
 }
+.sticker-item:nth-child(2n) { transform: rotate(0.6deg); }
+.sticker-item:nth-child(3n) { transform: rotate(-1.2deg); }
+.sticker-item:nth-child(5n) { transform: rotate(0.3deg); }
 .sticker-item.new {
   border-color: var(--gold);
   animation: stickerBounce .5s var(--ease-bounce);
@@ -98,8 +121,8 @@ function isNew(s: Sticker): boolean {
   margin-top: 8rpx;
 }
 @keyframes stickerBounce {
-  0% { transform: scale(.5); opacity: 0; }
-  60% { transform: scale(1.2); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
+  0% { transform: scale(.5) rotate(-5deg); opacity: 0; }
+  60% { transform: scale(1.15) rotate(1deg); opacity: 1; }
+  100% { transform: scale(1) rotate(-0.8deg); opacity: 1; }
 }
 </style>

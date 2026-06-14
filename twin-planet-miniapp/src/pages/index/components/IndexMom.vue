@@ -20,6 +20,7 @@
 
     <view class="today-card journal-card journal-curl reveal-2">
       <view class="journal-tape tape-amber" />
+      <view class="journal-ribbon" />
       <text class="greet-line1">{{ greetFull }}</text>
       <text class="greet-sub">{{ insightText }}</text>
       <view class="today-meta journal-margin" v-if="todaySummary || allGood || tomorrowForecast">
@@ -30,7 +31,8 @@
     </view>
 
     <view class="welcome-guide reveal-2" v-if="showWelcome && userStore.roleConfig.homeLayout==='full'">
-      <view class="welcome-card">
+      <view class="welcome-card journal-card">
+        <view class="journal-clip" />
         <view class="welcome-top">
           <text class="welcome-wave">👋</text>
           <view class="welcome-text">

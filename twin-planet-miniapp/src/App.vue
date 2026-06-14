@@ -265,6 +265,78 @@ page {
   opacity: 0.4;
 }
 
+/* 书签缎带 — 卡片右侧悬挂 */
+.journal-ribbon {
+  position: absolute;
+  right: -10rpx;
+  top: -10rpx;
+  width: 28rpx;
+  height: 80rpx;
+  background: linear-gradient(180deg, var(--rose) 0%, #C06050 100%);
+  border-radius: 4rpx 2rpx 2rpx 4rpx;
+  z-index: 3;
+  pointer-events: none;
+  box-shadow: 0 2rpx 4rpx rgba(45,35,24,0.1);
+}
+.journal-ribbon::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-left: 14rpx solid transparent;
+  border-right: 14rpx solid transparent;
+  border-top: 12rpx solid #C06050;
+  border-radius: 0 0 2rpx 2rpx;
+}
+
+/* 回形针 — 卡片角落装饰 */
+.journal-clip {
+  position: absolute;
+  top: -12rpx;
+  right: 28rpx;
+  width: 32rpx;
+  height: 52rpx;
+  border: 2.5px solid var(--ink-lt);
+  border-radius: 14rpx 14rpx 4rpx 4rpx;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.5;
+}
+.journal-clip::after {
+  content: '';
+  position: absolute;
+  bottom: -4rpx;
+  left: 4rpx;
+  width: 14rpx;
+  height: 20rpx;
+  border: 2.5px solid var(--ink-lt);
+  border-top: none;
+  border-radius: 0 0 8rpx 8rpx;
+}
+
+/* 撕纸边 — 模拟手撕的不规则边缘 */
+.journal-tear {
+  position: relative;
+}
+.journal-tear::before {
+  content: '';
+  position: absolute;
+  top: -6rpx;
+  left: 8rpx;
+  right: 8rpx;
+  height: 6rpx;
+  background:
+    radial-gradient(circle 3rpx at 10rpx 3rpx, var(--paper) 2rpx, transparent 3rpx),
+    radial-gradient(circle 3rpx at 30rpx 3rpx, var(--paper) 2rpx, transparent 3rpx),
+    radial-gradient(circle 3rpx at 50rpx 3rpx, var(--paper) 2rpx, transparent 3rpx),
+    radial-gradient(circle 3rpx at 70rpx 3rpx, var(--paper) 2rpx, transparent 3rpx),
+    radial-gradient(circle 3rpx at 90rpx 3rpx, var(--paper) 2rpx, transparent 3rpx),
+    radial-gradient(circle 3rpx at 110rpx 3rpx, var(--paper) 2rpx, transparent 3rpx);
+  z-index: 1;
+}
+
 .heading-xl{font-family:var(--font-journal);font-size:var(--font-hero);font-weight:400;color:var(--ink);letter-spacing:-1rpx}
 .heading-lg{font-family:var(--font-journal);font-size:var(--font-title);font-weight:400;color:var(--ink)}
 .body-text{font-size:var(--font-body);color:var(--ink-md);line-height:var(--leading-body)}
