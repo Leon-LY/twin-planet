@@ -142,7 +142,7 @@ page {
   --space-lg:60rpx;
 }
 /* 奶奶模式 — 禁用动画 */
-.font-large .bg-spot { animation-duration: 0s !important; }
+
 .font-large .page-enter { animation-duration: 0s !important; }
 .font-large * { animation-duration: 0s !important; transition-duration: 0s !important; }
 
