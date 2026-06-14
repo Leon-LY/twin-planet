@@ -96,10 +96,15 @@
           </view>
         </view>
 
-        <!-- 问候 — 手帐扉页 -->
-        <view class="greeting reveal-2">
+        <!-- 今日一览 — 问候 + 摘要 + 预测合并 -->
+        <view class="today-card reveal-2">
           <text class="greet-line1">{{ greetFull }}</text>
           <text class="greet-sub">{{ insightText }}</text>
+          <view class="today-meta" v-if="todaySummary || allGood || tomorrowForecast">
+            <text class="today-summary" v-if="todaySummary">{{ todaySummary }}</text>
+            <text class="today-allgood" v-if="allGood">🟢 两个小家伙今天都很好</text>
+            <text class="today-forecast" v-if="tomorrowForecast && streakDays >= 3">🔮 {{ tomorrowForecast }}</text>
+          </view>
         </view>
 
         <!-- 🆕 新手引导 — 首次使用教学 -->
@@ -173,16 +178,6 @@
           <StickerStrip :stickers="stickersStore.todayStickers" :showMore="true" @viewAll="navigate('/pages/stickers/index')" />
         </view>
 
-        <!-- 今日摘要 -->
-        <view class="summary-line reveal-4" v-if="todaySummary && userStore.roleConfig.homeLayout==='full'">
-          <text>{{ todaySummary }}</text>
-        </view>
-
-        <!-- 一切都好 -->
-        <view class="all-good reveal-4" v-if="allGood && userStore.roleConfig.homeLayout==='full'">
-          <text>🟢 两个小家伙今天都很好</text>
-        </view>
-
         <!-- 快速参考：上次喂奶/睡觉 -->
         <view class="quick-ref reveal-4" v-if="quickRef.lastFeeding!=='—' || quickRef.activeTimer">
           <view class="qr-item" v-if="quickRef.activeTimer">
@@ -222,11 +217,6 @@
           <view class="q-chip q-primary" @click="dualRecord('feeding')">🍼 都喂了</view>
           <view class="q-chip" @click="dualRecord('sleep')">😴 都睡了</view>
           <view class="q-chip" @click="dualRecord('diaper')">🧷 都换了</view>
-        </view>
-
-        <!-- 预测 -->
-        <view class="forecast-line reveal-6" v-if="tomorrowForecast && streakDays >= 3">
-          <text>🔮 {{ tomorrowForecast }}</text>
         </view>
 
         <!-- 底部工具行 -->
@@ -708,7 +698,13 @@ function doMilestoneAction() {
 /* 问候 — editorial left-aligned */
 .greeting{position:relative;z-index:1;margin-bottom:44rpx}
 .greet-line1{display:block;font-family:var(--font-journal);font-size:48rpx;font-weight:400;color:var(--ink);letter-spacing:-1rpx;line-height:1.3}
-.greet-sub{display:block;font-size:26rpx;color:var(--ink-lt);margin-top:16rpx;line-height:1.5;max-width:480rpx}
+.greet-sub{display:block;font-size:26rpx;color:var(--ink-lt);margin-top:12rpx;line-height:1.5;max-width:480rpx}
+/* 今日一览卡片 — 合并问候+摘要+预测 */
+.today-card{position:relative;z-index:1;margin-bottom:36rpx;padding:28rpx 24rpx;background:linear-gradient(135deg,var(--cream),var(--paper));border-radius:var(--radius-lg);border:1.5px solid var(--dot)}
+.today-meta{display:flex;flex-direction:column;gap:8rpx;margin-top:16rpx;padding-top:14rpx;border-top:1px dashed var(--dot)}
+.today-summary{font-family:var(--font-journal);font-size:24rpx;color:var(--ink)}
+.today-allgood{font-family:var(--font-journal);font-size:24rpx;color:var(--mint);font-weight:600}
+.today-forecast{font-size:22rpx;color:var(--ink-lt);font-style:italic}
 
 /* 双宝卡片 — asymmetric */
 .twins{position:relative;z-index:1;display:flex;align-items:flex-start;margin-bottom:8rpx}
@@ -750,8 +746,7 @@ function doMilestoneAction() {
 .sticker-zone{position:relative;z-index:1;margin-bottom:12rpx}
 
 /* 今日摘要 */
-.summary-line{text-align:left;margin-bottom:24rpx;position:relative;z-index:1}
-.summary-line text{font-family:var(--font-journal);font-size:24rpx;color:var(--ink-md)}
+
 
 /* 中央按钮 */
 .action-center{display:flex;align-items:center;justify-content:center;position:relative;z-index:1;margin-bottom:28rpx}
@@ -782,8 +777,7 @@ function doMilestoneAction() {
 .duty-card{display:flex;gap:8rpx;justify-content:center;position:relative;z-index:1;margin-bottom:20rpx;flex-wrap:wrap}
 
 /* 预测 */
-.forecast-line{text-align:left;margin-bottom:16rpx;position:relative;z-index:1}
-.forecast-line text{font-size:22rpx;color:var(--ink-lt);font-style:italic}
+
 
 .journal-footer-text{display:block;text-align:right;font-size:18rpx;color:var(--ink-lt);margin-bottom:20rpx;padding-right:8rpx;position:relative;z-index:1}
 
@@ -804,7 +798,7 @@ function doMilestoneAction() {
 .ft-row{display:flex;gap:12rpx}
 .ft-link{font-size:20rpx;color:var(--ink-lt)} .ft-link:active{color:var(--amber)} .ft-dot{font-size:20rpx;color:var(--ink-lt)}
 .disclaimer-note{display:block;text-align:center;font-size:18rpx;color:var(--ink-lt);margin-bottom:16rpx;opacity:.5;position:relative;z-index:1}
-.all-good{text-align:left;margin-bottom:12rpx;position:relative;z-index:1}.all-good text{font-family:var(--font-journal);font-size:24rpx;color:var(--mint);font-weight:600}
+
 
 /* 里程碑庆祝覆盖层 */
 .celebrate-overlay {
@@ -905,8 +899,6 @@ function doMilestoneAction() {
 .role-dad .greet-sub{display:none}
 .role-dad .greet-line1{font-size:44rpx}
 .role-dad .sticker-zone{display:none}
-.role-dad .summary-line{display:none}
-.role-dad .forecast-line{display:none}
 .role-dad .journal-footer-text{display:none}
 .role-dad .orbit-ring{display:none}
 .role-dad .card-surface{transform:none!important;border-radius:20rpx}
@@ -935,8 +927,8 @@ function doMilestoneAction() {
 
 /* 奶奶模式增强 */
 .role-granny .bg-spot,.role-granny .bridge-wrap,.role-granny .action-center,
-.role-granny .quick-bar,.role-granny .sticker-zone,.role-granny .summary-line,
-.role-granny .forecast-line,.role-granny .journal-footer-text,.role-granny .journal-nav{display:none}
+.role-granny .quick-bar,.role-granny .sticker-zone,
+.role-granny .journal-footer-text,.role-granny .journal-nav{display:none}
 .quick-ref{display:flex;gap:16rpx;flex-wrap:wrap;justify-content:center;margin-bottom:20rpx;position:relative;z-index:1}
 .qr-item{display:flex;align-items:center;gap:6rpx;padding:8rpx 16rpx;background:var(--cream);border-radius:16rpx;border:2rpx solid var(--dot)}
 .qr-emoji{font-size:24rpx}

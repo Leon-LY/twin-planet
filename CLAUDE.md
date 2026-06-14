@@ -40,7 +40,7 @@ E:/ly/project/twin-planet/
 
 ```
 框架：uni-app 3.0.0-alpha (Vue3 Composition API + <script setup> + TypeScript)
-状态：Pinia (9 个 Store)
+状态：Pinia (11 个 Store)
 图表：ECharts（懒加载，growth 子包）
 构建：Vite → npx uni build -p mp-weixin
 ```
@@ -76,14 +76,16 @@ twin-planet-miniapp/src/
 │   ├── twin-skeleton/twin-skeleton.vue  # 骨架屏
 │   └── ec-canvas/ec-canvas.vue      # ECharts 包装
 │
-├── stores/                    # 9 个 Pinia Store
+├── stores/                    # 11 个 Pinia Store
 │   ├── user.ts                # 登录/角色/奶奶模式/大字模式
 │   ├── family.ts              # 家庭（双胞胎组）
 │   ├── babies.ts              # 宝宝 CRUD + 大宝/二宝 + 早产儿胎龄
 │   ├── records.ts             # 双轨计时器 + 日志 + recordedBy
 │   ├── stickers.ts            # 贴纸收集系统（18 条规则）
 │   ├── growth.ts              # 生长测量数据
-│   ├── interactions.ts        # 萌芽日记 + 今天我做了什么
+│   ├── sprout.ts              # 萌芽日记（7 种互动类型）
+│   ├── contribution.ts        # 今天我做了什么（8 种贡献类别）
+│   ├── interactions.ts        # 向后兼容导出（委托 sprout + contribution）
 │   ├── duty.ts                # 爸爸值班 SOP 清单
 │   ├── alerts.ts              # 照顾者中断通知（纯统计规则）
 │   └── guardian.ts            # 电量表 + 一人时光
