@@ -222,7 +222,7 @@ onMounted(() => {
     trackSessionStart(); trackPageView('index')
     syncStickers(); initSync().catch(() => {})
     checkCelebrate(); checkInviteAndAccept()
-    ensureInviteToken().catch(() => {})
+    if (userStore.isLoggedIn) ensureInviteToken().catch(() => {})
     genShareCard().catch(() => {})
   }, 400)
 })
