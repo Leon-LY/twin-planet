@@ -41,6 +41,7 @@ export const useUserStore = defineStore('user', () => {
   const isLoggedIn = ref(false)
   const profile = ref<UserProfile | null>(_p.load())
   const isNewUser = ref(!profile.value)
+  const _isOffline = ref(false)
 
   // 如果从存储恢复了 profile，自动登录
   if (profile.value) {
@@ -81,6 +82,7 @@ export const useUserStore = defineStore('user', () => {
 
       // 保存 JWT token
       saveToken(res.data.token)
+      _isOffline.value = false
 
       // 更新本地 profile
       profile.value = res.data.profile
@@ -93,21 +95,32 @@ export const useUserStore = defineStore('user', () => {
         throw err
       }
       console.warn('[user] Backend login failed, using local fallback:', err.message)
-      profile.value = {
-        id: 'local-user-001',
-        openid: 'local-mock-openid',
-        nickname: 'Leon',
-        avatar: '',
-        phone: '',
-        role: 'dad',
-        preferredUiMode: 'normal',
-        uiConfig: { ...DEFAULT_UI_CONFIG },
-        createdAt: new Date().toISOString(),
-      }
-      isLoggedIn.value = true
-      isNewUser.value = false
-      _save()
+      _createLocalProfile()
     }
+  }
+
+  /** 离线模式 — 跳过服务器认证，创建本地用户 */
+  function _createLocalProfile() {
+    profile.value = {
+      id: 'local-user-' + Date.now(),
+      openid: 'offline-' + Date.now(),
+      nickname: '',
+      avatar: '',
+      phone: '',
+      role: 'mom',
+      preferredUiMode: 'normal',
+      uiConfig: { ...DEFAULT_UI_CONFIG },
+      createdAt: new Date().toISOString(),
+    }
+    isLoggedIn.value = true
+    isNewUser.value = false
+    _isOffline.value = true
+    _save()
+  }
+
+  /** 外部调用：启用离线模式（生产环境登录失败后的降级方案） */
+  function enableOfflineMode() {
+    _createLocalProfile()
   }
 
   /** 设置角色（不可变更新） */
@@ -152,9 +165,11 @@ export const useUserStore = defineStore('user', () => {
     clearToken()
   }
 
+  const isOffline = computed(() => _isOffline.value)
+
   return {
-    isLoggedIn, profile, isNewUser,
+    isLoggedIn, profile, isNewUser, isOffline,
     isGrandmaMode, isDad, isMom, roleConfig, roleLabel, roleEmoji, fontSize, shouldShowTTS,
-    loginByWechat, setRole, toggleLargeMode, setNickname, logout,
+    loginByWechat, enableOfflineMode, setRole, toggleLargeMode, setNickname, logout,
   }
 })

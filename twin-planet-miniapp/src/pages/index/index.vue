@@ -182,9 +182,14 @@
 
         <!-- 底部工具行 -->
         <view class="footer-tools reveal-6" v-if="userStore.roleConfig.homeLayout==='full'">
-          <text class="ft-link" @click="goExport">📤 导出备份</text>
-          <text class="ft-dot">·</text>
-          <text class="ft-link" @click="navigate('/pages/privacy/index')">隐私政策</text>
+          <button class="ft-invite" open-type="share">
+            <text>👨‍👩‍👧‍👦 邀请另一半一起记录</text>
+          </button>
+          <view class="ft-row">
+            <text class="ft-link" @click="goExport">📤 导出备份</text>
+            <text class="ft-dot">·</text>
+            <text class="ft-link" @click="navigate('/pages/privacy/index')">隐私政策</text>
+          </view>
         </view>
 
         <!-- 免责声明 -->
@@ -255,7 +260,14 @@ async function initSync(){
   } catch { /* 静默 */ }
 }
 onMounted(()=>{setTimeout(()=>{loading.value=false;syncStickers();initSync().catch(()=>{});checkCelebrate()},400)})
-onShareAppMessage(()=>({title:'🪐 双宝星球 · 两个小怪兽的成长记录',path:'/pages/index/index',imageUrl:'/static/share-brand.png'}))
+onShareAppMessage(()=>{
+  const aName=babyA.value?.nickname||'大宝';const bName=babyB.value?.nickname||'二宝'
+  return {
+    title:`${aName}和${bName}的成长手帐 · 一起来记录吧 🪐`,
+    path:'/pages/index/index',
+    imageUrl:'/static/share-brand.png',
+  }
+})
 
 const babiesStore=useBabiesStore();const recordsStore=useRecordsStore()
 const alertsStore=useAlertsStore();const stickersStore=useStickersStore()
@@ -617,7 +629,18 @@ const switchRole = () => {
 .journal-nav{display:flex;justify-content:space-between;padding:20rpx 48rpx 0;border-top:1.5px solid var(--dot);position:relative;z-index:1}
 .jnav-item{font-family:var(--font-journal);font-size:26rpx;color:var(--ink-lt);letter-spacing:3rpx}
 .jnav-item.active{color:var(--amber);font-weight:700}
-.footer-tools{display:flex;justify-content:center;gap:12rpx;margin-bottom:12rpx;position:relative;z-index:1} .ft-link{font-size:20rpx;color:var(--ink-lt)} .ft-link:active{color:var(--amber)} .ft-dot{font-size:20rpx;color:var(--ink-lt)}
+.footer-tools{display:flex;flex-direction:column;align-items:center;gap:12rpx;margin-bottom:12rpx;position:relative;z-index:1}
+.ft-invite{
+  width:100%;max-width:560rpx;padding:16rpx 0;
+  background:linear-gradient(135deg,var(--amber-lt),var(--rose-lt));
+  border:2rpx solid var(--dot);border-radius:20rpx;
+  font-size:24rpx;font-weight:600;color:var(--ink);
+  line-height:1.4;
+}
+.ft-invite::after{border:none}
+.ft-invite:active{opacity:.7}
+.ft-row{display:flex;gap:12rpx}
+.ft-link{font-size:20rpx;color:var(--ink-lt)} .ft-link:active{color:var(--amber)} .ft-dot{font-size:20rpx;color:var(--ink-lt)}
 .disclaimer-note{display:block;text-align:center;font-size:18rpx;color:var(--ink-lt);margin-bottom:16rpx;opacity:.5;position:relative;z-index:1}
 .all-good{text-align:left;margin-bottom:12rpx;position:relative;z-index:1}.all-good text{font-family:var(--font-journal);font-size:24rpx;color:var(--mint);font-weight:600}
 
