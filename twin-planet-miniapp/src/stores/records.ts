@@ -21,11 +21,18 @@ export interface TimerState {
   // 喂养专用
   feedingSide?: 'left' | 'right' | 'bottle'
   amountMl?: number
+  feedingMode?: 'breast' | 'bottle' | 'mixed'
   // 睡眠专用
   sleepQuality?: 1 | 2 | 3 | 4 | 5
   // 换尿布专用
   diaperType?: 'wet' | 'dirty' | 'both'
   diaperNote?: string
+  // 体温专用
+  temperatureValue?: number
+  // 用药专用
+  medicineName?: string
+  medicineDosage?: string
+  medicineUnit?: string
 }
 
 export interface RecordLog {
@@ -43,9 +50,22 @@ export interface RecordLog {
   recordedBy?: string
   // 扩展字段
   diaperType?: 'wet' | 'dirty' | 'both'
+  temperatureValue?: number
+  medicineName?: string
+  medicineDosage?: string
+  feedingMode?: 'breast' | 'bottle' | 'mixed'
+  feedingSide?: 'left' | 'right' | 'bottle'
+  amountMl?: number
 }
 
 const TIMER_TICK_MS = 1000
+/** 最大计时时长（分钟），超时自动停止，防止忘记关闭导致垃圾数据 */
+const MAX_TIMER_MINUTES: Record<string, number> = {
+  feeding: 90,   // 1.5 小时（亲喂单次通常在 10-30 分钟，90分钟是极端上限）
+  sleep: 240,    // 4 小时（新生儿单次睡眠通常在 30 分钟-4 小时）
+}
+/** 最小记录时长（分钟），少于此值不保存（避免误触） */
+const MIN_RECORD_MINUTES = 0.5  // 30 秒
 
 export const useRecordsStore = defineStore('records', () => {
   // ---- state ----
@@ -75,9 +95,14 @@ export const useRecordsStore = defineStore('records', () => {
             babyId: saved.babyId, type: saved.type, startedAt: saved.startedAt, elapsed, timerHandle: handle,
             feedingSide: (saved as any).feedingSide || undefined,
             amountMl: (saved as any).amountMl || undefined,
+            feedingMode: (saved as any).feedingMode || undefined,
             sleepQuality: (saved as any).sleepQuality || undefined,
             diaperType: (saved as any).diaperType || undefined,
             diaperNote: (saved as any).diaperNote || undefined,
+            temperatureValue: (saved as any).temperatureValue ?? undefined,
+            medicineName: (saved as any).medicineName || undefined,
+            medicineDosage: (saved as any).medicineDosage || undefined,
+            medicineUnit: (saved as any).medicineUnit || undefined,
           }
           console.log('[records] Restored active timer for', saved.babyId)
         }
@@ -95,9 +120,14 @@ export const useRecordsStore = defineStore('records', () => {
         startedAt: t.startedAt,
         feedingSide: t.feedingSide || null,
         amountMl: t.amountMl || null,
+        feedingMode: t.feedingMode || null,
         sleepQuality: t.sleepQuality || null,
         diaperType: t.diaperType || null,
         diaperNote: t.diaperNote || null,
+        temperatureValue: t.temperatureValue ?? null,
+        medicineName: t.medicineName || null,
+        medicineDosage: t.medicineDosage || null,
+        medicineUnit: t.medicineUnit || null,
       }))
       if (activeTimers.length) {
         uni.setStorageSync('tp_active_timers', JSON.stringify(activeTimers))
@@ -181,6 +211,21 @@ export const useRecordsStore = defineStore('records', () => {
 
   // ---- actions ----
 
+  /** 私有：检查是否超过最大计时时长，超时自动停止 */
+  function _checkMaxDuration(babyId: string): boolean {
+    const timer = _timers.value[babyId]
+    if (!timer) return false
+    const maxMin = MAX_TIMER_MINUTES[timer.type]
+    if (!maxMin) return false
+    const elapsedMin = (Date.now() - timer.startedAt) / 60000
+    if (elapsedMin >= maxMin) {
+      _stopOne(babyId)
+      console.log(`[records] Auto-stopped ${timer.type} timer for ${babyId} after ${Math.round(elapsedMin)}min (max=${maxMin}min)`)
+      return true
+    }
+    return false
+  }
+
   /** 私有：停止单个宝宝的计时器并保存记录 */
   function _stopOne(babyId: string): RecordLog | null {
     const timer = _timers.value[babyId]
@@ -190,8 +235,8 @@ export const useRecordsStore = defineStore('records', () => {
     const endedAt = Date.now()
     const durationMin = Math.round((endedAt - timer.startedAt) / 60000)
 
-    // 至少 1 分钟才记录
-    if (durationMin < 1) {
+    // 少于最小记录时长不保存（防误触），但从 Map 中移除计时器
+    if (durationMin < MIN_RECORD_MINUTES) {
       const newTimers = { ..._timers.value }
       delete newTimers[babyId]
       _timers.value = newTimers
@@ -208,22 +253,26 @@ export const useRecordsStore = defineStore('records', () => {
       return null
     }
 
+    // 生成可读详情
     let detail = ''
     if (timer.type === 'feeding') {
       const sideLabel = timer.feedingSide === 'left' ? '左' : timer.feedingSide === 'right' ? '右' : timer.feedingSide === 'bottle' ? '瓶喂' : ''
-      const amountStr = timer.amountMl ? ` ${timer.amountMl}ml` : ''
-      detail = sideLabel ? `${sideLabel}${amountStr} ${durationMin}分钟` : `喂养 ${durationMin}分钟`
+      const amountStr = timer.amountMl ? `${timer.amountMl}ml` : ''
+      const modeLabel = timer.feedingMode === 'bottle' ? '🍼' : timer.feedingMode === 'mixed' ? '🤱+🍼' : ''
+      const parts = [sideLabel, amountStr, modeLabel, durationMin > 0 ? `${durationMin}分钟` : ''].filter(Boolean)
+      detail = parts.length > 0 ? parts.join(' ') : '喂养'
     } else if (timer.type === 'sleep') {
-      detail = `睡眠 ${durationMin}分钟`
+      detail = durationMin > 0 ? `睡眠 ${durationMin}分钟` : '睡眠'
     } else if (timer.type === 'diaper') {
-      const diaperLabel = timer.diaperType === 'wet' ? '💧' : timer.diaperType === 'dirty' ? '💩' : timer.diaperType === 'both' ? '💧💩' : ''
-      detail = `换尿布${diaperLabel ? ' ' + diaperLabel : ''}`
+      const diaperLabel = timer.diaperType === 'wet' ? '💧小便' : timer.diaperType === 'dirty' ? '💩大便' : timer.diaperType === 'both' ? '💧💩都有' : '换尿布'
+      detail = diaperLabel
     } else if (timer.type === 'temperature') {
-      detail = '体温'
+      detail = timer.temperatureValue ? `体温 ${timer.temperatureValue}°C` : '体温'
     } else if (timer.type === 'medicine') {
-      detail = '用药'
+      const medParts = [timer.medicineName, timer.medicineDosage].filter(Boolean)
+      detail = medParts.length > 0 ? `用药 ${medParts.join(' ')}` : '用药'
     } else if (timer.type === 'bath') {
-      detail = '洗澡'
+      detail = '洗澡 🛁'
     }
 
     const log: RecordLog = {
@@ -237,8 +286,14 @@ export const useRecordsStore = defineStore('records', () => {
       durationMin,
       detail,
       createdAt: endedAt,
-      diaperType: timer.diaperType,
       recordedBy: useUserStore().profile?.role,
+      diaperType: timer.diaperType,
+      temperatureValue: timer.temperatureValue,
+      medicineName: timer.medicineName,
+      medicineDosage: timer.medicineDosage,
+      feedingMode: timer.feedingMode,
+      feedingSide: timer.feedingSide,
+      amountMl: timer.amountMl,
     }
 
     logs.value = [...logs.value, log]
@@ -270,6 +325,10 @@ export const useRecordsStore = defineStore('records', () => {
             ..._timers.value[babyId],
             elapsed: _timers.value[babyId].elapsed + 1,
           },
+        }
+        // 每 30 秒检查一次是否超过最大计时时长
+        if (_timers.value[babyId]?.elapsed % 30 === 0) {
+          _checkMaxDuration(babyId)
         }
       }
     }, TIMER_TICK_MS)
@@ -312,19 +371,44 @@ export const useRecordsStore = defineStore('records', () => {
     return lastLog
   }
 
-  /** 快速记录（无计时），支持回溯时间偏移 */
-  function quickLog(babyId: string, type: RecordType, amountMl?: number, offsetMs?: number) {
+  /** 快速记录（无计时），支持回溯时间偏移 + 完整上下文字段 */
+  function quickLog(
+    babyId: string,
+    type: RecordType,
+    opts?: {
+      amountMl?: number
+      offsetMs?: number
+      feedingSide?: 'left' | 'right' | 'bottle'
+      feedingMode?: 'breast' | 'bottle' | 'mixed'
+      diaperType?: 'wet' | 'dirty' | 'both'
+      temperatureValue?: number
+      medicineName?: string
+      medicineDosage?: string
+      medicineUnit?: string
+    }
+  ) {
     const baby = babiesStore.getBaby(babyId)
     if (!baby) return
 
-    const now = Date.now() - (offsetMs || 0)
+    const now = Date.now() - (opts?.offsetMs || 0)
     let detail = ''
-    if (type === 'feeding') detail = `快速记录${amountMl ? ` ${amountMl}ml` : ''}`
-    else if (type === 'sleep') detail = '快速记录 · 睡眠'
-    else if (type === 'diaper') detail = '快速记录 · 换尿布'
-    else if (type === 'temperature') detail = '快速记录 · 体温'
-    else if (type === 'medicine') detail = '快速记录 · 用药'
-    else if (type === 'bath') detail = '快速记录 · 洗澡'
+    if (type === 'feeding') {
+      const sideLabel = opts?.feedingSide === 'left' ? '左' : opts?.feedingSide === 'right' ? '右' : opts?.feedingSide === 'bottle' ? '瓶喂' : ''
+      const amountStr = opts?.amountMl ? `${opts.amountMl}ml` : ''
+      const parts = [sideLabel, amountStr].filter(Boolean)
+      detail = parts.length > 0 ? parts.join(' ') : '喂养'
+    } else if (type === 'sleep') {
+      detail = '睡眠'
+    } else if (type === 'diaper') {
+      detail = opts?.diaperType === 'wet' ? '💧小便' : opts?.diaperType === 'dirty' ? '💩大便' : opts?.diaperType === 'both' ? '💧💩都有' : '换尿布'
+    } else if (type === 'temperature') {
+      detail = opts?.temperatureValue ? `体温 ${opts.temperatureValue}°C` : '体温'
+    } else if (type === 'medicine') {
+      const medParts = [opts?.medicineName, opts?.medicineDosage].filter(Boolean)
+      detail = medParts.length > 0 ? `用药 ${medParts.join(' ')}` : '用药'
+    } else if (type === 'bath') {
+      detail = '洗澡 🛁'
+    }
 
     const log: RecordLog = {
       id: `log-${now}`,
@@ -338,6 +422,13 @@ export const useRecordsStore = defineStore('records', () => {
       detail,
       createdAt: now,
       recordedBy: useUserStore().profile?.role,
+      diaperType: opts?.diaperType,
+      temperatureValue: opts?.temperatureValue,
+      medicineName: opts?.medicineName,
+      medicineDosage: opts?.medicineDosage,
+      feedingMode: opts?.feedingMode,
+      feedingSide: opts?.feedingSide,
+      amountMl: opts?.amountMl,
     }
     logs.value = [...logs.value, log]
     _saveLogs()
