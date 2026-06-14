@@ -140,6 +140,7 @@ import {usePoeticTime} from '@/composables/usePoeticTime'
 import {useStickersStore} from '@/stores/stickers'
 import {useStickerSync} from '@/composables/useStickerSync'
 const babiesStore=useBabiesStore();const recordsStore=useRecordsStore();const stickersStore=useStickersStore();const userStore=useUserStore();const {syncStickers}=useStickerSync();const sel=ref('')
+const twins=computed(()=>{const a=babiesStore.babyA,b=babiesStore.babyB;return [a,b].filter(Boolean)})
 // 奶奶模式
 const isGrandma=computed(()=>userStore.isGrandmaMode)
 const selBabyName=computed(()=>{const id=sel.value;const b=twins.value.find(t=>t.id===id);return b?.nickname||b?.name||''})
@@ -173,7 +174,7 @@ function retro(m:number){const id=sel.value||twins.value[0]?.id;if(!id)return;re
 	const todayStart=computed(()=>new Date().setHours(0,0,0,0))
 	const recentLogs=computed(()=>{const t0=todayStart.value;return recordsStore.logs.filter(l=>l.createdAt>=t0).sort((a,b)=>b.createdAt-a.createdAt)})
 	onMounted(()=>{uni.setNavigationBarTitle({title:"记录"});if(twins.value[0])sel.value=twins.value[0].id})
-tonShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id})
+onShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id})
 </script>
 
 <style scoped>
