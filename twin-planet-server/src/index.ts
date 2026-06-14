@@ -9,6 +9,8 @@ import { recordsRouter } from './routes/records'
 import { growthRouter } from './routes/growth'
 import { familyRouter } from './routes/family'
 import { handoverRouter } from './routes/handover'
+import { sproutRouter } from './routes/sprout'
+import { contributionRouter } from './routes/contribution'
 import { userRouter } from './routes/user'
 import { errorHandler } from './middleware/errorHandler'
 
@@ -74,6 +76,8 @@ app.use('/api/records', recordsRouter)
 app.use('/api/growth', growthRouter)
 app.use('/api/family', familyRouter)
 app.use('/api/handover', handoverRouter)
+app.use('/api/sprout', sproutRouter)
+app.use('/api/contribution', contributionRouter)
 app.use('/api/user', userRouter)
 
 // Error handler
