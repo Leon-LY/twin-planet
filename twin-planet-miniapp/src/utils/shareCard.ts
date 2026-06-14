@@ -25,6 +25,12 @@ export interface WeekStats {
   babyADiapers: number
   babyBDiapers: number
   daysGrowing: number
+  /** 双宝同步率 0-100 */
+  syncRate?: number
+  /** 本周新贴纸数 */
+  newStickers?: number
+  /** 本周神同步时刻（趣味文案） */
+  syncMoment?: string
 }
 
 /** 在指定 canvasId 上绘制对比卡，返回临时文件路径 */
@@ -121,8 +127,35 @@ export function drawShareCard(
       ctx.fillText(row.b, rightX + 24, y + 16)
     })
 
+    // 🆕 本周神同步时刻
+    let syncY = dataY + 50 + rows.length * 52 + 20
+    if (stats.syncRate !== undefined && stats.syncRate > 0) {
+      ctx.setFillStyle(C.bg)
+      roundRect(ctx, pad + 16, syncY, W - pad * 2 - 32, 56, 8)
+      ctx.fill()
+      ctx.setFillStyle(C.ink)
+      ctx.setFontSize(12)
+      ctx.setTextAlign('center')
+      ctx.fillText(`🔗 本周同步率 ${stats.syncRate}% · 神同步！`, W / 2, syncY + 24)
+      if (stats.syncMoment) {
+        ctx.setFillStyle(C.inkMd)
+        ctx.setFontSize(10)
+        ctx.fillText(stats.syncMoment, W / 2, syncY + 42)
+      }
+      syncY += 64
+    }
+
+    // 🆕 贴纸收集
+    if (stats.newStickers !== undefined && stats.newStickers > 0) {
+      ctx.setFillStyle(C.ink)
+      ctx.setFontSize(12)
+      ctx.setTextAlign('center')
+      ctx.fillText(`🌟 本周新贴纸 ${stats.newStickers} 张`, W / 2, syncY + 16)
+      syncY += 28
+    }
+
     // 底部寄语
-    const bottomY = dataY + 50 + rows.length * 52 + 30
+    const bottomY = syncY + 28
     ctx.setFillStyle(C.inkMd)
     ctx.setFontSize(11)
     ctx.setTextAlign('center')
