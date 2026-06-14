@@ -278,6 +278,34 @@
           <text class="jnav-item" @click="goSnapshot">快照</text>
           <text class="jnav-item" @click="goMore">更多</text>
         </view>
+
+        <!-- 角色切换抽屉（替换原生 ActionSheet） -->
+        <view class="drawer-overlay" v-if="showRoleDrawer" @click="showRoleDrawer=false">
+          <view class="drawer-sheet" @click.stop>
+            <view class="drawer-handle" />
+            <text class="drawer-title">切换角色</text>
+            <view class="drawer-roles">
+              <view v-for="r in roleOptions" :key="r.key" class="drawer-role" @click="switchToRole(r.key)">
+                <text class="dr-emoji">{{ r.emoji }}</text>
+                <view class="dr-body">
+                  <text class="dr-label">{{ r.label }}</text>
+                  <text class="dr-desc">{{ r.desc }}</text>
+                </view>
+                <text class="dr-check" v-if="userStore.profile?.role===r.key">✓</text>
+              </view>
+            </view>
+            <view class="drawer-divider" />
+            <view class="drawer-role drawer-danger" @click="resetFamily">
+              <text class="dr-emoji">📝</text><text class="dr-label">重新创建家庭</text>
+            </view>
+            <view class="drawer-role drawer-danger" @click="logoutApp">
+              <text class="dr-emoji">🚪</text><text class="dr-label">退出登录</text>
+            </view>
+            <view class="drawer-cancel" @click="showRoleDrawer=false">
+              <text>取消</text>
+            </view>
+          </view>
+        </view>
       </view>
     </template>
   </view>
@@ -524,23 +552,30 @@ const goExport = async () => {
     uni.showToast({ title: '导出遇到问题，稍后再试吧', icon: 'none' })
   }
 }
-const switchRole = () => {
-  const roles = ['👩 妈妈','👨 爸爸','👵 奶奶','👴 爷爷','👩‍🍼 育儿嫂','📝 重新创建家庭','🚪 退出登录']
-  uni.showActionSheet({
-    itemList: roles,
-    success: (res) => {
-      if (res.tapIndex === 5) {
-        uni.reLaunch({ url: '/pages/onboarding/family' })
-      } else if (res.tapIndex === 6) {
-        userStore.logout()
-        uni.reLaunch({ url: '/pages/login/index' })
-      } else {
-        const r = ['mom','dad','grandma','grandpa','nanny'][res.tapIndex]
-        userStore.setRole(r)
-        uni.showToast({ title: '已切换为' + roles[res.tapIndex] + '模式', icon: 'success', duration: 1500 })
-      }
-    }
-  })
+// 角色切换抽屉
+const showRoleDrawer = ref(false)
+const roleOptions = [
+  { key: 'mom', emoji: '👩', label: '妈妈', desc: '完整手帳 · 全部功能' },
+  { key: 'dad', emoji: '👨', label: '爸爸', desc: '战术面板 · 精简高效' },
+  { key: 'grandma', emoji: '👵', label: '奶奶', desc: '大字模式 · 3 个大按钮' },
+  { key: 'grandpa', emoji: '👴', label: '爷爷', desc: '大字模式 · 3 个大按钮' },
+  { key: 'nanny', emoji: '👩‍🍼', label: '育儿嫂', desc: '高效记录 · 交接同步' },
+]
+const switchRole = () => { showRoleDrawer.value = true }
+function switchToRole(r: string) {
+  userStore.setRole(r as any)
+  showRoleDrawer.value = false
+  const label = roleOptions.find(o => o.key === r)?.label || r
+  uni.showToast({ title: '已切换为' + label + '模式', icon: 'success', duration: 1500 })
+}
+function resetFamily() {
+  showRoleDrawer.value = false
+  uni.reLaunch({ url: '/pages/onboarding/family' })
+}
+function logoutApp() {
+  showRoleDrawer.value = false
+  userStore.logout()
+  uni.reLaunch({ url: '/pages/login/index' })
 }
 </script>
 
@@ -883,4 +918,23 @@ const switchRole = () => {
 .qr-item{display:flex;align-items:center;gap:6rpx;padding:8rpx 16rpx;background:var(--cream);border-radius:16rpx;border:2rpx solid var(--dot)}
 .qr-emoji{font-size:24rpx}
 .qr-text{font-size:22rpx;color:var(--ink-md);font-weight:500}
+
+/* 角色切换抽屉 */
+.drawer-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(45,35,24,.4);z-index:1000;animation:fadeIn .25s var(--ease-soft)}
+.drawer-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--paper);border-radius:28rpx 28rpx 0 0;padding:0 28rpx calc(40rpx + env(safe-area-inset-bottom));animation:slideUp .3s var(--ease-soft);max-height:70vh;overflow-y:auto}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.drawer-handle{width:64rpx;height:6rpx;background:var(--dot);border-radius:3rpx;margin:16rpx auto 24rpx}
+.drawer-title{display:block;font-family:var(--font-journal);font-size:36rpx;color:var(--ink);text-align:center;margin-bottom:24rpx;font-weight:700}
+.drawer-roles{display:flex;flex-direction:column;gap:4rpx}
+.drawer-role{display:flex;align-items:center;gap:16rpx;padding:24rpx 16rpx;border-radius:var(--radius-md);transition:background .15s}
+.drawer-role:active{background:var(--cream)}
+.dr-emoji{font-size:44rpx;flex-shrink:0}
+.dr-body{flex:1;display:flex;flex-direction:column;gap:4rpx}
+.dr-label{font-size:30rpx;font-weight:600;color:var(--ink)}
+.dr-desc{font-size:22rpx;color:var(--ink-md)}
+.dr-check{font-size:28rpx;color:var(--mint);font-weight:700}
+.drawer-divider{height:2rpx;background:var(--dot);margin:16rpx 0}
+.drawer-role.drawer-danger .dr-label{color:var(--twin-danger)}
+.drawer-cancel{text-align:center;padding:24rpx 0 8rpx;font-size:28rpx;color:var(--ink-md);margin-top:8rpx}
+.drawer-cancel:active{opacity:.6}
 </style>

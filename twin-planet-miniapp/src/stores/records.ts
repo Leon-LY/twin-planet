@@ -71,7 +71,14 @@ export const useRecordsStore = defineStore('records', () => {
               _timers.value = { ..._timers.value, [saved.babyId]: { ..._timers.value[saved.babyId], elapsed: _timers.value[saved.babyId].elapsed + 1 } }
             }
           }, 1000)
-          restored[saved.babyId] = { babyId: saved.babyId, type: saved.type, startedAt: saved.startedAt, elapsed, timerHandle: handle }
+          restored[saved.babyId] = {
+            babyId: saved.babyId, type: saved.type, startedAt: saved.startedAt, elapsed, timerHandle: handle,
+            feedingSide: (saved as any).feedingSide || undefined,
+            amountMl: (saved as any).amountMl || undefined,
+            sleepQuality: (saved as any).sleepQuality || undefined,
+            diaperType: (saved as any).diaperType || undefined,
+            diaperNote: (saved as any).diaperNote || undefined,
+          }
           console.log('[records] Restored active timer for', saved.babyId)
         }
         _timers.value = restored
@@ -79,11 +86,18 @@ export const useRecordsStore = defineStore('records', () => {
     }
   } catch {}
 
-  /** 持久化所有活跃计时器（支持双计时器同时运行） */
+  /** 持久化所有活跃计时器（支持双计时器同时运行，含上下文字段） */
   function _saveActiveTimers() {
     try {
       const activeTimers = Object.values(_timers.value).map(t => ({
-        babyId: t.babyId, type: t.type, startedAt: t.startedAt,
+        babyId: t.babyId,
+        type: t.type,
+        startedAt: t.startedAt,
+        feedingSide: t.feedingSide || null,
+        amountMl: t.amountMl || null,
+        sleepQuality: t.sleepQuality || null,
+        diaperType: t.diaperType || null,
+        diaperNote: t.diaperNote || null,
       }))
       if (activeTimers.length) {
         uni.setStorageSync('tp_active_timers', JSON.stringify(activeTimers))

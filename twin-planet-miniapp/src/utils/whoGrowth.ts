@@ -406,13 +406,13 @@ export function calcDifferenceRate(
   let label: string
   if (rate < green) {
     level = 'green'
-    label = '差异正常'
+    label = '双宝节奏相近'
   } else if (rate < yellow) {
     level = 'yellow'
-    label = '略有关注'
+    label = '各有各的节奏'
   } else {
     level = 'red'
-    label = '差异较大'
+    label = '差异明显（临床常见，建议定期随访）'
   }
 
   return { rate, level, label }
