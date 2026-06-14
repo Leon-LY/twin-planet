@@ -22,7 +22,7 @@
       <input
         class="form-input"
         v-model="familyName"
-        placeholder="例如：川岑小星球、安宁安然的家"
+        placeholder="例如：大宝小宝的家、安宁安然的家"
         placeholder-style="color: var(--twin-text-muted); font-size: 28rpx;"
         maxlength="20"
       />

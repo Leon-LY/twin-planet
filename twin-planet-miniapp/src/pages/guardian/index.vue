@@ -3,7 +3,7 @@
     <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
     <view class="page-header">
       <text class="page-title">守护中心</text>
-      <text class="page-subtitle">照顾好自己，才能照顾好两个小星球</text>
+      <text class="page-subtitle">照顾好自己，才能照顾好两个小怪兽</text>
     </view>
 
     <view class="energy-section">
@@ -62,7 +62,7 @@
       <view class="active-timer" v-if="store.activeSession">
         <text class="timer-baby-name">{{ store.activeSession.babyName }}</text>
         <text class="timer-elapsed">{{ formatSessionTime(sessionElapsed) }}</text>
-        <text class="timer-running">星尘降临中...</text>
+        <text class="timer-running">一人时光中...</text>
         <button class="btn-end" @click="endTime">结束</button>
       </view>
 
@@ -101,7 +101,7 @@ function energyColor(lv: number) {
   if (lv >= 7) return 'var(--mint)'; if (lv >= 4) return 'var(--gold)'; return 'var(--rose)'
 }
 function energyLabel(lv: number) {
-  if (lv >= 8) return '星光满盈'; if (lv >= 6) return '星光稳定'; if (lv >= 4) return '星光微弱'; if (lv >= 2) return '星光黯淡'; return '几乎熄灭'
+  if (lv >= 8) return '元气满满'; if (lv >= 6) return '状态平稳'; if (lv >= 4) return '需要充电'; if (lv >= 2) return '电量告急'; return '需要休息'
 }
 function setMom(n: number) { store.setEnergy('mom', n, '手动设置') }
 function setDad(n: number) { store.setEnergy('dad', n, '手动设置') }

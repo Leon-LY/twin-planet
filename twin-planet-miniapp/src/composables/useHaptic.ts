@@ -38,7 +38,7 @@ export function useHaptic() {
   /** 关门 — 单次重击 (停止计时) */
   function thump() { vibrate('heavy') }
 
-  /** 星光 — 两次快速轻触 (完成粒子峰值) */
+  /** 贴纸 — 两次快速轻触 (完成粒子峰值) */
   function sparkle() {
     vibrate('light')
     setTimeout(() => vibrate('light'), 50)

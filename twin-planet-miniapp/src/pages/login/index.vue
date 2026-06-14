@@ -4,7 +4,7 @@
       <view class="brand-icon">🌺🌺</view>
       <text class="brand-name">双宝记</text>
       <text class="brand-slogan">两个小怪兽，一起长大 🪐</text>
-      <text class="brand-desc">双胞胎的快乐星球</text>
+      <text class="brand-desc">双胞胎的成长手帐</text>
     </view>
 
     <view class="login-actions">

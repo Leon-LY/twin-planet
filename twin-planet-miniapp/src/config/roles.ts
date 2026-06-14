@@ -76,7 +76,7 @@ export const FEATURE_LABELS: Record<string, string> = {
   record: '记录',
   growth: '生长曲线',
   sprout: '萌芽日记',
-  contribution: '星尘日志',
+  contribution: '日常记录',
   handover: '语音交接',
   duty: '值班清单',
   guardian: '守护中心',

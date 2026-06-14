@@ -297,18 +297,18 @@ export const useRecordsStore = defineStore('records', () => {
     _saveLogs()
     _syncStickersAuto()  // 自动检查贴纸解锁
   }
-  const cosmicInsight = computed(() => {
+  const journalInsight = computed(() => {
     const todayLogs = logs.value.filter(l => l.createdAt >= new Date().setHours(0,0,0,0))
     const total = todayLogs.length
-    if (total === 0) return '两颗星球等待今天的第一次星际守护 ✦'
+    if (total === 0) return '今天的手帐本还是空白，等第一笔记录 ✦'
     const feedCount = todayLogs.filter(l => l.type === 'feeding').length
     const sleepCount = todayLogs.filter(l => l.type === 'sleep').length
     const parts: string[] = []
-    if (feedCount > 0) parts.push(`${feedCount}次星光降临`)
-    if (sleepCount > 0) parts.push(`${sleepCount}次休眠`)
+    if (feedCount > 0) parts.push(`${feedCount}次喂奶`)
+    if (sleepCount > 0) parts.push(`${sleepCount}次安睡`)
     const runningCount = Object.keys(_timers.value).length
-    if (runningCount > 0) parts.push(`${runningCount}颗星球正在接收星光`)
-    if (parts.length === 0) parts.push(`${total}次星际守护`)
+    if (runningCount > 0) parts.push(`${runningCount}个小怪兽正在计时`)
+    if (parts.length === 0) parts.push(`${total}次记录`)
     return `今日：${parts.join(' · ')} ✦`
   })
 
@@ -351,6 +351,6 @@ export const useRecordsStore = defineStore('records', () => {
     isRunning, runningTimer, runningTimers, recentLogsByBaby,
     isBabyRunning, getTimer,
     startTimer, stopTimer, quickLog,
-    cosmicInsight, twinSyncRate, streakDays,
+    journalInsight, twinSyncRate, streakDays,
   }
 })

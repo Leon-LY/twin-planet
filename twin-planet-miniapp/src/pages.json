@@ -10,7 +10,7 @@
 		{
 			"path": "pages/login/index",
 			"style": {
-				"navigationBarTitleText": "欢迎登船",
+				"navigationBarTitleText": "欢迎",
 				"navigationBarBackgroundColor": "#FEF9F0",
 				"navigationStyle": "custom"
 			}
@@ -18,7 +18,7 @@
 		{
 			"path": "pages/onboarding/family",
 			"style": {
-				"navigationBarTitleText": "创建你的小星球",
+				"navigationBarTitleText": "创建家庭",
 				"navigationBarBackgroundColor": "#FEF9F0"
 			}
 		},

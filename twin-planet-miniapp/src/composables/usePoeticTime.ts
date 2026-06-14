@@ -1,6 +1,6 @@
 /**
  * usePoeticTime — 诗意时间标签
- * 将计时器秒数映射为宇宙隐喻标签
+ * 将计时器秒数映射为手帐诗意标签
  */
 import { computed, type ComputedRef } from 'vue'
 
@@ -13,18 +13,18 @@ interface PoeticPhase {
 
 const FEEDING_PHASES: PoeticPhase[] = [
   { maxMin: 2, label: '刚刚开始' },
-  { maxMin: 5, label: '星光降临' },
+  { maxMin: 5, label: '刚开始 ✦' },
   { maxMin: 10, label: '航行中' },
   { maxMin: 15, label: '渐入佳境' },
   { maxMin: 20, label: '即将圆满' },
-  { maxMin: Infinity, label: '星光已满' },
+  { maxMin: Infinity, label: '满满记录' },
 ]
 
 const SLEEP_PHASES: PoeticPhase[] = [
   { maxMin: 2, label: '刚刚入眠' },
-  { maxMin: 5, label: '星尘落下' },
+  { maxMin: 5, label: '渐入佳境' },
   { maxMin: 10, label: '梦乡深处' },
-  { maxMin: 15, label: '星际漫游' },
+  { maxMin: 15, label: '深度时光' },
   { maxMin: 20, label: '安心航行' },
   { maxMin: 30, label: '深空长夜' },
   { maxMin: 45, label: '星河漫渡' },
