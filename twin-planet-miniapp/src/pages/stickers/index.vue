@@ -44,6 +44,7 @@
 import { computed, onMounted } from 'vue'
 import { onShareAppMessage } from '@dcloudio/uni-app'
 import { useStickersStore, STICKER_RULES } from '@/stores/stickers'
+import { trackPageView } from '@/utils/analytics'
 
 const store = useStickersStore()
 
@@ -78,7 +79,7 @@ function enrich(cat: string) {
 }
 
 onMounted(() => {
-  uni.setNavigationBarTitle({ title: '贴纸收集册' })
+  uni.setNavigationBarTitle({ title: '贴纸收集册' }); trackPageView('stickers')
 })
 
 onShareAppMessage(() => ({

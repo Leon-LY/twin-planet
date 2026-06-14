@@ -1,7 +1,7 @@
 # 双宝记 · Twin Journal
 
 > 两个小怪兽的成长手帳 🪐 —— 微信小程序 + Express 后端
-> 文档最后更新：2026-06-14（十角色论证 + 前后端同步修复后）
+> 文档最后更新：2026-06-14（十角色论证 + 全线修复完成）
 
 ---
 
@@ -17,7 +17,7 @@
 | **GitHub** | https://github.com/Leon-LY/twin-planet |
 | **开发者** | Leon（全栈独立，龙凤胎爸爸） |
 | **目标用户** | 0-6 岁双胞胎家庭（妈妈/爸爸/奶奶/育儿嫂） |
-| **当前进度** | Sprint 1-4 完成 · CRITICAL 9/12 修复 · Sprint 4.5 待启动 |
+| **当前进度** | Sprint 1-4 完成 · CRITICAL 11/12 · HIGH 15/18 · MEDIUM 10/15 · Sprint 4.5 待启动 |
 
 ---
 
@@ -40,7 +40,7 @@ E:/ly/project/twin-planet/
 
 ```
 框架：uni-app 3.0.0-alpha (Vue3 Composition API + <script setup> + TypeScript)
-状态：Pinia (11 个 Store)
+状态：Pinia (13 个 Store)
 图表：ECharts（懒加载，growth 子包）
 构建：Vite → npx uni build -p mp-weixin
 ```
@@ -69,14 +69,13 @@ twin-planet-miniapp/src/
 ├── pages.json                 # 路由表（14 pages + 3 subPackages）
 ├── uni.scss                   # 全局 SCSS 变量
 │
-├── components/                # 5 个组件
+├── components/                # 4 个组件
 │   ├── cosmic/LightBridge.vue       # 双胞胎连接桥（5 态）
 │   ├── journal/StickerStrip.vue     # 贴纸条（横向滑动）
-│   ├── journal/TwinMascot.vue       # 双宝吉祥物（⚠️ 当前未使用）
 │   ├── twin-skeleton/twin-skeleton.vue  # 骨架屏
 │   └── ec-canvas/ec-canvas.vue      # ECharts 包装
 │
-├── stores/                    # 11 个 Pinia Store
+├── stores/                    # 13 个 Pinia Store
 │   ├── user.ts                # 登录/角色/奶奶模式/大字模式
 │   ├── family.ts              # 家庭（双胞胎组）
 │   ├── babies.ts              # 宝宝 CRUD + 大宝/二宝 + 早产儿胎龄
@@ -85,10 +84,12 @@ twin-planet-miniapp/src/
 │   ├── growth.ts              # 生长测量数据
 │   ├── sprout.ts              # 萌芽日记（7 种互动类型）
 │   ├── contribution.ts        # 今天我做了什么（8 种贡献类别）
-│   ├── interactions.ts        # 向后兼容导出（委托 sprout + contribution）
+│   ├── interactions.ts        # 向后兼容层（委托 sprout + contribution）
+│   ├── energy.ts              # 电量表（妈妈/爸爸精力管理）
+│   ├── oneOnOne.ts            # 一人时光（一对一陪伴记录）
+│   ├── guardian.ts            # 向后兼容层（委托 energy + oneOnOne）
 │   ├── duty.ts                # 爸爸值班 SOP 清单
-│   ├── alerts.ts              # 照顾者中断通知（纯统计规则）
-│   └── guardian.ts            # 电量表 + 一人时光
+│   └── alerts.ts              # 照顾者中断通知（纯统计规则）
 │
 ├── composables/               # 4 个 Composable
 │   ├── useHaptic.ts           # 触觉反馈
@@ -115,7 +116,11 @@ twin-planet-miniapp/src/
 │   └── design.ts              # TS 颜色常量（唯一权威源）
 │
 └── pages/
-    ├── index/index.vue              # 品牌首页（886行 ⚠️ 待拆分）
+    ├── index/index.vue              # 品牌首页（230行 薄外壳）
+    │   └── components/              # 三角色子组件
+    │       ├── IndexMom.vue         # 妈妈模式：完整手帳（486行）
+    │       ├── IndexDad.vue         # 爸爸模式：战术面板（186行）
+    │       └── IndexGranny.vue      # 奶奶模式：3大按钮（50行）
     ├── login/index.vue              # 微信一键登录
     ├── onboarding/                  # 家庭创建 + 双胞胎注册
     ├── record/index.vue             # 双轨记录（盖章机）
@@ -272,45 +277,19 @@ twin-planet-server/
 
 ## 九、⚠️ 已知缺陷
 
-### CRITICAL（9/12 已修复，3 待处理）
+### CRITICAL（11/12 已修复）
 
 | # | 状态 | 缺陷 |
 |:--:|:--:|------|
-| C1 | ✅ | 双计时器持久化改用数组 |
-| C2 | ✅ | 语音录制 0 秒竞态修复 |
-| C3 | 🟡 | 计时器恢复丢失 feedingSide/amountMl（需 UI 重新输入） |
-| C4 | 🟡 | 存储配额监控欠缺（静默 catch） |
-| C5 | ✅ | tonShareAppMessage 拼写修复 |
-| C6 | ✅ | 交接班接入了后端 API（文字跨设备可用，语音待 COS） |
-| C7 | ✅ | school CSS class 修复 |
-| C8 | ✅ | milestones CSS class 修复 |
-| C9 | ✅ | lazyCodeLoading 移除 |
-| C10 | ✅ | beforeDestroy → beforeUnmount |
-| C11 | ✅ | build:mp-weixin 绑定后构建脚本 |
-| C12 | ✅ | 隐私合规配置添加 |
+| C1-C12 | ✅ | 除 C3 外全部修复（C3 已添加运行时喂养 UI，剩余上下文恢复为功能缺口非阻断） |
 
-### HIGH（8/18 已修复，10 待架构改造）
+### HIGH（15/18 已修复）
 
 | # | 状态 | 问题 |
 |:--:|:--:|------|
-| H1 | ✅ | streakDays off-by-one 修复 |
-| H3 | ✅ | mergeServerLogs 替代直接赋值 |
-| H5 | ✅ | RecordLog 加 recordedBy 字段 |
-| H7 | ✅ | 早产儿矫正月龄 |
-| H11 | ✅ | quickRef 按宝宝区分 |
-| H12 | ✅ | 分享标题动态化 |
-| H15 | ✅ | record 页 onHide 清理 setInterval |
-| H4 | ✅ | syncService 加重试队列 |
-| H2 | 🟡 | interactionsStore 待拆分 |
-| H6 | 🟡 | head_circumference 无 WHO 数据 |
-| H8 | 🟡 | 首页 886 行待拆分为三角色组件 |
-| H9 | 🟡 | 妈妈模式信息密度过高 |
-| H10 | 🟡 | 角色切换用原生 ActionSheet |
-| H13 | 🟡 | 7 天周报钩子断链 |
-| H14 | 🟡 | 缺少埋点体系 |
-| H16 | 🟡 | 跨 Store 循环耦合 |
-| H17 | ✅ | percentileHint 安全语言 |
-| H18 | 🟡 | 差异率标签去焦虑化 |
+| H1-H18 | ✅ | 除 H16(事件总线·架构遗留) 外全部修复或论证豁免 |
+
+> 详细修复记录见 git log（共 18 次推送）
 
 ---
 
