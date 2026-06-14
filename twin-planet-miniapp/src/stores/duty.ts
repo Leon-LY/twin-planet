@@ -26,7 +26,7 @@ const DEFAULT_SOP: Omit<SOPTask, 'id' | 'done' | 'note' | 'createdAt'>[] = [
   { category: 'diaper', title: '检查纸尿裤，湿了就换', babyANeed: true, babyBNeed: true },
   { category: 'sleep', title: '哄睡 — 放白噪音、拉窗帘', babyANeed: true, babyBNeed: true },
   { category: 'play', title: '陪玩 15 分钟 — 唱歌/读绘本/搭积木', babyANeed: true, babyBNeed: true },
-  { category: 'bath', title: '洗澡（水温 38°C，先放冷水）', babyANeed: false, babyBNeed: false },
+  { category: 'bath', title: '洗澡（水温 38°C，先放冷水 · 可跳过）', babyANeed: true, babyBNeed: true },
   { category: 'custom', title: '检查家里是否有足够的奶粉/纸尿裤', babyANeed: true, babyBNeed: true },
   { category: 'custom', title: '拍照发给妈妈 📸', babyANeed: true, babyBNeed: true },
 ]

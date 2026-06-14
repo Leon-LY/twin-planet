@@ -33,7 +33,7 @@ export const ROLE_CONFIGS: Record<Role, RoleConfig> = {
     label: '爸爸',
     emoji: '👨',
     homeLayout: 'compact',
-    features: ['record', 'growth', 'duty', 'handover', 'snapshot', 'stickers'],
+    features: ['record', 'growth', 'duty', 'handover', 'snapshot', 'stickers', 'contribution'],
     quickActions: ['feeding', 'sleep', 'diaper'],
     greetingStyle: 'efficient',
   },

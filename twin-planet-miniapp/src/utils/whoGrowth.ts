@@ -26,7 +26,8 @@ export interface PercentileCurve {
 }
 
 export type Gender = 'male' | 'female'
-export type Indicator = 'weight' | 'length' | 'head_circumference'
+export type Indicator = 'weight' | 'length'
+// TODO: 添加 'head_circumference' 的 WHO 头围 LMS 数据后恢复此类型
 
 // ============================================================
 // WHO 体重-for-age L/M/S 参数 (0-60个月，按月度)

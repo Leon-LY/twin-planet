@@ -38,11 +38,13 @@
         <view class="dual-chip" @click="dualLog('sleep')">都睡了</view>
       </view>
 
-      <!-- 夜间快速记录 -->
+      <!-- 夜间快速记录 — 三种最常用类型 -->
       <view class="night-quick" v-if="isNight">
-        <view class="night-btn" @click="quickNight">
-          <text>🌙 半夜了，点这里快速记录</text>
-          <text class="night-sub">不选类型，记一笔就好</text>
+        <text class="night-label">🌙 夜间快速记录</text>
+        <view class="night-row">
+          <view class="night-chip" @click="quickNight('feeding')">🍼 喂奶</view>
+          <view class="night-chip" @click="quickNight('diaper')">🧷 尿布</view>
+          <view class="night-chip" @click="quickNight('sleep')">😴 哄睡</view>
         </view>
       </view>
 
@@ -137,7 +139,7 @@ const {label:poeticLabel}=usePoeticTime(elapsedRef,timerType)
 
 function getName(id:string){return twins.value.find(b=>b.id===id)?.nickname||''}
 function doAction(t:RecordType){const id=sel.value||twins.value[0]?.id;if(!id){uni.showToast({title:'请先在首页创建宝宝',icon:'none'});return}if(t==='feeding'||t==='sleep'){recordsStore.startTimer(id,t);haptic.thump();popSticker(t==='feeding'?'🍼':'😴')}else{recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();const m:Record<string,string>={diaper:'🧷',temperature:'🌡️',medicine:'💊',bath:'🛁'};popSticker(m[t]||'⭐')}}
-function quickNight(){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,'feeding');haptic.sparkle();syncStickers();popSticker('🌙')}
+function quickNight(t:RecordType='feeding'){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();const m:Record<string,string>={feeding:'🍼',diaper:'🧷',sleep:'😴'};popSticker(m[t]||'🌙')}
 function dualLog(t:RecordType){const a=twins.value[0],b=twins.value[1];if(a)recordsStore.quickLog(a.id,t);if(b)recordsStore.quickLog(b.id,t);haptic.doubleBeat();syncStickers();popSticker('🔗')}
 const retroType=ref<RecordType>('feeding')
 function retro(m:number){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,retroType.value,undefined,m*60000);haptic.sparkle();syncStickers();popSticker('⏰')}
@@ -168,7 +170,11 @@ const stopAll=()=>{recordsStore.stopTimer()}
 
 .dual-row{display:flex;gap:10rpx;margin-bottom:20rpx;position:relative;z-index:1;align-items:center}.dual-chip{flex:1;text-align:center;padding:14rpx 8rpx;background:var(--cream);border:1.5px solid var(--dot);border-radius:24rpx;font-size:22rpx;color:var(--ink-md);font-weight:600;transition:transform .15s var(--ease-bounce)}.dual-chip:active{transform:scale(.93);border-color:var(--amber);color:var(--amber)}.dual-primary{padding:18rpx 12rpx;font-size:26rpx;background:var(--amber-lt);border-color:var(--amber);color:var(--amber)}.dual-chip:not(.dual-primary){font-size:20rpx}
 
-.night-quick{text-align:center;margin-bottom:16rpx;position:relative;z-index:1}.night-btn{display:inline-block;padding:20rpx 40rpx;background:linear-gradient(135deg,rgba(45,35,24,0.03),rgba(45,35,24,0.06));border:2rpx solid var(--dot);border-radius:28rpx;font-size:26rpx;color:var(--ink-md)}.night-btn:active{background:var(--amber-lt);border-color:var(--amber)}.night-sub{display:block;font-size:20rpx;color:var(--ink-lt);margin-top:4rpx}
+.night-quick{text-align:center;margin-bottom:16rpx;position:relative;z-index:1}
+.night-label{display:block;font-size:22rpx;color:var(--ink-lt);margin-bottom:12rpx;font-family:var(--font-journal)}
+.night-row{display:flex;gap:10rpx;justify-content:center}
+.night-chip{flex:1;max-width:180rpx;text-align:center;padding:16rpx 8rpx;background:linear-gradient(135deg,rgba(45,35,24,0.03),rgba(45,35,24,0.06));border:2rpx solid var(--dot);border-radius:20rpx;font-size:24rpx;color:var(--ink-md);font-weight:600;transition:transform .15s var(--ease-bounce)}
+.night-chip:active{transform:scale(.9);background:var(--amber-lt);border-color:var(--amber);color:var(--amber)}
 
 .retro-note{display:flex;align-items:center;gap:10rpx;flex-wrap:wrap;justify-content:center;position:relative;z-index:1;padding:8rpx 0}.retro-dash{color:var(--ink-lt);font-size:20rpx;opacity:.5}.retro-label{font-size:22rpx;color:var(--ink-lt)}.retro-type-row{display:flex;gap:6rpx}.retro-type-dot{width:44rpx;height:44rpx;display:flex;align-items:center;justify-content:center;font-size:24rpx;border-radius:50%;background:var(--cream);border:1.5px solid var(--dot);transition:border-color .2s,background .2s}.retro-type-dot:active{transform:scale(.85)}.retro-type-dot.on{border-color:var(--amber);background:var(--amber-lt)}.retro-times{display:flex;gap:6rpx}.retro-min{padding:6rpx 14rpx;font-size:20rpx;color:var(--ink-lt);background:var(--cream);border:1px solid var(--dot);border-radius:16rpx;transition:transform .15s var(--ease-bounce)}.retro-min:active{transform:scale(.9);border-color:var(--amber)}
 

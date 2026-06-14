@@ -407,13 +407,17 @@ const { quickRef } = useQuickRef()
 const WELCOME_KEY = 'tp_welcome_dismissed'
 const showWelcome = ref(false)
 try {
-  const dismissed = uni.getStorageSync(WELCOME_KEY)
+  const raw = uni.getStorageSync(WELCOME_KEY)
+  const dismissedAt = raw ? parseInt(raw) : 0
   const hasRecords = recordsStore.logs.length > 0
-  showWelcome.value = !dismissed && !hasRecords
+  // 未关闭过 且 无记录 → 显示
+  // 关闭过但超过3天仍无记录 → 重新显示（救援策略）
+  const daysSinceDismiss = dismissedAt ? (Date.now() - dismissedAt) / 86400000 : 999
+  showWelcome.value = !hasRecords && (!dismissedAt || daysSinceDismiss > 3)
 } catch { showWelcome.value = true }
 function dismissWelcome() {
   showWelcome.value = false
-  try { uni.setStorageSync(WELCOME_KEY, '1') } catch {}
+  try { uni.setStorageSync(WELCOME_KEY, String(Date.now())) } catch {}
 }
 
 // 里程碑庆祝 — 连续7/30/100天触发一次性弹窗
