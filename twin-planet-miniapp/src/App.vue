@@ -6,6 +6,8 @@ export default {
     this._themeTimer = setInterval(() => this._syncTheme(), 60 * 60 * 1000)
     // 处理邀请令牌
     this._checkInvite(options)
+    // 记录启动
+    try { const { trackSessionStart } = require('@/utils/analytics'); trackSessionStart() } catch {}
   },
   onShow(options) {
     this._syncTheme()

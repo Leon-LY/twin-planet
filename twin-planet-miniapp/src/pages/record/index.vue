@@ -139,6 +139,7 @@ import {useHaptic} from '@/composables/useHaptic'
 import {usePoeticTime} from '@/composables/usePoeticTime'
 import {useStickersStore} from '@/stores/stickers'
 import {useStickerSync} from '@/composables/useStickerSync'
+import {trackRecordCreated} from '@/utils/analytics'
 const babiesStore=useBabiesStore();const recordsStore=useRecordsStore();const stickersStore=useStickersStore();const userStore=useUserStore();const {syncStickers}=useStickerSync();const sel=ref('')
 // 奶奶模式
 const isGrandma=computed(()=>userStore.isGrandmaMode)
@@ -168,11 +169,11 @@ const elapsedRef=computed(()=>runningElapsed.value)
 const {label:poeticLabel}=usePoeticTime(elapsedRef,timerType)
 
 function getName(id:string){return twins.value.find(b=>b.id===id)?.nickname||''}
-function doAction(t:RecordType){const id=sel.value||twins.value[0]?.id;if(!id)return;if(t==='feeding'||t==='sleep'){recordsStore.startTimer(id,t);haptic.thump();popSticker(t==='feeding'?'🍼':'😴')}else{recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();showUndoBar();const m:Record<string,string>={diaper:'🧷',temperature:'🌡️',medicine:'💊',bath:'🛁'};popSticker(m[t]||'⭐')}}
-function quickNight(){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,'feeding');haptic.sparkle();syncStickers();showUndoBar();popSticker('🌙')}
-function dualLog(t:RecordType){const a=twins.value[0],b=twins.value[1];if(a)recordsStore.quickLog(a.id,t);if(b)recordsStore.quickLog(b.id,t);haptic.doubleBeat();syncStickers();showUndoBar();popSticker('🔗')}
+function doAction(t:RecordType){const id=sel.value||twins.value[0]?.id;if(!id)return;if(t==='feeding'||t==='sleep'){recordsStore.startTimer(id,t);haptic.thump();popSticker(t==='feeding'?'🍼':'😴')}else{recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();showUndoBar();trackRecordCreated(t,"quick");const m:Record<string,string>={diaper:'🧷',temperature:'🌡️',medicine:'💊',bath:'🛁'};popSticker(m[t]||'⭐')}}
+function quickNight(){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,'feeding');haptic.sparkle();syncStickers();showUndoBar();trackRecordCreated('feeding','quick');popSticker('🌙')}
+function dualLog(t:RecordType){const a=twins.value[0],b=twins.value[1];if(a)recordsStore.quickLog(a.id,t);if(b)recordsStore.quickLog(b.id,t);haptic.doubleBeat();syncStickers();showUndoBar();trackRecordCreated(t,"dual");popSticker('🔗')}
 const retroType=ref<RecordType>('feeding')
-function retro(m:number){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,retroType.value,undefined,m*60000);haptic.sparkle();syncStickers();showUndoBar();popSticker('⏰')}
+function retro(m:number){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,retroType.value,undefined,m*60000);haptic.sparkle();syncStickers();showUndoBar();trackRecordCreated(retroType.value,"retro");popSticker('⏰')}
 	const todayStart=computed(()=>new Date().setHours(0,0,0,0))
 	const recentLogs=computed(()=>{const t0=todayStart.value;return recordsStore.logs.filter(l=>l.createdAt>=t0).sort((a,b)=>b.createdAt-a.createdAt)})
 	onMounted(()=>{uni.setNavigationBarTitle({title:"记录"});if(twins.value[0])sel.value=twins.value[0].id})
