@@ -84,7 +84,8 @@ interface VoiceMessage {
   read: boolean; createdAt: number; localPath: string; text?: string
 }
 
-const STORAGE_KEY = 'tp_handover_messages'
+import { PERSIST_KEYS } from '@/utils/persist'
+const STORAGE_KEY = 'tp_' + PERSIST_KEYS.handover
 const haptic = useHaptic()
 const textNote = ref('')
 

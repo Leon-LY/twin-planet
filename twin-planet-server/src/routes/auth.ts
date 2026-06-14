@@ -4,6 +4,7 @@ import { query } from '../config/database'
 import { config } from '../config'
 import { ok, fail } from '../utils/response'
 import { authRequired } from '../middleware/auth'
+import { code2Session } from '../utils/wechat'
 
 export const authRouter = Router()
 
@@ -13,12 +14,19 @@ authRouter.post('/wechat-login', async (req: Request, res: Response) => {
     const { code } = req.body
     if (!code) return fail(res, '缺少登录凭证', 'MISSING_CODE')
 
-    // TODO: 生产环境调用 wx.code2Session 换取 openid
-    // const wxRes = await fetch(`https://api.weixin.qq.com/sns/jscode2session?appid=${APPID}&secret=${SECRET}&js_code=${code}&grant_type=authorization_code`)
-    // const wxData = await wxRes.json()
-
-    // 开发阶段：使用 mock openid
-    const openid = code === 'dev' ? 'dev-openid-' + Date.now() : 'wx-' + code
+    // 获取微信 openid：生产环境调用 code2Session，开发阶段 fallback mock
+    let openid: string
+    try {
+      const wxData = await code2Session(code)
+      openid = wxData.openid
+    } catch {
+      // 开发/测试阶段：微信未配置时使用 mock
+      if (process.env.NODE_ENV !== 'production') {
+        openid = code === 'dev' ? 'dev-openid-' + Date.now() : 'wx-' + code
+      } else {
+        return fail(res, '微信登录失败，请稍后重试', 'WECHAT_FAILED', 500)
+      }
+    }
 
     // 查找或创建用户
     let result = await query('SELECT * FROM users WHERE openid = $1', [openid])
