@@ -84,20 +84,46 @@ export const useGuardianStore = defineStore('guardian', () => {
     return null
   })
 
+  const ACTIVE_SESSION_KEY = 'tp_active_session'
+
+  /** 恢复未完成的一对一时光（app 杀掉后重启） */
+  function _restoreSession() {
+    try {
+      const raw = uni.getStorageSync(ACTIVE_SESSION_KEY)
+      if (raw) {
+        const saved = JSON.parse(raw)
+        if (saved && saved.startedAt && !saved.endedAt) {
+          activeSession.value = saved
+        }
+      }
+    } catch {}
+  }
+  function _saveActiveSession() {
+    try { uni.setStorageSync(ACTIVE_SESSION_KEY, JSON.stringify(activeSession.value)) } catch {}
+  }
+  function _clearActiveSession() {
+    try { uni.removeStorageSync(ACTIVE_SESSION_KEY) } catch {}
+  }
+
+  // 初始化时恢复 session
+  _restoreSession()
+
   function startSession(babyId: string, babyName: string, babyColor: string) {
     if (activeSession.value) endSession()
     activeSession.value = { id: `os-${Date.now()}`, babyId, babyName, babyColor, startedAt: Date.now(), endedAt: null, durationMin: null, note: '' }
+    _saveActiveSession()
   }
 
   function endSession(): OneOnOneSession | null {
     if (!activeSession.value) return null
     const ended = Date.now()
     const dur = Math.round((ended - activeSession.value.startedAt) / 60000)
-    if (dur < 1) { activeSession.value = null; return null }
+    if (dur < 1) { activeSession.value = null; _clearActiveSession(); return null }
     const finished: OneOnOneSession = { ...activeSession.value, endedAt: ended, durationMin: dur }
     sessions.value = [...sessions.value, finished]
     activeSession.value = null
     _pSessions.save(sessions.value)
+    _clearActiveSession()
     return finished
   }
 

@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 
-defineProps<{
+const props = defineProps<{
   canvasId?: string
   width?: number
   height?: number
@@ -83,7 +83,7 @@ async function loadEcharts(): Promise<any> {
 }
 
 async function initChart() {
-  if (!(props as any).canvasId) return
+  if (!props.canvasId) return
 
   if (chartInstance) {
     chartInstance.dispose()
@@ -97,7 +97,7 @@ async function initChart() {
     const dpr = getDpr()
     const query = uni.createSelectorQuery()
     const res: any = await new Promise((resolve) => {
-      query.select(`#${(props as any).canvasId}`).fields({ node: true, size: true }).exec(resolve)
+      query.select(`#${props.canvasId}`).fields({ node: true, size: true }).exec(resolve)
     })
 
     const canvasNode = res[0]?.node
@@ -115,8 +115,8 @@ async function initChart() {
       devicePixelRatio: dpr,
     })
 
-    if ((props as any).option) {
-      chartInstance.setOption((props as any).option)
+    if (props.option) {
+      chartInstance.setOption(props.option)
     }
     emit('inited', chartInstance)
   } catch (err) {
@@ -127,7 +127,7 @@ async function initChart() {
 function onTouchStart() {}
 function onTouchEnd() {}
 
-watch(() => (props as any).option, (newOpt: any) => {
+watch(() => props.option, (newOpt: any) => {
   if (chartInstance && newOpt) chartInstance.setOption(newOpt, true)
 }, { deep: true })
 
@@ -142,7 +142,7 @@ onUnmounted(() => {
 defineExpose({
   getChart: () => chartInstance,
   refresh: () => {
-    if (chartInstance && (props as any).option) chartInstance.setOption((props as any).option, true)
+    if (chartInstance && props.option) chartInstance.setOption(props.option, true)
   },
 })
 </script>

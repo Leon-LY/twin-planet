@@ -4,9 +4,9 @@
  * 采用"尽力同步"策略：失败不阻塞用户操作，下次重试
  */
 import { request, getToken } from '@/api/client'
+import { PERSIST_KEYS } from '@/utils/persist'
 
 const SYNC_STATE_KEY = 'tp_sync_state'
-const LAST_SYNC_KEY = 'tp_last_sync'
 
 interface SyncState {
   lastSyncAt: number
@@ -35,6 +35,13 @@ export async function syncRecords(records: any[]): Promise<number> {
       method: 'POST', data: { records },
     })
     if (res.success && res.data) {
+      // 🔧 推送成功后更新同步状态
+      const state = getSyncState()
+      state.lastSyncAt = Date.now()
+      if (records.length > 0) {
+        state.lastRecordId = records[records.length - 1].id
+      }
+      saveSyncState(state)
       return res.data.synced
     }
   } catch { /* 静默失败，下次再试 */ }
@@ -75,11 +82,9 @@ export async function syncGrowthMeasurements(measurements: any[]): Promise<numbe
 /** 导出全部数据为 JSON 文件（换手机迁移用） */
 export function exportAllData(): string {
   const allData: Record<string, any> = {}
-  const keys = ['tp_user', 'tp_family', 'tp_babies', 'tp_records',
-    'tp_growth_measurements', 'tp_stickers', 'tp_duty',
-    'tp_guardian_energy', 'tp_guardian_sessions',
-    'tp_interactions_sprout', 'tp_interactions_contrib',
-    'tp_milestones', 'tp_school_decision', 'tp_handover_messages']
+  // 🔧 从 PERSIST_KEYS 动态构建，不再硬编码
+  const keys = Object.values(PERSIST_KEYS).map(k => 'tp_' + k)
+  keys.push('tp_active_baby', 'tp_active_timer', 'tp_active_session', 'tp_token')
 
   for (const key of keys) {
     try {

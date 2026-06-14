@@ -8,6 +8,7 @@ import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 // V4 暖纸手帐：大宝=姜黄，二宝=豆沙。按出生顺序，不按性别。
 import { TWIN_COLORS } from '@/constants/design'
 const BABY_COLORS = { 1: TWIN_COLORS.A, 2: TWIN_COLORS.B } as const
+const ACTIVE_BABY_KEY = 'tp_active_baby'
 
 export interface Baby {
   id: string
@@ -29,7 +30,14 @@ export const useBabiesStore = defineStore('babies', () => {
   const _p = createPersistence<Baby[]>(PERSIST_KEYS.babies)
 
   const babies = ref<Baby[]>(_p.load() ?? [])
-  const activeBabyId = ref<string | null>(null)
+  const activeBabyId = ref<string | null>(loadActiveBaby())
+
+  function loadActiveBaby(): string | null {
+    try { return uni.getStorageSync(ACTIVE_BABY_KEY) || null } catch { return null }
+  }
+  function saveActiveBaby() {
+    try { uni.setStorageSync(ACTIVE_BABY_KEY, activeBabyId.value) } catch {}
+  }
 
   const count = computed(() => babies.value.length)
   const activeBaby = computed(() => babies.value.find(b => b.id === activeBabyId.value) ?? null)
@@ -53,13 +61,16 @@ export const useBabiesStore = defineStore('babies', () => {
       avatar: '',
     }
     babies.value = [...babies.value, baby]
-    if (!activeBabyId.value) activeBabyId.value = id
+    if (!activeBabyId.value) { activeBabyId.value = id; saveActiveBaby() }
     _save()
     return baby
   }
 
   function setActive(id: string) {
-    if (babies.value.some(b => b.id === id)) activeBabyId.value = id
+    if (babies.value.some(b => b.id === id)) {
+      activeBabyId.value = id
+      saveActiveBaby()
+    }
   }
 
   function updateBaby(id: string, data: Partial<Baby>) {
