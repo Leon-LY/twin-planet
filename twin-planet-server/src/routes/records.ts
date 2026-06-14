@@ -45,6 +45,20 @@ recordsRouter.post('/', async (req: Request, res: Response) => {
   }
 })
 
+// GET /api/records/since?timestamp= — 拉取服务端新记录
+recordsRouter.get('/since', async (req: Request, res: Response) => {
+  try {
+    const since = req.query.timestamp ? new Date(parseInt(req.query.timestamp as string)) : new Date(0)
+    const result = await query(
+      'SELECT * FROM records WHERE user_id = $1 AND created_at > $2 ORDER BY created_at ASC LIMIT 500',
+      [req.user!.userId, since]
+    )
+    return ok(res, result.rows, { total: result.rows.length })
+  } catch (err: any) {
+    return fail(res, '获取记录失败', 'FETCH_FAILED', 500)
+  }
+})
+
 // POST /api/records/batch — 批量同步本地记录到服务器
 recordsRouter.post('/batch', async (req: Request, res: Response) => {
   try {
@@ -54,13 +68,10 @@ recordsRouter.post('/batch', async (req: Request, res: Response) => {
     }
     let synced = 0
     for (const r of records) {
-      // 检查是否已存在（幂等）
-      const existing = await query('SELECT id FROM records WHERE id = $1', [r.id])
-      if (existing.rows.length > 0) continue
-
-      await query(
+      const result = await query(
         `INSERT INTO records (id, baby_id, user_id, type, started_at, ended_at, duration_min, detail, feeding_side, amount_ml, sleep_quality, diaper_type, created_at)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+         ON CONFLICT (id) DO NOTHING RETURNING id`,
         [r.id, r.babyId, req.user!.userId, r.type,
          r.startedAt ? new Date(r.startedAt) : new Date(),
          r.endedAt ? new Date(r.endedAt) : null,
@@ -68,7 +79,7 @@ recordsRouter.post('/batch', async (req: Request, res: Response) => {
          r.feedingSide || null, r.amountMl || null, r.sleepQuality || null, r.diaperType || null,
          r.createdAt ? new Date(r.createdAt) : new Date()]
       )
-      synced++
+      if (result.rows.length > 0) synced++
     }
     return ok(res, { synced })
   } catch (err: any) {

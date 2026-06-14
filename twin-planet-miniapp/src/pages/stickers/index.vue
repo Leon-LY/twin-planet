@@ -121,7 +121,9 @@ onMounted(() => {
   border-color: var(--gold);
   background: var(--gold-lt);
 }
-.cell-emoji { font-size: 40rpx; }
+.cell-emoji { width:72rpx;height:72rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22rpx;font-weight:700;background:var(--gold-lt);color:var(--gold);border:2px solid var(--gold);font-family:var(--font-journal) }
+.sticker-cell.earned .cell-emoji { background:var(--gold-lt);color:var(--gold);border-color:var(--gold) }
+.sticker-cell:not(.earned) .cell-emoji { background:var(--cream);color:var(--ink-lt);border-color:var(--dot) }
 .cell-label { font-size: 18rpx; color: var(--ink-md); text-align: center; }
 .cell-label.earned { color: var(--ink); font-weight: 600; }
 

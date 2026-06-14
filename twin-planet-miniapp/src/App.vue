@@ -116,6 +116,14 @@ page {
 .page-enter{animation:revealUp .5s var(--ease-soft) both}
 @keyframes revealUp{from{opacity:0;transform:translateY(18rpx)}to{opacity:1;transform:translateY(0)}}
 
+/* 奶奶模式高对比度 */
+.role-granny {
+  --amber: #C06A2E;
+  --rose: #B04A3A;
+  --amber-md: rgba(192,106,46,0.25);
+  --rose-md: rgba(176,74,58,0.25);
+}
+
 /* 暗色模式 */
 .theme-dark{
   --paper:#1E1C18;--cream:#282520;--ink:#EBE5D8;--ink-md:#9C9488;--ink-lt:#6B6558;--dot:#3D3830;

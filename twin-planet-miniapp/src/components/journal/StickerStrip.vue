@@ -79,7 +79,12 @@ function isNew(s: Sticker): boolean {
   animation: stickerBounce .5s var(--ease-bounce);
 }
 .sticker-emoji {
-  font-size: 36rpx;
+  width: 56rpx; height: 56rpx; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20rpx; font-weight: 700;
+  background: var(--gold-lt); color: var(--gold);
+  border: 1.5px solid var(--gold);
+  font-family: var(--font-journal);
 }
 .sticker-label {
   font-size: 18rpx;
