@@ -26,6 +26,15 @@
       </view>
     </view>
 
+    <!-- 文本便签（可分享，跨设备） -->
+    <view class="note-section">
+      <text class="section-label">📝 文字便签（可分享）</text>
+      <view class="note-input-row">
+        <input class="note-input" v-model="textNote" placeholder="写点什么留给换班的家人..." confirm-type="done" @confirm="addTextNote" />
+        <view class="note-send" @click="addTextNote"><text>发送</text></view>
+      </view>
+    </view>
+
     <view class="messages-section" v-if="messages.length">
       <text class="section-label">交接记录</text>
       <view v-for="msg in messages" :key="msg.id" class="message-card" :class="{ unread: !msg.read, playing: playingId===msg.id }">
@@ -33,12 +42,13 @@
           <view class="msg-avatar">{{ msg.authorEmoji }}</view>
           <view class="msg-body">
             <text class="msg-author">{{ msg.author }}</text>
-            <text class="msg-duration">{{ formatDuration(msg.durationSec) }}</text>
+            <text class="msg-text" v-if="msg.text">{{ msg.text }}</text>
+              <text class="msg-duration" v-else>{{ formatDuration(msg.durationSec) }}</text>
             <text class="msg-time">{{ timeAgo(msg.createdAt) }}</text>
           </view>
         </view>
         <view class="msg-right">
-          <view class="play-btn" :class="{ playing: playingId===msg.id }" @click="playVoice(msg)">
+          <view class="play-btn" v-if="!msg.text" :class="{ playing: playingId===msg.id }" @click="playVoice(msg)">
             <text>{{ playingId===msg.id ? '⏸' : '▶' }}</text>
           </view>
           <view class="unread-dot" v-if="!msg.read" />
@@ -49,23 +59,45 @@
     <view class="empty-state" v-else>
       <text class="empty-emoji">📻</text>
       <text class="empty-title">等待第一段语音</text>
-      <text class="empty-desc">录一段话留给换班的家人吧</text>
+      <text class="empty-desc">录一段话或写条便签留给换班的家人吧</text>
+    </view>
+
+    <!-- 分享按钮 -->
+    <view class="share-section" v-if="messages.length">
+      <button class="share-btn" open-type="share">
+        <text>📤 转发给换班的家人</text>
+      </button>
+      <text class="share-hint">语音需同台设备播放，文字便签可通过分享传达</text>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { onShareAppMessage } from '@dcloudio/uni-app'
 import { timeAgo, formatDuration } from '@/utils/format'
 import { useHaptic } from '@/composables/useHaptic'
 
 interface VoiceMessage {
   id: string; author: string; authorEmoji: string; durationSec: number
-  read: boolean; createdAt: number; localPath: string
+  read: boolean; createdAt: number; localPath: string; text?: string
 }
 
 const STORAGE_KEY = 'tp_handover_messages'
 const haptic = useHaptic()
+const textNote = ref('')
+
+function addTextNote() {
+  const txt = textNote.value.trim()
+  if (!txt) return
+  messages.value = [{
+    id: `text-${Date.now()}`, author: '我', authorEmoji: '👤',
+    durationSec: 0, read: false, createdAt: Date.now(),
+    localPath: '', text: txt,
+  }, ...messages.value]
+  saveMessages(); textNote.value = ''
+  uni.showToast({ title: '✅ 已保存', icon: 'success' })
+}
 
 const isRecording = ref(false)
 const recordSeconds = ref(0)
@@ -224,6 +256,11 @@ onMounted(() => {
   uni.setNavigationBarTitle({ title: '语音便签' })
   loadMessages()
 })
+
+onShareAppMessage(() => ({
+  title: '📋 双宝交接班便签 — 换班前看一眼',
+  path: '/pages/handover/index',
+}))
 </script>
 
 <style scoped>
@@ -278,4 +315,17 @@ onMounted(() => {
 .empty-emoji { font-size: 48rpx; }
 .empty-title { display: block; font-family: var(--font-journal); font-size: var(--font-card); font-weight: 600; color: var(--ink); margin: 16rpx 0 8rpx; }
 .empty-desc { font-size: var(--font-body); color: var(--ink-md); }
+
+.note-section{margin-bottom:32rpx}
+.note-input-row{display:flex;gap:12rpx;align-items:center}
+.note-input{flex:1;padding:16rpx 20rpx;background:var(--cream);border:2rpx solid var(--dot);border-radius:var(--radius-md);font-size:28rpx;color:var(--ink)}
+.note-send{padding:16rpx 24rpx;background:var(--amber);border-radius:var(--radius-md);color:#FFF;font-size:28rpx;font-weight:700}
+.note-send:active{transform:scale(.94)}
+.msg-text{font-size:26rpx;color:var(--ink);line-height:1.5;margin-top:4rpx;background:var(--amber-lt);padding:8rpx 12rpx;border-radius:8rpx;display:block}
+.share-section{display:flex;flex-direction:column;align-items:center;gap:8rpx;margin-top:48rpx;padding-top:32rpx;border-top:2rpx dashed var(--dot)}
+.share-btn{width:100%;padding:20rpx;background:var(--cream);border:2rpx solid var(--dot);border-radius:var(--radius-md);font-size:28rpx;font-weight:600;color:var(--ink);text-align:center}
+.share-btn::after{border:none}
+.share-btn:active{background:var(--amber-lt);border-color:var(--amber)}
+.share-hint{font-size:20rpx;color:var(--ink-lt)}
+
 </style>
