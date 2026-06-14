@@ -340,8 +340,7 @@ const goMore = () => {
 .role-note:active{color:var(--amber)}
 .alert-badge{display:inline-flex;align-items:center;justify-content:center;min-width:28rpx;height:28rpx;border-radius:14rpx;background:var(--twin-danger);color:#FFF;font-size:16rpx;font-weight:700;padding:0 4rpx}
 .masthead-right{display:flex;align-items:flex-end}
-.streak-stamp{background:var(--gold-lt);padding:6rpx 14rpx;border-radius:4rpx 12rpx 4rpx 12rpx;font-family:var(--font-journal);font-size:20rpx;color:var(--gold);font-weight:700;transform:rotate(2deg);box-shadow:0 2rpx 6rpx rgba(200,153,62,0.1);animation:stampIn .4s var(--ease-bounce)}
-@keyframes stampIn{0%{transform:rotate(2deg)scale(0);opacity:0}70%{transform:rotate(-1deg)scale(1.1)}100%{transform:rotate(2deg)scale(1);opacity:1}}
+.streak-stamp{background:var(--gold-lt);padding:6rpx 14rpx;border-radius:4rpx 12rpx 4rpx 12rpx;font-family:var(--font-journal);font-size:20rpx;color:var(--gold);font-weight:700;transform:rotate(2deg);box-shadow:0 2rpx 6rpx rgba(200,153,62,0.1);animation:stampDown .5s var(--ease-stamp) both}
 .streak-start{font-size:20rpx;color:var(--ink-lt);font-family:var(--font-journal);background:var(--cream);padding:6rpx 14rpx;border-radius:12rpx;border:1.5px dashed var(--dot)}
 
 .today-card{position:relative;z-index:1;margin-bottom:36rpx;padding:28rpx 24rpx;background:linear-gradient(135deg,var(--cream),var(--paper));border-radius:var(--radius-lg);border:1.5px solid var(--dot)}
@@ -353,8 +352,7 @@ const goMore = () => {
 .today-forecast{font-size:22rpx;color:var(--ink-lt);font-style:italic}
 
 .welcome-guide{position:relative;z-index:1;margin-bottom:32rpx}
-.welcome-card{background:linear-gradient(135deg,var(--amber-lt),var(--cream) 50%,var(--rose-lt));border-radius:var(--radius-lg);border:2rpx solid var(--dot);padding:28rpx 24rpx 24rpx;animation:welcomeIn .6s var(--ease-soft)}
-@keyframes welcomeIn{from{opacity:0;transform:translateY(-12rpx)}to{opacity:1;transform:translateY(0)}}
+.welcome-card{background:linear-gradient(135deg,var(--amber-lt),var(--cream) 50%,var(--rose-lt));border-radius:var(--radius-lg);border:2rpx solid var(--dot);padding:28rpx 24rpx 24rpx;animation:cardFloatIn .6s var(--ease-page) both}
 .welcome-top{display:flex;align-items:flex-start;gap:12rpx;margin-bottom:24rpx}
 .welcome-wave{font-size:48rpx;flex-shrink:0}
 .welcome-text{flex:1}

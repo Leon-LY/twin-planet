@@ -147,8 +147,7 @@ const goDuty = () => emit('navigate', '/pages/duty/index')
 .date-line{font-family:var(--font-journal);font-size:24rpx;color:var(--ink-md);letter-spacing:2rpx}
 .dad-greeting{display:block;font-family:var(--font-journal);font-size:36rpx;color:var(--ink);font-weight:700;margin-top:4rpx}
 .masthead-right{display:flex;align-items:flex-end}
-.streak-stamp{background:var(--gold-lt);padding:6rpx 14rpx;border-radius:4rpx 12rpx 4rpx 12rpx;font-family:var(--font-journal);font-size:20rpx;color:var(--gold);font-weight:700;transform:rotate(2deg);box-shadow:0 2rpx 6rpx rgba(200,153,62,0.1);animation:stampIn .4s var(--ease-bounce)}
-@keyframes stampIn{0%{transform:rotate(2deg)scale(0);opacity:0}70%{transform:rotate(-1deg)scale(1.1)}100%{transform:rotate(2deg)scale(1);opacity:1}}
+.streak-stamp{background:var(--gold-lt);padding:6rpx 14rpx;border-radius:4rpx 12rpx 4rpx 12rpx;font-family:var(--font-journal);font-size:20rpx;color:var(--gold);font-weight:700;transform:rotate(2deg);box-shadow:0 2rpx 6rpx rgba(200,153,62,0.1);animation:stampDown .5s var(--ease-stamp) both}
 .dad-twins{margin-bottom:16rpx}
 .dad-twins .card-surface{border-radius:20rpx;transform:none!important}
 .dad-twins .twin-card.card-b{margin-left:0;margin-top:0}

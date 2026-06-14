@@ -386,8 +386,8 @@ const stopAll=()=>{recordsStore.stopTimer();resetContext()}
 .spot-a{width:420rpx;height:420rpx;top:80rpx;right:-160rpx;background:radial-gradient(circle,rgba(212,128,104,0.03) 0%,transparent 60%)}
 .spot-b{width:360rpx;height:360rpx;bottom:180rpx;left:-140rpx;background:radial-gradient(circle,rgba(224,123,62,0.03) 0%,transparent 60%)}
 .sticker-pop{position:fixed;top:16%;left:50%;transform:translate(-50%,-50%);z-index:99;pointer-events:none}
-.sticker-pop-emoji{font-size:96rpx;animation:stampPop .75s var(--ease-bounce) forwards}
-@keyframes stampPop{0%{transform:scale(.2)rotate(-12deg);opacity:0}55%{transform:scale(1.25)rotate(3deg);opacity:1}100%{transform:scale(1)rotate(0);opacity:0}}
+.sticker-pop-emoji{font-size:96rpx;animation:stickerPlacePop .7s var(--ease-stamp) forwards}
+@keyframes stickerPlacePop{0%{transform:translate(32rpx,-40rpx)rotate(-18deg)scale(.15);opacity:0}35%{transform:translate(4rpx,-8rpx)rotate(4deg)scale(1.15);opacity:1}60%{transform:translate(-2rpx,3rpx)rotate(-1deg)scale(.92)}80%{transform:translate(0,0)rotate(0)scale(1.03)}100%{transform:translate(0,0)rotate(0)scale(1);opacity:0}}
 
 /* 空状态 */
 .empty-state{padding:160rpx 0;text-align:center;position:relative;z-index:1}

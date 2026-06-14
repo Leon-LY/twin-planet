@@ -99,7 +99,7 @@ function isNew(s: Sticker): boolean {
 .sticker-item:nth-child(5n) { transform: rotate(0.3deg); }
 .sticker-item.new {
   border-color: var(--gold);
-  animation: stickerBounce .5s var(--ease-bounce);
+  animation: stickerPlace .55s var(--ease-stamp) both;
 }
 .sticker-emoji {
   width: 56rpx; height: 56rpx; border-radius: 50%;
@@ -119,10 +119,5 @@ function isNew(s: Sticker): boolean {
   font-size: var(--font-caption);
   color: var(--amber);
   margin-top: 8rpx;
-}
-@keyframes stickerBounce {
-  0% { transform: scale(.5) rotate(-5deg); opacity: 0; }
-  60% { transform: scale(1.15) rotate(1deg); opacity: 1; }
-  100% { transform: scale(1) rotate(-0.8deg); opacity: 1; }
 }
 </style>

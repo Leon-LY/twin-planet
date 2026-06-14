@@ -71,6 +71,12 @@ page {
   --dur-fast:0.15s;--dur-normal:0.3s;--dur-slow:0.5s;
   --ease-bounce:cubic-bezier(0.34,1.3,0.64,1);
   --ease-soft:cubic-bezier(0.16,1,0.3,1);
+  /* 手帳物理曲线 */
+  --ease-stamp:cubic-bezier(0.25,0.1,0.1,1);    /* 盖章：快压慢起 */
+  --ease-page:cubic-bezier(0.3,0,0.1,1);        /* 翻页：平滑加速后干脆停止 */
+  --ease-peel:cubic-bezier(0.5,-0.1,0.3,1);     /* 撕胶带：初始阻力+释放 */
+  --ease-drop:cubic-bezier(0.2,1.6,0.5,1);      /* 掉落：弹跳着陆 */
+  --ease-ink:cubic-bezier(0.05,0,0.05,1);       /* 书写：极慢起笔 */
 
   --twin-baby-a:var(--amber);--twin-baby-b:var(--rose);
   --twin-baby-a-light:var(--amber-lt);--twin-baby-b-light:var(--rose-lt);
@@ -176,6 +182,7 @@ page {
   z-index: 2;
   pointer-events: none;
   box-shadow: 0 1rpx 3rpx rgba(0,0,0,0.06);
+  animation: tapeUnroll .6s var(--ease-peel) both;
 }
 .journal-tape.tape-amber {
   background: var(--amber-lt);
@@ -205,7 +212,7 @@ page {
   font-weight: 700;
   transform: rotate(2deg);
   box-shadow: 0 2rpx 6rpx rgba(0,0,0,0.08);
-  animation: stampIn .4s var(--ease-bounce);
+  animation: stampDown .5s var(--ease-stamp) both;
 }
 .journal-stamp.stamp-amber {
   background: var(--amber-lt);
@@ -278,6 +285,7 @@ page {
   z-index: 3;
   pointer-events: none;
   box-shadow: 0 2rpx 4rpx rgba(0,0,0,0.1);
+  animation: ribbonFall .7s var(--ease-drop) .4s both;
 }
 .journal-ribbon::after {
   content: '';
@@ -364,6 +372,80 @@ page {
 .page-enter{animation:revealUp .5s var(--ease-soft) both}
 @keyframes revealUp{from{opacity:0;transform:translateY(18rpx)}to{opacity:1;transform:translateY(0)}}
 
+/* ═══════════════════════════════════════════
+   手帳动效关键帧 · Journal Motion System
+   ═══════════════════════════════════════════ */
+
+/* 盖章 — 从上方落下 → 压下 → 轻微反弹 */
+@keyframes stampDown {
+  0%   { transform: translateY(-24rpx) scale(0.6); opacity: 0; }
+  35%  { transform: translateY(4rpx) scale(1.05, 0.9); opacity: 1; }
+  55%  { transform: translateY(-2rpx) scale(1); }
+  70%  { transform: translateY(0); }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* 翻页 — 从左向右展开 + 轻微倾斜 → 展平 */
+@keyframes pageFlip {
+  0%   { transform: skewX(-2deg) scaleX(0.94); opacity: 0;
+         box-shadow: 6rpx 0 16rpx rgba(0,0,0,0.08); }
+  60%  { transform: skewX(-0.3deg) scaleX(1.01); opacity: 1; }
+  100% { transform: skewX(0) scaleX(1); opacity: 1;
+         box-shadow: 0 1rpx 0 rgba(0,0,0,0.03); }
+}
+
+/* 撕胶带 — 从左端揭起 → 向右展开 → 贴平 */
+@keyframes tapeUnroll {
+  0%   { transform: translateX(-50%) rotate(-7deg) scaleX(0); opacity: 0;
+         transform-origin: left center; }
+  50%  { transform: translateX(-50%) rotate(-3deg) scaleX(1.06); opacity: 1; }
+  80%  { transform: translateX(-50%) rotate(-2.8deg) scaleX(0.97); }
+  100% { transform: translateX(-50%) rotate(-2.4deg) scaleX(1); opacity: 1; }
+}
+
+/* 贴纸贴上 — 斜角飞入 → 按压 → 微旋转就位 */
+@keyframes stickerPlace {
+  0%   { transform: translate(24rpx, -32rpx) rotate(-15deg) scale(0.2); opacity: 0; }
+  35%  { transform: translate(2rpx, -6rpx) rotate(3deg) scale(1.12); opacity: 1; }
+  60%  { transform: translate(-1rpx, 2rpx) rotate(-0.5deg) scale(0.94); }
+  100% { transform: translate(0, 0) rotate(var(--sticker-rot, -0.8deg)) scale(1); opacity: 1; }
+}
+
+/* 缎带掉落 — 从上方落下 → 弹跳 → 静止 */
+@keyframes ribbonFall {
+  0%   { transform: translateY(-60rpx) rotate(-2deg); opacity: 0; }
+  40%  { transform: translateY(8rpx) rotate(0.5deg); opacity: 1; }
+  65%  { transform: translateY(-6rpx) rotate(-0.3deg); }
+  85%  { transform: translateY(2rpx) rotate(0); }
+  100% { transform: translateY(0) rotate(0); opacity: 1; }
+}
+
+/* 书写揭示 — 宽度从右向左展开（配合 overflow:hidden） */
+@keyframes inkReveal {
+  0%   { max-width: 0; opacity: 0; }
+  30%  { opacity: 0.6; }
+  100% { max-width: 600rpx; opacity: 1; }
+}
+
+/* 卡片浮入 — 带纸层叠感的入场 */
+@keyframes cardFloatIn {
+  0%   { transform: translateY(32rpx) rotate(0.5deg); opacity: 0; }
+  100% { transform: translateY(0) rotate(0); opacity: 1; }
+}
+
+/* 纸页抖动 — 轻触反馈（快速左右微颤） */
+@keyframes paperJiggle {
+  0%,100% { transform: rotate(0); }
+  25%  { transform: rotate(0.3deg); }
+  75%  { transform: rotate(-0.3deg); }
+}
+
+/* 点阵渐显 — 纸张纹理缓慢浮现 */
+@keyframes dotFadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
 /* 奶奶模式 — 全局大字 */
 .font-large {
   --font-caption:28rpx;
@@ -404,7 +486,13 @@ page {
 .font-large .spot-b,
 .font-large .confetti-piece,
 .font-large .shine,
-.font-large .float-up { animation: none !important; }
+.font-large .float-up,
+.font-large .journal-tape,
+.font-large .journal-ribbon,
+.font-large .journal-stamp,
+.font-large .journal-card,
+.font-large .sticker-item.new,
+.font-large .sticker-pop-emoji { animation: none !important; }
 
 .font-large view,
 .font-large text,
