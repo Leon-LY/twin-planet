@@ -4,8 +4,17 @@
     <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
     <view v-if="stickerShow" class="sticker-pop"><text class="sticker-pop-emoji">{{ stickerEmoji }}</text></view>
 
+    <!-- 无宝宝：引导创建 -->
+    <template v-if="!twins.length">
+      <view class="empty-state" style="padding:120rpx 0">
+        <text class="empty-emoji">👶👶</text>
+        <text class="empty-title">还没有添加宝宝</text>
+        <text class="empty-desc">请先回到首页创建你的双胞胎档案</text>
+      </view>
+    </template>
+
     <!-- IDLE -->
-    <template v-if="!recordsStore.isRunning">
+    <template v-else-if="!recordsStore.isRunning">
       <view class="baby-tabs">
         <view class="baby-tab" v-for="(t,i) in twins" :key="t.id"
           :class="{ active: sel===t.id, 'tab-a':i===0, 'tab-b':i===1 }" @click="sel=t.id">
@@ -126,7 +135,7 @@ const elapsedRef=computed(()=>runningElapsed.value)
 const {label:poeticLabel}=usePoeticTime(elapsedRef,timerType)
 
 function getName(id:string){return twins.value.find(b=>b.id===id)?.nickname||''}
-function doAction(t:RecordType){const id=sel.value||twins.value[0]?.id;if(!id)return;if(t==='feeding'||t==='sleep'){recordsStore.startTimer(id,t);haptic.thump();popSticker(t==='feeding'?'🍼':'😴')}else{recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();const m:Record<string,string>={diaper:'🧷',temperature:'🌡️',medicine:'💊',bath:'🛁'};popSticker(m[t]||'⭐')}}
+function doAction(t:RecordType){const id=sel.value||twins.value[0]?.id;if(!id){uni.showToast({title:'请先在首页创建宝宝',icon:'none'});return}if(t==='feeding'||t==='sleep'){recordsStore.startTimer(id,t);haptic.thump();popSticker(t==='feeding'?'🍼':'😴')}else{recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();const m:Record<string,string>={diaper:'🧷',temperature:'🌡️',medicine:'💊',bath:'🛁'};popSticker(m[t]||'⭐')}}
 function quickNight(){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,'feeding');haptic.sparkle();syncStickers();popSticker('🌙')}
 function dualLog(t:RecordType){const a=twins.value[0],b=twins.value[1];if(a)recordsStore.quickLog(a.id,t);if(b)recordsStore.quickLog(b.id,t);haptic.doubleBeat();syncStickers();popSticker('🔗')}
 const retroType=ref<RecordType>('feeding')
