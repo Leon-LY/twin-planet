@@ -121,16 +121,17 @@ page {
   border-radius: 6rpx 22rpx 6rpx 22rpx;
   border: 1.5px solid var(--dot);
   box-shadow:
-    0 1rpx 0 rgba(45,35,24,0.03),
-    0 3rpx 8rpx rgba(45,35,24,0.04),
-    0 6rpx 20rpx rgba(45,35,24,0.03);
+    0 1rpx 0 rgba(0,0,0,0.03),
+    0 3rpx 8rpx rgba(0,0,0,0.04),
+    0 6rpx 20rpx rgba(0,0,0,0.03);
 }
 /* 纸页底层阴影（下一张纸） */
 .journal-card::before {
   content: '';
   position: absolute;
   top: 6rpx; left: 4rpx; right: 4rpx; bottom: -4rpx;
-  background: rgba(255,245,232,0.7);
+  background: var(--cream);
+  opacity: 0.7;
   border-radius: 6rpx 22rpx 6rpx 22rpx;
   border: 1px solid var(--dot);
   z-index: -1;
@@ -174,22 +175,22 @@ page {
   border-radius: 4rpx 3rpx 5rpx 2rpx;
   z-index: 2;
   pointer-events: none;
-  box-shadow: 0 1rpx 3rpx rgba(45,35,24,0.06);
+  box-shadow: 0 1rpx 3rpx rgba(0,0,0,0.06);
 }
 .journal-tape.tape-amber {
-  background: rgba(224,123,62,0.18);
+  background: var(--amber-lt);
   border: 1px solid rgba(224,123,62,0.15);
 }
 .journal-tape.tape-rose {
-  background: rgba(212,128,104,0.18);
+  background: var(--rose-lt);
   border: 1px solid rgba(212,128,104,0.15);
 }
 .journal-tape.tape-mint {
-  background: rgba(92,154,110,0.15);
+  background: var(--mint-lt);
   border: 1px solid rgba(92,154,110,0.12);
 }
 .journal-tape.tape-gold {
-  background: rgba(200,153,62,0.2);
+  background: var(--gold-lt);
   border: 1px solid rgba(200,153,62,0.15);
 }
 
@@ -203,37 +204,37 @@ page {
   font-family: var(--font-journal);
   font-weight: 700;
   transform: rotate(2deg);
-  box-shadow: 0 2rpx 6rpx rgba(200,153,62,0.1), inset 0 1rpx 0 rgba(255,255,255,0.3);
+  box-shadow: 0 2rpx 6rpx rgba(0,0,0,0.08);
   animation: stampIn .4s var(--ease-bounce);
 }
 .journal-stamp.stamp-amber {
-  background: linear-gradient(135deg, var(--amber-lt), rgba(224,123,62,0.15));
+  background: var(--amber-lt);
   color: var(--amber);
-  border: 1.5px solid rgba(224,123,62,0.2);
+  border: 1.5px solid var(--amber-md);
 }
 .journal-stamp.stamp-mint {
-  background: linear-gradient(135deg, var(--mint-lt), rgba(92,154,110,0.15));
+  background: var(--mint-lt);
   color: var(--mint);
-  border: 1.5px solid rgba(92,154,110,0.2);
+  border: 1.5px solid var(--mint-lt);
 }
 .journal-stamp.stamp-gold {
-  background: linear-gradient(135deg, var(--gold-lt), rgba(200,153,62,0.18));
+  background: var(--gold-lt);
   color: var(--gold);
-  border: 1.5px solid rgba(200,153,62,0.25);
+  border: 1.5px solid var(--gold-lt);
 }
 
 /* 便签贴 — 微旋转 + 投影，仿 Post-it */
 .journal-sticky {
   display: inline-block;
   padding: 12rpx 20rpx;
-  background: linear-gradient(170deg, #FFF9E6, #FFF3C8);
-  border: 1px solid rgba(200,153,62,0.2);
+  background: linear-gradient(170deg, var(--gold-lt), rgba(200,153,62,0.06));
+  border: 1px solid rgba(200,153,62,0.15);
   border-radius: 2rpx 12rpx 2rpx 12rpx;
   font-family: var(--font-journal);
   font-size: var(--font-caption);
   color: var(--ink-md);
   transform: rotate(-1.5deg);
-  box-shadow: 0 3rpx 8rpx rgba(45,35,24,0.06);
+  box-shadow: 0 3rpx 8rpx rgba(0,0,0,0.06);
 }
 
 /* 页卷角 — 卡片右下角翻起效果 */
@@ -251,7 +252,7 @@ page {
   border-style: solid;
   border-width: 0 0 32rpx 32rpx;
   border-color: transparent transparent var(--paper) transparent;
-  filter: drop-shadow(-2rpx 2rpx 3rpx rgba(45,35,24,0.08));
+  filter: drop-shadow(-2rpx 2rpx 3rpx rgba(0,0,0,0.1));
   border-radius: 0 0 4rpx 0;
 }
 
@@ -272,11 +273,11 @@ page {
   top: -10rpx;
   width: 28rpx;
   height: 80rpx;
-  background: linear-gradient(180deg, var(--rose) 0%, #C06050 100%);
+  background: linear-gradient(180deg, var(--rose-md) 0%, var(--rose) 100%);
   border-radius: 4rpx 2rpx 2rpx 4rpx;
   z-index: 3;
   pointer-events: none;
-  box-shadow: 0 2rpx 4rpx rgba(45,35,24,0.1);
+  box-shadow: 0 2rpx 4rpx rgba(0,0,0,0.1);
 }
 .journal-ribbon::after {
   content: '';
@@ -287,7 +288,7 @@ page {
   height: 0;
   border-left: 14rpx solid transparent;
   border-right: 14rpx solid transparent;
-  border-top: 12rpx solid #C06050;
+  border-top: 12rpx solid var(--rose);
   border-radius: 0 0 2rpx 2rpx;
 }
 
@@ -444,5 +445,45 @@ page {
   --surface-card:var(--cream);--border-void:var(--dot);
   --twin-a-glow:rgba(232,145,90,0.2);--twin-b-glow:rgba(224,154,128,0.2);
   --twin-text-tertiary:var(--ink-lt);
+}
+
+/* 暗色模式 — 手帳元素微调 */
+.theme-dark .journal-paper {
+  background-image:
+    radial-gradient(circle, var(--ink-lt) 0.8rpx, transparent 0.8rpx);
+  background-size: 44rpx 44rpx;
+  background-position: 6rpx 6rpx;
+}
+.theme-dark .journal-card {
+  box-shadow:
+    0 1rpx 0 rgba(255,255,255,0.02),
+    0 4rpx 12rpx rgba(0,0,0,0.15),
+    0 8rpx 24rpx rgba(0,0,0,0.1);
+}
+.theme-dark .journal-card::before {
+  opacity: 0.4;
+  border-color: var(--dot);
+}
+.theme-dark .journal-tape {
+  box-shadow: 0 1rpx 3rpx rgba(0,0,0,0.2);
+}
+.theme-dark .journal-stamp {
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.25);
+}
+.theme-dark .journal-sticky {
+  box-shadow: 0 3rpx 10rpx rgba(0,0,0,0.15);
+}
+.theme-dark .journal-ribbon {
+  box-shadow: 0 2rpx 4rpx rgba(0,0,0,0.3);
+}
+.theme-dark .journal-clip {
+  opacity: 0.35;
+  border-color: var(--ink-md);
+}
+.theme-dark .journal-clip::after {
+  border-color: var(--ink-md);
+}
+.theme-dark .journal-curl::after {
+  filter: drop-shadow(-2rpx 2rpx 4rpx rgba(0,0,0,0.2));
 }
 </style>
