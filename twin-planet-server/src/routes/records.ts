@@ -92,21 +92,32 @@ recordsRouter.post('/batch', async (req: Request, res: Response) => {
       return fail(res, '没有有效的宝宝记录', 'FORBIDDEN', 403)
     }
 
+    // 🔧 批量 INSERT（单条SQL多行），性能远优于逐条循环
     let synced = 0
-    let skipped = records.length - validRecords.length
-    for (const r of validRecords) {
+    const skipped = records.length - validRecords.length
+    if (validRecords.length > 0) {
+      const values: string[] = []
+      const params: any[] = []
+      let idx = 1
+      for (const r of validRecords) {
+        values.push(`($${idx},$${idx+1},$${idx+2},$${idx+3},$${idx+4},$${idx+5},$${idx+6},$${idx+7},$${idx+8},$${idx+9},$${idx+10},$${idx+11},$${idx+12})`)
+        params.push(
+          r.id, r.babyId, req.user!.userId, r.type,
+          r.startedAt ? new Date(r.startedAt) : new Date(),
+          r.endedAt ? new Date(r.endedAt) : null,
+          r.durationMin || 0, r.detail || '',
+          r.feedingSide || null, r.amountMl || null, r.sleepQuality || null, r.diaperType || null,
+          r.createdAt ? new Date(r.createdAt) : new Date()
+        )
+        idx += 13
+      }
       const result = await query(
         `INSERT INTO records (id, baby_id, user_id, type, started_at, ended_at, duration_min, detail, feeding_side, amount_ml, sleep_quality, diaper_type, created_at)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
-         ON CONFLICT (id) DO NOTHING RETURNING id`,
-        [r.id, r.babyId, req.user!.userId, r.type,
-         r.startedAt ? new Date(r.startedAt) : new Date(),
-         r.endedAt ? new Date(r.endedAt) : null,
-         r.durationMin || 0, r.detail || '',
-         r.feedingSide || null, r.amountMl || null, r.sleepQuality || null, r.diaperType || null,
-         r.createdAt ? new Date(r.createdAt) : new Date()]
+         VALUES ${values.join(',')}
+         ON CONFLICT (id) DO NOTHING`,
+        params
       )
-      if (result.rows.length > 0) synced++
+      synced = result.rowCount ?? validRecords.length
     }
     return ok(res, { synced, skipped })
   } catch (err: any) {

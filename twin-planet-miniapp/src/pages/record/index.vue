@@ -2,7 +2,16 @@
 <template>
   <view class="record-page">
     <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
-    <view v-if="stickerShow" class="sticker-pop"><text class="sticker-pop-emoji">{{ stickerEmoji }}</text></view>
+    <view v-if="stickerShow && !isGrandma" class="sticker-pop"><text class="sticker-pop-emoji">{{ stickerEmoji }}</text></view>
+
+    <!-- 奶奶确认弹窗 -->
+    <view v-if="grannyConfirm" class="granny-confirm" @click="grannyConfirm=false">
+      <view class="granny-confirm-card">
+        <text class="granny-confirm-icon">✅</text>
+        <text class="granny-confirm-text">{{ grannyConfirmText }}</text>
+        <text class="granny-confirm-hint">轻触任意位置关闭</text>
+      </view>
+    </view>
 
     <!-- IDLE: 奶奶模式 — 极简3按钮 -->
     <template v-if="!recordsStore.isRunning && isGrandma">
@@ -169,7 +178,26 @@ const elapsedRef=computed(()=>runningElapsed.value)
 const {label:poeticLabel}=usePoeticTime(elapsedRef,timerType)
 
 function getName(id:string){return twins.value.find(b=>b.id===id)?.nickname||''}
-function doAction(t:RecordType){const id=sel.value||twins.value[0]?.id;if(!id)return;if(t==='feeding'||t==='sleep'){recordsStore.startTimer(id,t);haptic.thump();popSticker(t==='feeding'?'🍼':'😴')}else{recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();showUndoBar();trackRecordCreated(t,"quick");const m:Record<string,string>={diaper:'🧷',temperature:'🌡️',medicine:'💊',bath:'🛁'};popSticker(m[t]||'⭐')}}
+function doAction(t:RecordType){
+  const id=sel.value||twins.value[0]?.id;if(!id)return
+  if(t==='feeding'||t==='sleep'){
+    recordsStore.startTimer(id,t);haptic.thump()
+    if(isGrandma.value){
+      const nm=selBabyName.value
+      showGrannyConfirm(nm+' '+(t==='feeding'?'吃奶了 ⏱️':'睡觉了 ⏱️'))
+    }else{popSticker(t==='feeding'?'🍼':'😴')}
+  }else{
+    recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();showUndoBar();trackRecordCreated(t,'quick')
+    if(isGrandma.value){
+      const nm=selBabyName.value
+      const lb: Record<string,string> = {diaper:'换尿布',temperature:'量体温',medicine:'吃药',bath:'洗澡'}
+      showGrannyConfirm(nm+' '+(lb[t]||'记录')+' ✅')
+    }else{
+      const m: Record<string,string> = {diaper:'🧷',temperature:'🌡️',medicine:'💊',bath:'🛁'}
+      popSticker(m[t]||'⭐')
+    }
+  }
+}
 function quickNight(){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,'feeding');haptic.sparkle();syncStickers();showUndoBar();trackRecordCreated('feeding','quick');popSticker('🌙')}
 function dualLog(t:RecordType){const a=twins.value[0],b=twins.value[1];if(a)recordsStore.quickLog(a.id,t);if(b)recordsStore.quickLog(b.id,t);haptic.doubleBeat();syncStickers();showUndoBar();trackRecordCreated(t,"dual");popSticker('🔗')}
 const retroType=ref<RecordType>('feeding')
@@ -210,6 +238,13 @@ tonShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id})
 .dual-zone{display:flex;gap:12rpx;margin-bottom:12rpx;position:relative;z-index:1}.dual-card{flex:1;display:flex;flex-direction:column;align-items:center;gap:10rpx;padding:20rpx 8rpx;border-radius:24rpx}.dual-card.dc-a{background:var(--amber-lt);border:2rpx solid rgba(224,123,62,.1)}.dual-card.dc-b{background:var(--rose-lt);border:2rpx solid rgba(212,128,104,.1)}.dc-face{width:96rpx;height:96rpx;border-radius:50%;display:flex;align-items:center;justify-content:center}.dc-face.bg-a{background:var(--amber-md)}.dc-face.bg-b{background:var(--rose-md)}.dc-emoji{font-size:48rpx;animation:faceRock 3s ease-in-out infinite}.dc-name{font-family:var(--font-journal);font-size:24rpx;font-weight:700;color:var(--ink)}.dc-time{font-family:var(--font-journal);font-size:36rpx;color:var(--ink);letter-spacing:2rpx}.dc-stop{padding:6rpx 20rpx;border-radius:16rpx;border:1.5px solid var(--twin-danger);font-size:20rpx;color:var(--twin-danger)}.dc-stop:active{background:rgba(212,112,107,.06)}.stop-all{width:100%;padding:16rpx;background:transparent;border:2rpx solid var(--twin-danger);border-radius:24rpx;font-size:28rpx;font-weight:600;color:var(--twin-danger);position:relative;z-index:1}
 
 .timeline{padding-top:16rpx;position:relative;z-index:1}.tl-section{display:block;font-family:var(--font-journal);font-size:22rpx;color:var(--ink-lt);font-weight:600;margin-bottom:10rpx;padding-left:2rpx}.tl-item{display:flex;align-items:center;gap:12rpx;padding:10rpx 0}.tl-dot{width:7rpx;height:7rpx;border-radius:50%;flex-shrink:0}.tl-text{flex:1;font-size:26rpx;color:var(--ink)}.tl-when{flex-shrink:0;font-size:20rpx;color:var(--ink-lt)}
+
+/* 奶奶大反馈弹窗 */
+.granny-confirm{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(45,35,24,.3);display:flex;align-items:center;justify-content:center;z-index:999}
+.granny-confirm-card{background:var(--paper);border-radius:var(--radius-lg);padding:64rpx 56rpx;text-align:center;margin:0 48rpx;box-shadow:0 12rpx 40rpx rgba(0,0,0,.12);animation:celebBounce .4s var(--ease-bounce)}
+.granny-confirm-icon{font-size:100rpx;display:block;margin-bottom:16rpx}
+.granny-confirm-text{display:block;font-family:var(--font-journal);font-size:48rpx;color:var(--ink);font-weight:700;margin-bottom:16rpx}
+.granny-confirm-hint{font-size:28rpx;color:var(--ink-lt)}
 
 /* 奶奶模式 — 极简3按钮 */
 .granny-record {

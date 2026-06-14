@@ -9,6 +9,7 @@ import { recordsRouter } from './routes/records'
 import { growthRouter } from './routes/growth'
 import { familyRouter } from './routes/family'
 import { handoverRouter } from './routes/handover'
+import { userRouter } from './routes/user'
 import { errorHandler } from './middleware/errorHandler'
 
 dotenv.config()
@@ -73,6 +74,7 @@ app.use('/api/records', recordsRouter)
 app.use('/api/growth', growthRouter)
 app.use('/api/family', familyRouter)
 app.use('/api/handover', handoverRouter)
+app.use('/api/user', userRouter)
 
 // Error handler
 app.use(errorHandler)

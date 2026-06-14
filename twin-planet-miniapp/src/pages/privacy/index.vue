@@ -28,6 +28,9 @@
       <button class="action-btn delete-btn" @click="handleDelete">
         <text>🗑️ 清除本地数据</text>
       </button>
+      <button class="action-btn server-delete-btn" @click="handleDeleteServer" style="margin-top:12rpx">
+        <text>☁️ 删除服务器数据</text>
+      </button>
     </view>
 
     <text class="section-title">四、免责声明</text>
@@ -43,6 +46,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { saveExportData } from '@/utils/syncService'
+import { request } from '@/api/client'
 
 onMounted(() => { uni.setNavigationBarTitle({ title: '隐私政策' }) })
 
@@ -57,6 +61,28 @@ async function handleExport() {
         uni.showToast({ title: '已导出到：' + path, icon: 'success', duration: 2000 })
       } catch {
         uni.showToast({ title: '导出遇到问题，稍后再试吧', icon: 'none' })
+      }
+    }
+  })
+}
+
+async function handleDeleteServer() {
+  uni.showModal({
+    title: '🗑️ 删除服务器数据',
+    content: '此操作将永久删除服务器上存储的所有记录。本地数据不受影响。此操作不可撤销。',
+    confirmText: '确认删除',
+    confirmColor: '#D4706B',
+    success: async (res) => {
+      if (!res.confirm) return
+      try {
+        const result = await request('/user/data', { method: 'DELETE' })
+        if (result.success) {
+          uni.showToast({ title: '服务器数据已删除', icon: 'success' })
+        } else {
+          uni.showToast({ title: '删除失败，请稍后重试', icon: 'none' })
+        }
+      } catch {
+        uni.showToast({ title: '网络连接失败，请稍后重试', icon: 'none' })
       }
     }
   })
@@ -140,5 +166,10 @@ function handleDelete() {
   background: var(--cream);
   color: var(--twin-danger);
   border: 2rpx solid var(--twin-danger);
+}
+.server-delete-btn {
+  background: var(--cream);
+  color: var(--gold);
+  border: 2rpx solid var(--gold);
 }
 </style>

@@ -342,7 +342,15 @@ async function ensureInviteToken() {
   return ''
 }
 
-onMounted(()=>{setTimeout(()=>{loading.value=false;syncStickers();initSync().catch(()=>{});checkCelebrate();checkInviteAndAccept();ensureInviteToken().catch(()=>{})},400)})
+onMounted(()=>{
+  // 数据驱动加载：骨架屏仅在 store 数据未就绪时显示
+  if (babiesStore.babyA || babiesStore.babyB) {
+    loading.value = false
+  } else {
+    setTimeout(() => { loading.value = false }, 200) // 200ms 兜底
+  }
+  syncStickers();initSync().catch(()=>{});checkCelebrate();checkInviteAndAccept();ensureInviteToken().catch(()=>{})
+})
 onShareAppMessage(() => {
   const aName=babyA.value?.nickname||'大宝';const bName=babyB.value?.nickname||'二宝'
   const token = inviteToken.value
