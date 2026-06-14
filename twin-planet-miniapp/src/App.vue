@@ -75,8 +75,8 @@ page {
   --gold-lt: rgba(200,153,62,0.12);
   --dot:    #E8DCC8;
 
-  --font-journal: Georgia, KaiTi, STKaiti, serif;
-  --font-ui: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-journal: Georgia, "KaiTi", "STKaiti", serif;
+  --font-ui: "PingFang SC", "Microsoft YaHei", sans-serif;
 
   --radius-sm:12rpx;--radius-md:20rpx;--radius-lg:28rpx;--radius-full:9999rpx;
   --space-xs:8rpx;--space-sm:14rpx;--space-md:28rpx;--space-lg:48rpx;
@@ -160,10 +160,18 @@ page {
   --space-md:40rpx;
   --space-lg:60rpx;
 }
-/* 奶奶模式 — 禁用动画 */
-.font-large .bg-spot { animation: none !important; }
-.font-large .page-enter { animation: none !important; }
-.font-large * { animation-duration: 0s !important; transition-duration: 0s !important; }
+/* 奶奶模式 — 禁用动画（WXSS 不支持 * 选择器，逐个指定） */
+.font-large .bg-spot,
+.font-large .page-enter,
+.font-large .sticker-item.new,
+.font-large .mascot-item.bounce,
+.font-large .welcome-card,
+.font-large .celebrate-card,
+.font-large .more-sheet,
+.font-large .sticker-pop-emoji,
+.font-large .orbit-ring.pulsing,
+.font-large .streak-stamp,
+.font-large .avatar-ring.pulsing { animation: none !important; transition-duration: 0s !important; }
 
 /* 奶奶模式高对比度 */
 .role-granny {
