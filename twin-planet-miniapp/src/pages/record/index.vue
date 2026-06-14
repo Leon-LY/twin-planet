@@ -205,7 +205,7 @@ function retro(m:number){const id=sel.value||twins.value[0]?.id;if(!id)return;re
 	const todayStart=computed(()=>new Date().setHours(0,0,0,0))
 	const recentLogs=computed(()=>{const t0=todayStart.value;return recordsStore.logs.filter(l=>l.createdAt>=t0).sort((a,b)=>b.createdAt-a.createdAt)})
 	onMounted(()=>{uni.setNavigationBarTitle({title:"记录"});if(twins.value[0])sel.value=twins.value[0].id})
-tonShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id})
+onShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id})
 </script>
 
 <style scoped>

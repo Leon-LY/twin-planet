@@ -150,14 +150,35 @@
           </view>
         </view>
 
-        <!-- 中央按钮 -->
+        <!-- 中央按钮 — 🆕 一键记录（打开快速操作面板） -->
         <view class="action-center reveal-5">
           <view class="btn-stage">
             <view class="orbit-ring" :class="{ pulsing: recordsStore.isRunning }" />
-            <button class="main-btn" @click="goRecord">
-              <text class="btn-icon">✋</text>
-              <text class="btn-text">记一笔</text>
+            <button class="main-btn" @click="showQuickActions=true">
+              <text class="btn-icon">{{ recordsStore.isRunning ? '⏱️' : '✋' }}</text>
+              <text class="btn-text">{{ recordsStore.isRunning ? '计时中' : '记一笔' }}</text>
             </button>
+          </view>
+        </view>
+
+        <!-- 快速操作面板 — 2 tap 完成记录 -->
+        <view class="quick-overlay" v-if="showQuickActions" @click="showQuickActions=false">
+          <view class="quick-sheet" @click.stop>
+            <text class="quick-sheet-title">快速记录 · {{ activeBabyName }}</text>
+            <view class="quick-action-grid">
+              <view class="quick-action" @click="quickRecord('feeding');showQuickActions=false">
+                <text class="qa-emoji">🍼</text><text class="qa-label">喂奶</text>
+              </view>
+              <view class="quick-action" @click="quickRecord('sleep');showQuickActions=false">
+                <text class="qa-emoji">😴</text><text class="qa-label">睡觉</text>
+              </view>
+              <view class="quick-action" @click="quickRecord('diaper');showQuickActions=false">
+                <text class="qa-emoji">🧷</text><text class="qa-label">尿布</text>
+              </view>
+            </view>
+            <view class="quick-sheet-footer">
+              <view class="quick-more" @click="showQuickActions=false;goRecord()">更多操作 →</view>
+            </view>
           </view>
         </view>
 
@@ -454,6 +475,23 @@ const lastUpdateText=computed(()=>{
 
 function dualRecord(t:'feeding'|'sleep'|'diaper'){if(babyA.value)recordsStore.quickLog(babyA.value.id,t);if(babyB.value)recordsStore.quickLog(babyB.value.id,t);syncStickers();uni.showToast({title:t==='feeding'?'都喂了':t==='sleep'?'都睡了':'都换了',icon:'success',duration:800})}
 
+// 快速记录面板（主按钮 → 2 tap 完成记录）
+const showQuickActions=ref(false)
+const activeBabyName=computed(()=>{
+  const ab=babiesStore.activeBabyId
+  if(ab&&babyA.value?.id===ab)return babyA.value?.nickname||'大宝'
+  if(ab&&babyB.value?.id===ab)return babyB.value?.nickname||'二宝'
+  return babyA.value?.nickname||babyB.value?.nickname||'宝宝'
+})
+function quickRecord(type:'feeding'|'sleep'|'diaper'){
+  const id=babiesStore.activeBabyId||babyA.value?.id||babyB.value?.id
+  if(!id)return
+  if(type==='feeding'||type==='sleep'){recordsStore.startTimer(id,type)}
+  else{recordsStore.quickLog(id,type)}
+  syncStickers()
+  uni.showToast({title:'✅ 已记录',icon:'success',duration:800})
+}
+
 const navigate=(url:string)=>uni.navigateTo({url})
 const goRecord=()=>navigate('/pages/record/index')
 const goGrowth=()=>navigate('/pages/growth/index')
@@ -716,6 +754,18 @@ const switchRole = () => {
 .main-btn:active{transform:rotate(-2deg)scale(.86);box-shadow:0 6rpx 20rpx rgba(224,123,62,.16),0 2rpx 4rpx rgba(224,123,62,.08)}
 .btn-icon{font-size:56rpx;position:relative;z-index:1}
 .btn-text{font-size:32rpx;font-weight:700;letter-spacing:6rpx;position:relative;z-index:1}
+
+/* 快速操作面板 */
+.quick-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(45,35,24,.35);z-index:998;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s}
+.quick-sheet{width:100%;max-width:750rpx;background:var(--paper);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:32rpx 32rpx calc(32rpx + env(safe-area-inset-bottom));animation:slideUp .3s var(--ease-soft)}
+.quick-sheet-title{display:block;text-align:center;font-family:var(--font-journal);font-size:var(--font-card);color:var(--ink);margin-bottom:32rpx}
+.quick-action-grid{display:flex;gap:24rpx;justify-content:center;margin-bottom:24rpx}
+.quick-action{display:flex;flex-direction:column;align-items:center;gap:12rpx;padding:40rpx 48rpx;background:var(--cream);border:3rpx solid var(--dot);border-radius:var(--radius-md);transition:transform .15s var(--ease-bounce)}
+.quick-action:active{transform:scale(.92);border-color:var(--amber);background:var(--amber-lt)}
+.qa-emoji{font-size:72rpx}
+.qa-label{font-size:28rpx;font-weight:700;color:var(--ink);font-family:var(--font-journal)}
+.quick-sheet-footer{text-align:center}
+.quick-more{font-size:26rpx;color:var(--ink-lt);padding:16rpx 0}
 
 /* 快捷操作 — asymmetric sizes */
 .quick-bar{display:flex;gap:12rpx;justify-content:center;position:relative;z-index:1;margin-bottom:20rpx;align-items:center}
