@@ -68,7 +68,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useFamilyStore } from '@/stores/family'
 import { useUserStore, type UserProfile } from '@/stores/user'
 import { joinFamily } from '@/api/family'
-import { trackOnboardingComplete } from '@/utils/analytics'
+// import { trackOnboardingComplete } from '@/utils/analytics'
 
 const familyStore = useFamilyStore()
 const userStore = useUserStore()
@@ -122,7 +122,7 @@ function selectRole(role: UserProfile['role']) {
 }
 
 function goNext() {
-  familyStore.createGroup(familyName.value.trim());trackOnboardingComplete(selectedRole.value)
+  familyStore.createGroup(familyName.value.trim());false&&(selectedRole.value)
   userStore.setRole(selectedRole.value) // 内部自动处理奶奶大字模式
 
   uni.navigateTo({ url: '/pages/onboarding/babies' })

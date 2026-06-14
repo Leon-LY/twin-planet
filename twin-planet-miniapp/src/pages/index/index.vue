@@ -292,7 +292,7 @@ import { useQuickRef } from '@/composables/useQuickRef'
 import { getDiscoverFeatures } from '@/config/roles'
 import { saveExportData, syncRecords, pullRecords } from '@/utils/syncService'
 import { createInvite, joinFamily } from '@/api/family'
-import { trackCelebration, trackShare } from '@/utils/analytics'
+// import { trackCelebration, trackShare } from '@/utils/analytics'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
 import LightBridge from '@/components/cosmic/LightBridge.vue'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
@@ -425,7 +425,7 @@ function checkCelebrate() {
     const m = MILESTONES[days]
     celebrateEmoji.value = m.emoji; celebrateTitle.value = m.title; celebrateDesc.value = m.desc
     showCelebrate.value = true
-    celebrated.push(days);trackCelebration(days)
+    celebrated.push(days);false&&(days)
     uni.setStorageSync(CELEBRATE_KEY, JSON.stringify(celebrated))
   } catch {}
 }

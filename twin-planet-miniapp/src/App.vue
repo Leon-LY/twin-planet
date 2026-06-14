@@ -1,5 +1,5 @@
 <script>
-import { trackSessionStart } from '@/utils/analytics'
+// import { trackSessionStart } from '@/utils/analytics'
 
 export default {
   onLaunch(options) {
@@ -8,8 +8,7 @@ export default {
     this._themeTimer = setInterval(() => this._syncTheme(), 60 * 60 * 1000)
     // 处理邀请令牌
     this._checkInvite(options)
-    // 记录启动
-    try { trackSessionStart() } catch {}
+    // 记录启动 (analytics temporarily disabled for debugging)
   },
   onShow(options) {
     this._syncTheme()
