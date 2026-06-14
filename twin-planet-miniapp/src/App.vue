@@ -1,4 +1,6 @@
 <script>
+import { trackSessionStart } from '@/utils/analytics'
+
 export default {
   onLaunch(options) {
     this._syncTheme()
@@ -7,7 +9,7 @@ export default {
     // 处理邀请令牌
     this._checkInvite(options)
     // 记录启动
-    try { const { trackSessionStart } = require('@/utils/analytics'); trackSessionStart() } catch {}
+    try { trackSessionStart() } catch {}
   },
   onShow(options) {
     this._syncTheme()
