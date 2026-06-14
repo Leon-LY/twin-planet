@@ -63,9 +63,9 @@
             </view>
             <text class="timeline-note">{{ entry.note }}</text>
             <view class="timeline-twins">
-              <text class="twin-tag blue">{{ entry.babyAName }}</text>
+              <text class="twin-tag amber">{{ entry.babyAName }}</text>
               <text class="tag-arrow">↔</text>
-              <text class="twin-tag pink">{{ entry.babyBName }}</text>
+              <text class="twin-tag rose">{{ entry.babyBName }}</text>
             </view>
           </view>
         </view>
@@ -86,13 +86,11 @@ import { ref, onMounted } from 'vue'
 import { useBabiesStore } from '@/stores/babies'
 import { useInteractionsStore, INTERACTION_TYPES, type InteractionType } from '@/stores/interactions'
 import { timeStr } from '@/utils/format'
-import { useStickersStore } from '@/stores/stickers'
-import { useRecordsStore } from '@/stores/records'
+import { useStickerSync } from '@/composables/useStickerSync'
 
 const babiesStore = useBabiesStore()
 const store = useInteractionsStore()
-const stickersStore = useStickersStore()
-const recordsStore = useRecordsStore()
+const { syncStickers } = useStickerSync()
 
 const selectedType = ref<InteractionType>('share')
 const noteText = ref('')
@@ -116,14 +114,7 @@ function addEntry() {
 
   noteText.value = ''
   // 同步贴纸
-  const t0=new Date().setHours(0,0,0,0);const today=recordsStore.logs.filter(l=>l.createdAt>=t0)
-  stickersStore.sync({
-    todayLogCount:today.length,streakDays:recordsStore.streakDays,
-    totalLogCount:recordsStore.logs.length,twinSyncCount:0,
-    sproutCount:store.sproutEntries.length,dutyDoneCount:0,
-    babyAHasRecord:!!babyA,babyBHasRecord:!!babyB,
-    babyARecentRecord:false,babyBRecentRecord:false,
-  })
+  syncStickers({ sproutCount: store.sproutEntries.length })
   uni.showToast({ title: '🌱 已记录', icon: 'success', duration: 1000 })
 }
 
@@ -134,11 +125,6 @@ onMounted(() => {
 
 <style scoped>
 .sprout-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
-
-.section-header { text-align: center; margin-bottom: 32rpx; }
-.section-icon { font-size: 80rpx; }
-.section-title { display: block; font-size: 44rpx; font-weight: 700; color: var(--twin-text); margin: 12rpx 0; }
-.section-desc { font-size: 26rpx; color: var(--twin-text-secondary); }
 
 /* 添加区 */
 .add-section { margin-bottom: 40rpx; }
@@ -163,7 +149,7 @@ onMounted(() => {
 .btn-send {
   padding: 0 32rpx; background: var(--twin-accent); border-radius: 24rpx;
   display: flex; align-items: center; justify-content: center;
-  color: var(--twin-card-bg); font-size: 28rpx; font-weight: 600;
+  color: #FFF; font-size: 28rpx; font-weight: 600;
 }
 .input-hint { display: block; text-align: right; font-size: 20rpx; color: var(--twin-text-muted); margin-top: 8rpx; }
 
@@ -186,8 +172,8 @@ onMounted(() => {
 .timeline-note { font-size: 26rpx; color: var(--ink); line-height: 1.6; }
 .timeline-twins { display: flex; align-items: center; gap: 8rpx; margin-top: 12rpx; }
 .twin-tag { font-size: 22rpx; padding: 4rpx 16rpx; border-radius: 20rpx; }
-.twin-tag.blue { background: var(--twin-baby-a-light); color: var(--twin-baby-a); }
-.twin-tag.pink { background: var(--twin-baby-b-light); color: var(--twin-baby-b); }
+.twin-tag.amber { background: var(--twin-baby-a-light); color: var(--twin-baby-a); }
+.twin-tag.rose { background: var(--twin-baby-b-light); color: var(--twin-baby-b); }
 .tag-arrow { font-size: 18rpx; color: var(--twin-text-muted); }
 
 .empty-state { text-align: center; padding: 80rpx 32rpx; }

@@ -102,7 +102,8 @@ import {timeAgo, formatElapsed} from '@/utils/format'
 import {useHaptic} from '@/composables/useHaptic'
 import {usePoeticTime} from '@/composables/usePoeticTime'
 import {useStickersStore} from '@/stores/stickers'
-const babiesStore=useBabiesStore();const recordsStore=useRecordsStore();const stickersStore=useStickersStore();const sel=ref('')
+import {useStickerSync} from '@/composables/useStickerSync'
+const babiesStore=useBabiesStore();const recordsStore=useRecordsStore();const stickersStore=useStickersStore();const {syncStickers}=useStickerSync();const sel=ref('')
 const twins=computed(()=>[babiesStore.babyA,babiesStore.babyB].filter(Boolean))
 const actions=[{type:'feeding',emoji:'🍼',label:'喂奶'},{type:'sleep',emoji:'😴',label:'睡觉'},{type:'diaper',emoji:'🧷',label:'尿布'},{type:'temperature',emoji:'🌡️',label:'体温'},{type:'medicine',emoji:'💊',label:'用药'},{type:'bath',emoji:'🛁',label:'洗澡'}]
 const retroActions=actions.slice(0,4)
@@ -123,7 +124,6 @@ const timerType=computed(()=>recordsStore.runningTimer?.type as 'feeding'|'sleep
 const elapsedRef=computed(()=>runningElapsed.value)
 const {label:poeticLabel}=usePoeticTime(elapsedRef,timerType)
 
-function syncStickers(){const t0=new Date().setHours(0,0,0,0);const today=recordsStore.logs.filter(l=>l.createdAt>=t0);const aId=babiesStore.babyA?.id;const bId=babiesStore.babyB?.id;const n=Date.now();stickersStore.sync({todayLogCount:today.length,streakDays:recordsStore.streakDays,totalLogCount:recordsStore.logs.length,twinSyncCount:today.filter(l=>l.type==='feeding'||l.type==='sleep').length>=2?1:0,sproutCount:0,dutyDoneCount:0,babyAHasRecord:aId?today.some(l=>l.babyId===aId):false,babyBHasRecord:bId?today.some(l=>l.babyId===bId):false,babyARecentRecord:aId?today.some(l=>l.babyId===aId&&n-l.createdAt<3600000):false,babyBRecentRecord:bId?today.some(l=>l.babyId===bId&&n-l.createdAt<3600000):false})}
 function getName(id:string){return twins.value.find(b=>b.id===id)?.nickname||''}
 function doAction(t:RecordType){const id=sel.value||twins.value[0]?.id;if(!id)return;if(t==='feeding'||t==='sleep'){recordsStore.startTimer(id,t);haptic.thump();popSticker(t==='feeding'?'🍼':'😴')}else{recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();const m:Record<string,string>={diaper:'🧷',temperature:'🌡️',medicine:'💊',bath:'🛁'};popSticker(m[t]||'⭐')}}
 function quickNight(){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,'feeding');haptic.sparkle();syncStickers();popSticker('🌙')}

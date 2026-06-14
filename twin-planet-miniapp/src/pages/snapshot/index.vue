@@ -11,7 +11,7 @@
       <!-- 大宝 -->
       <view class="sandwich-card" style="border-color: var(--twin-baby-a)">
         <view class="card-top">
-          <view class="baby-avatar" style="background: var(--twin-baby-a-light)"><text>👦</text></view>
+          <view class="baby-avatar" style="background: var(--twin-baby-a-light)"><text>{{ twinA?.gender==='male'?'👦':'👧' }}</text></view>
           <view class="baby-info">
             <text class="baby-name">{{ twinA?.nickname || '大宝' }}</text>
             <text class="baby-status">{{ getBabyStatus(twinA) }}</text>
@@ -47,7 +47,7 @@
       <!-- 二宝 -->
       <view class="sandwich-card" style="border-color: var(--twin-baby-b)">
         <view class="card-top">
-          <view class="baby-avatar" style="background: var(--twin-baby-b-light)"><text>👧</text></view>
+          <view class="baby-avatar" style="background: var(--twin-baby-b-light)"><text>{{ twinB?.gender==='male'?'👦':'👧' }}</text></view>
           <view class="baby-info">
             <text class="baby-name">{{ twinB?.nickname || '二宝' }}</text>
             <text class="baby-status">{{ getBabyStatus(twinB) }}</text>

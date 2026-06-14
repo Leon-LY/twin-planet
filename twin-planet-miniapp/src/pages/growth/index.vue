@@ -55,7 +55,8 @@
             <text class="stat-value">{{ indicator==='weight'?latestA.weight:latestA.height }}</text>
             <text class="stat-unit">{{ indicator==='weight'?'kg':'cm' }}</text>
           </view>
-          <view class="stat-item"><text class="stat-label">百分位</text><text class="stat-value-sm">P{{ percentileA }}</text></view>
+          <view class="stat-item"><text class="stat-label">百分位</text><text class="stat-value-sm">P{{ percentileA }}</text>
+	          <text class="percentile-hint" v-if="percentileA">{{ percentileHint(percentileA) }}</text></view>
         </view>
         <text v-else class="card-no-data">暂无数据</text>
       </view>
@@ -68,7 +69,8 @@
             <text class="stat-value">{{ indicator==='weight'?latestB.weight:latestB.height }}</text>
             <text class="stat-unit">{{ indicator==='weight'?'kg':'cm' }}</text>
           </view>
-          <view class="stat-item"><text class="stat-label">百分位</text><text class="stat-value-sm">P{{ percentileB }}</text></view>
+          <view class="stat-item"><text class="stat-label">百分位</text><text class="stat-value-sm">P{{ percentileB }}</text>
+	          <text class="percentile-hint" v-if="percentileB">{{ percentileHint(percentileB) }}</text></view>
         </view>
         <text v-else class="card-no-data">暂无数据</text>
       </view>
@@ -201,6 +203,15 @@ const chartOption=computed(()=>{
 })
 
 // 添加测量表单
+	// 百分位白话解释
+	function percentileHint(p:number):string{
+	  if(p<3)return '(比大多数同龄宝宝小)'
+	  if(p<15)return '(稍微偏小)'
+	  if(p<85)return '(和同龄宝宝差不多)'
+	  if(p<97)return '(稍微偏大)'
+	  return '(比大多数同龄宝宝大)'
+	}
+
 const showAdd=ref(false)
 const addBabyId=ref('')
 const addWeight=ref('')

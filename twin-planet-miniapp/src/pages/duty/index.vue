@@ -70,6 +70,7 @@ import { onShow } from '@dcloudio/uni-app'
 import { useDutyStore, CATEGORY_META } from '@/stores/duty'
 import { useAlertsStore } from '@/stores/alerts'
 import { useStickersStore } from '@/stores/stickers'
+import { useStickerSync } from '@/composables/useStickerSync'
 import { useRecordsStore } from '@/stores/records'
 import { useBabiesStore } from '@/stores/babies'
 
@@ -78,6 +79,7 @@ const alertsStore = useAlertsStore()
 const stickersStore = useStickersStore()
 const recordsStore = useRecordsStore()
 const babiesStore = useBabiesStore()
+const { syncStickers } = useStickerSync()
 
 function getBabyName(order: 'A' | 'B'): string {
   const baby = order === 'A' ? babiesStore.babyA : babiesStore.babyB
@@ -105,15 +107,7 @@ function finishDuty() {
     success: (res) => {
       if (!res.confirm) return
       // 完成值班 = 获得贴纸
-      const t0 = new Date().setHours(0, 0, 0, 0)
-      const today = recordsStore.logs.filter(l => l.createdAt >= t0)
-      stickersStore.sync({
-        todayLogCount: today.length, streakDays: recordsStore.streakDays,
-        totalLogCount: recordsStore.logs.length, twinSyncCount: 0,
-        sproutCount: 0, dutyDoneCount: 1,
-        babyAHasRecord: false, babyBHasRecord: false,
-        babyARecentRecord: false, babyBRecentRecord: false,
-      })
+      syncStickers({ dutyDoneCount: 1 })
       uni.showToast({ title: '🏆 太棒了！', icon: 'success', duration: 2000 })
       setTimeout(() => { uni.navigateBack({ fail: () => uni.reLaunch({ url: '/pages/index/index' }) }) }, 1500)
     }

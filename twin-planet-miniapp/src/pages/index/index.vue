@@ -161,6 +161,7 @@ import { useBabiesStore } from '@/stores/babies'
 import { useRecordsStore } from '@/stores/records'
 import { useAlertsStore } from '@/stores/alerts'
 import { useStickersStore } from '@/stores/stickers'
+import { useStickerSync } from '@/composables/useStickerSync'
 import { getDiscoverFeatures } from '@/config/roles'
 import { saveExportData, syncRecords, pullRecords } from '@/utils/syncService'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
@@ -193,21 +194,7 @@ onShareAppMessage(()=>({title:'🪐 双宝星球 · 两个小怪兽的成长记�
 
 const babiesStore=useBabiesStore();const recordsStore=useRecordsStore()
 const alertsStore=useAlertsStore();const stickersStore=useStickersStore()
-
-function syncStickers(){
-  const todayLogs=recordsStore.logs.filter(l=>l.createdAt>=new Date().setHours(0,0,0,0))
-  const aId=babyA.value?.id;const bId=babyB.value?.id;const now=Date.now()
-  stickersStore.sync({
-    todayLogCount:todayLogs.length,streakDays:recordsStore.streakDays,
-    totalLogCount:recordsStore.logs.length,
-    twinSyncCount:todayLogs.filter(l=>l.type==='feeding'||l.type==='sleep').length>=2?1:0,
-    sproutCount:0,dutyDoneCount:0,
-    babyAHasRecord:aId?todayLogs.some(l=>l.babyId===aId):false,
-    babyBHasRecord:bId?todayLogs.some(l=>l.babyId===bId):false,
-    babyARecentRecord:aId?todayLogs.some(l=>l.babyId===aId&&now-l.createdAt<3600000):false,
-    babyBRecentRecord:bId?todayLogs.some(l=>l.babyId===bId&&now-l.createdAt<3600000):false,
-  })
-}
+const { syncStickers } = useStickerSync()
 
 const isGrandma=computed(()=>userStore.isGrandmaMode)
 const babyA=computed(()=>babiesStore.babyA);const babyB=computed(()=>babiesStore.babyB)
