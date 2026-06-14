@@ -190,6 +190,18 @@
         <!-- 免责声明 -->
         <text class="disclaimer-note reveal-6" v-if="userStore.roleConfig.homeLayout==='full'">本应用不提供医疗建议，所有数据仅供参考</text>
 
+        <!-- 里程碑庆祝弹窗 -->
+        <view class="celebrate-overlay" v-if="showCelebrate" @click="showCelebrate=false">
+          <view class="celebrate-card">
+            <text class="celebrate-emoji">{{ celebrateEmoji }}</text>
+            <text class="celebrate-title">{{ celebrateTitle }}</text>
+            <text class="celebrate-desc">{{ celebrateDesc }}</text>
+            <view class="celebrate-stars">
+              <text class="cs">⭐</text><text class="cs">🌟</text><text class="cs">⭐</text>
+            </view>
+          </view>
+        </view>
+
         <text class="journal-footer-text" v-if="streakDays > 0">连续记录第 {{ streakDays }} 天 ✦</text>
 
         <!-- 底部导航 — journal-style page tabs -->
@@ -242,7 +254,7 @@ async function initSync(){
     syncRecords(recordsStore.logs.slice(-20))
   } catch { /* 静默 */ }
 }
-onMounted(()=>{setTimeout(()=>{loading.value=false;syncStickers();initSync().catch(()=>{})},400)})
+onMounted(()=>{setTimeout(()=>{loading.value=false;syncStickers();initSync().catch(()=>{});checkCelebrate()},400)})
 onShareAppMessage(()=>({title:'🪐 双宝星球 · 两个小怪兽的成长记录',path:'/pages/index/index',imageUrl:'/static/share-brand.png'}))
 
 const babiesStore=useBabiesStore();const recordsStore=useRecordsStore()
@@ -261,6 +273,31 @@ try {
 function dismissWelcome() {
   showWelcome.value = false
   try { uni.setStorageSync(WELCOME_KEY, '1') } catch {}
+}
+
+// 里程碑庆祝 — 连续7/30/100天触发一次性弹窗
+const CELEBRATE_KEY = 'tp_celebrated'
+const showCelebrate = ref(false)
+const celebrateEmoji = ref('🎉')
+const celebrateTitle = ref('')
+const celebrateDesc = ref('')
+const MILESTONES: Record<number, { emoji: string; title: string; desc: string }> = {
+  7: { emoji: '🌟', title: '一周全勤！', desc: '连续7天记录，你已经是个了不起的守护者了' },
+  30: { emoji: '🏆', title: '月度之星！', desc: '连续30天记录，这份坚持太厉害了' },
+  100: { emoji: '👑', title: '百天守护！', desc: '100天的陪伴，两个小怪兽有你真幸福' },
+}
+function checkCelebrate() {
+  const days = streakDays.value
+  if (!MILESTONES[days]) return
+  try {
+    const celebrated: number[] = JSON.parse(uni.getStorageSync(CELEBRATE_KEY) || '[]')
+    if (celebrated.includes(days)) return
+    const m = MILESTONES[days]
+    celebrateEmoji.value = m.emoji; celebrateTitle.value = m.title; celebrateDesc.value = m.desc
+    showCelebrate.value = true
+    celebrated.push(days)
+    uni.setStorageSync(CELEBRATE_KEY, JSON.stringify(celebrated))
+  } catch {}
 }
 
 const isGrandma=computed(()=>userStore.isGrandmaMode)
@@ -583,6 +620,41 @@ const switchRole = () => {
 .footer-tools{display:flex;justify-content:center;gap:12rpx;margin-bottom:12rpx;position:relative;z-index:1} .ft-link{font-size:20rpx;color:var(--ink-lt)} .ft-link:active{color:var(--amber)} .ft-dot{font-size:20rpx;color:var(--ink-lt)}
 .disclaimer-note{display:block;text-align:center;font-size:18rpx;color:var(--ink-lt);margin-bottom:16rpx;opacity:.5;position:relative;z-index:1}
 .all-good{text-align:left;margin-bottom:12rpx;position:relative;z-index:1}.all-good text{font-family:var(--font-journal);font-size:24rpx;color:var(--mint);font-weight:600}
+
+/* 里程碑庆祝覆盖层 */
+.celebrate-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(45,35,24,.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999;
+  animation: fadeIn .3s var(--ease-soft);
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.celebrate-card {
+  background: var(--paper);
+  border-radius: var(--radius-lg);
+  padding: 64rpx 48rpx 48rpx;
+  text-align: center;
+  margin: 0 48rpx;
+  box-shadow: 0 16rpx 48rpx rgba(45,35,24,.15);
+  animation: celebBounce .5s var(--ease-bounce);
+}
+@keyframes celebBounce {
+  0% { transform: scale(.5); opacity: 0; }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.celebrate-emoji { font-size: 120rpx; display: block; margin-bottom: 16rpx; }
+.celebrate-title { display: block; font-family: var(--font-journal); font-size: 44rpx; color: var(--ink); font-weight: 700; }
+.celebrate-desc { display: block; font-size: 28rpx; color: var(--ink-md); margin-top: 12rpx; line-height: 1.5; }
+.celebrate-stars { margin-top: 24rpx; display: flex; gap: 16rpx; justify-content: center; }
+.cs { font-size: 48rpx; animation: starSpin 1s ease-in-out infinite; }
+.cs:nth-child(2) { animation-delay: .2s; font-size: 56rpx; }
+.cs:nth-child(3) { animation-delay: .4s; }
+@keyframes starSpin {
+  0%, 100% { transform: rotate(0) scale(1); }
+  50% { transform: rotate(15deg) scale(1.2); }
+}
 
 /* 入场 */
 .reveal-1{animation:revealUp .5s var(--ease-soft) both}
