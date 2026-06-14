@@ -161,7 +161,7 @@ const goShare = async () => {
 }
 
 onMounted(() => { uni.setNavigationBarTitle({ title: '双宝快照' }) })
-onShareAppMessage(()=>({title:'双宝快照 · 一眼看完两个娃',path:'/pages/snapshot/index',imageUrl:''}))
+onShareAppMessage(()=>({title:'双宝快照 · 一眼看完两个娃',path:'/pages/snapshot/index',imageUrl:'/static/share-brand.png'}))
 </script>
 
 <style scoped>

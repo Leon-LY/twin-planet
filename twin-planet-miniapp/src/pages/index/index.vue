@@ -129,6 +129,13 @@
           <text>🔮 {{ tomorrowForecast }}</text>
         </view>
 
+        <!-- 底部工具行 -->
+        <view class="footer-tools reveal-6" v-if="userStore.roleConfig.homeLayout==='full'">
+          <text class="ft-link" @click="goExport">📤 导出备份</text>
+          <text class="ft-dot">·</text>
+          <text class="ft-link" @click="navigate('/pages/privacy/index')">隐私政策</text>
+        </view>
+
         <!-- 免责声明 -->
         <text class="disclaimer-note reveal-6" v-if="userStore.roleConfig.homeLayout==='full'">本应用不提供医疗建议，所有数据仅供参考</text>
 
@@ -155,15 +162,34 @@ import { useRecordsStore } from '@/stores/records'
 import { useAlertsStore } from '@/stores/alerts'
 import { useStickersStore } from '@/stores/stickers'
 import { getDiscoverFeatures } from '@/config/roles'
-import { saveExportData, syncRecords } from '@/utils/syncService'
+import { saveExportData, syncRecords, pullRecords } from '@/utils/syncService'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
 import LightBridge from '@/components/cosmic/LightBridge.vue'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
 
 const loading=ref(true);const userStore=useUserStore()
 const themeClass=computed(()=>{const c=['page-root'];const h=new Date().getHours();if(h>=22||h<6)c.push('theme-dark');if(userStore.isGrandmaMode)c.push('font-large','role-granny');else if(userStore.isDad)c.push('role-dad');return c.join(' ')})
-onMounted(()=>{setTimeout(()=>{loading.value=false;syncStickers();try{syncRecords(recordsStore.logs.slice(-20))}catch{/*静默*/}},400)})
-onShareAppMessage(()=>({title:'双宝手帐 · 中国首款双胞胎育儿伴侣',path:'/pages/index/index',imageUrl:''}))
+async function initSync(){
+  try {
+    const server = await pullRecords()
+    if (server.length) {
+      const existingIds = new Set(recordsStore.logs.map(l => l.id))
+      const newLogs = server.filter((r: any) => !existingIds.has(r.id))
+      if (newLogs.length) {
+        const merged = [...recordsStore.logs, ...newLogs.map((r: any) => ({
+          id: r.id, babyId: r.baby_id, babyName: '', babyColor: '',
+          type: r.type, startedAt: new Date(r.started_at).getTime(),
+          endedAt: 0, durationMin: r.duration_min, detail: r.detail,
+          createdAt: new Date(r.created_at).getTime()
+        }))]
+        recordsStore.logs = merged
+      }
+    }
+    syncRecords(recordsStore.logs.slice(-20))
+  } catch { /* 静默 */ }
+}
+onMounted(()=>{setTimeout(()=>{loading.value=false;syncStickers();initSync().catch(()=>{})},400)})
+onShareAppMessage(()=>({title:'双宝手帐 · 双胞胎的成长记录本',path:'/pages/index/index',imageUrl:'/static/share-brand.png'}))
 
 const babiesStore=useBabiesStore();const recordsStore=useRecordsStore()
 const alertsStore=useAlertsStore();const stickersStore=useStickersStore()
@@ -237,9 +263,68 @@ const goRecord=()=>navigate('/pages/record/index')
 const goGrowth=()=>navigate('/pages/growth/index')
 const goSnapshot=()=>navigate('/pages/snapshot/index')
 const goMore=()=>{const features=getDiscoverFeatures(userStore.profile?.role);const labels=features.map(f=>f.label);labels.push('📤 导出数据备份');labels.push('取消');uni.showActionSheet({itemList:labels,success:(res)=>{const idx=res.tapIndex;if(idx<features.length){uni.navigateTo({url:features[idx].path})}else if(idx===features.length){goExport()}}})}
-const goHelp=()=>{uni.showModal({title:'打电话给妈妈？',content:'将直接拨打妈妈的电话',confirmText:'打电话',cancelText:'不用了',success:(res)=>{if(res.confirm){uni.makePhoneCall({phoneNumber:userStore.profile?.phone||''})}}})}
-const goExport=async()=>{try{const path=await saveExportData();uni.showModal({title:'数据已导出',content:`文件已保存，可通过微信发送到新手机导入。\n路径：${path}`,confirmText:'知道了',showCancel:false})}catch{uni.showToast({title:'导出失败，请重试',icon:'none'})}}
-const switchRole=()=>{const roles=['👩 妈妈','👨 爸爸','👵 奶奶','👴 爷爷','👩‍🍼 育儿嫂','📝 重新创建家庭','🚪 退出登录'];uni.showActionSheet({itemList:roles,success:(res)=>{if(res.tapIndex===5){uni.reLaunch({url:'/pages/onboarding/family'})}else if(res.tapIndex===6){userStore.logout();uni.reLaunch({url:'/pages/login/index'})}else{const r=['mom','dad','grandma','grandpa','nanny'][res.tapIndex];userStore.setRole(r);uni.showToast({title:`已切换为${roles[res.tapIndex]}模式`,icon:'success',duration:1500})}}})}
+const goHelp = () => {
+  uni.showActionSheet({
+    itemList: ['📞 打电话给妈妈','💬 发消息到家庭群','📋 查看使用说明'],
+    success: (res) => {
+      if (res.tapIndex === 0) {
+        const phone = userStore.profile?.phone
+        if (phone) {
+          uni.makePhoneCall({ phoneNumber: phone })
+        } else {
+          uni.showToast({ title: '请先在设置中添加电话号码', icon: 'none' })
+        }
+      } else if (res.tapIndex === 1) {
+        uni.showModal({
+          title: '需要帮忙',
+          content: '宝宝需要帮忙照顾，你能过来一下吗？',
+          confirmText: '分享给微信好友',
+          success: () => {
+            uni.showToast({ title: '请点击右上角分享', icon: 'none' })
+          }
+        })
+      } else {
+        uni.showModal({
+          title: '使用说明',
+          content: '1. 点"记一笔"记录喂奶/睡觉\n2. 点"看看长多大了"查看生长曲线\n3. 点"问家里人"联系家人\n\n记不住？没关系，点最大的那个按钮就行！',
+          confirmText: '我知道了',
+          showCancel: false
+        })
+      }
+    }
+  })
+}
+const goExport = async () => {
+  try {
+    const path = await saveExportData()
+    uni.showModal({
+      title: '数据已导出',
+      content: '文件已保存，可通过微信发送到新手机导入。',
+      confirmText: '知道了',
+      showCancel: false
+    })
+  } catch {
+    uni.showToast({ title: '导出失败，请重试', icon: 'none' })
+  }
+}
+const switchRole = () => {
+  const roles = ['👩 妈妈','👨 爸爸','👵 奶奶','👴 爷爷','👩‍🍼 育儿嫂','📝 重新创建家庭','🚪 退出登录']
+  uni.showActionSheet({
+    itemList: roles,
+    success: (res) => {
+      if (res.tapIndex === 5) {
+        uni.reLaunch({ url: '/pages/onboarding/family' })
+      } else if (res.tapIndex === 6) {
+        userStore.logout()
+        uni.reLaunch({ url: '/pages/login/index' })
+      } else {
+        const r = ['mom','dad','grandma','grandpa','nanny'][res.tapIndex]
+        userStore.setRole(r)
+        uni.showToast({ title: '已切换为' + roles[res.tapIndex] + '模式', icon: 'success', duration: 1500 })
+      }
+    }
+  })
+}
 </script>
 
 <style scoped>
@@ -347,6 +432,7 @@ const switchRole=()=>{const roles=['👩 妈妈','👨 爸爸','👵 奶奶','�
 .journal-nav{display:flex;justify-content:space-between;padding:20rpx 48rpx 0;border-top:1.5px solid var(--dot);position:relative;z-index:1}
 .jnav-item{font-family:var(--font-journal);font-size:26rpx;color:var(--ink-lt);letter-spacing:3rpx}
 .jnav-item.active{color:var(--amber);font-weight:700}
+.footer-tools{display:flex;justify-content:center;gap:12rpx;margin-bottom:12rpx;position:relative;z-index:1} .ft-link{font-size:20rpx;color:var(--ink-lt)} .ft-link:active{color:var(--amber)} .ft-dot{font-size:20rpx;color:var(--ink-lt)}
 .disclaimer-note{display:block;text-align:center;font-size:18rpx;color:var(--ink-lt);margin-bottom:16rpx;opacity:.5;position:relative;z-index:1}
 .all-good{text-align:left;margin-bottom:12rpx;position:relative;z-index:1}.all-good text{font-family:var(--font-journal);font-size:24rpx;color:var(--mint);font-weight:600}
 

@@ -41,6 +41,22 @@ export async function syncRecords(records: any[]): Promise<number> {
   return 0
 }
 
+/** 从服务端拉取新记录（换手机恢复数据） */
+export async function pullRecords(): Promise<any[]> {
+  const token = getToken()
+  if (!token) return []
+  try {
+    const state = getSyncState()
+    const res = await request<any[]>('/records/since?timestamp=' + (state.lastSyncAt || 0))
+    if (res.success && res.data) {
+      // 更新同步时间
+      saveSyncState({ ...state, lastSyncAt: Date.now() })
+      return res.data
+    }
+  } catch { /* 静默失败 */ }
+  return []
+}
+
 /** 同步生长测量数据 */
 export async function syncGrowthMeasurements(measurements: any[]): Promise<number> {
   const token = getToken()
