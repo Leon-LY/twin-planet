@@ -126,6 +126,7 @@ import {useHaptic} from '@/composables/useHaptic'
 import {usePoeticTime} from '@/composables/usePoeticTime'
 import {useStickersStore} from '@/stores/stickers'
 import {useStickerSync} from '@/composables/useStickerSync'
+import {trackRecordCreated, trackPageView} from '@/utils/analytics'
 const babiesStore=useBabiesStore();const recordsStore=useRecordsStore();const stickersStore=useStickersStore();const {syncStickers}=useStickerSync();const sel=ref('')
 const twins=computed(()=>[babiesStore.babyA,babiesStore.babyB].filter(Boolean))
 const actions=[{type:'feeding',emoji:'🍼',label:'喂奶'},{type:'sleep',emoji:'😴',label:'睡觉'},{type:'diaper',emoji:'🧷',label:'尿布'},{type:'temperature',emoji:'🌡️',label:'体温'},{type:'medicine',emoji:'💊',label:'用药'},{type:'bath',emoji:'🛁',label:'洗澡'}]
@@ -151,14 +152,14 @@ const feedSide=ref<'left'|'right'|'bottle'|''>('');const feedAmount=ref(0)
 function setFeedSide(s:'left'|'right'|'bottle'){feedSide.value=s;const id=recordsStore.runningTimer?.babyId;if(id)recordsStore.setTimerField(id,'feedingSide',s)}
 function setFeedAmount(ml:number){feedAmount.value=ml;const id=recordsStore.runningTimer?.babyId;if(id)recordsStore.setTimerField(id,'amountMl',ml)}
 function getName(id:string){return twins.value.find(b=>b.id===id)?.nickname||''}
-function doAction(t:RecordType){const id=sel.value||twins.value[0]?.id;if(!id){uni.showToast({title:'请先在首页创建宝宝',icon:'none'});return}if(t==='feeding'||t==='sleep'){recordsStore.startTimer(id,t);haptic.thump();popSticker(t==='feeding'?'🍼':'😴')}else{recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();const m:Record<string,string>={diaper:'🧷',temperature:'🌡️',medicine:'💊',bath:'🛁'};popSticker(m[t]||'⭐')}}
+function doAction(t:RecordType){const id=sel.value||twins.value[0]?.id;if(!id){uni.showToast({title:'请先在首页创建宝宝',icon:'none'});return}if(t==='feeding'||t==='sleep'){recordsStore.startTimer(id,t);haptic.thump();popSticker(t==='feeding'?'🍼':'😴')}else{recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();trackRecordCreated(t,'quick');const m:Record<string,string>={diaper:'🧷',temperature:'🌡️',medicine:'💊',bath:'🛁'};popSticker(m[t]||'⭐')}}
 function quickNight(t:RecordType='feeding'){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();const m:Record<string,string>={feeding:'🍼',diaper:'🧷',sleep:'😴'};popSticker(m[t]||'🌙')}
-function dualLog(t:RecordType){const a=twins.value[0],b=twins.value[1];if(a)recordsStore.quickLog(a.id,t);if(b)recordsStore.quickLog(b.id,t);haptic.doubleBeat();syncStickers();popSticker('🔗')}
+function dualLog(t:RecordType){const a=twins.value[0],b=twins.value[1];if(a)recordsStore.quickLog(a.id,t);if(b)recordsStore.quickLog(b.id,t);haptic.doubleBeat();syncStickers();trackRecordCreated(t,'dual');popSticker('🔗')}
 function retro(m:number,t:RecordType='feeding'){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,t,undefined,m*60000);haptic.sparkle();syncStickers();const em:Record<string,string>={feeding:'🍼',diaper:'🧷',sleep:'😴'};popSticker(em[t]||'⏰')}
 	const todayStart=computed(()=>new Date().setHours(0,0,0,0))
 	const recentLogs=computed(()=>{const t0=todayStart.value;return recordsStore.logs.filter(l=>l.createdAt>=t0).sort((a,b)=>b.createdAt-a.createdAt)})
 	onMounted(()=>{uni.setNavigationBarTitle({title:"记录"});if(twins.value[0])sel.value=twins.value[0].id})
-onShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id})
+onShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id;trackPageView('record')})
 const stopOne=(id?:string)=>{recordsStore.stopTimer(id)}
 const stopAll=()=>{recordsStore.stopTimer()}
 </script>

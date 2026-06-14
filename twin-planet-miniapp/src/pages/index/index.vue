@@ -45,6 +45,7 @@ import { useStickerSync } from '@/composables/useStickerSync'
 import { saveExportData, syncRecords, pullRecords } from '@/utils/syncService'
 import { drawShareCard } from '@/utils/shareCard'
 import { createInvite, joinFamily } from '@/api/family'
+import { trackSessionStart, trackCelebration, trackPageView } from '@/utils/analytics'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
 import IndexGranny from './components/IndexGranny.vue'
 import IndexDad from './components/IndexDad.vue'
@@ -104,6 +105,7 @@ function checkCelebrate() {
     celebrateEmoji.value = m.emoji; celebrateTitle.value = m.title; celebrateDesc.value = m.desc
     milestoneAction.value = m.action || ''
     showCelebrate.value = true
+    trackCelebration(days)
     celebrated.push(days); uni.setStorageSync(CELEBRATE_KEY, JSON.stringify(celebrated))
   } catch {}
 }
@@ -217,6 +219,7 @@ onMounted(() => {
   const tick = setInterval(() => { /* keep alive */ }, 30000)
   setTimeout(() => {
     loading.value = false
+    trackSessionStart(); trackPageView('index')
     syncStickers(); initSync().catch(() => {})
     checkCelebrate(); checkInviteAndAccept()
     ensureInviteToken().catch(() => {})
