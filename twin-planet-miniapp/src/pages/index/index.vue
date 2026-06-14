@@ -19,7 +19,7 @@
     </template>
 
     <template v-else-if="!loading">
-      <view class="page-shell journal">
+      <view class="page-shell journal"><text class="heading-xl">双宝记</text><text class="body-text" style="display:block;margin-bottom:32rpx">{{ greeting }}</text>
         <!-- 暖色光斑 — 不对称位置 -->
         <view class="bg-spot spot-a" />
         <view class="bg-spot spot-b" />
