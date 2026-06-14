@@ -8,17 +8,27 @@
     <text class="body">• 微信授权信息（昵称、头像）— 用于登录和身份识别</text>
     <text class="body">• 宝宝信息（名字、性别、出生日期）— 用于生长曲线和记录对比</text>
     <text class="body">• 喂养/睡眠/换尿布等日常记录数据 — 存储在您的手机本地和我们的服务器</text>
-    <text class="body">• 语音交接录音 — 临时存储，7天后自动删除</text>
+    <text class="body">• 语音交接录音 — 存储在手机本地和服务器，可手动删除</text>
 
     <text class="section-title">二、数据存储与安全</text>
-    <text class="body">• 您的数据主要存储在手机本地，部分数据加密后存储在我们的服务器</text>
-    <text class="body">• 语音和照片使用加密传输（SSE-COS）</text>
+    <text class="body">• 您的数据主要存储在手机本地，部分数据加密后同步到我们的服务器</text>
+    <text class="body">• 语音和照片使用加密传输</text>
     <text class="body">• 我们不会将您的数据出售或分享给任何第三方</text>
 
     <text class="section-title">三、您的权利</text>
     <text class="body">• 您可以随时查看、导出或删除您的所有数据</text>
     <text class="body">• 删除账号后，服务器上的所有数据将在30天内永久清除</text>
     <text class="body">• 如有疑问，请联系：leon@twinplanet.cn</text>
+
+    <!-- 🔧 实际操作按钮 -->
+    <view class="action-section">
+      <button class="action-btn export-btn" @click="handleExport">
+        <text>📤 导出全部数据</text>
+      </button>
+      <button class="action-btn delete-btn" @click="handleDelete">
+        <text>🗑️ 清除本地数据</text>
+      </button>
+    </view>
 
     <text class="section-title">四、免责声明</text>
     <text class="body">双宝星球是一款育儿辅助工具，不提供医疗建议。所有生长数据对比基于WHO儿童生长标准（2006），仅供参考。如对宝宝的健康有任何疑虑，请咨询专业儿科医生。</text>
@@ -32,7 +42,44 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import { saveExportData } from '@/utils/syncService'
+
 onMounted(() => { uni.setNavigationBarTitle({ title: '隐私政策' }) })
+
+async function handleExport() {
+  uni.showModal({
+    title: '导出数据',
+    content: '将您的所有本地数据导出为JSON文件。数据仅保存在您的手机中。',
+    success: async (res) => {
+      if (!res.confirm) return
+      try {
+        const path = await saveExportData()
+        uni.showToast({ title: '已导出到：' + path, icon: 'success', duration: 2000 })
+      } catch {
+        uni.showToast({ title: '导出失败，请重试', icon: 'none' })
+      }
+    }
+  })
+}
+
+function handleDelete() {
+  uni.showModal({
+    title: '⚠️ 清除本地数据',
+    content: '此操作将删除手机上的所有记录、宝宝信息和设置。服务器数据不受影响，重新登录后可恢复。确定继续吗？',
+    success: (res) => {
+      if (!res.confirm) return
+      try {
+        uni.clearStorageSync()
+        uni.showToast({ title: '本地数据已清除', icon: 'success' })
+        setTimeout(() => {
+          uni.reLaunch({ url: '/pages/index/index' })
+        }, 1000)
+      } catch {
+        uni.showToast({ title: '清除失败，请重试', icon: 'none' })
+      }
+    }
+  })
+}
 </script>
 
 <style scoped>
@@ -70,5 +117,28 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '隐私政策' }) })
   font-size: var(--font-body);
   color: var(--ink-md);
   margin-bottom: 8rpx;
+}
+
+.action-section {
+  margin-top: 32rpx;
+  display: flex;
+  gap: 16rpx;
+}
+.action-btn {
+  flex: 1;
+  padding: 22rpx 0;
+  border-radius: var(--radius-md);
+  font-size: var(--font-body);
+  font-weight: 600;
+  border: none;
+}
+.export-btn {
+  background: var(--mint);
+  color: #FFF;
+}
+.delete-btn {
+  background: var(--cream);
+  color: var(--twin-danger);
+  border: 2rpx solid var(--twin-danger);
 }
 </style>

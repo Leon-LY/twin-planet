@@ -226,7 +226,7 @@ onMounted(() => {
 
 /* 标题 */
 .section-header { text-align: center; margin-bottom: 32rpx; }
-.section-icon { font-size: 32px; }
+.section-icon { font-size: 32rpx; }
 .section-title { display: block; font-size: 40rpx; font-weight: 700; color: var(--twin-text); margin-top: 12rpx; }
 .section-desc { display: block; font-size: 24rpx; color: var(--twin-text-secondary); margin-top: 8rpx; }
 

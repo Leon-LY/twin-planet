@@ -229,7 +229,7 @@ onMounted(() => {
 <style scoped>
 .handover-page { min-height: 100vh; background: var(--paper); padding: 40rpx 28rpx calc(80rpx + env(safe-area-inset-bottom)); }
 .section-header { text-align: center; margin-bottom: 36rpx; }
-.section-icon { font-size: 40px; }
+.section-icon { font-size: 40rpx; }
 .section-title { display: block; font-family: var(--font-journal); font-size: var(--font-title); color: var(--ink); margin: 12rpx 0; }
 .section-desc { font-size: var(--font-body); color: var(--ink-md); }
 
@@ -275,7 +275,7 @@ onMounted(() => {
 .unread-dot { width: 12rpx; height: 12rpx; border-radius: 50%; background: var(--amber); }
 
 .empty-state { text-align: center; padding: 80rpx 32rpx; }
-.empty-emoji { font-size: 48px; }
+.empty-emoji { font-size: 48rpx; }
 .empty-title { display: block; font-family: var(--font-journal); font-size: var(--font-card); font-weight: 600; color: var(--ink); margin: 16rpx 0 8rpx; }
 .empty-desc { font-size: var(--font-body); color: var(--ink-md); }
 </style>

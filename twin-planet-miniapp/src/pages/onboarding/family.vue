@@ -121,7 +121,7 @@ onMounted(() => {
 
 /* 标题 */
 .section-header { text-align: center; margin-bottom: 48rpx; }
-.section-icon { font-size: 36px; }
+.section-icon { font-size: 36rpx; }
 .section-title { display: block; font-size: 44rpx; font-weight: 700; color: var(--twin-text); margin-top: 16rpx; }
 .section-desc { display: block; font-size: 26rpx; color: var(--twin-text-secondary); margin-top: 12rpx; }
 
@@ -144,7 +144,7 @@ onMounted(() => {
   border-radius: 24rpx; text-align: center; gap: 12rpx;
 }
 .role-card.selected { border-color: var(--twin-baby-a); background: var(--twin-baby-a-light); }
-.role-icon { font-size: 28px; }
+.role-icon { font-size: 28rpx; }
 .role-name { font-size: 26rpx; font-weight: 500; color: var(--ink); }
 
 /* 底部 */

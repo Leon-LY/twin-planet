@@ -83,7 +83,7 @@ onMounted(() => {
 }
 
 .brand-hero { text-align: center; margin-bottom: 120rpx; }
-.brand-icon { font-size: 56px; margin-bottom: 12px; }
+.brand-icon { font-size: 56rpx; margin-bottom: 12rpx; }
 .brand-name { display: block; font-size: 64rpx; font-weight: 700; color: var(--twin-text); letter-spacing: 4px; }
 .brand-slogan { display: block; font-size: 28rpx; color: var(--twin-text-tertiary); margin-top: 16rpx; letter-spacing: 6px; }
 .brand-desc { display: block; font-size: 24rpx; color: var(--twin-text-secondary); margin-top: 24rpx; }
