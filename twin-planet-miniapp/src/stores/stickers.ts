@@ -36,6 +36,10 @@ export interface StickerContext {
   babyBHasRecord: boolean
   babyARecentRecord: boolean   // 1小时内
   babyBRecentRecord: boolean   // 1小时内
+  // 3-6 岁专属
+  totalSproutCount?: number
+  milestoneCount?: number
+  schoolAssessmentCount?: number
 }
 
 export const STICKER_RULES: StickerRule[] = [
@@ -90,6 +94,23 @@ export const STICKER_RULES: StickerRule[] = [
   {
     trigger: 'duty_done', emoji: '超人', label: '独自守护', category: 'special',
     check: (c) => c.dutyDoneCount > 0,
+  },
+  // === 3-6 岁专属贴纸 ===
+  {
+    trigger: 'sprout_10', emoji: '观察', label: '细心观察者', category: 'milestone',
+    check: (c) => (c.totalSproutCount ?? c.sproutCount) >= 10,
+  },
+  {
+    trigger: 'sprout_30', emoji: '记录', label: '成长记录家', category: 'milestone',
+    check: (c) => (c.totalSproutCount ?? c.sproutCount) >= 30,
+  },
+  {
+    trigger: 'milestone_5', emoji: '成长', label: '五个里程碑', category: 'milestone',
+    check: (c) => (c.milestoneCount ?? 0) >= 5,
+  },
+  {
+    trigger: 'first_school', emoji: '入园', label: '入园纪念', category: 'special',
+    check: (c) => (c.schoolAssessmentCount ?? 0) >= 1,
   },
 ]
 

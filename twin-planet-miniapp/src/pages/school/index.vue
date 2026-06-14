@@ -147,10 +147,6 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '入园助手' }) })
 
 <style scoped>
 .school-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 100rpx; }
-.section-header { text-align: center; margin-bottom: 28rpx; }
-.section-icon { font-size: 80rpx; }
-.section-title { display: block; font-size: 44rpx; font-weight: 700; color: var(--twin-text); margin: 12rpx 0; }
-.section-desc { font-size: 26rpx; color: var(--twin-text-secondary); }
 
 .card-title { display: block; font-size: 28rpx; font-weight: 600; color: var(--twin-text); margin-bottom: 12rpx; }
 .card-sub { display: block; font-size: 22rpx; color: var(--twin-text-secondary); margin-bottom: 16rpx; margin-top: -8rpx; }
@@ -171,11 +167,11 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '入园助手' }) })
 .compare-section { margin-bottom: 20rpx; }
 .compare-cols { display: flex; gap: 12rpx; }
 .compare-col { flex: 1; background: var(--twin-card-bg); border-radius: 16rpx; padding: 16rpx 14rpx; }
-.compare-col.blue { border-top: 6rpx solid var(--twin-baby-a); }
-.compare-col.pink { border-top: 6rpx solid var(--twin-baby-b); }
+.compare-col.amber { border-top: 6rpx solid var(--twin-baby-a); }
+.compare-col.rose { border-top: 6rpx solid var(--twin-baby-b); }
 .col-title { display: block; font-size: 28rpx; font-weight: 700; margin-bottom: 10rpx; }
-.compare-col.blue .col-title { color: var(--twin-baby-a); }
-.compare-col.pink .col-title { color: var(--twin-baby-b); }
+.compare-col.amber .col-title { color: var(--twin-baby-a); }
+.compare-col.rose .col-title { color: var(--twin-baby-b); }
 .col-item { display: block; font-size: 22rpx; color: var(--ink); line-height: 1.8; }
 .col-item.risk { color: var(--twin-text-secondary); }
 

@@ -99,6 +99,22 @@
           <text>🟢 两个小家伙今天都很好</text>
         </view>
 
+        <!-- 快速参考：上次喂奶/睡觉 -->
+        <view class="quick-ref reveal-4" v-if="quickRef.lastFeeding!=='—' || quickRef.activeTimer">
+          <view class="qr-item" v-if="quickRef.activeTimer">
+            <text class="qr-emoji">⏱️</text>
+            <text class="qr-text">{{ quickRef.activeTimer }}</text>
+          </view>
+          <view class="qr-item" v-if="quickRef.lastFeeding!=='—'">
+            <text class="qr-emoji">🍼</text>
+            <text class="qr-text">上次喂奶 {{ quickRef.lastFeeding }}</text>
+          </view>
+          <view class="qr-item" v-if="quickRef.lastSleep!=='—'">
+            <text class="qr-emoji">😴</text>
+            <text class="qr-text">上次睡觉 {{ quickRef.lastSleep }}</text>
+          </view>
+        </view>
+
         <!-- 中央按钮 -->
         <view class="action-center reveal-5">
           <view class="btn-stage">
@@ -162,6 +178,7 @@ import { useRecordsStore } from '@/stores/records'
 import { useAlertsStore } from '@/stores/alerts'
 import { useStickersStore } from '@/stores/stickers'
 import { useStickerSync } from '@/composables/useStickerSync'
+import { useQuickRef } from '@/composables/useQuickRef'
 import { getDiscoverFeatures } from '@/config/roles'
 import { saveExportData, syncRecords, pullRecords } from '@/utils/syncService'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
@@ -195,6 +212,7 @@ onShareAppMessage(()=>({title:'🪐 双宝星球 · 两个小怪兽的成长记�
 const babiesStore=useBabiesStore();const recordsStore=useRecordsStore()
 const alertsStore=useAlertsStore();const stickersStore=useStickersStore()
 const { syncStickers } = useStickerSync()
+const { quickRef } = useQuickRef()
 
 const isGrandma=computed(()=>userStore.isGrandmaMode)
 const babyA=computed(()=>babiesStore.babyA);const babyB=computed(()=>babiesStore.babyB)
@@ -462,4 +480,8 @@ const switchRole = () => {
 .role-granny .bg-spot,.role-granny .bridge-wrap,.role-granny .action-center,
 .role-granny .quick-bar,.role-granny .sticker-zone,.role-granny .summary-line,
 .role-granny .forecast-line,.role-granny .journal-footer-text,.role-granny .journal-nav{display:none}
+.quick-ref{display:flex;gap:16rpx;flex-wrap:wrap;justify-content:center;margin-bottom:20rpx;position:relative;z-index:1}
+.qr-item{display:flex;align-items:center;gap:6rpx;padding:8rpx 16rpx;background:var(--cream);border-radius:16rpx;border:2rpx solid var(--dot)}
+.qr-emoji{font-size:24rpx}
+.qr-text{font-size:22rpx;color:var(--ink-md);font-weight:500}
 </style>

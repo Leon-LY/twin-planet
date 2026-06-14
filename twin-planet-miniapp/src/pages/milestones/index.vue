@@ -122,15 +122,11 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '能力观察' }) })
 
 <style scoped>
 .ms-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
-.section-header { text-align: center; margin-bottom: 24rpx; }
-.section-icon { font-size: 80rpx; }
-.section-title { display: block; font-size: 44rpx; font-weight: 700; color: var(--twin-text); margin: 12rpx 0; }
-.section-desc { font-size: 26rpx; color: var(--twin-text-secondary); }
 
 .baby-tabs { display: flex; gap: 16rpx; margin-bottom: 24rpx; }
 .baby-tab { flex: 1; text-align: center; padding: 18rpx 0; background: var(--twin-card-bg); border: 4rpx solid var(--twin-border); border-radius: 16rpx; font-size: 28rpx; color: var(--twin-text-tertiary); }
-.baby-tab.active.blue { border-color: var(--twin-baby-a); background: var(--twin-baby-a-light); color: var(--twin-text); font-weight: 600; }
-.baby-tab.active.pink { border-color: var(--twin-baby-b); background: var(--twin-baby-b-light); color: var(--twin-text); font-weight: 600; }
+.baby-tab.active.amber { border-color: var(--twin-baby-a); background: var(--twin-baby-a-light); color: var(--twin-text); font-weight: 600; }
+.baby-tab.active.rose { border-color: var(--twin-baby-b); background: var(--twin-baby-b-light); color: var(--twin-text); font-weight: 600; }
 
 .domain-cards { display: flex; flex-direction: column; gap: 10rpx; margin-bottom: 28rpx; }
 .domain-card { background: var(--twin-card-bg); border-radius: 16rpx; padding: 20rpx; }

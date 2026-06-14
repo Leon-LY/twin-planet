@@ -125,10 +125,6 @@ onMounted(() => {
 <style scoped>
 .contrib-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
 
-.section-header { text-align: center; margin-bottom: 32rpx; }
-.section-icon { font-size: 80rpx; }
-.section-title { display: block; font-size: 44rpx; font-weight: 700; color: var(--twin-text); margin: 12rpx 0; }
-.section-desc { font-size: 26rpx; color: var(--twin-text-secondary); }
 
 /* 今日统计 */
 .today-stats {

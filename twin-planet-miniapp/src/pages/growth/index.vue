@@ -90,6 +90,11 @@
           <input class="add-input" type="digit" v-model="addWeight" placeholder="体重(kg)" />
           <input class="add-input" type="digit" v-model="addHeight" placeholder="身高(cm)" />
         </view>
+        <view class="add-date-row">
+          <picker mode="date" :value="addDate" :end="todayDate" @change="(e: any) => { addDate = e.detail.value }">
+            <view class="add-date-picker"><text>{{ addDate || '选择日期' }}</text><text class="date-arrow">📅</text></view>
+          </picker>
+        </view>
         <button class="add-btn" @click="submitMeasurement" :disabled="!canSubmit">保存测量</button>
       </view>
     </view>
@@ -215,6 +220,8 @@ const chartOption=computed(()=>{
 const showAdd=ref(false)
 const addBabyId=ref('')
 const addWeight=ref('')
+const addDate=ref(new Date().toISOString().slice(0,10))
+const todayDate=computed(()=>new Date().toISOString().slice(0,10))
 const addHeight=ref('')
 const canSubmit=computed(()=>addBabyId.value&&(addWeight.value||addHeight.value))
 
@@ -224,7 +231,7 @@ function submitMeasurement(){
   if(!baby)return
   growthStore.addMeasurement({
     babyId:addBabyId.value,
-    date:new Date().toISOString().slice(0,10),
+    date:addDate.value,
     ageMonths:calcAgeMonths(baby.birthDate),
     weight:parseFloat(addWeight.value)||0,
     height:parseFloat(addHeight.value)||0,
@@ -285,4 +292,10 @@ onShareAppMessage(()=>({title:'双宝生长曲线 · WHO国际标准对比',path
 .add-input{flex:1;padding:16rpx 20rpx;background:var(--paper);border:2rpx solid var(--dot);border-radius:var(--radius-sm);font-size:var(--font-body);color:var(--ink)}
 .add-btn{width:100%;padding:22rpx;background:var(--amber);color:#FFF;border:none;border-radius:var(--radius-md);font-size:var(--font-body);font-weight:700}
 .add-btn[disabled]{opacity:.4}
+
+.add-date-row{margin-top:12rpx}
+.add-date-picker{display:flex;align-items:center;justify-content:space-between;padding:16rpx 20rpx;background:var(--paper);border:2rpx solid var(--dot);border-radius:var(--radius-sm);font-size:var(--font-body);color:var(--ink)}
+.date-arrow{font-size:24rpx}
+
+.percentile-hint{display:block;font-size:var(--font-caption);color:var(--ink-md);margin-top:2rpx;font-family:var(--font-journal)}
 </style>
