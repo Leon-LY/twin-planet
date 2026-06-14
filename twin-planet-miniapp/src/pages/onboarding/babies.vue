@@ -94,12 +94,12 @@
 
     <view class="form-row">
       <view class="form-group half">
-        <text class="form-label">出生体重 (kg)</text>
+        <text class="form-label">出生体重 (kg) <text class="optional">选填</text></text>
         <input
           class="form-input"
           v-model="form.birthWeight"
           type="digit"
-          placeholder="如 3.2"
+          placeholder="记不清可跳过"
           placeholder-style="color: var(--twin-text-muted)"
         />
       </view>
@@ -255,6 +255,8 @@ onMounted(() => {
   border-radius: 20rpx; font-size: 30rpx; color: var(--twin-text);
   box-sizing: border-box;
 }
+.optional{font-size:20rpx;color:var(--ink-lt);font-weight:400}
+.optional{font-size:20rpx;color:var(--ink-lt);font-weight:400}
 .form-sublabel { display: block; font-size: 20rpx; color: var(--twin-text-muted); margin-top: 8rpx; }
 .form-row { display: flex; }
 .date-picker { color: var(--twin-text); line-height: 1.6; }

@@ -94,6 +94,11 @@
           <text>{{ todaySummary }}</text>
         </view>
 
+        <!-- 一切都好 -->
+        <view class="all-good reveal-4" v-if="allGood && userStore.roleConfig.homeLayout==='full'">
+          <text>🟢 两个小家伙今天都很好</text>
+        </view>
+
         <!-- 中央按钮 -->
         <view class="action-center reveal-5">
           <view class="btn-stage">
@@ -218,6 +223,7 @@ const tomorrowForecast=computed(()=>{
   const h=Math.floor(avgMin/60);const m=Math.floor(avgMin%60)
   return `明早约 ${h}:${String(m).padStart(2,'0')} 第一次喂奶`
 })
+const allGood=computed(()=>{const today=recordsStore.logs.filter(l=>l.createdAt>=new Date().setHours(0,0,0,0));if(!today.length)return false;const aId=babyA.value?.id;const bId=babyB.value?.id;return today.some(l=>l.babyId===aId)&&today.some(l=>l.babyId===bId)})
 const lastUpdateText=computed(()=>{
   const logs=recordsStore.logs;if(!logs.length)return''
   const m=Math.floor((Date.now()-logs[logs.length-1].createdAt)/60000)
@@ -342,6 +348,7 @@ const switchRole=()=>{const roles=['👩 妈妈','👨 爸爸','👵 奶奶','�
 .jnav-item{font-family:var(--font-journal);font-size:26rpx;color:var(--ink-lt);letter-spacing:3rpx}
 .jnav-item.active{color:var(--amber);font-weight:700}
 .disclaimer-note{display:block;text-align:center;font-size:18rpx;color:var(--ink-lt);margin-bottom:16rpx;opacity:.5;position:relative;z-index:1}
+.all-good{text-align:left;margin-bottom:12rpx;position:relative;z-index:1}.all-good text{font-family:var(--font-journal);font-size:24rpx;color:var(--mint);font-weight:600}
 
 /* 入场 */
 .reveal-1{animation:revealUp .5s var(--ease-soft) both}

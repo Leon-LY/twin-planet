@@ -31,7 +31,10 @@
             <text class="legend-label">{{ babyB.nickname || babyB.name }}</text>
           </view>
         </view>
-        <view class="diff-text" v-if="diffText">{{ diffText }}</view>
+        <view class="diff-text" v-if="showDiff && diffText" @click="showDiff=false">{{ diffText }}</view>
+        <view class="diff-toggle" v-if="!showDiff && diffText" @click="showDiff=true">
+          <text>查看对比</text>
+        </view>
       </view>
 
       <ec-canvas canvas-id="growth-chart" :width="chartWidth" :height="chartHeight" :option="chartOption" />
@@ -108,6 +111,7 @@ const babyA=computed(()=>babiesStore.babyA)
 const babyB=computed(()=>babiesStore.babyB)
 
 const indicator=ref<Indicator>('weight')
+const showDiff=ref(false)
 const CHART_W=345;const CHART_H=320
 const chartWidth=computed(()=>Math.min(uni.getSystemInfoSync().windowWidth-30,375))
 const chartHeight=ref(CHART_H)
@@ -244,6 +248,7 @@ onShareAppMessage(()=>({title:'双宝生长曲线 · WHO国际标准对比',path
 .legend-dot{width:12rpx;height:12rpx;border-radius:50%}
 .legend-label{font-size:var(--font-body);font-weight:600;color:var(--ink)}
 .diff-text{font-size:var(--font-caption);color:var(--mint);font-weight:600;font-family:var(--font-journal)}
+.diff-toggle{font-size:var(--font-caption);color:var(--ink-lt);text-decoration:underline;padding:2rpx 0}
 .disclaimer{display:flex;align-items:flex-start;gap:8rpx;padding:12rpx 8rpx 4rpx;margin-top:8rpx;border-top:1px solid var(--dot)}
 .disclaimer-icon{font-size:24rpx;flex-shrink:0}
 .disclaimer-text{font-size:var(--font-caption);color:var(--ink-md);line-height:1.5}
