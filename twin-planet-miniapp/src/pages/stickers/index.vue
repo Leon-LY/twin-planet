@@ -32,6 +32,9 @@
 </template>
 
 <script setup lang="ts">
+	// 分享
+	onShareAppMessage(()=>({title:"🪐 双宝星球 · 两个小怪兽的成长记录",path:"/pages/index/index",imageUrl:"/static/share-brand.png"}))
+
 import { computed, onMounted } from 'vue'
 import { useStickersStore, STICKER_RULES } from '@/stores/stickers'
 
@@ -61,6 +64,9 @@ function enrich(cat: string) {
     .filter(s => s.category === cat)
     .map(s => ({ ...s, earned: earnedSet.value.has(s.label) }))
 }
+
+	// 分享
+	onShareAppMessage(()=>({title:"🪐 双宝星球 · 两个小怪兽的成长记录",path:"/pages/index/index",imageUrl:"/static/share-brand.png"}))
 
 onMounted(() => {
   uni.setNavigationBarTitle({ title: '贴纸收集册' })

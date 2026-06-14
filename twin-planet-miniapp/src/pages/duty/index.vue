@@ -67,17 +67,16 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
+import { onShareAppMessage } from '@dcloudio/uni-app'
 import { useDutyStore, CATEGORY_META } from '@/stores/duty'
 import { useAlertsStore } from '@/stores/alerts'
-import { useStickersStore } from '@/stores/stickers'
+
 import { useStickerSync } from '@/composables/useStickerSync'
-import { useRecordsStore } from '@/stores/records'
+
 import { useBabiesStore } from '@/stores/babies'
 
 const store = useDutyStore()
 const alertsStore = useAlertsStore()
-const stickersStore = useStickersStore()
-const recordsStore = useRecordsStore()
 const babiesStore = useBabiesStore()
 const { syncStickers } = useStickerSync()
 
@@ -119,6 +118,7 @@ onMounted(() => {
   if (store.tasks.length === 0) startDuty()
 })
 
+tonShareAppMessage(() => ({ title: "🦸 双宝星球 · 值班清单", path: "/pages/index/index", imageUrl: "/static/share-brand.png" }))
 onShow(() => {
   alertsStore.checkAlerts()
 })

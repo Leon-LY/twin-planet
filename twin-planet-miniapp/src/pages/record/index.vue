@@ -96,6 +96,7 @@
 <script setup lang="ts">
 import {computed,ref,onMounted,onUnmounted,watch} from 'vue'
 import {onShow} from '@dcloudio/uni-app'
+import { onShareAppMessage } from '@dcloudio/uni-app'
 import {useBabiesStore} from '@/stores/babies'
 import {useRecordsStore,type RecordType} from '@/stores/records'
 import {timeAgo, formatElapsed} from '@/utils/format'
