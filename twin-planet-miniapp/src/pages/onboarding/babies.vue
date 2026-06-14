@@ -189,7 +189,7 @@ function saveBaby() {
     currentBaby.value = 2
     uni.showToast({ title: '大宝已保存，请添加二宝', icon: 'none' })
   } else {
-    uni.showToast({ title: '🎉 欢迎来到并蒂星球！', icon: 'none', duration: 1500 })
+    uni.showToast({ title: '🎉 🚀 欢迎登船！双宝星球见！', icon: 'none', duration: 1500 })
     setTimeout(() => {
       uni.reLaunch({ url: '/pages/index/index' })
     }, 1500)

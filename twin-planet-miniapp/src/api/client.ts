@@ -1,5 +1,5 @@
 /**
- * 统一 HTTP 客户端 — 并蒂星球后端 API
+ * 统一 HTTP 客户端 — 双宝星球后端 API
  * 双写策略：后端优先 + 本地兜底
  */
 import type { ApiResponse } from './types'

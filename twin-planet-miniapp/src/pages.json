@@ -3,14 +3,14 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "并蒂星球",
+				"navigationBarTitleText": "双宝星球",
 				"navigationBarBackgroundColor": "#FFFBF2"
 			}
 		},
 		{
 			"path": "pages/login/index",
 			"style": {
-				"navigationBarTitleText": "进入宇宙",
+				"navigationBarTitleText": "欢迎登船",
 				"navigationBarBackgroundColor": "#FFFBF2",
 				"navigationStyle": "custom"
 			}
@@ -18,21 +18,21 @@
 		{
 			"path": "pages/onboarding/family",
 			"style": {
-				"navigationBarTitleText": "命名你的星系",
+				"navigationBarTitleText": "创建你的小星球",
 				"navigationBarBackgroundColor": "#FFFBF2"
 			}
 		},
 		{
 			"path": "pages/onboarding/babies",
 			"style": {
-				"navigationBarTitleText": "遇见你的星球",
+				"navigationBarTitleText": "迎接两个小怪兽",
 				"navigationBarBackgroundColor": "#FFFBF2"
 			}
 		},
 		{
 			"path": "pages/record/index",
 			"style": {
-				"navigationBarTitleText": "宇宙记录",
+				"navigationBarTitleText": "光速记录",
 				"navigationBarBackgroundColor": "#FFFBF2"
 			}
 		},
@@ -133,7 +133,7 @@
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "并蒂星球",
+		"navigationBarTitleText": "双宝星球",
 		"navigationBarBackgroundColor": "#FFFBF2",
 		"backgroundColor": "#FFFBF2"
 	}

@@ -1,4 +1,4 @@
-<!-- 双宝手帐 v5 · Editorial Journal -->
+<!-- 双宝星球 v5 · Editorial Journal -->
 <template>
   <view :class="[themeClass, { 'font-large': isGrandma }]">
     <template v-if="loading">
@@ -7,7 +7,7 @@
 
     <template v-else-if="isGrandma">
       <view class="page-shell granny-shell">
-        <text class="heading-xl" style="text-align:center;display:block;margin-bottom:8rpx">双宝手帐</text>
+        <text class="heading-xl" style="text-align:center;display:block;margin-bottom:8rpx">双宝星球</text>
         <text class="body-text" style="text-align:center;display:block;margin-bottom:64rpx">{{ greeting }}</text>
         <view class="granny-actions">
           <view class="granny-btn" @click="goRecord"><text class="granny-emoji">✋</text><text class="granny-label">记一笔</text></view>
@@ -139,11 +139,11 @@
         <!-- 免责声明 -->
         <text class="disclaimer-note reveal-6" v-if="userStore.roleConfig.homeLayout==='full'">本应用不提供医疗建议，所有数据仅供参考</text>
 
-        <text class="journal-footer-text" v-if="streakDays > 0">1 + 1 = 11 · 端水失败的第 {{ streakDays }} 天</text>
+        <text class="journal-footer-text" v-if="streakDays > 0">端水失败的第 {{ streakDays }} 天</text>
 
         <!-- 底部导航 — journal-style page tabs -->
         <view class="journal-nav">
-          <text class="jnav-item active">手帐</text>
+          <text class="jnav-item active">星球</text>
           <text class="jnav-item" @click="goGrowth">生长</text>
           <text class="jnav-item" @click="goSnapshot">快照</text>
           <text class="jnav-item" @click="goMore">更多</text>
@@ -189,7 +189,7 @@ async function initSync(){
   } catch { /* 静默 */ }
 }
 onMounted(()=>{setTimeout(()=>{loading.value=false;syncStickers();initSync().catch(()=>{})},400)})
-onShareAppMessage(()=>({title:'双宝手帐 · 双胞胎的成长记录本',path:'/pages/index/index',imageUrl:'/static/share-brand.png'}))
+onShareAppMessage(()=>({title:'🪐 双宝星球 · 两个小怪兽的成长记录',path:'/pages/index/index',imageUrl:'/static/share-brand.png'}))
 
 const babiesStore=useBabiesStore();const recordsStore=useRecordsStore()
 const alertsStore=useAlertsStore();const stickersStore=useStickersStore()
@@ -217,7 +217,7 @@ const isRunningB=computed(()=>babyB.value?recordsStore.isBabyRunning(babyB.value
 const alertCount=computed(()=>alertsStore.unreadCount)
 
 const greeting=computed(()=>{const h=new Date().getHours();if(h<6)return'凌晨好';if(h<9)return'早上好';if(h<12)return'上午好';if(h<14)return'中午好';if(h<18)return'下午好';if(h<22)return'晚上好';return'夜深了'})
-const greetLine2=computed(()=>{const h=new Date().getHours();if(h>=22||h<6)return'夜深了，辛苦了';if(h<9)return'新的一天开始了';if(h<14)return'上午过半，记得喂奶';return'下午时光，两个小家伙在干嘛？'})
+const greetLine2=computed(()=>{const h=new Date().getHours();const r=userStore.profile?.role;if(r==='dad'){if(h>=22||h<6)return'值班中，撑住 💪';if(h<9)return'早上好，今天你是超级奶爸';return'数据看板已就绪 📊'}if(r==='grandma'||r==='grandpa')return'';if(h>=22||h<6)return'夜深了，辛苦啦 🌙';if(h<9)return'新的一天，两个小怪兽醒了没';if(h<14)return'上午过半，奶茶续命时间 🧋';return'下午好，小怪兽们在干嘛呢'})
 const roleEmoji=computed(()=>userStore.roleEmoji)
 const roleLabel=computed(()=>userStore.roleLabel)
 const dateStr=computed(()=>{const d=new Date();const days=['日','一','二','三','四','五','六'];return `${d.getMonth()+1}月${d.getDate()}日 星期${days[d.getDay()]}`})
@@ -225,7 +225,7 @@ const dateStr=computed(()=>{const d=new Date();const days=['日','一','二','�
 function babyStatus(b:any):string{if(!b)return'';const logs=recordsStore.recentLogsByBaby[b.id];if(!logs?.length)return'';const last=logs[logs.length-1];const m=Math.floor((Date.now()-last.createdAt)/60000);const a=last.type==='feeding'?'喂奶':last.type==='sleep'?'睡觉':'记录';if(m<1)return`刚刚${a}`;if(m<60)return`${m}分钟前${a}`;return`${Math.floor(m/60)}小时前${a}`}
 
 const syncRate=computed(()=>recordsStore.twinSyncRate)
-const insightText=computed(()=>{const s=syncRate.value;if(s>70)return`同步率 ${s}%，默契满满`;if(s>30)return`同步率 ${s}%，打架战绩：平局`;if(s>0)return'各有各的节奏';return'两个小怪兽，今天会同步吗？'})
+const insightText=computed(()=>{const s=syncRate.value;if(s>70)return`同步率 ${s}% · 神同步！不愧是双胞胎`;if(s>30)return`同步率 ${s}% · 今天打架战绩：平局 🤼`;if(s>0)return'各有各的节奏，挺好的';return'两个小怪兽，今天会同步吗？'})
 const bridgeState=computed(()=>{const aId=babyA.value?.id;const bId=babyB.value?.id;if(!aId||!bId)return'faint';const aLogs=recordsStore.recentLogsByBaby[aId]||[];const bLogs=recordsStore.recentLogsByBaby[bId]||[];const aRecent=aLogs.length&&(Date.now()-aLogs[aLogs.length-1].createdAt)<3600000;const bRecent=bLogs.length&&(Date.now()-bLogs[bLogs.length-1].createdAt)<3600000;if(aRecent&&bRecent)return'bright';if(aRecent)return'one-sided-a';if(bRecent)return'one-sided-b';if(aLogs.length||bLogs.length)return'steady';return'faint'})
 
 const todaySummary=computed(()=>{

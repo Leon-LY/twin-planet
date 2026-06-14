@@ -131,7 +131,7 @@ export function drawShareCard(
     // 品牌水印
     ctx.setFillStyle('#D4C8B8')
     ctx.setFontSize(10)
-    ctx.fillText('—— 双宝手帐 · 中国首款双胞胎育儿伴侣', W / 2, bottomY + 24)
+    ctx.fillText('—— 双宝星球 · 中国首款双胞胎育儿伴侣', W / 2, bottomY + 24)
 
     // 底部品牌色条
     ctx.setFillStyle(C.b)
