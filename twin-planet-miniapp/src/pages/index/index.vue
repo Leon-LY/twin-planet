@@ -41,7 +41,10 @@
           </view>
         </view>
 
-        <!-- 品牌吉祥物 (temporarily disabled for debugging) -->
+        <!-- 品牌吉祥物 -->
+        <view class="mascot-area reveal-2" v-if="userStore.roleConfig.homeLayout==='full'">
+          <TwinMascot size="sm" :linked="true" />
+        </view>
 
         <!-- 问候 — editorial, left-aligned, dramatic scale -->
         <view class="greeting reveal-2">
@@ -113,12 +116,12 @@
 
         <!-- LightBridge connection -->
         <view class="bridge-wrap reveal-4">
-          <view style="height:36rpx" />
+          <LightBridge :state="bridgeState" :height="36" :animated="true" />
         </view>
 
         <!-- 贴纸条 — only for full layout (mom) -->
         <view class="sticker-zone reveal-4" v-if="userStore.roleConfig.homeLayout==='full'">
-          <text class="body-text" style="text-align:center">{{ stickersStore.todayCount }} 张贴纸</text>
+          <StickerStrip :stickers="stickersStore.todayStickers" :showMore="true" @viewAll="navigate('/pages/stickers/index')" />
         </view>
 
         <!-- 今日摘要 -->
@@ -291,6 +294,9 @@ import { saveExportData, syncRecords, pullRecords } from '@/utils/syncService'
 import { createInvite, joinFamily } from '@/api/family'
 import { trackCelebration, trackShare } from '@/utils/analytics'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
+import LightBridge from '@/components/cosmic/LightBridge.vue'
+import StickerStrip from '@/components/journal/StickerStrip.vue'
+import TwinMascot from '@/components/journal/TwinMascot.vue'
 
 const loading=ref(true);const userStore=useUserStore()
 const themeClass=computed(()=>{const c=['page-root'];const h=new Date().getHours();if(h>=22||h<6)c.push('theme-dark');if(userStore.isGrandmaMode)c.push('font-large','role-granny');else if(userStore.isDad)c.push('role-dad');return c.join(' ')})
