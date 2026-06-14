@@ -142,9 +142,9 @@ page {
   --space-lg:60rpx;
 }
 /* 奶奶模式 — 禁用动画 */
-.font-large .bg-spot { animation: none !important; }
-.font-large .page-enter { animation: none !important; }
-.font-large .bg-spot,.font-large .page-enter,.font-large .sticker-item.new,.font-large .mascot-item.bounce,.font-large .welcome-card,.font-large .celebrate-card,.font-large .more-sheet,.font-large .sticker-pop-emoji,.font-large .orbit-ring.pulsing,.font-large .streak-stamp,.font-large .avatar-ring.pulsing { animation-duration: 0s !important; transition-duration: 0s !important; }
+.font-large .bg-spot { animation-duration: 0s !important; }
+.font-large .page-enter { animation-duration: 0s !important; }
+.font-large * { animation-duration: 0s !important; transition-duration: 0s !important; }
 
 /* 奶奶模式高对比度 */
 .role-granny {

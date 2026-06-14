@@ -1,6 +1,6 @@
 <template>
   <view class="privacy-page">
-    <text class="title">双宝记 · 用户协议与隐私政策</text>
+    <text class="title">双宝星球 · 用户协议与隐私政策</text>
     <text class="update-date">最后更新：2026年6月14日</text>
 
     <text class="section-title">一、信息收集</text>
@@ -28,13 +28,10 @@
       <button class="action-btn delete-btn" @click="handleDelete">
         <text>🗑️ 清除本地数据</text>
       </button>
-      <button class="action-btn server-delete-btn" @click="handleDeleteServer" style="margin-top:12rpx">
-        <text>☁️ 删除服务器数据</text>
-      </button>
     </view>
 
     <text class="section-title">四、免责声明</text>
-    <text class="body">双宝记是一款育儿辅助工具，不提供医疗建议。所有生长数据对比基于WHO儿童生长标准（2006），仅供参考。如对宝宝的健康有任何疑虑，请咨询专业儿科医生。</text>
+    <text class="body">双宝星球是一款育儿辅助工具，不提供医疗建议。所有生长数据对比基于WHO儿童生长标准（2006），仅供参考。如对宝宝的健康有任何疑虑，请咨询专业儿科医生。</text>
 
     <text class="section-title">五、联系我们</text>
     <text class="body">如有任何问题或建议，请通过以下方式联系我们：</text>
@@ -46,7 +43,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { saveExportData } from '@/utils/syncService'
-import { request } from '@/api/client'
 
 onMounted(() => { uni.setNavigationBarTitle({ title: '隐私政策' }) })
 
@@ -60,29 +56,7 @@ async function handleExport() {
         const path = await saveExportData()
         uni.showToast({ title: '已导出到：' + path, icon: 'success', duration: 2000 })
       } catch {
-        uni.showToast({ title: '导出遇到问题，稍后再试吧', icon: 'none' })
-      }
-    }
-  })
-}
-
-async function handleDeleteServer() {
-  uni.showModal({
-    title: '🗑️ 删除服务器数据',
-    content: '此操作将永久删除服务器上存储的所有记录。本地数据不受影响。此操作不可撤销。',
-    confirmText: '确认删除',
-    confirmColor: '#D4706B',
-    success: async (res) => {
-      if (!res.confirm) return
-      try {
-        const result = await request('/user/data', { method: 'DELETE' })
-        if (result.success) {
-          uni.showToast({ title: '服务器数据已删除', icon: 'success' })
-        } else {
-          uni.showToast({ title: '删除失败，请稍后重试', icon: 'none' })
-        }
-      } catch {
-        uni.showToast({ title: '网络连接失败，请稍后重试', icon: 'none' })
+        uni.showToast({ title: '导出失败，请重试', icon: 'none' })
       }
     }
   })
@@ -101,7 +75,7 @@ function handleDelete() {
           uni.reLaunch({ url: '/pages/index/index' })
         }, 1000)
       } catch {
-        uni.showToast({ title: '清除遇到问题，稍后再试吧', icon: 'none' })
+        uni.showToast({ title: '清除失败，请重试', icon: 'none' })
       }
     }
   })
@@ -166,10 +140,5 @@ function handleDelete() {
   background: var(--cream);
   color: var(--twin-danger);
   border: 2rpx solid var(--twin-danger);
-}
-.server-delete-btn {
-  background: var(--cream);
-  color: var(--gold);
-  border: 2rpx solid var(--gold);
 }
 </style>

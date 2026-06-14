@@ -11,14 +11,6 @@
       <view class="progress-fill" :style="{ width: progressPercent + '%' }" />
     </view>
 
-    <!-- 分享成就 -->
-    <view class="share-row" v-if="store.collectionCount > 0">
-      <button class="share-btn" open-type="share">
-        <text>📤 分享我的贴纸成就</text>
-        <text class="share-sub">{{ progressPercent }}% · {{ store.collectionCount }}/{{ store.totalStickers }}</text>
-      </button>
-    </view>
-
     <!-- 分类展示 — 空分类隐藏 -->
     <view v-for="cat in visibleCategories" :key="cat.key" class="category">
       <text class="cat-label">{{ cat.label }} · {{ cat.earnedCount }}/{{ cat.total }}</text>
@@ -110,29 +102,6 @@ onShareAppMessage(() => ({
   background: var(--gold);
   border-radius: 4rpx;
   transition: width .5s var(--ease-soft);
-}
-
-.share-row { margin-bottom: 32rpx; }
-.share-btn {
-  width: 100%;
-  padding: 20rpx 0;
-  background: var(--amber-lt);
-  border: 2rpx solid var(--amber);
-  border-radius: var(--radius-md);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rpx;
-  font-size: 26rpx;
-  font-weight: 600;
-  color: var(--amber);
-  line-height: 1.4;
-}
-.share-btn::after { border: none; }
-.share-sub {
-  font-size: 22rpx;
-  font-weight: 400;
-  color: var(--ink-md);
 }
 
 .category { margin-bottom: 36rpx; }

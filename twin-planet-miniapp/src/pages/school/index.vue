@@ -34,7 +34,7 @@
     <view class="compare-section">
       <text class="card-title">⚖️ 同班 vs 分班</text>
       <view class="compare-cols">
-        <view class="compare-col amber">
+        <view class="compare-col blue">
           <text class="col-title">同班</text>
           <text class="col-item">✅ 接送方便，只去一个教室</text>
           <text class="col-item">✅ 家长会、作业同步</text>
@@ -42,7 +42,7 @@
           <text class="col-item risk">⚠️ 老师不自觉会比较</text>
           <text class="col-item risk">⚠️ 可能与对方"绑定"影响社交</text>
         </view>
-        <view class="compare-col rose">
+        <view class="compare-col pink">
           <text class="col-title">分班</text>
           <text class="col-item">✅ 各自独立空间，不被标签化</text>
           <text class="col-item">✅ 发展独立朋友圈</text>
@@ -65,7 +65,7 @@
           <text class="assess-note">{{ d.note || '没有备注' }}</text>
         </view>
       </view>
-      <view v-else class="empty-mini">完成首次评估后显示</view>
+      <view v-else class="empty-mini">还没有评估记录</view>
     </view>
 
     <!-- 新建评估 -->
@@ -151,7 +151,7 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '入园助手' }) })
 .card-title { display: block; font-size: 28rpx; font-weight: 600; color: var(--twin-text); margin-bottom: 12rpx; }
 .card-sub { display: block; font-size: 22rpx; color: var(--twin-text-secondary); margin-bottom: 16rpx; margin-top: -8rpx; }
 
-/* 耦合度条形图 */
+/* 雷达图模拟 */
 .radar-card { background: var(--twin-card-bg); border-radius: 20rpx; padding: 24rpx; margin-bottom: 20rpx; }
 .radar-axis { display: flex; justify-content: space-between; font-size: 20rpx; color: var(--twin-text-secondary); margin-bottom: 12rpx; }
 .radar-bar-wrap { display: flex; align-items: center; gap: 12rpx; margin-bottom: 12rpx; }

@@ -83,7 +83,7 @@
     <!-- 空状态 -->
     <view class="empty-state" v-if="!store.recentContributions.length">
       <text class="empty-emoji">📝</text>
-      <text class="empty-title">今天还是一片空白</text>
+      <text class="empty-title">还没有记录</text>
       <text class="empty-desc">记录一下你为宝宝做的事吧，每件小事都值得被看见</text>
     </view>
   </view>
