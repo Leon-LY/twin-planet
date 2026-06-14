@@ -49,9 +49,8 @@ function getDpr() {
 async function loadEcharts(): Promise<any> {
   // #ifdef MP-WEIXIN
   return new Promise((resolve, reject) => {
-    // 从 static/echarts/ 加载预置的 echarts.min.js（~500KB）
-    // require.async 仅在访问生长曲线页面时才加载，不影响首页启动
-    ;(require as any).async?.('/static/echarts/echarts.min.js', (mod: any) => {
+    // 从分包 pages/growth/ 按需加载（~492KB），post-build 脚本搬运
+    ;(require as any).async?.('/pages/growth/echarts.min.js', (mod: any) => {
       resolve(mod)
     }, (err: any) => {
       reject(new Error('ECharts load failed: ' + JSON.stringify(err)))

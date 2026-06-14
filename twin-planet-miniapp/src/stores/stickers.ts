@@ -123,6 +123,8 @@ export const useStickersStore = defineStore('stickers', () => {
 
   const stickers = ref<Sticker[]>(_p.load() ?? [])
   const lastSyncAt = ref(0)
+  /** 最近一次解锁的贴纸（供 UI 播放动画用） */
+  const lastUnlocked = ref<Sticker[]>([])
 
   function _save() {
     _p.save(stickers.value.slice(-200))
@@ -160,18 +162,22 @@ export const useStickersStore = defineStore('stickers', () => {
 
     if (newStickers.length > 0) {
       stickers.value = [...stickers.value, ...newStickers]
+      lastUnlocked.value = newStickers
       _save()
     }
     lastSyncAt.value = now
     return newStickers
   }
 
+  /** 距离集齐全套贴纸还差多少（百分比） */
+  const completionRate = computed(() =>
+    Math.round((stickers.value.length / STICKER_RULES.length) * 100)
+  )
+
   return {
-    stickers,
+    stickers, lastUnlocked,
     todayStickers,
-    collectionCount,
-    todayCount,
-    totalStickers,
+    collectionCount, todayCount, totalStickers, completionRate,
     lastSyncAt,
     sync,
   }

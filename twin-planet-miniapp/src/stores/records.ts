@@ -6,6 +6,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useBabiesStore, type Baby } from './babies'
+import { useStickersStore, type StickerContext } from './stickers'
 import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 
 export type RecordType = 'feeding' | 'sleep' | 'diaper' | 'temperature' | 'medicine' | 'bath'
@@ -72,6 +73,39 @@ export const useRecordsStore = defineStore('records', () => {
 
   function _saveLogs() {
     _p.save(logs.value.slice(-200)) // 只保留最近 200 条，控制存储体积
+  }
+
+  /** 自动同步贴纸 —— 每次记录后自动检查解锁 */
+  function _syncStickersAuto() {
+    try {
+      const stickersStore = useStickersStore()
+      const t0 = new Date().setHours(0, 0, 0, 0)
+      const today = logs.value.filter(l => l.createdAt >= t0)
+      const aId = babiesStore.babyA?.id
+      const bId = babiesStore.babyB?.id
+      const n = Date.now()
+
+      const ctx: StickerContext = {
+        todayLogCount: today.length,
+        streakDays: streakDays.value,
+        totalLogCount: logs.value.length,
+        twinSyncCount: today.filter(l =>
+          l.type === 'feeding' || l.type === 'sleep'
+        ).length >= 2 ? 1 : 0,
+        sproutCount: 0,  // 非 record 可计算的字段，sprout/duty 页自行补充
+        dutyDoneCount: 0,
+        babyAHasRecord: aId ? today.some(l => l.babyId === aId) : false,
+        babyBHasRecord: bId ? today.some(l => l.babyId === bId) : false,
+        babyARecentRecord: aId
+          ? today.some(l => l.babyId === aId && n - l.createdAt < 3600000)
+          : false,
+        babyBRecentRecord: bId
+          ? today.some(l => l.babyId === bId && n - l.createdAt < 3600000)
+          : false,
+      }
+
+      return stickersStore.sync(ctx)
+    } catch { /* 贴纸同步失败不影响记录功能 */ }
   }
 
   // ---- getters ----
@@ -170,6 +204,7 @@ export const useRecordsStore = defineStore('records', () => {
 
     logs.value = [...logs.value, log]
     _saveLogs()
+    _syncStickersAuto()  // 自动检查贴纸解锁
 
     // 从 Map 中移除（不可变更新）
     const newTimers = { ..._timers.value }
@@ -260,9 +295,8 @@ export const useRecordsStore = defineStore('records', () => {
     }
     logs.value = [...logs.value, log]
     _saveLogs()
+    _syncStickersAuto()  // 自动检查贴纸解锁
   }
-
-  /** 宇宙洞察 — 基于今日记录的诗意总结 */
   const cosmicInsight = computed(() => {
     const todayLogs = logs.value.filter(l => l.createdAt >= new Date().setHours(0,0,0,0))
     const total = todayLogs.length

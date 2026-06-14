@@ -141,10 +141,50 @@ page {
   --space-md:40rpx;
   --space-lg:60rpx;
 }
-/* 奶奶模式 — 禁用动画 */
+/* 奶奶模式 — 禁用所有动画与过渡（显式选择器，WXSS 兼容） */
+.font-large .bg-spot,
+.font-large .page-enter,
+.font-large [class*="reveal-"],
+.font-large .streak-stamp,
+.font-large .sticker-pop-emoji,
+.font-large .celebrate-overlay,
+.font-large .celebrate-card,
+.font-large .cs,
+.font-large .avatar-ring.pulsing::before,
+.font-large .welcome-card,
+.font-large .wave-bar,
+.font-large .orbit-ring,
+.font-large .main-btn,
+.font-large .q-chip,
+.font-large .btn-stage,
+.font-large .pulse-dot,
+.font-large .stamp-btn,
+.font-large .hero-face,
+.font-large .clock-sep,
+.font-large .spot-a,
+.font-large .spot-b,
+.font-large .confetti-piece,
+.font-large .shine,
+.font-large .float-up { animation: none !important; }
 
-
-.font-large .bg-spot,.font-large .page-enter{animation:none!important}.font-large * { animation-duration: 0s !important; transition-duration: 0s !important; }
+.font-large view,
+.font-large text,
+.font-large button,
+.font-large image,
+.font-large scroll-view,
+.font-large input,
+.font-large textarea,
+.font-large label,
+.font-large picker,
+.font-large slider,
+.font-large switch,
+.font-large navigator,
+.font-large video,
+.font-large canvas,
+.font-large map,
+.font-large progress,
+.font-large rich-text,
+.font-large icon { animation-duration: 0s !important; transition-duration: 0s !important; }
 
 /* 奶奶模式高对比度 */
 .role-granny {

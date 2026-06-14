@@ -2,7 +2,12 @@
 <template>
   <view class="record-page">
     <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
-    <view v-if="stickerShow" class="sticker-pop"><text class="sticker-pop-emoji">{{ stickerEmoji }}</text></view>
+    <!-- 贴纸解锁动画 -->
+    <view v-if="stickerShow" class="sticker-pop">
+      <text class="sticker-pop-emoji">{{ stickerEmoji }}</text>
+      <text class="sticker-pop-label" v-if="stickerLabel">{{ stickerLabel }}</text>
+      <text class="sticker-pop-progress" v-if="stickerProgress">{{ stickerProgress }}</text>
+    </view>
 
     <!-- IDLE: 奶奶模式 — 极简3按钮 -->
     <template v-if="!recordsStore.isRunning && isGrandma">
@@ -143,9 +148,11 @@ const retroActions=actions.slice(0,4)
 const haptic=useHaptic()
 const isNight=computed(()=>{const h=new Date().getHours();return h>=22||h<6})
 
-const stickerShow=ref(false);const stickerEmoji=ref('⭐')
+const stickerShow=ref(false);const stickerEmoji=ref('🌟');const stickerLabel=ref('');const stickerProgress=ref('')
 let stickerTimer:ReturnType<typeof setTimeout>|null=null
-function popSticker(emoji:string){if(stickerTimer)clearTimeout(stickerTimer);stickerEmoji.value=emoji;stickerShow.value=true;stickerTimer=setTimeout(()=>{stickerShow.value=false},750)}
+function popSticker(emoji:string,label?:string){if(stickerTimer)clearTimeout(stickerTimer);stickerEmoji.value=emoji;stickerLabel.value=label||'';stickerProgress.value='';stickerShow.value=true;stickerTimer=setTimeout(()=>{stickerShow.value=false},1200)}
+	function showStickerUnlock(s){popSticker(s.emoji,s.label);stickerProgress.value="收集进度 "+stickersStore.completionRate+"%"}
+	watch(function(){return stickersStore.lastUnlocked},function(ns){if(ns&&ns.length>0)showStickerUnlock(ns[ns.length-1])},{deep:true})
 
 // 🔧 tick 由 recordsStore._tick 全局管理，页面不再维护独立 interval
 watch(()=>recordsStore.isRunning,r=>{if(r){haptic.heartbeatStart()}else{haptic.heartbeatStop()}},{immediate:true})
@@ -174,9 +181,11 @@ tonShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id})
 .bg-spot{position:absolute;pointer-events:none;z-index:0;border-radius:50%}
 .spot-a{width:420rpx;height:420rpx;top:80rpx;right:-160rpx;background:radial-gradient(circle,rgba(212,128,104,0.03) 0%,transparent 60%)}
 .spot-b{width:360rpx;height:360rpx;bottom:180rpx;left:-140rpx;background:radial-gradient(circle,rgba(224,123,62,0.03) 0%,transparent 60%)}
-.sticker-pop{position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);z-index:99;pointer-events:none}
-.sticker-pop-emoji{font-size:128rpx;animation:stampPop .75s var(--ease-bounce) forwards}
-@keyframes stampPop{0%{transform:scale(.2)rotate(-12deg);opacity:0}55%{transform:scale(1.25)rotate(3deg);opacity:1}100%{transform:scale(1)rotate(0);opacity:0}}
+.sticker-pop{position:fixed;top:38%;left:50%;transform:translate(-50%,-50%);z-index:99;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:4rpx}
+.sticker-pop-emoji{font-size:144rpx;animation:stampPop 1.2s var(--ease-bounce) forwards}
+.sticker-pop-label{font-family:var(--font-journal);font-size:36rpx;color:var(--ink);font-weight:700;animation:stampPop 1.2s var(--ease-bounce) .15s forwards}
+.sticker-pop-progress{font-size:24rpx;color:var(--ink-md);margin-top:8rpx;animation:stampPop 1.2s var(--ease-bounce) .25s forwards}
+@keyframes stampPop{0%{transform:scale(.2)rotate(-12deg);opacity:0}50%{transform:scale(1.3)rotate(3deg);opacity:1}80%{transform:scale(1)rotate(0);opacity:1}100%{transform:scale(1)rotate(0);opacity:0}}
 
 .baby-tabs{display:flex;gap:0;margin-bottom:32rpx;position:relative;z-index:1}
 .baby-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:8rpx;padding:20rpx;border-radius:20rpx 20rpx 0 0;opacity:.45;transition:opacity .2s,border-color .2s;border-bottom:3rpx solid transparent}
