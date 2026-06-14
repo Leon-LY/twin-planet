@@ -48,9 +48,15 @@
             "minified" : true
         },
         "usingComponents" : true,
-        
-        
-        "permission": {},
+        "lazyCodeLoading" : "requiredComponents",
+        "optimization" : {
+            "subPackages" : true
+        },
+        "permission" : {
+            "scope.record" : {
+                "desc" : "用于语音交接班——录一段话留给换班的家人"
+            }
+        },
         "requiredPrivateInfos" : [],
         "plugins" : {}
     },

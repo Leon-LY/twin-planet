@@ -123,7 +123,7 @@ function getBabyStatus(baby: Baby | null): string {
 }
 function getLastFeeding(baby: Baby | null): string {
   if (!baby) return '—'
-  return recordsStore.recentLogsByBaby[baby.id]?.find(l => l.type === 'feeding')?.detail || '—'
+  return recordsStore.recentLogsByBaby[baby.id]?.find(l => l.type === 'feeding')?.detail || '暂无'
 }
 function getLastSleep(baby: Baby | null): string {
   if (!baby) return '—'
@@ -156,7 +156,7 @@ const goShare = async () => {
     await saveToAlbum(path)
     uni.showToast({ title: '已保存到相册，去分享吧', icon: 'success' })
   } catch {
-    uni.showToast({ title: '卡片生成遇到问题，稍后再试吧', icon: 'none' })
+    uni.showToast({ title: '生成失败，请重试', icon: 'none' })
   }
 }
 

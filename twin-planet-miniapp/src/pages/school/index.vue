@@ -65,7 +65,7 @@
           <text class="assess-note">{{ d.note || '没有备注' }}</text>
         </view>
       </view>
-      <view v-else class="empty-mini">完成首次评估后显示</view>
+      <view v-else class="empty-mini">还没有评估记录</view>
     </view>
 
     <!-- 新建评估 -->
