@@ -98,6 +98,14 @@
         <button class="add-btn" @click="submitMeasurement" :disabled="!canSubmit">保存测量</button>
       </view>
     </view>
+
+    <!-- 就诊速查卡导出 -->
+    <view class="export-section" v-if="babyA && babyB && growthStore.hasRealData">
+      <button class="export-btn" @click="exportClinicCard" :disabled="exporting">
+        {{ exporting ? '生成中...' : '🏥 导出就诊速查卡' }}
+      </button>
+      <text class="export-hint">双宝对比摘要，方便儿科就诊时给医生看</text>
+    </view>
   </view>
 </template>
 
@@ -111,6 +119,7 @@ import {
   getPercentileCurve,getLMS,calcZScore,zScoreToPercentile,calcDifferenceRate,
 type Gender,type Indicator,type DiffResult,
 } from '@/utils/whoGrowth'
+import { drawClinicCard } from '@/utils/clinicCard'
 
 const babiesStore=useBabiesStore()
 const growthStore=useGrowthStore()
@@ -242,6 +251,28 @@ function submitMeasurement(){
 
 onMounted(()=>{uni.setNavigationBarTitle({title:'生长曲线'});if(babyA.value)addBabyId.value=babyA.value.id})
 onShareAppMessage(()=>({title:'双宝生长曲线 · WHO国际标准对比',path:'/pages/growth/index',imageUrl:'/static/share-brand.png'}))
+const exporting=ref(false)
+async function exportClinicCard(){
+  if(exporting.value||!babyA.value||!babyB.value)return
+  exporting.value=true
+  try{
+    const path=await drawClinicCard({
+      babyAName:babyA.value.nickname||babyA.value.name,
+      babyBName:babyB.value.nickname||babyB.value.name,
+      babyAGender:babyA.value.gender==='male'?'男':'女',
+      babyBGender:babyB.value.gender==='male'?'男':'女',
+      babyABirth:babyA.value.birthDate,
+      babyBBirth:babyB.value.birthDate,
+      babyAWeight:latestA.value?.weight||0,
+      babyBWeight:latestB.value?.weight||0,
+      babyAHeight:latestA.value?.height||0,
+      babyBHeight:latestB.value?.height||0,
+    })
+    uni.showToast({title:'速查卡已生成',icon:'success'})
+  }catch(e:any){
+    uni.showToast({title:e?.message||'生成失败',icon:'none'})
+  }finally{exporting.value=false}
+}
 </script>
 
 <style scoped>
@@ -298,4 +329,11 @@ onShareAppMessage(()=>({title:'双宝生长曲线 · WHO国际标准对比',path
 .date-arrow{font-size:24rpx}
 
 .percentile-hint{display:block;font-size:var(--font-caption);color:var(--ink-md);margin-top:2rpx;font-family:var(--font-journal)}
+
+.export-section{display:flex;flex-direction:column;align-items:center;gap:12rpx;margin-top:48rpx;padding-top:32rpx;border-top:2rpx dashed var(--dot)}
+.export-btn{width:100%;padding:24rpx;background:var(--cream);border:2rpx solid var(--dot);border-radius:var(--radius-md);font-family:var(--font-journal);font-size:30rpx;font-weight:700;color:var(--ink);text-align:center}
+.export-btn::after{border:none}
+.export-btn:active{background:var(--amber-lt);border-color:var(--amber)}
+.export-btn[disabled]{opacity:.4}
+.export-hint{font-size:22rpx;color:var(--ink-lt)}
 </style>
