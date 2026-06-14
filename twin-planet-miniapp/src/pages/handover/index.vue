@@ -94,12 +94,31 @@ function startRecord() {
 
   // #ifdef MP-WEIXIN
   recorder = uni.getRecorderManager()
-  recorder.onStop((res) => { tempFilePath = res.tempFilePath })
+  // 🔧 仅在 startRecord 设置 onStop，finishRecord 通过闭包捕获状态
+  recorder.onStop((res) => {
+    tempFilePath = res.tempFilePath
+    // 如果仍在录音状态（由 finishRecord 触发），保存消息
+    if (saveAfterStop) {
+      saveAfterStop = false
+      const duration = recordSeconds.value
+      if (duration >= 2) {
+        messages.value = [{
+          id: `voice-${Date.now()}`, author: '我', authorEmoji: '👤',
+          durationSec: duration, read: false,
+          createdAt: Date.now(), localPath: tempFilePath,
+        }, ...messages.value]
+        saveMessages()
+        uni.showToast({ title: '✅ 已保存', icon: 'success' })
+      } else {
+        uni.showToast({ title: '录音太短，请重录', icon: 'none' })
+      }
+    }
+  })
   recorder.onError(() => {
-    uni.showToast({ title: '录音失败，请授权麦克风', icon: 'none' })
+    uni.showToast({ title: '录音失败，请检查麦克风权限', icon: 'none' })
     cancelRecord()
   })
-  recorder.start({ format: 'mp3', duration: 120000 }) // max 2分钟
+  recorder.start({ format: 'mp3', duration: 120000 })
   haptic.heartbeatStart()
   // #endif
 
@@ -108,6 +127,9 @@ function startRecord() {
   cancelRecord()
   // #endif
 }
+
+// 标志：finishRecord 触发 stop 后，onStop 回调应该保存消息
+let saveAfterStop = false
 
 function cancelRecord() {
   isRecording.value = false
@@ -125,30 +147,20 @@ function cancelRecord() {
 function finishRecord() {
   isRecording.value = false
   if (timerHandle) { clearInterval(timerHandle); timerHandle = null }
-  const duration = recordSeconds.value; recordSeconds.value = 0
+  recordSeconds.value = 0
   haptic.heartbeatStop(); haptic.thump()
 
   // #ifdef MP-WEIXIN
   if (recorder) {
-    recorder.onStop((res) => {
-      tempFilePath = res.tempFilePath
-      if (duration < 2) {
-        uni.showToast({ title: '录音太短，请重录', icon: 'none' }); return
-      }
-      messages.value = [{
-        id: `voice-${Date.now()}`, author: '我', authorEmoji: '👤',
-        durationSec: duration, read: false,
-        createdAt: Date.now(), localPath: tempFilePath,
-      }, ...messages.value]
-      saveMessages()
-      uni.showToast({ title: '✅ 已保存', icon: 'success' })
-    })
+    // 🔧 设置标志让 startRecord 的 onStop 处理器保存消息
+    saveAfterStop = true
     recorder.stop()
     recorder = null
   }
   // #endif
 
   // #ifndef MP-WEIXIN
+  const duration = recordSeconds.value
   if (duration < 2) {
     uni.showToast({ title: '录音太短，请重录', icon: 'none' }); return
   }

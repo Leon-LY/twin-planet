@@ -27,8 +27,8 @@
         </view>
       </view>
       <view class="energy-adjust">
-        <view v-for="n in 5" :key="n" class="adjust-btn" @click="setMom(n*2)">👩{{ n*2 }}</view>
-        <view v-for="n in 5" :key="'d'+n" class="adjust-btn" @click="setDad(n*2)">👨{{ n*2 }}</view>
+        <view v-for="n in 10" :key="n" class="adjust-btn" @click="setMom(n)">👩{{ n }}</view>
+        <view v-for="n in 10" :key="'d'+n" class="adjust-btn" @click="setDad(n)">👨{{ n }}</view>
       </view>
     </view>
 

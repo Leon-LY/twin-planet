@@ -99,7 +99,8 @@ const selectedCat = ref<ContributionCategory>('other')
 const noteText = ref('')
 
 function selectCategory(cat: ContributionCategory) {
-  selectedCat.value = cat
+  // 点击已选中的分类取消选择
+  selectedCat.value = selectedCat.value === cat ? '' as ContributionCategory : cat
 }
 
 function addEntry() {

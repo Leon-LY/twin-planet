@@ -11,12 +11,13 @@
       <view class="progress-fill" :style="{ width: progressPercent + '%' }" />
     </view>
 
-    <!-- 分类展示 -->
-    <view v-for="cat in categories" :key="cat.key" class="category">
-      <text class="cat-label">{{ cat.label }}</text>
+    <!-- 分类展示 — 空分类隐藏 -->
+    <view v-for="cat in visibleCategories" :key="cat.key" class="category">
+      <text class="cat-label">{{ cat.label }} · {{ cat.earnedCount }}/{{ cat.total }}</text>
       <view class="cat-grid">
         <view v-for="s in cat.stickers" :key="s.label" class="sticker-cell" :class="{ earned: s.earned }">
-          <text class="cell-emoji">{{ s.earned ? s.emoji : '❓' }}</text>
+          <!-- 未收集的贴纸显示灰色实际 emoji 而不是 ❓ -->
+          <text class="cell-emoji" :class="{ earned: s.earned }">{{ s.emoji }}</text>
           <text class="cell-label" :class="{ earned: s.earned }">{{ s.label }}</text>
         </view>
       </view>
@@ -32,10 +33,8 @@
 </template>
 
 <script setup lang="ts">
-	// 分享
-	onShareAppMessage(()=>({title:"🪐 双宝星球 · 两个小怪兽的成长记录",path:"/pages/index/index",imageUrl:"/static/share-brand.png"}))
-
 import { computed, onMounted } from 'vue'
+import { onShareAppMessage } from '@dcloudio/uni-app'
 import { useStickersStore, STICKER_RULES } from '@/stores/stickers'
 
 const store = useStickersStore()
@@ -59,18 +58,26 @@ const categories = computed(() => [
   { key: 'special', label: '👑 特殊成就', stickers: enrich('special') },
 ])
 
+// 🔧 只显示有贴纸的分类
+const visibleCategories = computed(() =>
+  categories.value.filter(c => c.stickers.length > 0)
+)
+
 function enrich(cat: string) {
   return ALL_STICKERS
     .filter(s => s.category === cat)
     .map(s => ({ ...s, earned: earnedSet.value.has(s.label) }))
 }
 
-	// 分享
-	onShareAppMessage(()=>({title:"🪐 双宝星球 · 两个小怪兽的成长记录",path:"/pages/index/index",imageUrl:"/static/share-brand.png"}))
-
 onMounted(() => {
   uni.setNavigationBarTitle({ title: '贴纸收集册' })
 })
+
+onShareAppMessage(() => ({
+  title: '🪐 双宝星球 · 我的贴纸收集册',
+  path: '/pages/index/index',
+  imageUrl: '/static/share-brand.png',
+}))
 </script>
 
 <style scoped>
@@ -120,21 +127,27 @@ onMounted(() => {
   background: var(--cream);
   border-radius: var(--radius-sm);
   border: 2rpx solid var(--dot);
-  opacity: 0.4;
+  opacity: 0.35;
 }
 .sticker-cell.earned {
   opacity: 1;
   border-color: var(--gold);
   background: var(--gold-lt);
 }
-.cell-emoji { width:72rpx;height:72rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22rpx;font-weight:700;background:var(--gold-lt);color:var(--gold);border:2px solid var(--gold);font-family:var(--font-journal) }
-.sticker-cell.earned .cell-emoji { background:var(--gold-lt);color:var(--gold);border-color:var(--gold) }
-.sticker-cell:not(.earned) .cell-emoji { background:var(--cream);color:var(--ink-lt);border-color:var(--dot) }
-.cell-label { font-size: 18rpx; color: var(--ink-md); text-align: center; }
+/* 已收集: 金色圆圈 */
+.cell-emoji {
+  width:72rpx;height:72rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:22rpx;font-weight:700;font-family:var(--font-journal);
+  background:var(--cream);color:var(--ink-lt);border:2rpx solid var(--dot);
+}
+.cell-emoji.earned {
+  background:var(--gold-lt);color:var(--gold);border-color:var(--gold);
+}
+.cell-label { font-size: 18rpx; color: var(--ink-lt); text-align: center; }
 .cell-label.earned { color: var(--ink); font-weight: 600; }
 
 .empty { text-align: center; padding: 80rpx 32rpx; }
-.empty-emoji { font-size: 48px; display: block; margin-bottom: 16rpx; }
+.empty-emoji { font-size: 48rpx; display: block; margin-bottom: 16rpx; }
 .empty-title { display: block; font-family: var(--font-journal); font-size: var(--font-card); color: var(--ink); }
 .empty-desc { font-size: var(--font-body); color: var(--ink-md); margin-top: 8rpx; }
 </style>
