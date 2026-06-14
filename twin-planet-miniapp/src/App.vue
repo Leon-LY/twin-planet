@@ -101,7 +101,169 @@ page {
 
 .page-shell{min-height:100vh;background:var(--paper);padding:48rpx 28rpx calc(64rpx + env(safe-area-inset-bottom))}
 
+/* ═══════════════════════════════════════════
+   手帳全局样式 · Journal Design System
+   点阵背景 / 装订孔 / 纸层叠 / 和纸胶带 / 印章
+   ═══════════════════════════════════════════ */
+
+/* 点阵纸纹 — 子弹笔记风格 */
+.journal-paper {
+  background-image:
+    radial-gradient(circle, var(--dot) 1.2rpx, transparent 1.2rpx);
+  background-size: 44rpx 44rpx;
+  background-position: 6rpx 6rpx;
+}
+
+/* 纸页层叠阴影 — 立体"翻开中"的厚度感 */
+.journal-card {
+  position: relative;
+  background: var(--cream);
+  border-radius: 6rpx 22rpx 6rpx 22rpx;
+  border: 1.5px solid var(--dot);
+  box-shadow:
+    0 1rpx 0 rgba(45,35,24,0.03),
+    0 3rpx 8rpx rgba(45,35,24,0.04),
+    0 6rpx 20rpx rgba(45,35,24,0.03);
+}
+/* 纸页底层阴影（下一张纸） */
+.journal-card::before {
+  content: '';
+  position: absolute;
+  top: 6rpx; left: 4rpx; right: 4rpx; bottom: -4rpx;
+  background: rgba(255,245,232,0.7);
+  border-radius: 6rpx 22rpx 6rpx 22rpx;
+  border: 1px solid var(--dot);
+  z-index: -1;
+  transform: rotate(-0.5deg);
+}
+
+/* 页边红线 — 中文笔记本的结构线 */
+.journal-margin {
+  border-left: 2rpx solid rgba(212,112,107,0.25);
+  padding-left: 24rpx;
+}
+
+/* 装订孔 — 环形活页夹孔 */
+.journal-holes {
+  position: relative;
+}
+.journal-holes::after {
+  content: '';
+  position: absolute;
+  left: -14rpx;
+  top: 18%;
+  bottom: 18%;
+  width: 8rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 28%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle 8rpx at center, transparent 5rpx, var(--dot) 5.5rpx, var(--dot) 6.5rpx, transparent 7rpx) repeat-y 0 0 / 8rpx calc(100% / 3);
+}
+
+/* 和纸胶带 — 可配置颜色 */
+.journal-tape {
+  position: absolute;
+  top: -18rpx;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2.4deg);
+  width: 70%;
+  height: 36rpx;
+  border-radius: 4rpx 3rpx 5rpx 2rpx;
+  z-index: 2;
+  pointer-events: none;
+  box-shadow: 0 1rpx 3rpx rgba(45,35,24,0.06);
+}
+.journal-tape.tape-amber {
+  background: rgba(224,123,62,0.18);
+  border: 1px solid rgba(224,123,62,0.15);
+}
+.journal-tape.tape-rose {
+  background: rgba(212,128,104,0.18);
+  border: 1px solid rgba(212,128,104,0.15);
+}
+.journal-tape.tape-mint {
+  background: rgba(92,154,110,0.15);
+  border: 1px solid rgba(92,154,110,0.12);
+}
+.journal-tape.tape-gold {
+  background: rgba(200,153,62,0.2);
+  border: 1px solid rgba(200,153,62,0.15);
+}
+
+/* 印章效果 — 不规则圆角 + 微旋转 + 颜色溢出感 */
+.journal-stamp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rpx 18rpx;
+  border-radius: 4rpx 14rpx 4rpx 14rpx;
+  font-family: var(--font-journal);
+  font-weight: 700;
+  transform: rotate(2deg);
+  box-shadow: 0 2rpx 6rpx rgba(200,153,62,0.1), inset 0 1rpx 0 rgba(255,255,255,0.3);
+  animation: stampIn .4s var(--ease-bounce);
+}
+.journal-stamp.stamp-amber {
+  background: linear-gradient(135deg, var(--amber-lt), rgba(224,123,62,0.15));
+  color: var(--amber);
+  border: 1.5px solid rgba(224,123,62,0.2);
+}
+.journal-stamp.stamp-mint {
+  background: linear-gradient(135deg, var(--mint-lt), rgba(92,154,110,0.15));
+  color: var(--mint);
+  border: 1.5px solid rgba(92,154,110,0.2);
+}
+.journal-stamp.stamp-gold {
+  background: linear-gradient(135deg, var(--gold-lt), rgba(200,153,62,0.18));
+  color: var(--gold);
+  border: 1.5px solid rgba(200,153,62,0.25);
+}
+
+/* 便签贴 — 微旋转 + 投影，仿 Post-it */
+.journal-sticky {
+  display: inline-block;
+  padding: 12rpx 20rpx;
+  background: linear-gradient(170deg, #FFF9E6, #FFF3C8);
+  border: 1px solid rgba(200,153,62,0.2);
+  border-radius: 2rpx 12rpx 2rpx 12rpx;
+  font-family: var(--font-journal);
+  font-size: var(--font-caption);
+  color: var(--ink-md);
+  transform: rotate(-1.5deg);
+  box-shadow: 0 3rpx 8rpx rgba(45,35,24,0.06);
+}
+
+/* 页卷角 — 卡片右下角翻起效果 */
+.journal-curl {
+  position: relative;
+  overflow: visible;
+}
+.journal-curl::after {
+  content: '';
+  position: absolute;
+  right: -2rpx;
+  bottom: -2rpx;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 0 32rpx 32rpx;
+  border-color: transparent transparent var(--paper) transparent;
+  filter: drop-shadow(-2rpx 2rpx 3rpx rgba(45,35,24,0.08));
+  border-radius: 0 0 4rpx 0;
+}
+
+/* 手帳分隔线 — 比普通虚线更有手工感 */
 .journal-divider{border:none;border-top:1.5px dashed var(--dot);margin:20rpx 0}
+
+/* 手縫线 — 模拟针线装订 */
+.journal-stitch {
+  border-top: 1.5px dotted var(--ink-lt);
+  margin: 28rpx 0;
+  opacity: 0.4;
+}
 
 .heading-xl{font-family:var(--font-journal);font-size:var(--font-hero);font-weight:400;color:var(--ink);letter-spacing:-1rpx}
 .heading-lg{font-family:var(--font-journal);font-size:var(--font-title);font-weight:400;color:var(--ink)}

@@ -1,17 +1,17 @@
 <!-- 爸爸模式 — 战术面板 -->
 <template>
-  <view class="page-shell dad-shell">
+  <view class="page-shell dad-shell journal-paper">
     <view class="dad-header">
       <view class="masthead-left">
         <text class="date-line">{{ dateStr }}</text>
         <text class="dad-greeting">{{ greeting }} · {{ greetLine2 }}</text>
       </view>
       <view class="masthead-right">
-        <view class="streak-stamp" v-if="streakDays > 0"><text>连续 {{ streakDays }} 天</text></view>
+        <view class="streak-stamp journal-stamp stamp-gold" v-if="streakDays > 0"><text>连续 {{ streakDays }} 天</text></view>
       </view>
     </view>
     <view class="twins dad-twins">
-      <view class="twin-card card-a" @click="goRecord">
+      <view class="twin-card card-a journal-holes" @click="goRecord">
         <view class="card-surface">
           <view class="avatar-ring" :class="{ pulsing: isRunningA }"><text class="avatar-emoji">{{ isRunningA ? '😋' : '😛' }}</text></view>
           <text class="twin-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
@@ -22,7 +22,7 @@
           </view>
         </view>
       </view>
-      <view class="twin-card card-b" @click="goRecord">
+      <view class="twin-card card-b journal-holes" @click="goRecord">
         <view class="card-surface">
           <view class="avatar-ring" :class="{ pulsing: isRunningB }"><text class="avatar-emoji">{{ isRunningB ? '😴' : '😪' }}</text></view>
           <text class="twin-name">{{ babyB?.nickname || babyB?.name || '二宝' }}</text>

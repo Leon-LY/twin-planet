@@ -1,6 +1,6 @@
 <!-- 奶奶/爷爷模式 — 3个大按钮 -->
 <template>
-  <view class="page-shell granny-shell">
+  <view class="page-shell granny-shell journal-paper">
     <text class="heading-xl" style="text-align:center;display:block;margin-bottom:8rpx">双宝记</text>
     <text class="body-text" style="text-align:center;display:block;margin-bottom:64rpx">{{ greeting }}</text>
     <view class="granny-actions">

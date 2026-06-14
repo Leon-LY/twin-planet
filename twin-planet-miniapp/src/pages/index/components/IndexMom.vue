@@ -1,6 +1,6 @@
 <!-- 妈妈模式 — 完整手帳对开页 -->
 <template>
-  <view class="page-shell journal">
+  <view class="page-shell journal journal-paper">
     <view class="bg-spot spot-a" />
     <view class="bg-spot spot-b" />
 
@@ -13,15 +13,16 @@
         </view>
       </view>
       <view class="masthead-right">
-        <view class="streak-stamp" v-if="streakDays > 0"><text>连续 {{ streakDays }} 天</text></view>
+        <view class="streak-stamp journal-stamp stamp-gold" v-if="streakDays > 0"><text>连续 {{ streakDays }} 天</text></view>
         <text class="streak-start" v-else>今天开始</text>
       </view>
     </view>
 
-    <view class="today-card reveal-2">
+    <view class="today-card journal-card journal-curl reveal-2">
+      <view class="journal-tape tape-amber" />
       <text class="greet-line1">{{ greetFull }}</text>
       <text class="greet-sub">{{ insightText }}</text>
-      <view class="today-meta" v-if="todaySummary || allGood || tomorrowForecast">
+      <view class="today-meta journal-margin" v-if="todaySummary || allGood || tomorrowForecast">
         <text class="today-summary" v-if="todaySummary">{{ todaySummary }}</text>
         <text class="today-allgood" v-if="allGood">🟢 两个小家伙今天都很好</text>
         <text class="today-forecast" v-if="tomorrowForecast && streakDays >= 3">🔮 {{ tomorrowForecast }}</text>
@@ -49,8 +50,9 @@
     </view>
 
     <view class="twins reveal-3">
-      <view class="twin-card card-a" :class="{ 'has-timer': isRunningA }" @click="goRecord">
-        <view class="card-surface">
+      <view class="twin-card card-a journal-holes" :class="{ 'has-timer': isRunningA }" @click="goRecord">
+        <view class="card-surface journal-curl">
+          <view class="journal-tape tape-rose" />
           <view class="avatar-ring" :class="{ pulsing: isRunningA }"><text class="avatar-emoji">{{ isRunningA ? '😋' : '😛' }}</text></view>
           <text class="twin-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
           <view class="twin-status-row">
@@ -60,8 +62,9 @@
           </view>
         </view>
       </view>
-      <view class="twin-card card-b" :class="{ 'has-timer': isRunningB }" @click="goRecord">
-        <view class="card-surface">
+      <view class="twin-card card-b journal-holes" :class="{ 'has-timer': isRunningB }" @click="goRecord">
+        <view class="card-surface journal-curl">
+          <view class="journal-tape tape-mint" />
           <view class="avatar-ring" :class="{ pulsing: isRunningB }"><text class="avatar-emoji">{{ isRunningB ? '😴' : '😪' }}</text></view>
           <text class="twin-name">{{ babyB?.nickname || babyB?.name || '二宝' }}</text>
           <view class="twin-status-row">
@@ -78,9 +81,9 @@
     </view>
 
     <view class="quick-ref reveal-4" v-if="quickRef.lastFeeding!=='—' || quickRef.activeTimer">
-      <view class="qr-item" v-if="quickRef.activeTimer"><text class="qr-emoji">⏱️</text><text class="qr-text">{{ quickRef.activeTimer }}</text></view>
-      <view class="qr-item" v-if="quickRef.lastFeeding!=='—'"><text class="qr-emoji">🍼</text><text class="qr-text">上次喂奶 {{ quickRef.lastFeeding }}</text></view>
-      <view class="qr-item" v-if="quickRef.lastSleep!=='—'"><text class="qr-emoji">😴</text><text class="qr-text">上次睡觉 {{ quickRef.lastSleep }}</text></view>
+      <view class="qr-item journal-sticky" v-if="quickRef.activeTimer"><text class="qr-emoji">⏱️</text><text class="qr-text">{{ quickRef.activeTimer }}</text></view>
+      <view class="qr-item journal-sticky" v-if="quickRef.lastFeeding!=='—'"><text class="qr-emoji">🍼</text><text class="qr-text">上次喂奶 {{ quickRef.lastFeeding }}</text></view>
+      <view class="qr-item journal-sticky" v-if="quickRef.lastSleep!=='—'"><text class="qr-emoji">😴</text><text class="qr-text">上次睡觉 {{ quickRef.lastSleep }}</text></view>
     </view>
 
     <view class="action-center reveal-5">

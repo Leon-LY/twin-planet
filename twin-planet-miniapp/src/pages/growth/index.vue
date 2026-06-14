@@ -1,5 +1,5 @@
 <template>
-  <view class="growth-page">
+  <view class="growth-page journal-paper">
     <view class="page-header">
       <text class="page-title">生长曲线</text>
       <text class="page-subtitle">每个宝宝都有自己的生长节奏 🌱</text>
@@ -47,7 +47,7 @@
 
     <!-- 双宝数据卡 -->
     <view class="data-cards" v-if="babyA || babyB">
-      <view class="data-card" v-if="babyA" :style="{borderLeft:'4rpx solid var(--amber)'}">
+      <view class="data-card journal-card" v-if="babyA" :style="{borderLeft:'4rpx solid var(--amber)'}">
         <text class="card-name">{{ babyA.nickname || babyA.name }}</text>
         <text class="card-gender">{{ babyA.gender==='male'?'👦':'👧' }} {{ babyA.gender==='male'?'男孩':'女孩' }}</text>
         <view class="card-stats" v-if="latestA">

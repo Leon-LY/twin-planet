@@ -1,5 +1,5 @@
 <template>
-  <view class="contrib-page">
+  <view class="contrib-page journal-paper">
     <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
     <!-- 头部 -->
     <view class="page-header">
