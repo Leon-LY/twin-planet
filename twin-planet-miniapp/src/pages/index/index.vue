@@ -43,7 +43,7 @@
 
         <!-- 品牌吉祥物 -->
         <view class="mascot-area reveal-2" v-if="userStore.roleConfig.homeLayout==='full'">
-          <TwinMascot size="sm" :linked="true" mood="happy" />
+          <TwinMascot size="sm" :linked="true" />
         </view>
 
         <!-- 问候 — editorial, left-aligned, dramatic scale -->
@@ -51,6 +51,36 @@
           <text class="greet-line1">{{ greeting }}</text>
           <text class="greet-line2">{{ greetLine2 }}</text>
           <text class="greet-sub">{{ insightText }}</text>
+        </view>
+
+        <!-- 🆕 新手引导 — 首次使用教学 -->
+        <view class="welcome-guide reveal-2" v-if="showWelcome && userStore.roleConfig.homeLayout==='full'">
+          <view class="welcome-card">
+            <view class="welcome-top">
+              <text class="welcome-wave">👋</text>
+              <view class="welcome-text">
+                <text class="welcome-title">欢迎来到双宝手帐</text>
+                <text class="welcome-desc">一本可以玩的成长记录本，从今天开始吧</text>
+              </view>
+              <view class="welcome-close" @click="dismissWelcome"><text>✕</text></view>
+            </view>
+            <view class="welcome-steps">
+              <view class="w-step">
+                <text class="ws-num">1</text>
+                <text class="ws-text">点击下方大按钮<br><text class="ws-hl">记录喂奶/睡觉</text></text>
+              </view>
+              <view class="ws-arrow">→</view>
+              <view class="w-step">
+                <text class="ws-num">2</text>
+                <text class="ws-text">每天记录<br><text class="ws-hl">收集贴纸</text></text>
+              </view>
+              <view class="ws-arrow">→</view>
+              <view class="w-step">
+                <text class="ws-num">3</text>
+                <text class="ws-text">7天后生成<br><text class="ws-hl">第一张双宝卡</text></text>
+              </view>
+            </view>
+          </view>
         </view>
 
         <!-- 双宝卡片 — asymmetric, hand-rotated, overlapping -->
@@ -220,6 +250,19 @@ const alertsStore=useAlertsStore();const stickersStore=useStickersStore()
 const { syncStickers } = useStickerSync()
 const { quickRef } = useQuickRef()
 
+// 新手引导：首次使用显示教学卡片，进行第一次记录后或手动关闭后消失
+const WELCOME_KEY = 'tp_welcome_dismissed'
+const showWelcome = ref(false)
+try {
+  const dismissed = uni.getStorageSync(WELCOME_KEY)
+  const hasRecords = recordsStore.logs.length > 0
+  showWelcome.value = !dismissed && !hasRecords
+} catch { showWelcome.value = true }
+function dismissWelcome() {
+  showWelcome.value = false
+  try { uni.setStorageSync(WELCOME_KEY, '1') } catch {}
+}
+
 const isGrandma=computed(()=>userStore.isGrandmaMode)
 const babyA=computed(()=>babiesStore.babyA);const babyB=computed(()=>babiesStore.babyB)
 const streakDays=computed(()=>recordsStore.streakDays)
@@ -365,6 +408,91 @@ const switchRole = () => {
   margin-bottom: 20rpx;
   position: relative;
   z-index: 1;
+}
+
+/* 新手引导卡片 */
+.welcome-guide {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 32rpx;
+}
+.welcome-card {
+  background: linear-gradient(135deg, var(--amber-lt) 0%, var(--cream) 50%, var(--rose-lt) 100%);
+  border-radius: var(--radius-lg);
+  border: 2rpx solid var(--dot);
+  padding: 28rpx 24rpx 24rpx;
+  animation: welcomeIn .6s var(--ease-soft);
+}
+@keyframes welcomeIn {
+  from { opacity: 0; transform: translateY(-12rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.welcome-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+}
+.welcome-wave { font-size: 48rpx; flex-shrink: 0; }
+.welcome-text { flex: 1; }
+.welcome-title {
+  display: block;
+  font-family: var(--font-journal);
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.welcome-desc {
+  display: block;
+  font-size: 24rpx;
+  color: var(--ink-md);
+  margin-top: 4rpx;
+}
+.welcome-close {
+  width: 48rpx; height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 24rpx;
+  color: var(--ink-lt);
+}
+.welcome-close:active { background: var(--dot); }
+.welcome-steps {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  justify-content: center;
+}
+.w-step {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+.ws-num {
+  width: 44rpx; height: 44rpx;
+  border-radius: 50%;
+  background: var(--amber);
+  color: #FFF;
+  font-size: 24rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ws-text {
+  font-size: 22rpx;
+  color: var(--ink-md);
+  line-height: 1.4;
+}
+.ws-hl {
+  color: var(--amber);
+  font-weight: 600;
+}
+.ws-arrow {
+  font-size: 24rpx;
+  color: var(--ink-lt);
 }
 
 /* 问候 — editorial left-aligned */
