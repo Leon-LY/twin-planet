@@ -84,12 +84,9 @@
     </view>
 
     <view class="action-center reveal-5">
-      <view class="btn-stage">
-        <view class="orbit-ring" />
-        <button class="main-btn" @click="goRecord">
-          <text class="btn-icon">✋</text><text class="btn-text">记一笔</text>
-        </button>
-      </view>
+      <button class="main-btn" @click="goRecord">
+        <text class="btn-icon">✋</text><text class="btn-text">记一笔</text>
+      </button>
     </view>
 
     <view class="quick-bar reveal-6" v-if="babyA && babyB && userStore.roleConfig.homeLayout!=='compact'">
@@ -397,8 +394,6 @@ const goMore = () => {
 .qr-text{font-size:22rpx;color:var(--ink-md);font-weight:500}
 
 .action-center{display:flex;align-items:center;justify-content:center;position:relative;z-index:1;margin-bottom:28rpx}
-.btn-stage{position:relative;width:420rpx;height:420rpx;display:flex;align-items:center;justify-content:center}
-.orbit-ring{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:50%;border:2rpx dashed var(--dot);opacity:.35}
 .main-btn{width:300rpx;height:300rpx;border-radius:50%;position:relative;z-index:2;background:var(--amber);border:none;color:#FFF;font-family:var(--font-journal);box-shadow:0 20rpx 56rpx rgba(224,123,62,0.2),0 6rpx 12rpx rgba(224,123,62,0.1),inset 0 3rpx 0 rgba(255,255,255,.2),inset 0 -6rpx 12rpx rgba(0,0,0,.06);transform:rotate(-2deg);transition:transform .18s var(--ease-bounce),box-shadow .18s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6rpx}
 .main-btn::after{content:'';position:absolute;top:14rpx;left:22%;right:22%;height:32%;background:radial-gradient(ellipse at center,rgba(255,255,255,.25) 0%,transparent 70%);border-radius:50%;pointer-events:none}
 .main-btn:active{transform:rotate(-2deg)scale(.86);box-shadow:0 6rpx 20rpx rgba(224,123,62,.16),0 2rpx 4rpx rgba(224,123,62,.08)}
