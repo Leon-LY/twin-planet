@@ -155,7 +155,7 @@
         <!-- 免责声明 -->
         <text class="disclaimer-note reveal-6" v-if="userStore.roleConfig.homeLayout==='full'">本应用不提供医疗建议，所有数据仅供参考</text>
 
-        <text class="journal-footer-text" v-if="streakDays > 0">端水失败的第 {{ streakDays }} 天</text>
+        <text class="journal-footer-text" v-if="streakDays > 0">连续记录第 {{ streakDays }} 天 ✦</text>
 
         <!-- 底部导航 — journal-style page tabs -->
         <view class="journal-nav">

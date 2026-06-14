@@ -2,7 +2,7 @@
   <view class="growth-page">
     <view class="page-header">
       <text class="page-title">生长曲线</text>
-      <text class="page-subtitle">WHO 国际标准 · 双宝对比</text>
+      <text class="page-subtitle">每个宝宝都有自己的生长节奏 🌱</text>
     </view>
 
     <!-- 指标切换 -->
@@ -210,11 +210,11 @@ const chartOption=computed(()=>{
 // 添加测量表单
 	// 百分位白话解释
 	function percentileHint(p:number):string{
-	  if(p<3)return '(比大多数同龄宝宝小)'
-	  if(p<15)return '(稍微偏小)'
-	  if(p<85)return '(和同龄宝宝差不多)'
-	  if(p<97)return '(稍微偏大)'
-	  return '(比大多数同龄宝宝大)'
+	  if(p<3)return '(可以咨询儿科医生了解详情)'
+	  if(p<15)return '(正在以自己的节奏成长)'
+	  if(p<85)return '(在健康范围内，长得很好)'
+	  if(p<97)return '(长得很好，每个宝宝节奏不同)'
+	  return '(可以咨询儿科医生了解详情)'
 	}
 
 const showAdd=ref(false)
