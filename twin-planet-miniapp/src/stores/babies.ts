@@ -10,18 +10,6 @@ import { TWIN_COLORS } from '@/constants/design'
 const BABY_COLORS = { 1: TWIN_COLORS.A, 2: TWIN_COLORS.B } as const
 const ACTIVE_BABY_KEY = 'tp_active_baby'
 
-/** 获取当前用户 ID（从持久化 user profile 或生成本地 ID） */
-function getUserId(): string {
-  try {
-    const raw = uni.getStorageSync('tp_user')
-    if (raw) {
-      const profile = JSON.parse(raw)
-      if (profile.id) return profile.id
-    }
-  } catch {}
-  return 'local-' + Date.now()
-}
-
 export interface Baby {
   id: string
   userId: string
@@ -67,7 +55,7 @@ export const useBabiesStore = defineStore('babies', () => {
     const baby: Baby = {
       ...data,
       id,
-      userId: getUserId(),
+      userId: 'mock-user-001',
       twinGroupId: '',
       color: BABY_COLORS[data.birthOrder],
       avatar: '',

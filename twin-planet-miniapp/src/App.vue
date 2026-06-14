@@ -1,18 +1,12 @@
 <script>
-import { trackSessionStart } from '@/utils/analytics'
-
 export default {
-  onLaunch(options) {
+  onLaunch() {
     this._syncTheme()
     // 每小时检查一次暗色模式切换
     this._themeTimer = setInterval(() => this._syncTheme(), 60 * 60 * 1000)
-    // 处理邀请令牌
-    this._checkInvite(options)
-    try { trackSessionStart() } catch {}
   },
-  onShow(options) {
+  onShow() {
     this._syncTheme()
-    this._checkInvite(options)
   },
   onHide() {
     // keep timer running while app is in background
@@ -26,20 +20,6 @@ export default {
           const isNight = hour >= 22 || hour < 6
           app.globalData = app.globalData || {}
           app.globalData.__theme = isNight ? 'dark' : 'light'
-        }
-      } catch (_) {}
-    },
-    _checkInvite(options) {
-      try {
-        // 从启动参数中提取邀请令牌
-        const token = options?.query?.invite
-        if (token) {
-          const app = getApp()
-          if (app) {
-            app.globalData = app.globalData || {}
-            app.globalData.__inviteToken = token
-          }
-          console.log('[App] Invite token detected:', token.slice(0, 8) + '...')
         }
       } catch (_) {}
     },
@@ -76,8 +56,8 @@ page {
   --gold-lt: rgba(200,153,62,0.12);
   --dot:    #E8DCC8;
 
-  --font-journal: Georgia, "KaiTi", "STKaiti", serif;
-  --font-ui: "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-journal: Georgia, KaiTi, STKaiti, serif;
+  --font-ui: 'PingFang SC', 'Microsoft YaHei', sans-serif;
 
   --radius-sm:12rpx;--radius-md:20rpx;--radius-lg:28rpx;--radius-full:9999rpx;
   --space-xs:8rpx;--space-sm:14rpx;--space-md:28rpx;--space-lg:48rpx;
@@ -161,18 +141,10 @@ page {
   --space-md:40rpx;
   --space-lg:60rpx;
 }
-/* 奶奶模式 — 禁用动画（WXSS 不支持 * 选择器，逐个指定） */
-.font-large .bg-spot,
-.font-large .page-enter,
-.font-large .sticker-item.new,
-.font-large .mascot-item.bounce,
-.font-large .welcome-card,
-.font-large .celebrate-card,
-.font-large .more-sheet,
-.font-large .sticker-pop-emoji,
-.font-large .orbit-ring.pulsing,
-.font-large .streak-stamp,
-.font-large .avatar-ring.pulsing { animation: none !important; transition-duration: 0s !important; }
+/* 奶奶模式 — 禁用动画 */
+.font-large .bg-spot { animation: none !important; }
+.font-large .page-enter { animation: none !important; }
+.font-large .bg-spot,.font-large .page-enter,.font-large .sticker-item.new,.font-large .mascot-item.bounce,.font-large .welcome-card,.font-large .celebrate-card,.font-large .more-sheet,.font-large .sticker-pop-emoji,.font-large .orbit-ring.pulsing,.font-large .streak-stamp,.font-large .avatar-ring.pulsing { animation-duration: 0s !important; transition-duration: 0s !important; }
 
 /* 奶奶模式高对比度 */
 .role-granny {

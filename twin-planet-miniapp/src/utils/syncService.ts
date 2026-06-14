@@ -25,29 +25,17 @@ function saveSyncState(state: SyncState) {
   uni.setStorageSync(SYNC_STATE_KEY, JSON.stringify(state))
 }
 
-/** 带指数退避的通用重试包装 */
-async function withRetry<T>(fn: () => Promise<T>, maxRetries = 2): Promise<T> {
-  for (let i = 0; i <= maxRetries; i++) {
-    try {
-      return await fn()
-    } catch (err) {
-      if (i === maxRetries) throw err
-      await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000)) // 1s, 2s, 4s
-    }
-  }
-  throw new Error('unreachable')
-}
-
 /** 同步喂养/睡眠等日常记录 */
 export async function syncRecords(records: any[]): Promise<number> {
   const token = getToken()
   if (!token || records.length === 0) return 0
 
   try {
-    const res = await withRetry(() => request<{ synced: number }>('/records/batch', {
+    const res = await request<{ synced: number }>('/records/batch', {
       method: 'POST', data: { records },
-    }))
+    })
     if (res.success && res.data) {
+      // 🔧 推送成功后更新同步状态
       const state = getSyncState()
       state.lastSyncAt = Date.now()
       if (records.length > 0) {
@@ -95,9 +83,8 @@ export async function syncGrowthMeasurements(measurements: any[]): Promise<numbe
 export function exportAllData(): string {
   const allData: Record<string, any> = {}
   // 🔧 从 PERSIST_KEYS 动态构建，不再硬编码
-  const keys = Object.values(PERSIST_KEYS)
-    .map(k => 'tp_' + k)
-    .filter(k => k !== 'tp_token') // 🔒 不导出 JWT token（防止账户劫持）
+  const keys = Object.values(PERSIST_KEYS).map(k => 'tp_' + k)
+  // 🔒 不导出 token（防止账户劫持）
   keys.push('tp_active_baby', 'tp_active_timer', 'tp_active_session')
 
   for (const key of keys) {

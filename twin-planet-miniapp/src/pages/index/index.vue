@@ -1,4 +1,4 @@
-<!-- 双宝记 v5 · Editorial Journal -->
+<!-- 双宝星球 v5 · Editorial Journal -->
 <template>
   <view :class="[themeClass, { 'font-large': isGrandma }]">
     <template v-if="loading">
@@ -7,7 +7,7 @@
 
     <template v-else-if="isGrandma">
       <view class="page-shell granny-shell">
-        <text class="heading-xl" style="text-align:center;display:block;margin-bottom:8rpx">双宝记</text>
+        <text class="heading-xl" style="text-align:center;display:block;margin-bottom:8rpx">双宝星球</text>
         <text class="body-text" style="text-align:center;display:block;margin-bottom:64rpx">{{ greeting }}</text>
         <view class="granny-actions">
           <view class="granny-btn" @click="goRecord"><text class="granny-emoji">✋</text><text class="granny-label">记一笔</text></view>
@@ -41,46 +41,11 @@
           </view>
         </view>
 
-        <!-- 品牌吉祥物 -->
-        <view class="mascot-area reveal-2" v-if="userStore.roleConfig.homeLayout==='full'">
-          <TwinMascot size="sm" :linked="true" />
-        </view>
-
         <!-- 问候 — editorial, left-aligned, dramatic scale -->
         <view class="greeting reveal-2">
           <text class="greet-line1">{{ greeting }}</text>
           <text class="greet-line2">{{ greetLine2 }}</text>
           <text class="greet-sub">{{ insightText }}</text>
-        </view>
-
-        <!-- 🆕 新手引导 — 首次使用教学 -->
-        <view class="welcome-guide reveal-2" v-if="showWelcome && userStore.roleConfig.homeLayout==='full'">
-          <view class="welcome-card">
-            <view class="welcome-top">
-              <text class="welcome-wave">👋</text>
-              <view class="welcome-text">
-                <text class="welcome-title">欢迎来到双宝手帐</text>
-                <text class="welcome-desc">一本可以玩的成长记录本，从今天开始吧</text>
-              </view>
-              <view class="welcome-close" @click="dismissWelcome"><text>✕</text></view>
-            </view>
-            <view class="welcome-steps">
-              <view class="w-step">
-                <text class="ws-num">1</text>
-                <text class="ws-text">点击下方大按钮<br><text class="ws-hl">记录喂奶/睡觉</text></text>
-              </view>
-              <view class="ws-arrow">→</view>
-              <view class="w-step">
-                <text class="ws-num">2</text>
-                <text class="ws-text">每天记录<br><text class="ws-hl">收集贴纸</text></text>
-              </view>
-              <view class="ws-arrow">→</view>
-              <view class="w-step">
-                <text class="ws-num">3</text>
-                <text class="ws-text">7天后生成<br><text class="ws-hl">第一张双宝卡</text></text>
-              </view>
-            </view>
-          </view>
         </view>
 
         <!-- 双宝卡片 — asymmetric, hand-rotated, overlapping -->
@@ -150,35 +115,14 @@
           </view>
         </view>
 
-        <!-- 中央按钮 — 🆕 一键记录（打开快速操作面板） -->
+        <!-- 中央按钮 -->
         <view class="action-center reveal-5">
           <view class="btn-stage">
-            <view class="orbit-ring" :class="{ pulsing: recordsStore.isRunning }" />
-            <button class="main-btn" @click="showQuickActions=true">
-              <text class="btn-icon">{{ recordsStore.isRunning ? '⏱️' : '✋' }}</text>
-              <text class="btn-text">{{ recordsStore.isRunning ? '计时中' : '记一笔' }}</text>
+            <view class="orbit-ring" />
+            <button class="main-btn" @click="goRecord">
+              <text class="btn-icon">✋</text>
+              <text class="btn-text">记一笔</text>
             </button>
-          </view>
-        </view>
-
-        <!-- 快速操作面板 — 2 tap 完成记录 -->
-        <view class="quick-overlay" v-if="showQuickActions" @click="showQuickActions=false">
-          <view class="quick-sheet" @click.stop>
-            <text class="quick-sheet-title">快速记录 · {{ activeBabyName }}</text>
-            <view class="quick-action-grid">
-              <view class="quick-action" @click="quickRecord('feeding');showQuickActions=false">
-                <text class="qa-emoji">🍼</text><text class="qa-label">喂奶</text>
-              </view>
-              <view class="quick-action" @click="quickRecord('sleep');showQuickActions=false">
-                <text class="qa-emoji">😴</text><text class="qa-label">睡觉</text>
-              </view>
-              <view class="quick-action" @click="quickRecord('diaper');showQuickActions=false">
-                <text class="qa-emoji">🧷</text><text class="qa-label">尿布</text>
-              </view>
-            </view>
-            <view class="quick-sheet-footer">
-              <view class="quick-more" @click="showQuickActions=false;goRecord()">更多操作 →</view>
-            </view>
           </view>
         </view>
 
@@ -203,76 +147,22 @@
 
         <!-- 底部工具行 -->
         <view class="footer-tools reveal-6" v-if="userStore.roleConfig.homeLayout==='full'">
-          <button class="ft-invite" open-type="share">
-            <text>👨‍👩‍👧‍👦 邀请另一半一起记录</text>
-          </button>
-          <view class="ft-row">
-            <text class="ft-link" @click="goExport">📤 导出备份</text>
-            <text class="ft-dot">·</text>
-            <text class="ft-link" @click="navigate('/pages/privacy/index')">隐私政策</text>
-          </view>
+          <text class="ft-link" @click="goExport">📤 导出备份</text>
+          <text class="ft-dot">·</text>
+          <text class="ft-link" @click="navigate('/pages/privacy/index')">隐私政策</text>
         </view>
 
         <!-- 免责声明 -->
         <text class="disclaimer-note reveal-6" v-if="userStore.roleConfig.homeLayout==='full'">本应用不提供医疗建议，所有数据仅供参考</text>
 
-        <!-- 邀请接受弹窗 -->
-        <view class="celebrate-overlay" v-if="showInvitePrompt" @click="showInvitePrompt=false">
-          <view class="celebrate-card" @click.stop>
-            <text class="celebrate-emoji">👨‍👩‍👧‍👦</text>
-            <text class="celebrate-title">有人邀请你一起记录！</text>
-            <text class="celebrate-desc">加入家庭后，你们可以一起记录双宝的日常</text>
-            <view class="invite-actions">
-              <button class="invite-accept" @click="acceptInvite">加入家庭</button>
-              <button class="invite-decline" @click="showInvitePrompt=false">以后再说</button>
-            </view>
-          </view>
-        </view>
-
-        <!-- 里程碑庆祝弹窗 -->
-        <view class="celebrate-overlay" v-if="showCelebrate" @click="showCelebrate=false">
-          <view class="celebrate-card">
-            <text class="celebrate-emoji">{{ celebrateEmoji }}</text>
-            <text class="celebrate-title">{{ celebrateTitle }}</text>
-            <text class="celebrate-desc">{{ celebrateDesc }}</text>
-            <view class="celebrate-stars">
-              <text class="cs">⭐</text><text class="cs">🌟</text><text class="cs">⭐</text>
-            </view>
-          </view>
-        </view>
-
         <text class="journal-footer-text" v-if="streakDays > 0">连续记录第 {{ streakDays }} 天 ✦</text>
 
         <!-- 底部导航 — journal-style page tabs -->
         <view class="journal-nav">
-          <text class="jnav-item active">手帐</text>
+          <text class="jnav-item active">星球</text>
           <text class="jnav-item" @click="goGrowth">生长</text>
           <text class="jnav-item" @click="goSnapshot">快照</text>
-          <text class="jnav-item" @click="showMoreSheet=true">更多</text>
-        </view>
-
-        <!-- 🆕 自定义「更多」底部弹出面板 (替代原生ActionSheet) -->
-        <view class="more-overlay" v-if="showMoreSheet" @click="showMoreSheet=false">
-          <view class="more-sheet" @click.stop>
-            <view class="more-handle" />
-            <text class="more-title">更多功能</text>
-            <view class="more-grid">
-              <view v-for="f in discoverFeatures" :key="f.path" class="more-item" @click="showMoreSheet=false;navigate(f.path)">
-                <text class="more-item-icon">{{ f.icon }}</text>
-                <text class="more-item-label">{{ f.label }}</text>
-              </view>
-            </view>
-            <view class="more-divider" />
-            <view class="more-actions">
-              <view class="more-action" @click="showMoreSheet=false;goExport()">
-                <text>📤 导出数据备份</text>
-              </view>
-              <view class="more-action" @click="showMoreSheet=false;navigate('/pages/privacy/index')">
-                <text>🔒 隐私政策</text>
-              </view>
-            </view>
-            <view class="more-cancel" @click="showMoreSheet=false">取消</view>
-          </view>
+          <text class="jnav-item" @click="goMore">更多</text>
         </view>
       </view>
     </template>
@@ -291,12 +181,9 @@ import { useStickerSync } from '@/composables/useStickerSync'
 import { useQuickRef } from '@/composables/useQuickRef'
 import { getDiscoverFeatures } from '@/config/roles'
 import { saveExportData, syncRecords, pullRecords } from '@/utils/syncService'
-import { createInvite, joinFamily } from '@/api/family'
-import { trackCelebration, trackShare } from '@/utils/analytics'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
 import LightBridge from '@/components/cosmic/LightBridge.vue'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
-import TwinMascot from '@/components/journal/TwinMascot.vue'
 
 const loading=ref(true);const userStore=useUserStore()
 const themeClass=computed(()=>{const c=['page-root'];const h=new Date().getHours();if(h>=22||h<6)c.push('theme-dark');if(userStore.isGrandmaMode)c.push('font-large','role-granny');else if(userStore.isDad)c.push('role-dad');return c.join(' ')})
@@ -319,116 +206,13 @@ async function initSync(){
     syncRecords(recordsStore.logs.slice(-20))
   } catch { /* 静默 */ }
 }
-// 邀请令牌 — 预生成用于分享，从 globalData 检测被邀请
-const inviteToken = ref('')
-const showInvitePrompt = ref(false)
-
-async function checkInviteAndAccept() {
-  // 检测是否有邀请令牌
-  try {
-    const app = getApp()
-    const token = app?.globalData?.__inviteToken
-    if (token && userStore.isLoggedIn) {
-      showInvitePrompt.value = true
-      inviteToken.value = token
-      // 清除，避免重复弹窗
-      app.globalData.__inviteToken = null
-    }
-  } catch {}
-}
-async function acceptInvite() {
-  try {
-    const res = await joinFamily(inviteToken.value)
-    if (res.success) {
-      uni.showToast({ title: '成功加入家庭！', icon: 'success' })
-      showInvitePrompt.value = false
-    } else {
-      uni.showToast({ title: res.error?.message || '加入失败', icon: 'none' })
-    }
-  } catch {
-    uni.showToast({ title: '网络问题，稍后再试吧', icon: 'none' })
-  }
-}
-
-// 预生成邀请令牌用于分享
-async function ensureInviteToken() {
-  if (inviteToken.value) return inviteToken.value
-  try {
-    const res = await createInvite()
-    if (res.success && res.data) {
-      inviteToken.value = res.data.token
-      return res.data.token
-    }
-  } catch { /* 离线或无家庭时静默失败 */ }
-  return ''
-}
-
-onMounted(()=>{
-  // 数据驱动加载：骨架屏仅在 store 数据未就绪时显示
-  if (babiesStore.babyA || babiesStore.babyB) {
-    loading.value = false
-  } else {
-    setTimeout(() => { loading.value = false }, 200) // 200ms 兜底
-  }
-  syncStickers();initSync().catch(()=>{});checkCelebrate();checkInviteAndAccept();ensureInviteToken().catch(()=>{})
-})
-onShareAppMessage(() => {
-  const aName=babyA.value?.nickname||'大宝';const bName=babyB.value?.nickname||'二宝'
-  const token = inviteToken.value
-  const path = token ? `/pages/index/index?invite=${token}` : '/pages/index/index'
-  // 使用真实数据让分享卡片更具吸引力
-  const todayCount=recordsStore.logs.filter(l=>l.createdAt>=new Date().setHours(0,0,0,0)).length
-  const days=streakDays.value
-  const summary=days>0?`已连续记录${days}天 · 今日${todayCount}次`:'开始记录双宝成长'
-  return {
-    title:`${aName}和${bName}的成长手帐 ✦ ${summary}`,
-    path,
-    imageUrl:'/static/share-brand.png',
-  }
-})
+onMounted(()=>{setTimeout(()=>{loading.value=false;syncStickers();initSync().catch(()=>{})},400)})
+onShareAppMessage(()=>({title:'🪐 双宝星球 · 两个小怪兽的成长记录',path:'/pages/index/index',imageUrl:'/static/share-brand.png'}))
 
 const babiesStore=useBabiesStore();const recordsStore=useRecordsStore()
 const alertsStore=useAlertsStore();const stickersStore=useStickersStore()
 const { syncStickers } = useStickerSync()
 const { quickRef } = useQuickRef()
-
-// 新手引导：首次使用显示教学卡片，进行第一次记录后或手动关闭后消失
-const WELCOME_KEY = 'tp_welcome_dismissed'
-const showWelcome = ref(false)
-try {
-  const dismissed = uni.getStorageSync(WELCOME_KEY)
-  const hasRecords = recordsStore.logs.length > 0
-  showWelcome.value = !dismissed && !hasRecords
-} catch { showWelcome.value = true }
-function dismissWelcome() {
-  showWelcome.value = false
-  try { uni.setStorageSync(WELCOME_KEY, '1') } catch {}
-}
-
-// 里程碑庆祝 — 连续7/30/100天触发一次性弹窗
-const CELEBRATE_KEY = 'tp_celebrated'
-const showCelebrate = ref(false)
-const celebrateEmoji = ref('🎉')
-const celebrateTitle = ref('')
-const celebrateDesc = ref('')
-const MILESTONES: Record<number, { emoji: string; title: string; desc: string }> = {
-  7: { emoji: '🌟', title: '一周全勤！', desc: '连续7天记录，你已经是个了不起的守护者了' },
-  30: { emoji: '🏆', title: '月度之星！', desc: '连续30天记录，这份坚持太厉害了' },
-  100: { emoji: '👑', title: '百天守护！', desc: '100天的陪伴，两个小怪兽有你真幸福' },
-}
-function checkCelebrate() {
-  const days = streakDays.value
-  if (!MILESTONES[days]) return
-  try {
-    const celebrated: number[] = JSON.parse(uni.getStorageSync(CELEBRATE_KEY) || '[]')
-    if (celebrated.includes(days)) return
-    const m = MILESTONES[days]
-    celebrateEmoji.value = m.emoji; celebrateTitle.value = m.title; celebrateDesc.value = m.desc
-    showCelebrate.value = true
-    celebrated.push(days);trackCelebration(days)
-    uni.setStorageSync(CELEBRATE_KEY, JSON.stringify(celebrated))
-  } catch {}
-}
 
 const isGrandma=computed(()=>userStore.isGrandmaMode)
 const babyA=computed(()=>babiesStore.babyA);const babyB=computed(()=>babiesStore.babyB)
@@ -479,40 +263,11 @@ const lastUpdateText=computed(()=>{
 
 function dualRecord(t:'feeding'|'sleep'|'diaper'){if(babyA.value)recordsStore.quickLog(babyA.value.id,t);if(babyB.value)recordsStore.quickLog(babyB.value.id,t);syncStickers();uni.showToast({title:t==='feeding'?'都喂了':t==='sleep'?'都睡了':'都换了',icon:'success',duration:800})}
 
-// 快速记录面板（主按钮 → 2 tap 完成记录）
-const showQuickActions=ref(false)
-const activeBabyName=computed(()=>{
-  const ab=babiesStore.activeBabyId
-  if(ab&&babyA.value?.id===ab)return babyA.value?.nickname||'大宝'
-  if(ab&&babyB.value?.id===ab)return babyB.value?.nickname||'二宝'
-  return babyA.value?.nickname||babyB.value?.nickname||'宝宝'
-})
-function quickRecord(type:'feeding'|'sleep'|'diaper'){
-  const id=babiesStore.activeBabyId||babyA.value?.id||babyB.value?.id
-  if(!id)return
-  if(type==='feeding'||type==='sleep'){recordsStore.startTimer(id,type)}
-  else{recordsStore.quickLog(id,type)}
-  syncStickers()
-  uni.showToast({title:'✅ 已记录',icon:'success',duration:800})
-}
-
 const navigate=(url:string)=>uni.navigateTo({url})
 const goRecord=()=>navigate('/pages/record/index')
 const goGrowth=()=>navigate('/pages/growth/index')
 const goSnapshot=()=>navigate('/pages/snapshot/index')
-const showMoreSheet=ref(false)
-
-// 发现页功能列表（带图标）
-const FEATURE_ICONS: Record<string, string> = {
-  sprout:'🌱', contribution:'⭐', duty:'🦸', guardian:'🔋',
-  handover:'🎙️', stickers:'🏅', school:'🏫', milestones:'📊',
-}
-const discoverFeatures=computed(()=>{
-  return getDiscoverFeatures(userStore.profile?.role).map(f=>({
-    ...f, icon: FEATURE_ICONS[f.path.split('/').pop()||''] || '📋',
-  }))
-})
-
+const goMore=()=>{const features=getDiscoverFeatures(userStore.profile?.role);const labels=features.map(f=>f.label);labels.push('📤 导出数据备份');labels.push('取消');uni.showActionSheet({itemList:labels,success:(res)=>{const idx=res.tapIndex;if(idx<features.length){uni.navigateTo({url:features[idx].path})}else if(idx===features.length){goExport()}}})}
 const goHelp = () => {
   uni.showActionSheet({
     itemList: ['📞 打电话给妈妈','💬 发消息到家庭群','📋 查看使用说明'],
@@ -554,7 +309,7 @@ const goExport = async () => {
       showCancel: false
     })
   } catch {
-    uni.showToast({ title: '导出遇到问题，稍后再试吧', icon: 'none' })
+    uni.showToast({ title: '导出失败，请重试', icon: 'none' })
   }
 }
 const switchRole = () => {
@@ -596,100 +351,6 @@ const switchRole = () => {
 .streak-stamp{background:var(--gold-lt);padding:6rpx 14rpx;border-radius:4rpx 12rpx 4rpx 12rpx;font-family:var(--font-journal);font-size:20rpx;color:var(--gold);font-weight:700;transform:rotate(2deg);box-shadow:0 2rpx 6rpx rgba(200,153,62,0.1);animation:stampIn .4s var(--ease-bounce)}
 @keyframes stampIn{0%{transform:rotate(2deg)scale(0);opacity:0}70%{transform:rotate(-1deg)scale(1.1)}100%{transform:rotate(2deg)scale(1);opacity:1}}
 .streak-start{font-size:20rpx;color:var(--ink-lt);font-family:var(--font-journal)}
-
-/* 吉祥物区域 */
-.mascot-area {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 20rpx;
-  position: relative;
-  z-index: 1;
-}
-
-/* 新手引导卡片 */
-.welcome-guide {
-  position: relative;
-  z-index: 1;
-  margin-bottom: 32rpx;
-}
-.welcome-card {
-  background: linear-gradient(135deg, var(--amber-lt) 0%, var(--cream) 50%, var(--rose-lt) 100%);
-  border-radius: var(--radius-lg);
-  border: 2rpx solid var(--dot);
-  padding: 28rpx 24rpx 24rpx;
-  animation: welcomeIn .6s var(--ease-soft);
-}
-@keyframes welcomeIn {
-  from { opacity: 0; transform: translateY(-12rpx); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.welcome-top {
-  display: flex;
-  align-items: flex-start;
-  gap: 12rpx;
-  margin-bottom: 24rpx;
-}
-.welcome-wave { font-size: 48rpx; flex-shrink: 0; }
-.welcome-text { flex: 1; }
-.welcome-title {
-  display: block;
-  font-family: var(--font-journal);
-  font-size: 32rpx;
-  font-weight: 700;
-  color: var(--ink);
-}
-.welcome-desc {
-  display: block;
-  font-size: 24rpx;
-  color: var(--ink-md);
-  margin-top: 4rpx;
-}
-.welcome-close {
-  width: 48rpx; height: 48rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 24rpx;
-  color: var(--ink-lt);
-}
-.welcome-close:active { background: var(--dot); }
-.welcome-steps {
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
-  justify-content: center;
-}
-.w-step {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-}
-.ws-num {
-  width: 44rpx; height: 44rpx;
-  border-radius: 50%;
-  background: var(--amber);
-  color: #FFF;
-  font-size: 24rpx;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.ws-text {
-  font-size: 22rpx;
-  color: var(--ink-md);
-  line-height: 1.4;
-}
-.ws-hl {
-  color: var(--amber);
-  font-weight: 600;
-}
-.ws-arrow {
-  font-size: 24rpx;
-  color: var(--ink-lt);
-}
 
 /* 问候 — editorial left-aligned */
 .greeting{position:relative;z-index:1;margin-bottom:44rpx}
@@ -741,9 +402,7 @@ const switchRole = () => {
 /* 中央按钮 */
 .action-center{display:flex;align-items:center;justify-content:center;position:relative;z-index:1;margin-bottom:28rpx}
 .btn-stage{position:relative;width:420rpx;height:420rpx;display:flex;align-items:center;justify-content:center}
-.orbit-ring{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:50%;border:2rpx dashed var(--dot);opacity:.35;transition:opacity .3s,border-color .3s}
-.orbit-ring.pulsing{border-color:var(--mint);opacity:.6;animation:orbitGlow 3s ease-in-out infinite}
-@keyframes orbitGlow{0%,100%{opacity:.35;border-color:var(--dot)}50%{opacity:.7;border-color:var(--mint)}}
+.orbit-ring{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:50%;border:2rpx dashed var(--dot);opacity:.35}
 .main-btn{
   width:300rpx;height:300rpx;border-radius:50%;
   position:relative;z-index:2;
@@ -758,18 +417,6 @@ const switchRole = () => {
 .main-btn:active{transform:rotate(-2deg)scale(.86);box-shadow:0 6rpx 20rpx rgba(224,123,62,.16),0 2rpx 4rpx rgba(224,123,62,.08)}
 .btn-icon{font-size:56rpx;position:relative;z-index:1}
 .btn-text{font-size:32rpx;font-weight:700;letter-spacing:6rpx;position:relative;z-index:1}
-
-/* 快速操作面板 */
-.quick-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(45,35,24,.35);z-index:998;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s}
-.quick-sheet{width:100%;max-width:750rpx;background:var(--paper);border-radius:var(--radius-lg) var(--radius-lg) 0 0;padding:32rpx 32rpx calc(32rpx + env(safe-area-inset-bottom));animation:slideUp .3s var(--ease-soft)}
-.quick-sheet-title{display:block;text-align:center;font-family:var(--font-journal);font-size:var(--font-card);color:var(--ink);margin-bottom:32rpx}
-.quick-action-grid{display:flex;gap:24rpx;justify-content:center;margin-bottom:24rpx}
-.quick-action{display:flex;flex-direction:column;align-items:center;gap:12rpx;padding:40rpx 48rpx;background:var(--cream);border:3rpx solid var(--dot);border-radius:var(--radius-md);transition:transform .15s var(--ease-bounce)}
-.quick-action:active{transform:scale(.92);border-color:var(--amber);background:var(--amber-lt)}
-.qa-emoji{font-size:72rpx}
-.qa-label{font-size:28rpx;font-weight:700;color:var(--ink);font-family:var(--font-journal)}
-.quick-sheet-footer{text-align:center}
-.quick-more{font-size:26rpx;color:var(--ink-lt);padding:16rpx 0}
 
 /* 快捷操作 — asymmetric sizes */
 .quick-bar{display:flex;gap:12rpx;justify-content:center;position:relative;z-index:1;margin-bottom:20rpx;align-items:center}
@@ -790,128 +437,9 @@ const switchRole = () => {
 .journal-nav{display:flex;justify-content:space-between;padding:20rpx 48rpx 0;border-top:1.5px solid var(--dot);position:relative;z-index:1}
 .jnav-item{font-family:var(--font-journal);font-size:26rpx;color:var(--ink-lt);letter-spacing:3rpx}
 .jnav-item.active{color:var(--amber);font-weight:700}
-
-/* 自定义「更多」底部弹出面板 */
-.more-overlay{
-  position:fixed;top:0;left:0;right:0;bottom:0;
-  background:rgba(45,35,24,.35);z-index:999;
-  display:flex;align-items:flex-end;justify-content:center;
-  animation:fadeIn .2s var(--ease-soft);
-}
-.more-sheet{
-  width:100%;max-width:750rpx;
-  background:var(--paper);
-  border-radius:var(--radius-lg) var(--radius-lg) 0 0;
-  padding:0 32rpx calc(32rpx + env(safe-area-inset-bottom));
-  animation:slideUp .3s var(--ease-soft);
-}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.more-handle{
-  width:64rpx;height:8rpx;border-radius:4rpx;
-  background:var(--dot);margin:16rpx auto 24rpx;
-}
-.more-title{
-  display:block;font-family:var(--font-journal);font-size:var(--font-card);
-  color:var(--ink);font-weight:700;text-align:center;margin-bottom:28rpx;
-}
-.more-grid{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:16rpx;
-  margin-bottom:20rpx;
-}
-.more-item{
-  display:flex;flex-direction:column;align-items:center;gap:8rpx;
-  padding:24rpx 8rpx;background:var(--cream);border-radius:var(--radius-sm);
-  border:2rpx solid var(--dot);
-}
-.more-item:active{background:var(--amber-lt);border-color:var(--amber)}
-.more-item-icon{font-size:40rpx}
-.more-item-label{font-size:22rpx;color:var(--ink);font-weight:600}
-.more-divider{height:2rpx;background:var(--dot);margin:12rpx 0}
-.more-actions{display:flex;flex-direction:column;gap:4rpx}
-.more-action{padding:20rpx 16rpx;font-size:26rpx;color:var(--ink-md)}
-.more-action:active{color:var(--amber)}
-.more-cancel{
-  text-align:center;padding:24rpx 0 8rpx;
-  font-size:28rpx;color:var(--ink-lt);font-weight:600;
-}
-.more-cancel:active{color:var(--ink)}
-.footer-tools{display:flex;flex-direction:column;align-items:center;gap:12rpx;margin-bottom:12rpx;position:relative;z-index:1}
-.ft-invite{
-  width:100%;max-width:560rpx;padding:16rpx 0;
-  background:linear-gradient(135deg,var(--amber-lt),var(--rose-lt));
-  border:2rpx solid var(--dot);border-radius:20rpx;
-  font-size:24rpx;font-weight:600;color:var(--ink);
-  line-height:1.4;
-}
-.ft-invite::after{border:none}
-.ft-invite:active{opacity:.7}
-.ft-row{display:flex;gap:12rpx}
-.ft-link{font-size:20rpx;color:var(--ink-lt)} .ft-link:active{color:var(--amber)} .ft-dot{font-size:20rpx;color:var(--ink-lt)}
+.footer-tools{display:flex;justify-content:center;gap:12rpx;margin-bottom:12rpx;position:relative;z-index:1} .ft-link{font-size:20rpx;color:var(--ink-lt)} .ft-link:active{color:var(--amber)} .ft-dot{font-size:20rpx;color:var(--ink-lt)}
 .disclaimer-note{display:block;text-align:center;font-size:18rpx;color:var(--ink-lt);margin-bottom:16rpx;opacity:.5;position:relative;z-index:1}
 .all-good{text-align:left;margin-bottom:12rpx;position:relative;z-index:1}.all-good text{font-family:var(--font-journal);font-size:24rpx;color:var(--mint);font-weight:600}
-
-/* 里程碑庆祝覆盖层 */
-.celebrate-overlay {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(45,35,24,.45);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 999;
-  animation: fadeIn .3s var(--ease-soft);
-}
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.celebrate-card {
-  background: var(--paper);
-  border-radius: var(--radius-lg);
-  padding: 64rpx 48rpx 48rpx;
-  text-align: center;
-  margin: 0 48rpx;
-  box-shadow: 0 16rpx 48rpx rgba(45,35,24,.15);
-  animation: celebBounce .5s var(--ease-bounce);
-}
-@keyframes celebBounce {
-  0% { transform: scale(.5); opacity: 0; }
-  60% { transform: scale(1.08); }
-  100% { transform: scale(1); opacity: 1; }
-}
-.celebrate-emoji { font-size: 120rpx; display: block; margin-bottom: 16rpx; }
-.celebrate-title { display: block; font-family: var(--font-journal); font-size: 44rpx; color: var(--ink); font-weight: 700; }
-.celebrate-desc { display: block; font-size: 28rpx; color: var(--ink-md); margin-top: 12rpx; line-height: 1.5; }
-.celebrate-stars { margin-top: 24rpx; display: flex; gap: 16rpx; justify-content: center; }
-.cs { font-size: 48rpx; animation: starSpin 1s ease-in-out infinite; }
-.cs:nth-child(2) { animation-delay: .2s; font-size: 56rpx; }
-.cs:nth-child(3) { animation-delay: .4s; }
-@keyframes starSpin {
-  0%, 100% { transform: rotate(0) scale(1); }
-  50% { transform: rotate(15deg) scale(1.2); }
-}
-
-/* 邀请弹窗按钮 */
-.invite-actions {
-  margin-top: 32rpx;
-  display: flex;
-  flex-direction: column;
-  gap: 16rpx;
-}
-.invite-accept {
-  width: 100%;
-  padding: 24rpx 0;
-  background: var(--amber);
-  color: #FFF;
-  border: none;
-  border-radius: var(--radius-full);
-  font-size: 30rpx;
-  font-weight: 700;
-}
-.invite-accept::after { border: none; }
-.invite-decline {
-  width: 100%;
-  padding: 16rpx 0;
-  background: transparent;
-  color: var(--ink-md);
-  border: none;
-  font-size: 24rpx;
-}
-.invite-decline::after { border: none; }
 
 /* 入场 */
 .reveal-1{animation:revealUp .5s var(--ease-soft) both}

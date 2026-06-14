@@ -10,45 +10,6 @@
  */
 
 const PREFIX = 'tp_'
-const MAX_STORAGE = 10 * 1024 * 1024  // 微信小程序 10MB 限制
-const WARN_THRESHOLD = 8 * 1024 * 1024 // 8MB 时警告
-
-/** 检查存储空间，返回 { used, limit, percent } */
-export function checkStorageQuota(): { used: number; limit: number; percent: number } {
-  try {
-    const info = uni.getStorageInfoSync()
-    return {
-      used: info.currentSize,
-      limit: MAX_STORAGE,
-      percent: Math.round((info.currentSize / MAX_STORAGE) * 100),
-    }
-  } catch {
-    return { used: 0, limit: MAX_STORAGE, percent: 0 }
-  }
-}
-
-/** 存储空间不足时弹窗警告 */
-let _quotaWarned = false
-function warnIfLowStorage() {
-  if (_quotaWarned) return
-  const { percent } = checkStorageQuota()
-  if (percent >= 80) {
-    _quotaWarned = true
-    uni.showModal({
-      title: '存储空间紧张',
-      content: `本地存储已使用 ${percent}%，建议导出数据备份后清理旧记录。`,
-      confirmText: '去清理',
-      cancelText: '稍后',
-      success: (res) => {
-        if (res.confirm) {
-          uni.navigateTo({ url: '/pages/privacy/index' })
-        }
-      },
-    })
-    // 5分钟后允许再次提醒
-    setTimeout(() => { _quotaWarned = false }, 300000)
-  }
-}
 
 export interface Persistence<T = unknown> {
   /** 保存数据到本地 */
@@ -67,13 +28,8 @@ export function createPersistence<T = unknown>(key: string): Persistence<T> {
     save(data: T) {
       try {
         uni.setStorageSync(fullKey, JSON.stringify(data))
-        warnIfLowStorage()
       } catch (e) {
         console.warn(`[persist] save ${fullKey} failed:`, e)
-        // 存储满时提示用户
-        if (String(e).includes('exceed') || String(e).includes('quota')) {
-          uni.showToast({ title: '存储空间不足，请清理旧数据', icon: 'none', duration: 3000 })
-        }
       }
     },
 

@@ -49,51 +49,23 @@ export const useRecordsStore = defineStore('records', () => {
 
   /** 活跃计时器 Map: babyId → TimerState，支持双宝同时计时 */
   const _timers = ref<Record<string, TimerState>>({})
-  /** 全局秒级 tick — 单向递增计数器，避免每 tick 重建对象树 */
-  const _tick = ref(0)
   const logs = ref<RecordLog[]>(_p.load() ?? [])
   const selectedBabyId = ref<string | null>(null)
-  let _tickHandle: ReturnType<typeof setInterval> | null = null
 
-  /** 启动全局心跳（仅在首次 startTimer 时调用） */
-  function _ensureTick() {
-    if (_tickHandle) return
-    _tickHandle = setInterval(() => { _tick.value++ }, TIMER_TICK_MS)
-  }
-  /** 停止全局心跳（无计时器时调用） */
-  function _stopTick() {
-    if (!_tickHandle) return
-    clearInterval(_tickHandle)
-    _tickHandle = null
-  }
-
-  // 恢复持久化的计时器（App 被杀后恢复所有活跃计时器）
+  // 恢复持久化的计时器（App 被杀后恢复）
   try {
-    // 先尝试新格式（数组）
-    const raw = uni.getStorageSync('tp_active_timers')
-    const saved = raw ? JSON.parse(raw) : null
-    if (Array.isArray(saved) && saved.length > 0) {
-      const restored: Record<string, TimerState> = {}
-      for (const t of saved) {
-        if (t.babyId && t.type && t.startedAt) {
-          restored[t.babyId] = { babyId: t.babyId, type: t.type, startedAt: t.startedAt, elapsed: 0, timerHandle: null as any }
-        }
-      }
-      if (Object.keys(restored).length > 0) {
-        _timers.value = restored
-        _ensureTick()
-        console.log('[records] Restored', Object.keys(restored).length, 'active timers')
-      }
-    } else {
-      // 回退：旧格式（单个对象）
-      const oldRaw = uni.getStorageSync('tp_active_timer')
-      if (oldRaw) {
-        const old = JSON.parse(oldRaw)
-        if (old.babyId && old.type && old.startedAt) {
-          _timers.value = { [old.babyId]: { babyId: old.babyId, type: old.type, startedAt: old.startedAt, elapsed: 0, timerHandle: null as any } }
-          _ensureTick()
-          console.log('[records] Restored (legacy) timer for', old.babyId)
-        }
+    const raw = uni.getStorageSync('tp_active_timer')
+    if (raw) {
+      const saved = JSON.parse(raw)
+      if (saved.babyId && saved.type && saved.startedAt) {
+        const elapsed = Math.floor((Date.now() - saved.startedAt) / 1000)
+        const handle = setInterval(() => {
+          if (_timers.value[saved.babyId]) {
+            _timers.value = { ..._timers.value, [saved.babyId]: { ..._timers.value[saved.babyId], elapsed: _timers.value[saved.babyId].elapsed + 1 } }
+          }
+        }, 1000)
+        _timers.value = { [saved.babyId]: { babyId: saved.babyId, type: saved.type, startedAt: saved.startedAt, elapsed, timerHandle: handle } }
+        console.log('[records] Restored active timer for', saved.babyId)
       }
     }
   } catch {}
@@ -108,23 +80,13 @@ export const useRecordsStore = defineStore('records', () => {
   /** 是否有任何计时器在运行 */
   const isRunning = computed(() => Object.keys(_timers.value).length > 0)
 
-  /** 第一个运行中计时器的 elapsed（基于全局 _tick） */
-  const runningTimer = computed(() => {
-    _tick.value
-    const ids = Object.keys(_timers.value)
-    if (ids.length === 0) return null
-    const t = _timers.value[ids[0]]
-    const elapsed = Math.floor((Date.now() - t.startedAt) / 1000)
-    return { ...t, elapsed }
-  })
+  /** 当前活跃计时器列表 */
+  const runningTimers = computed(() => Object.values(_timers.value))
 
-  /** 活跃计时器列表（elapsed 基于全局 tick 实时计算） */
-  const runningTimers = computed(() => {
-    _tick.value
-    return Object.values(_timers.value).map(t => ({
-      ...t,
-      elapsed: Math.floor((Date.now() - t.startedAt) / 1000),
-    }))
+  /** 第一个运行中的计时器（向后兼容 snapshot 等页面） */
+  const runningTimer = computed(() => {
+    const ids = Object.keys(_timers.value)
+    return ids.length > 0 ? _timers.value[ids[0]] : null
   })
 
   /** 按宝宝分组日志（最近30条） */
@@ -144,10 +106,7 @@ export const useRecordsStore = defineStore('records', () => {
 
   /** 获取某个宝宝当前的计时器 */
   function getTimer(babyId: string): TimerState | null {
-    const t = _timers.value[babyId]
-    if (!t) return null
-    _tick.value
-    return { ...t, elapsed: Math.floor((Date.now() - t.startedAt) / 1000) }
+    return _timers.value[babyId] ?? null
   }
 
   // ---- actions ----
@@ -157,6 +116,7 @@ export const useRecordsStore = defineStore('records', () => {
     const timer = _timers.value[babyId]
     if (!timer) return null
 
+    clearInterval(timer.timerHandle!)
     const endedAt = Date.now()
     const durationMin = Math.round((endedAt - timer.startedAt) / 60000)
 
@@ -165,7 +125,6 @@ export const useRecordsStore = defineStore('records', () => {
       const newTimers = { ..._timers.value }
       delete newTimers[babyId]
       _timers.value = newTimers
-      if (Object.keys(newTimers).length === 0) _stopTick()
       return null
     }
 
@@ -174,7 +133,6 @@ export const useRecordsStore = defineStore('records', () => {
       const newTimers = { ..._timers.value }
       delete newTimers[babyId]
       _timers.value = newTimers
-      if (Object.keys(newTimers).length === 0) _stopTick()
       return null
     }
 
@@ -217,12 +175,9 @@ export const useRecordsStore = defineStore('records', () => {
     const newTimers = { ..._timers.value }
     delete newTimers[babyId]
     _timers.value = newTimers
-    // 清除持久化的计时器 + 停止全局心跳
+    // 清除持久化的计时器
     if (Object.keys(newTimers).length === 0) {
-      _stopTick()
-      try { uni.removeStorageSync('tp_active_timers'); uni.removeStorageSync('tp_active_timer') } catch {}
-    } else {
-      _persistTimers()
+      try { uni.removeStorageSync('tp_active_timer') } catch {}
     }
 
     return log
@@ -235,7 +190,17 @@ export const useRecordsStore = defineStore('records', () => {
       _stopOne(babyId)
     }
 
-    _ensureTick() // 启动全局心跳（幂等）
+    const handle = setInterval(() => {
+      if (_timers.value[babyId]) {
+        _timers.value = {
+          ..._timers.value,
+          [babyId]: {
+            ..._timers.value[babyId],
+            elapsed: _timers.value[babyId].elapsed + 1,
+          },
+        }
+      }
+    }, TIMER_TICK_MS)
 
     _timers.value = {
       ..._timers.value,
@@ -244,24 +209,12 @@ export const useRecordsStore = defineStore('records', () => {
         type,
         startedAt: Date.now(),
         elapsed: 0,
-        timerHandle: null as any, // 不再使用独立 interval handle
+        timerHandle: handle,
       },
     }
-    // 🔧 持久化所有活跃计时器（不只是最后一个）
-    _persistTimers()
+    // 持久化计时器状态，防止 App 被杀后丢失
+    try { uni.setStorageSync('tp_active_timer', JSON.stringify({ babyId, type, startedAt: Date.now() })) } catch {}
     selectedBabyId.value = babyId
-  }
-
-  /** 持久化所有活跃计时器到 storage */
-  function _persistTimers() {
-    try {
-      const active = Object.values(_timers.value).map(t => ({
-        babyId: t.babyId, type: t.type, startedAt: t.startedAt,
-      }))
-      if (active.length > 0) {
-        uni.setStorageSync('tp_active_timers', JSON.stringify(active))
-      }
-    } catch {}
   }
 
   /** 停止计时器并保存记录。不传 babyId 则停止全部 */
@@ -277,17 +230,6 @@ export const useRecordsStore = defineStore('records', () => {
       if (log) lastLog = log
     }
     return lastLog
-  }
-
-  /** 撤销最近一条记录（30秒内可撤销） */
-  function undoLastLog(): RecordLog | null {
-    if (logs.value.length === 0) return null
-    const last = logs.value[logs.value.length - 1]
-    const elapsed = Date.now() - last.createdAt
-    if (elapsed > 30000) return null // 超过30秒不可撤销
-    logs.value = logs.value.slice(0, -1)
-    _saveLogs()
-    return last
   }
 
   /** 快速记录（无计时），支持回溯时间偏移 */
@@ -374,7 +316,7 @@ export const useRecordsStore = defineStore('records', () => {
     _timers, logs, selectedBabyId,
     isRunning, runningTimer, runningTimers, recentLogsByBaby,
     isBabyRunning, getTimer,
-    startTimer, stopTimer, quickLog, undoLastLog,
+    startTimer, stopTimer, quickLog,
     cosmicInsight, twinSyncRate, streakDays,
   }
 })

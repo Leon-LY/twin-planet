@@ -3,7 +3,7 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "双宝记",
+				"navigationBarTitleText": "双宝星球",
 				"navigationBarBackgroundColor": "#FEF9F0"
 			}
 		},
@@ -133,7 +133,7 @@
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "双宝记",
+		"navigationBarTitleText": "双宝星球",
 		"navigationBarBackgroundColor": "#FEF9F0",
 		"backgroundColor": "#FEF9F0"
 	}
