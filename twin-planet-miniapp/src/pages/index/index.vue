@@ -376,8 +376,12 @@ onShareAppMessage(() => {
   const aName=babyA.value?.nickname||'大宝';const bName=babyB.value?.nickname||'二宝'
   const token = inviteToken.value
   const path = token ? `/pages/index/index?invite=${token}` : '/pages/index/index'
+  // 使用真实数据让分享卡片更具吸引力
+  const todayCount=recordsStore.logs.filter(l=>l.createdAt>=new Date().setHours(0,0,0,0)).length
+  const days=streakDays.value
+  const summary=days>0?`已连续记录${days}天 · 今日${todayCount}次`:'开始记录双宝成长'
   return {
-    title:`${aName}和${bName}的成长手帐 · 一起来记录吧 🪐`,
+    title:`${aName}和${bName}的成长手帐 ✦ ${summary}`,
     path,
     imageUrl:'/static/share-brand.png',
   }
