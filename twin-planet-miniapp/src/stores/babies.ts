@@ -5,8 +5,9 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 
-// V3 同色系：大宝=深陶土，二宝=浅陶土。不按性别，不给蓝粉性别暗示。
-const BABY_COLORS = { 1: '#A45C40', 2: '#C7866A' } as const
+// V4 暖纸手帐：大宝=姜黄，二宝=豆沙。按出生顺序，不按性别。
+import { TWIN_COLORS } from '@/constants/design'
+const BABY_COLORS = { 1: TWIN_COLORS.A, 2: TWIN_COLORS.B } as const
 
 export interface Baby {
   id: string

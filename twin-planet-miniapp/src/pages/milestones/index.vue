@@ -66,10 +66,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
-import { onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useBabiesStore } from '@/stores/babies'
 import { useMilestonesStore, MILESTONE_DOMAINS, MILESTONE_NORMS, type MilestoneDomain } from '@/stores/milestones'
+import { dateStr } from '@/utils/format'
 
 const babiesStore = useBabiesStore()
 const store = useMilestonesStore()
@@ -117,15 +117,13 @@ function addCustom(domain: MilestoneDomain) {
   uni.showToast({ title: '已添加', icon: 'success' })
 }
 
-function dateStr(ts: number) { return new Date(ts).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }) }
-
 onMounted(() => { uni.setNavigationBarTitle({ title: '能力观察' }) })
 </script>
 
 <style scoped>
 .ms-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
 .section-header { text-align: center; margin-bottom: 24rpx; }
-.section-icon { font-size: 40px; }
+.section-icon { font-size: 80rpx; }
 .section-title { display: block; font-size: 44rpx; font-weight: 700; color: var(--twin-text); margin: 12rpx 0; }
 .section-desc { font-size: 26rpx; color: var(--twin-text-secondary); }
 
@@ -149,7 +147,7 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '能力观察' }) })
 .norm-item { display: flex; align-items: center; gap: 12rpx; padding: 10rpx 0; }
 .norm-item.achieved { opacity: 0.5; }
 .norm-check { font-size: 28rpx; }
-.norm-title { flex: 1; font-size: 26rpx; color: #4A5568; }
+.norm-title { flex: 1; font-size: 26rpx; color: var(--ink); }
 .norm-age { font-size: 22rpx; color: var(--twin-text-muted); }
 
 .add-custom { margin-top: 8rpx; }

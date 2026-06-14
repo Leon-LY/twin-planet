@@ -1,0 +1,103 @@
+/**
+ * 数据同步服务
+ * 将本地记录同步到后端服务器，防止换手机数据丢失
+ * 采用"尽力同步"策略：失败不阻塞用户操作，下次重试
+ */
+import { request, getToken } from '@/api/client'
+
+const SYNC_STATE_KEY = 'tp_sync_state'
+const LAST_SYNC_KEY = 'tp_last_sync'
+
+interface SyncState {
+  lastSyncAt: number
+  lastRecordId: string
+  lastGrowthId: string
+}
+
+/** 获取同步状态 */
+function getSyncState(): SyncState {
+  try {
+    const raw = uni.getStorageSync(SYNC_STATE_KEY)
+    return raw ? JSON.parse(raw) : { lastSyncAt: 0, lastRecordId: '', lastGrowthId: '' }
+  } catch { return { lastSyncAt: 0, lastRecordId: '', lastGrowthId: '' } }
+}
+function saveSyncState(state: SyncState) {
+  uni.setStorageSync(SYNC_STATE_KEY, JSON.stringify(state))
+}
+
+/** 同步喂养/睡眠等日常记录 */
+export async function syncRecords(records: any[]): Promise<number> {
+  const token = getToken()
+  if (!token || records.length === 0) return 0
+
+  try {
+    const res = await request<{ synced: number }>('/records/batch', {
+      method: 'POST', data: { records },
+    })
+    if (res.success && res.data) {
+      return res.data.synced
+    }
+  } catch { /* 静默失败，下次再试 */ }
+  return 0
+}
+
+/** 同步生长测量数据 */
+export async function syncGrowthMeasurements(measurements: any[]): Promise<number> {
+  const token = getToken()
+  if (!token || measurements.length === 0) return 0
+
+  let synced = 0
+  for (const m of measurements) {
+    try {
+      const res = await request('/growth', { method: 'POST', data: m })
+      if (res.success) synced++
+    } catch { /* continue */ }
+  }
+  return synced
+}
+
+/** 导出全部数据为 JSON 文件（换手机迁移用） */
+export function exportAllData(): string {
+  const allData: Record<string, any> = {}
+  const keys = ['tp_user', 'tp_family', 'tp_babies', 'tp_records',
+    'tp_growth_measurements', 'tp_stickers', 'tp_duty',
+    'tp_guardian_energy', 'tp_guardian_sessions',
+    'tp_interactions_sprout', 'tp_interactions_contrib',
+    'tp_milestones', 'tp_school_decision', 'tp_handover_messages']
+
+  for (const key of keys) {
+    try {
+      const raw = uni.getStorageSync(key)
+      if (raw) allData[key] = JSON.parse(raw)
+    } catch { /* skip unreadable keys */ }
+  }
+
+  const json = JSON.stringify({ exportedAt: new Date().toISOString(), data: allData }, null, 2)
+  return json
+}
+
+/** 保存导出数据到剪贴板或文件 */
+export function saveExportData(): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const json = exportAllData()
+    const fs = uni.getFileSystemManager()
+    const path = `${wx.env.USER_DATA_PATH}/twin-planet-backup-${Date.now()}.json`
+    fs.writeFile({
+      filePath: path,
+      data: json,
+      encoding: 'utf8',
+      success: () => resolve(path),
+      fail: (err) => reject(err),
+    })
+  })
+}
+
+/** 获取上次同步时间（用于 UI 显示） */
+export function getLastSyncTime(): string {
+  const state = getSyncState()
+  if (!state.lastSyncAt) return '从未同步'
+  const diff = Math.floor((Date.now() - state.lastSyncAt) / 60000)
+  if (diff < 1) return '刚刚'
+  if (diff < 60) return `${diff}分钟前`
+  return `${Math.floor(diff / 60)}小时前`
+}

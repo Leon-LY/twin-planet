@@ -127,7 +127,7 @@ onMounted(() => {
 
 /* 表单 */
 .form-group { margin-bottom: 40rpx; }
-.form-label { display: block; font-size: 26rpx; font-weight: 600; color: #4A5568; margin-bottom: 16rpx; }
+.form-label { display: block; font-size: 26rpx; font-weight: 600; color: var(--ink); margin-bottom: 16rpx; }
 .form-input {
   width: 100%; padding: 28rpx 32rpx;
   background: var(--twin-card-bg); border: 4rpx solid var(--twin-border);
@@ -145,7 +145,7 @@ onMounted(() => {
 }
 .role-card.selected { border-color: var(--twin-baby-a); background: var(--twin-baby-a-light); }
 .role-icon { font-size: 28px; }
-.role-name { font-size: 26rpx; font-weight: 500; color: #4A5568; }
+.role-name { font-size: 26rpx; font-weight: 500; color: var(--ink); }
 
 /* 底部 */
 .bottom-action {

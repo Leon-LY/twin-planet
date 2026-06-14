@@ -39,42 +39,56 @@
 		{
 			"path": "pages/sprout/index",
 			"style": {
-				"navigationBarTitleText": "光桥编年史",
+				"navigationBarTitleText": "萌芽日记",
 				"navigationBarBackgroundColor": "#FFFBF2"
 			}
 		},
 		{
 			"path": "pages/contribution/index",
 			"style": {
-				"navigationBarTitleText": "星尘日志",
+				"navigationBarTitleText": "今天我做了",
 				"navigationBarBackgroundColor": "#FFFBF2"
 			}
 		},
 		{
 			"path": "pages/snapshot/index",
 			"style": {
-				"navigationBarTitleText": "星图快照",
+				"navigationBarTitleText": "双宝快照",
 				"navigationBarBackgroundColor": "#FFFBF2"
 			}
 		},
 		{
 			"path": "pages/handover/index",
 			"style": {
-				"navigationBarTitleText": "星际通讯",
+				"navigationBarTitleText": "语音便签",
 				"navigationBarBackgroundColor": "#FFFBF2"
 			}
 		},
 		{
 			"path": "pages/duty/index",
 			"style": {
-				"navigationBarTitleText": "指挥官控制台",
+				"navigationBarTitleText": "值班清单",
 				"navigationBarBackgroundColor": "#FFFBF2"
 			}
 		},
 		{
 			"path": "pages/guardian/index",
 			"style": {
-				"navigationBarTitleText": "星光监测站",
+				"navigationBarTitleText": "守护中心",
+				"navigationBarBackgroundColor": "#FFFBF2"
+			}
+		},
+		{
+			"path": "pages/stickers/index",
+			"style": {
+				"navigationBarTitleText": "贴纸收集册",
+				"navigationBarBackgroundColor": "#FFFBF2"
+			}
+		},
+		{
+			"path": "pages/privacy/index",
+			"style": {
+				"navigationBarTitleText": "隐私政策",
 				"navigationBarBackgroundColor": "#FFFBF2"
 			}
 		}
@@ -86,7 +100,7 @@
 				{
 					"path": "index",
 					"style": {
-						"navigationBarTitleText": "星球档案",
+						"navigationBarTitleText": "生长曲线",
 						"navigationBarBackgroundColor": "#FFFBF2"
 					}
 				}
@@ -98,7 +112,7 @@
 				{
 					"path": "index",
 					"style": {
-						"navigationBarTitleText": "轨道决策",
+						"navigationBarTitleText": "入园助手",
 						"navigationBarBackgroundColor": "#FFFBF2"
 					}
 				}
@@ -110,7 +124,7 @@
 				{
 					"path": "index",
 					"style": {
-						"navigationBarTitleText": "星座日志",
+						"navigationBarTitleText": "能力观察",
 						"navigationBarBackgroundColor": "#FFFBF2"
 					}
 				}

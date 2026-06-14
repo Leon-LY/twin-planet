@@ -121,6 +121,7 @@
       <button class="btn-primary" @click="saveBaby">
         {{ currentBaby === 1 ? '保存 · 添加二宝' : '保存 · 完成注册' }}
       </button>
+      <text class="back-link" @click="goBack" v-if="currentBaby===1">← 返回修改家庭信息</text>
     </view>
   </view>
 </template>
@@ -155,6 +156,10 @@ const form = computed(() => (currentBaby.value === 1 ? baby1Form : baby2Form))
 
 function onDateChange(e: any) {
   form.value.birthDate = e.detail.value
+}
+
+function goBack() {
+  uni.navigateBack()
 }
 
 function saveBaby() {
@@ -241,7 +246,7 @@ onMounted(() => {
 .form-group { margin-bottom: 28rpx; }
 .form-group.half { flex: 1; margin-right: 0; }
 .form-group.half:first-child { margin-right: 16rpx; }
-.form-label { display: block; font-size: 24rpx; font-weight: 600; color: #4A5568; margin-bottom: 12rpx; }
+.form-label { display: block; font-size: 24rpx; font-weight: 600; color: var(--ink); margin-bottom: 12rpx; }
 .required { color: var(--twin-baby-b); }
 .optional { font-weight: 400; color: var(--twin-text-secondary); font-size: 22rpx; }
 .form-input {
@@ -274,4 +279,5 @@ onMounted(() => {
   color: var(--twin-card-bg); border: none; border-radius: 24rpx;
   font-size: 36rpx; font-weight: 600;
 }
+.back-link { display:block; text-align:center; margin-top:20rpx; font-size:26rpx; color:var(--ink-md); }
 </style>

@@ -1,70 +1,77 @@
-/**
- * 记录路由 — POST/GET /api/records
- */
-import { Router } from 'express'
-import { eq, and, desc, gte } from 'drizzle-orm'
-import { db, schema } from '../db'
-import { requireAuth } from '../middleware/auth'
+import { Router, Request, Response } from 'express'
+import { query } from '../config/database'
 import { ok, fail } from '../utils/response'
+import { authRequired } from '../middleware/auth'
 
-export const recordRoutes = Router()
-recordRoutes.use(requireAuth)
+export const recordsRouter = Router()
+recordsRouter.use(authRequired)
 
-// 获取记录列表（支持筛选）
-recordRoutes.get('/', async (req, res) => {
+// GET /api/records?babyId=&limit=30
+recordsRouter.get('/', async (req: Request, res: Response) => {
   try {
-    const { babyId, type, days } = req.query
-
-    let where = and()
-    if (babyId) {
-      where = and(where, eq(schema.records.babyId, babyId as string))
-    }
-    if (type) {
-      where = and(where, eq(schema.records.type, type as string))
-    }
-    if (days) {
-      const since = new Date(Date.now() - parseInt(days as string) * 86400000)
-      where = and(where, gte(schema.records.createdAt, since))
-    }
-
-    const list = await db.query.records.findMany({
-      where,
-      orderBy: [desc(schema.records.createdAt)],
-      limit: 100,
-    })
-    return ok(res, list)
+    const { babyId, limit = '30', offset = '0' } = req.query
+    let sql = 'SELECT * FROM records WHERE user_id = $1'
+    const params: any[] = [req.user!.userId]
+    let idx = 2
+    if (babyId) { sql += ` AND baby_id = $${idx++}`; params.push(babyId) }
+    sql += ` ORDER BY created_at DESC LIMIT $${idx++} OFFSET $${idx}`
+    params.push(parseInt(limit as string), parseInt(offset as string))
+    const result = await query(sql, params)
+    return ok(res, result.rows, { total: result.rows.length })
   } catch (err: any) {
-    return fail(res, 'INTERNAL', err.message, 500)
+    return fail(res, '获取记录失败', 'FETCH_FAILED', 500)
   }
 })
 
-// 创建记录
-recordRoutes.post('/', async (req, res) => {
+// POST /api/records
+recordsRouter.post('/', async (req: Request, res: Response) => {
   try {
-    const {
-      babyId, type, startedAt, endedAt, durationMin, detail,
-      feedingSide, amountMl, sleepQuality, diaperType,
-    } = req.body
+    const { babyId, type, startedAt, endedAt, durationMin, detail, feedingSide, amountMl, sleepQuality, diaperType } = req.body
+    if (!babyId || !type) return fail(res, '缺少必要字段：babyId, type')
 
-    if (!babyId || !type) {
-      return fail(res, 'MISSING_FIELDS', '缺少必填字段：babyId, type')
-    }
-
-    const [record] = await db.insert(schema.records).values({
-      babyId,
-      type,
-      startedAt: new Date(startedAt || Date.now()),
-      endedAt: new Date(endedAt || Date.now()),
-      durationMin: durationMin || 0,
-      detail: detail || '',
-      feedingSide: feedingSide || null,
-      amountMl: amountMl || null,
-      sleepQuality: sleepQuality || null,
-      diaperType: diaperType || null,
-    }).returning()
-
-    return ok(res, record)
+    const id = 'log-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6)
+    const result = await query(
+      `INSERT INTO records (id, baby_id, user_id, type, started_at, ended_at, duration_min, detail, feeding_side, amount_ml, sleep_quality, diaper_type)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *`,
+      [id, babyId, req.user!.userId, type,
+       startedAt ? new Date(startedAt) : new Date(),
+       endedAt ? new Date(endedAt) : null,
+       durationMin || 0, detail || '',
+       feedingSide || null, amountMl || null, sleepQuality || null, diaperType || null]
+    )
+    return ok(res, result.rows[0])
   } catch (err: any) {
-    return fail(res, 'INTERNAL', err.message, 500)
+    return fail(res, '保存记录失败', 'CREATE_FAILED', 500)
+  }
+})
+
+// POST /api/records/batch — 批量同步本地记录到服务器
+recordsRouter.post('/batch', async (req: Request, res: Response) => {
+  try {
+    const { records } = req.body
+    if (!Array.isArray(records) || records.length === 0) {
+      return fail(res, '请提供要同步的记录数组')
+    }
+    let synced = 0
+    for (const r of records) {
+      // 检查是否已存在（幂等）
+      const existing = await query('SELECT id FROM records WHERE id = $1', [r.id])
+      if (existing.rows.length > 0) continue
+
+      await query(
+        `INSERT INTO records (id, baby_id, user_id, type, started_at, ended_at, duration_min, detail, feeding_side, amount_ml, sleep_quality, diaper_type, created_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
+        [r.id, r.babyId, req.user!.userId, r.type,
+         r.startedAt ? new Date(r.startedAt) : new Date(),
+         r.endedAt ? new Date(r.endedAt) : null,
+         r.durationMin || 0, r.detail || '',
+         r.feedingSide || null, r.amountMl || null, r.sleepQuality || null, r.diaperType || null,
+         r.createdAt ? new Date(r.createdAt) : new Date()]
+      )
+      synced++
+    }
+    return ok(res, { synced })
+  } catch (err: any) {
+    return fail(res, '批量同步失败', 'BATCH_FAILED', 500)
   }
 })

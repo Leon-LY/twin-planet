@@ -6,6 +6,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { useBabiesStore } from './babies'
+import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 
 export interface GrowthMeasurement {
   id: string
@@ -18,20 +19,14 @@ export interface GrowthMeasurement {
   note?: string
 }
 
-const STORAGE_KEY = 'tp_growth_measurements'
-
-function load(): GrowthMeasurement[] {
-  try {
-    const raw = uni.getStorageSync(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : []
-  } catch { return [] }
-}
-function save(data: GrowthMeasurement[]) {
-  uni.setStorageSync(STORAGE_KEY, JSON.stringify(data))
-}
-
 export const useGrowthStore = defineStore('growth', () => {
-  const measurements = ref<GrowthMeasurement[]>(load())
+  const _p = createPersistence<GrowthMeasurement[]>(PERSIST_KEYS.growth)
+
+  const measurements = ref<GrowthMeasurement[]>(_p.load() ?? [])
+
+  function _save() {
+    _p.save(measurements.value.slice(-200)) // 保留最近 200 条
+  }
 
   /** 按宝宝 ID 筛选 */
   function forBaby(babyId: string): GrowthMeasurement[] {
@@ -53,14 +48,14 @@ export const useGrowthStore = defineStore('growth', () => {
       id: `gm-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
     }
     measurements.value = [...measurements.value, entry]
-    save(measurements.value)
+    _save()
     return entry
   }
 
   /** 删除一条记录 */
   function removeMeasurement(id: string) {
     measurements.value = measurements.value.filter(m => m.id !== id)
-    save(measurements.value)
+    _save()
   }
 
   /** 双宝最新数据摘要（供就诊速查卡使用） */

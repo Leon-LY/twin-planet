@@ -84,9 +84,14 @@
 import { ref, onMounted } from 'vue'
 import { useBabiesStore } from '@/stores/babies'
 import { useInteractionsStore, INTERACTION_TYPES, type InteractionType } from '@/stores/interactions'
+import { timeStr } from '@/utils/format'
+import { useStickersStore } from '@/stores/stickers'
+import { useRecordsStore } from '@/stores/records'
 
 const babiesStore = useBabiesStore()
 const store = useInteractionsStore()
+const stickersStore = useStickersStore()
+const recordsStore = useRecordsStore()
 
 const selectedType = ref<InteractionType>('share')
 const noteText = ref('')
@@ -109,12 +114,16 @@ function addEntry() {
   })
 
   noteText.value = ''
+  // 同步贴纸
+  const t0=new Date().setHours(0,0,0,0);const today=recordsStore.logs.filter(l=>l.createdAt>=t0)
+  stickersStore.sync({
+    todayLogCount:today.length,streakDays:recordsStore.streakDays,
+    totalLogCount:recordsStore.logs.length,twinSyncCount:0,
+    sproutCount:store.sproutEntries.length,dutyDoneCount:0,
+    babyAHasRecord:!!babyA,babyBHasRecord:!!babyB,
+    babyARecentRecord:false,babyBRecentRecord:false,
+  })
   uni.showToast({ title: '🌱 已记录', icon: 'success', duration: 1000 })
-}
-
-function timeStr(ts: number): string {
-  const d = new Date(ts)
-  return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
 onMounted(() => {
@@ -126,7 +135,7 @@ onMounted(() => {
 .sprout-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
 
 .section-header { text-align: center; margin-bottom: 32rpx; }
-.section-icon { font-size: 40px; }
+.section-icon { font-size: 80rpx; }
 .section-title { display: block; font-size: 44rpx; font-weight: 700; color: var(--twin-text); margin: 12rpx 0; }
 .section-desc { font-size: 26rpx; color: var(--twin-text-secondary); }
 
@@ -173,7 +182,7 @@ onMounted(() => {
 .timeline-emoji { font-size: 24rpx; }
 .timeline-type { font-size: 24rpx; font-weight: 600; color: var(--twin-text); }
 .timeline-time { font-size: 20rpx; color: var(--twin-text-secondary); margin-left: auto; }
-.timeline-note { font-size: 26rpx; color: #4A5568; line-height: 1.6; }
+.timeline-note { font-size: 26rpx; color: var(--ink); line-height: 1.6; }
 .timeline-twins { display: flex; align-items: center; gap: 8rpx; margin-top: 12rpx; }
 .twin-tag { font-size: 22rpx; padding: 4rpx 16rpx; border-radius: 20rpx; }
 .twin-tag.blue { background: var(--twin-baby-a-light); color: var(--twin-baby-a); }
@@ -181,7 +190,7 @@ onMounted(() => {
 .tag-arrow { font-size: 18rpx; color: var(--twin-text-muted); }
 
 .empty-state { text-align: center; padding: 80rpx 32rpx; }
-.empty-emoji { font-size: 48px; }
+.empty-emoji { font-size: 96rpx; }
 .empty-title { display: block; font-size: 32rpx; font-weight: 600; color: var(--twin-text); margin: 16rpx 0 8rpx; }
 .empty-desc { font-size: 26rpx; color: var(--twin-text-secondary); line-height: 1.6; }
 </style>

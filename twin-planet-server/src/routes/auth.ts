@@ -1,62 +1,95 @@
-/**
- * 认证路由 — POST /api/auth/wechat-login
- */
-import { Router } from 'express'
-import { eq } from 'drizzle-orm'
-import { db, schema } from '../db'
-import { config } from '../config'
-import { code2Session } from '../utils/wechat'
-import { signToken } from '../utils/jwt'
+import { Router, Request, Response } from 'express'
+import jwt from 'jsonwebtoken'
+import { query } from '../config/database'
 import { ok, fail } from '../utils/response'
+import { authRequired } from '../middleware/auth'
 
-export const authRoutes = Router()
+export const authRouter = Router()
 
-authRoutes.post('/wechat-login', async (req, res) => {
+// POST /api/auth/wechat-login
+authRouter.post('/wechat-login', async (req: Request, res: Response) => {
   try {
     const { code } = req.body
-    if (!code) return fail(res, 'MISSING_CODE', '缺少微信登录 code')
+    if (!code) return fail(res, '缺少登录凭证', 'MISSING_CODE')
 
-    // 开发环境跳过微信验证（无真实 secret 或使用 mock code）
-    const isMockSecret = !config.wechat.secret || config.wechat.secret.startsWith('your-');
-    if (code === 'dev-mock-code' && isMockSecret) {
-      const profile = await db.query.users.findFirst({
-        where: eq(schema.users.openid, 'dev-mock-openid'),
-      })
-      if (profile) {
-        const token = signToken({ userId: profile.id, openid: profile.openid })
-        return ok(res, { token, profile })
-      }
-      // 创建开发用户
-      const [user] = await db.insert(schema.users).values({
-        openid: 'dev-mock-openid',
-        nickname: 'Leon',
-        role: 'dad',
-      }).returning()
-      const token = signToken({ userId: user.id, openid: user.openid })
-      return ok(res, { token, profile: user })
-    }
+    // TODO: 生产环境调用 wx.code2Session 换取 openid
+    // const wxRes = await fetch(`https://api.weixin.qq.com/sns/jscode2session?appid=${APPID}&secret=${SECRET}&js_code=${code}&grant_type=authorization_code`)
+    // const wxData = await wxRes.json()
 
-    // 正式流程：code → openid
-    const { openid } = await code2Session(code)
+    // 开发阶段：使用 mock openid
+    const openid = code === 'dev' ? 'dev-openid-' + Date.now() : 'wx-' + code
 
     // 查找或创建用户
-    let user = await db.query.users.findFirst({
-      where: eq(schema.users.openid, openid),
-    })
+    let result = await query('SELECT * FROM users WHERE openid = $1', [openid])
 
-    if (!user) {
-      const [newUser] = await db.insert(schema.users).values({
-        openid,
-        nickname: '新用户',
-        role: 'mom',
-      }).returning()
-      user = newUser
+    let user
+    if (result.rows.length === 0) {
+      // 新用户
+      const id = 'u-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6)
+      result = await query(
+        `INSERT INTO users (id, openid, role, preferred_ui_mode) 
+         VALUES ($1, $2, 'mom', 'normal') RETURNING *`,
+        [id, openid]
+      )
+      user = result.rows[0]
+    } else {
+      user = result.rows[0]
     }
 
-    const token = signToken({ userId: user.id, openid: user.openid })
-    return ok(res, { token, profile: user })
+    // 生成 JWT
+    const secret = process.env.JWT_SECRET || 'dev-secret'
+    const token = jwt.sign(
+      { userId: user.id, openid: user.openid, role: user.role },
+      secret,
+      { expiresIn: "30d" }
+    )
+
+    const profile = {
+      id: user.id,
+      openid: user.openid,
+      nickname: user.nickname || '',
+      avatar: user.avatar || '',
+      phone: user.phone || '',
+      role: user.role,
+      preferredUiMode: user.preferred_ui_mode,
+      uiConfig: user.ui_config || { fontSize: 14, showTTS: false, simplifiedHome: false, autoNightMode: true },
+      createdAt: user.created_at,
+    }
+
+    return ok(res, { token, profile })
   } catch (err: any) {
-    console.error('[auth] wechat-login error:', err.message)
-    return fail(res, 'LOGIN_FAILED', err.message || '登录失败，请重试', 500)
+    console.error('[Auth] Login error:', err.message)
+    return fail(res, '登录失败，请重试', 'LOGIN_FAILED', 500)
+  }
+})
+
+// PUT /api/auth/profile
+authRouter.put('/profile', authRequired, async (req: Request, res: Response) => {
+  try {
+    const { nickname, role, preferredUiMode, uiConfig } = req.body
+    const userId = req.user!.userId
+
+    const updates: string[] = []
+    const values: any[] = []
+    let idx = 1
+
+    if (nickname !== undefined) { updates.push(`nickname = $${idx++}`); values.push(nickname) }
+    if (role !== undefined) { updates.push(`role = $${idx++}`); values.push(role) }
+    if (preferredUiMode !== undefined) { updates.push(`preferred_ui_mode = $${idx++}`); values.push(preferredUiMode) }
+    if (uiConfig !== undefined) { updates.push(`ui_config = $${idx++}`); values.push(JSON.stringify(uiConfig)) }
+
+    if (updates.length === 0) return fail(res, '没有要更新的字段')
+
+    updates.push(`updated_at = NOW()`)
+    values.push(userId)
+
+    const result = await query(
+      `UPDATE users SET ${updates.join(', ')} WHERE id = $${idx} RETURNING *`,
+      values
+    )
+
+    return ok(res, result.rows[0])
+  } catch (err: any) {
+    return fail(res, '更新失败', 'UPDATE_FAILED', 500)
   }
 })

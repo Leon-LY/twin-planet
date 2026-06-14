@@ -1,5 +1,6 @@
 <template>
   <view class="snap-page">
+    <canvas canvas-id="shareCanvas" style="position:fixed;left:-9999px;top:-9999px;width:345px;height:480px"></canvas>
     <view class="greeting">
       <text class="greeting-text">{{ greetingText }}</text>
       <text class="greeting-sub">一眼看完两个娃</text>
@@ -40,10 +41,6 @@
             <text class="middle-num">{{ todayRecords }}</text>
             <text class="middle-label">次记录</text>
           </view>
-          <view class="middle-item">
-            <text class="middle-num">{{ handoverCount }}</text>
-            <text class="middle-label">条留言</text>
-          </view>
         </view>
       </view>
 
@@ -79,6 +76,9 @@
         <view class="quick-btn" @click="goHandover"><text class="quick-emoji">🎙️</text><text class="quick-label">交接</text></view>
         <view class="quick-btn" @click="goSprout"><text class="quick-emoji">🌱</text><text class="quick-label">萌芽</text></view>
       </view>
+      <view class="share-row" @click="goShare">
+        <text>📤 生成今日双宝卡，分享给家人</text>
+      </view>
     </view>
   </view>
 </template>
@@ -88,6 +88,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useBabiesStore, type Baby } from '@/stores/babies'
 import { useRecordsStore } from '@/stores/records'
 import { useInteractionsStore } from '@/stores/interactions'
+import { onShareAppMessage } from '@dcloudio/uni-app'
+import { drawShareCard, saveToAlbum, type WeekStats } from '@/utils/shareCard'
 
 const babiesStore = useBabiesStore()
 const recordsStore = useRecordsStore()
@@ -95,7 +97,6 @@ const interactionsStore = useInteractionsStore()
 
 const twinA = computed(() => babiesStore.babyA)
 const twinB = computed(() => babiesStore.babyB)
-const handoverCount = ref(0)
 
 const greetingText = computed(() => {
   const h = new Date().getHours()
@@ -127,16 +128,40 @@ function getLastFeeding(baby: Baby | null): string {
 function getLastSleep(baby: Baby | null): string {
   if (!baby) return '—'
   const last = recordsStore.recentLogsByBaby[baby.id]?.find(l => l.type === 'sleep')
-  return last ? `${last.durationMin}分钟` : '暂无'
+  return last?.durationMin ? `${last.durationMin}分钟` : '暂无'
 }
 
 const goRecord = () => uni.navigateTo({ url: '/pages/record/index' })
 const goDuty = () => uni.navigateTo({ url: '/pages/duty/index' })
 const goHandover = () => uni.navigateTo({ url: '/pages/handover/index' })
-const goContribution = () => uni.navigateTo({ url: '/pages/contribution/index' })
 const goSprout = () => uni.navigateTo({ url: '/pages/sprout/index' })
+const goShare = async () => {
+  const now = Date.now()
+  const weekAgo = now - 7 * 86400000
+  const weekLogs = recordsStore.logs.filter(l => l.createdAt >= weekAgo)
+  const aId = twinA.value?.id; const bId = twinB.value?.id
+  const stats: WeekStats = {
+    babyAName: twinA.value?.nickname || twinA.value?.name || '大宝',
+    babyBName: twinB.value?.nickname || twinB.value?.name || '二宝',
+    babyAFeedings: weekLogs.filter(l => l.babyId === aId && l.type === 'feeding').length,
+    babyBFeedings: weekLogs.filter(l => l.babyId === bId && l.type === 'feeding').length,
+    babyASleepMin: weekLogs.filter(l => l.babyId === aId && l.type === 'sleep').reduce((s,l) => s + (l.durationMin || 0), 0),
+    babyBSleepMin: weekLogs.filter(l => l.babyId === bId && l.type === 'sleep').reduce((s,l) => s + (l.durationMin || 0), 0),
+    babyADiapers: weekLogs.filter(l => l.babyId === aId && l.type === 'diaper').length,
+    babyBDiapers: weekLogs.filter(l => l.babyId === bId && l.type === 'diaper').length,
+    daysGrowing: Math.floor((now - new Date(twinA.value?.birthDate || '').getTime()) / 86400000),
+  }
+  try {
+    const path = await drawShareCard('shareCanvas', stats)
+    await saveToAlbum(path)
+    uni.showToast({ title: '已保存到相册，去分享吧', icon: 'success' })
+  } catch {
+    uni.showToast({ title: '生成失败，请重试', icon: 'none' })
+  }
+}
 
-onMounted(() => { uni.setNavigationBarTitle({ title: '爸爸的快照' }) })
+onMounted(() => { uni.setNavigationBarTitle({ title: '双宝快照' }) })
+onShareAppMessage(()=>({title:'双宝快照 · 一眼看完两个娃',path:'/pages/snapshot/index',imageUrl:''}))
 </script>
 
 <style scoped>
@@ -173,5 +198,7 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '爸爸的快照' }) })
 .action-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12rpx; }
 .quick-btn { text-align: center; padding: 24rpx 8rpx; background: var(--twin-card-bg); border-radius: 16rpx; }
 .quick-emoji { font-size: 36rpx; display: block; }
-.quick-label { font-size: 22rpx; color: #4A5568; margin-top: 8rpx; display: block; }
+.quick-label { font-size: 22rpx; color: var(--ink); margin-top: 8rpx; display: block; }
+.share-row { text-align:center; padding: 20rpx; margin-top: 16rpx; background: var(--amber-lt); border-radius: 16rpx; font-size: 24rpx; color: var(--amber); font-weight: 600; }
+.share-row:active { opacity: .7; }
 </style>

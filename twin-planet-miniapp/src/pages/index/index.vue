@@ -1,4 +1,4 @@
-<!-- 双宝手帐 v4 -->
+<!-- 双宝手帐 v5 · Editorial Journal -->
 <template>
   <view :class="[themeClass, { 'font-large': isGrandma }]">
     <template v-if="loading">
@@ -7,114 +7,134 @@
 
     <template v-else-if="isGrandma">
       <view class="page-shell granny-shell">
-        <text class="heading-xl" style="text-align:center;display:block;margin-bottom:8rpx">并蒂星球</text>
+        <text class="heading-xl" style="text-align:center;display:block;margin-bottom:8rpx">双宝手帐</text>
         <text class="body-text" style="text-align:center;display:block;margin-bottom:64rpx">{{ greeting }}</text>
         <view class="granny-actions">
           <view class="granny-btn" @click="goRecord"><text class="granny-emoji">✋</text><text class="granny-label">记一笔</text></view>
           <view class="granny-btn" @click="goGrowth"><text class="granny-emoji">🌱</text><text class="granny-label">看看长多大了</text></view>
           <view class="granny-btn granny-help" @click="goHelp"><text class="granny-emoji">📞</text><text class="granny-label">问家里人</text></view>
         </view>
+        <text class="last-update" v-if="lastUpdateText">最后更新 {{ lastUpdateText }}</text>
       </view>
     </template>
 
     <template v-else-if="!loading">
       <view class="page-shell journal">
-        <!-- 暖色光斑 -->
+        <!-- 暖色光斑 — 不对称位置 -->
         <view class="bg-spot spot-a" />
         <view class="bg-spot spot-b" />
 
-        <!-- 页眉 -->
-        <view class="header reveal-1">
-          <view class="header-left">
-            <text class="date-tag">{{ dateStr }}</text>
-            <text class="role-tag" @click="switchRole">{{ roleEmoji }} {{ roleLabel }}</text>
+        <!-- 页眉 — journal masthead -->
+        <view class="masthead reveal-1">
+          <view class="masthead-left">
+            <text class="date-line">{{ dateStr }}</text>
+            <view class="role-note" @click="switchRole">
+              <text>{{ roleEmoji }} {{ roleLabel }}</text>
+              <text v-if="alertCount" class="alert-badge">{{ alertCount }}</text>
+            </view>
           </view>
-          <view class="streak-stamp">
-             <text v-if="streakDays > 0">✦ 连续 {{ streakDays }} 天</text><text v-else>✦ 今天开始</text>
-          </view>
-        </view>
-
-        <!-- 问候 -->
-        <view class="greet-zone reveal-2">
-          <text class="greet-hand">{{ greeting }}</text>
-          <text class="greet-hand"><text class="highlight">两个小怪兽</text></text>
-          <view class="greet-quote">
-            <text class="greet-emoji">{{ moodEmoji }}</text>
-            <text>{{ insightText }}</text>
+          <view class="masthead-right">
+            <view class="streak-stamp" v-if="streakDays > 0">
+              <text>连续 {{ streakDays }} 天</text>
+            </view>
+            <text class="streak-start" v-else>今天开始</text>
           </view>
         </view>
 
-        <!-- 双宝卡片 — 重叠 -->
-        <view class="twins-zone reveal-3">
-          <view class="twin-card card-a" @click="goRecord">
-            <view class="card-bg bg-a" />
-            <view class="avatar-wrap">
-              <view class="avatar av-a" :class="{ running: isRunningA }">
-                <text class="av-emoji">{{ isRunningA ? '😋' : '😛' }}</text>
+        <!-- 问候 — editorial, left-aligned, dramatic scale -->
+        <view class="greeting reveal-2">
+          <text class="greet-line1">{{ greeting }}</text>
+          <text class="greet-line2">{{ greetLine2 }}</text>
+          <text class="greet-sub">{{ insightText }}</text>
+        </view>
+
+        <!-- 双宝卡片 — asymmetric, hand-rotated, overlapping -->
+        <view class="twins reveal-3">
+          <view class="twin-card card-a" :class="{ 'has-timer': isRunningA }" @click="goRecord">
+            <view class="card-surface">
+              <view class="avatar-ring" :class="{ pulsing: isRunningA }">
+                <text class="avatar-emoji">{{ isRunningA ? '😋' : '😛' }}</text>
               </view>
-              <text class="av-sparkle s1">⭐</text>
-              <text class="av-sparkle s2">✨</text>
-            </view>
-            <text class="twin-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
-            <text class="twin-role">大宝</text>
-            <view class="twin-status">
-              <text v-if="isRunningA" class="status-running"><text class="st-dot green"></text>喂奶中</text>
-              <text v-else-if="babyStatus(babyA)" class="status-idle">{{ babyStatus(babyA) }}</text>
-              <text v-else class="status-idle">轻触记录</text>
+              <text class="twin-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
+              <view class="twin-status-row">
+                <text v-if="isRunningA" class="status-live">计时中</text>
+                <text v-else-if="babyStatus(babyA)" class="status-recent">{{ babyStatus(babyA) }}</text>
+                <text v-else class="status-tap">轻触记录</text>
+              </view>
             </view>
           </view>
 
-          <view class="twin-card card-b" @click="goRecord">
-            <view class="card-bg bg-b" />
-            <view class="avatar-wrap">
-              <view class="avatar av-b" :class="{ running: isRunningB }">
-                <text class="av-emoji">{{ isRunningB ? '😴' : '😪' }}</text>
+          <view class="twin-card card-b" :class="{ 'has-timer': isRunningB }" @click="goRecord">
+            <view class="card-surface">
+              <view class="avatar-ring" :class="{ pulsing: isRunningB }">
+                <text class="avatar-emoji">{{ isRunningB ? '😴' : '😪' }}</text>
               </view>
-              <text class="av-sparkle s1">🌸</text>
-              <text class="av-sparkle s2">💫</text>
-            </view>
-            <text class="twin-name">{{ babyB?.nickname || babyB?.name || '二宝' }}</text>
-            <text class="twin-role">二宝</text>
-            <view class="twin-status">
-              <text v-if="isRunningB" class="status-running"><text class="st-dot green"></text>计时中</text>
-              <text v-else-if="babyStatus(babyB)" class="status-idle">{{ babyStatus(babyB) }}</text>
-              <text v-else class="status-idle">轻触记录</text>
+              <text class="twin-name">{{ babyB?.nickname || babyB?.name || '二宝' }}</text>
+              <view class="twin-status-row">
+                <text v-if="isRunningB" class="status-live">计时中</text>
+                <text v-else-if="babyStatus(babyB)" class="status-recent">{{ babyStatus(babyB) }}</text>
+                <text v-else class="status-tap">轻触记录</text>
+              </view>
             </view>
           </view>
         </view>
 
-        <!-- 并蒂光桥 -->
+        <!-- LightBridge connection -->
         <view class="bridge-wrap reveal-4">
-          <LightBridge :state="bridgeState" :height="40" :animated="true" />
+          <LightBridge :state="bridgeState" :height="36" :animated="true" />
+        </view>
+
+        <!-- 贴纸条 — only for full layout (mom) -->
+        <view class="sticker-zone reveal-4" v-if="userStore.roleConfig.homeLayout==='full'">
+          <StickerStrip :stickers="stickersStore.todayStickers" :showMore="true" @viewAll="navigate('/pages/stickers/index')" />
+        </view>
+
+        <!-- 今日摘要 -->
+        <view class="summary-line reveal-4" v-if="todaySummary && userStore.roleConfig.homeLayout==='full'">
+          <text>{{ todaySummary }}</text>
         </view>
 
         <!-- 中央按钮 -->
-        <view class="center-zone reveal-5">
+        <view class="action-center reveal-5">
           <view class="btn-stage">
             <view class="orbit-ring" />
-            <text class="float-el f1">⭐</text><text class="float-el f2">💫</text>
             <button class="main-btn" @click="goRecord">
               <text class="btn-icon">✋</text>
-              <text class="btn-text">记 一 笔</text>
+              <text class="btn-text">记一笔</text>
             </button>
           </view>
         </view>
 
-        <!-- 快捷 -->
-        <view class="quick-row reveal-6" v-if="babyA && babyB">
-          <view class="q-chip" @click="dualRecord('feeding')"><text>🍼 都喂了</text></view>
-          <view class="q-chip" @click="dualRecord('sleep')"><text>😴 都睡了</text></view>
-          <view class="q-chip" @click="dualRecord('diaper')"><text>🧷 都换了</text></view>
+        <!-- 快捷操作 — asymmetric sizes -->
+        <view class="quick-bar reveal-6" v-if="babyA && babyB && userStore.roleConfig.homeLayout!=='compact'">
+          <view class="q-chip q-primary" @click="dualRecord('feeding')">🍼 都喂了</view>
+          <view class="q-chip" @click="dualRecord('sleep')">😴 都睡了</view>
+          <view class="q-chip" @click="dualRecord('diaper')">🧷</view>
         </view>
 
-        <text class="egg" v-if="streakDays > 0">1+1=11 · 端水失败的第 {{ streakDays }} 天</text>
+        <!-- 爸爸模式：值班进度卡 -->
+        <view class="duty-card reveal-6" v-if="userStore.roleConfig.homeLayout==='compact' && babyA && babyB">
+          <view class="q-chip q-primary" @click="dualRecord('feeding')">🍼 都喂了</view>
+          <view class="q-chip" @click="dualRecord('sleep')">😴 都睡了</view>
+          <view class="q-chip" @click="dualRecord('diaper')">🧷 都换了</view>
+        </view>
 
-        <!-- 底部 -->
-        <view class="footer">
-          <text class="f-item active">记录</text>
-          <text class="f-item" @click="goGrowth">生长</text>
-          <text class="f-item" @click="goSnapshot">快照</text>
-          <text class="f-item" @click="goMore">发现</text>
+        <!-- 预测 -->
+        <view class="forecast-line reveal-6" v-if="tomorrowForecast && streakDays >= 3">
+          <text>🔮 {{ tomorrowForecast }}</text>
+        </view>
+
+        <!-- 免责声明 -->
+        <text class="disclaimer-note reveal-6" v-if="userStore.roleConfig.homeLayout==='full'">本应用不提供医疗建议，所有数据仅供参考</text>
+
+        <text class="journal-footer-text" v-if="streakDays > 0">1 + 1 = 11 · 端水失败的第 {{ streakDays }} 天</text>
+
+        <!-- 底部导航 — journal-style page tabs -->
+        <view class="journal-nav">
+          <text class="jnav-item active">手帐</text>
+          <text class="jnav-item" @click="goGrowth">生长</text>
+          <text class="jnav-item" @click="goSnapshot">快照</text>
+          <text class="jnav-item" @click="goMore">更多</text>
         </view>
       </view>
     </template>
@@ -123,173 +143,241 @@
 
 <script setup lang="ts">
 import { computed,ref,onMounted } from 'vue'
+import { onShareAppMessage } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 import { useBabiesStore } from '@/stores/babies'
 import { useRecordsStore } from '@/stores/records'
+import { useAlertsStore } from '@/stores/alerts'
+import { useStickersStore } from '@/stores/stickers'
+import { getDiscoverFeatures } from '@/config/roles'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
 import LightBridge from '@/components/cosmic/LightBridge.vue'
+import StickerStrip from '@/components/journal/StickerStrip.vue'
 
 const loading=ref(true);const userStore=useUserStore()
 const themeClass=computed(()=>{const c=['page-root'];const h=new Date().getHours();if(h>=22||h<6)c.push('theme-dark');if(userStore.isGrandmaMode)c.push('font-large','role-granny');else if(userStore.isDad)c.push('role-dad');return c.join(' ')})
-onMounted(()=>{setTimeout(()=>{loading.value=false},400)})
+onMounted(()=>{setTimeout(()=>{loading.value=false;syncStickers()},400)})
+onShareAppMessage(()=>({title:'双宝手帐 · 中国首款双胞胎育儿伴侣',path:'/pages/index/index',imageUrl:''}))
 
 const babiesStore=useBabiesStore();const recordsStore=useRecordsStore()
+const alertsStore=useAlertsStore();const stickersStore=useStickersStore()
+
+function syncStickers(){
+  const todayLogs=recordsStore.logs.filter(l=>l.createdAt>=new Date().setHours(0,0,0,0))
+  const aId=babyA.value?.id;const bId=babyB.value?.id;const now=Date.now()
+  stickersStore.sync({
+    todayLogCount:todayLogs.length,streakDays:recordsStore.streakDays,
+    totalLogCount:recordsStore.logs.length,
+    twinSyncCount:todayLogs.filter(l=>l.type==='feeding'||l.type==='sleep').length>=2?1:0,
+    sproutCount:0,dutyDoneCount:0,
+    babyAHasRecord:aId?todayLogs.some(l=>l.babyId===aId):false,
+    babyBHasRecord:bId?todayLogs.some(l=>l.babyId===bId):false,
+    babyARecentRecord:aId?todayLogs.some(l=>l.babyId===aId&&now-l.createdAt<3600000):false,
+    babyBRecentRecord:bId?todayLogs.some(l=>l.babyId===bId&&now-l.createdAt<3600000):false,
+  })
+}
+
 const isGrandma=computed(()=>userStore.isGrandmaMode)
 const babyA=computed(()=>babiesStore.babyA);const babyB=computed(()=>babiesStore.babyB)
 const streakDays=computed(()=>recordsStore.streakDays)
 const isRunningA=computed(()=>babyA.value?recordsStore.isBabyRunning(babyA.value.id):false)
 const isRunningB=computed(()=>babyB.value?recordsStore.isBabyRunning(babyB.value.id):false)
+const alertCount=computed(()=>alertsStore.unreadCount)
 
 const greeting=computed(()=>{const h=new Date().getHours();if(h<6)return'凌晨好';if(h<9)return'早上好';if(h<12)return'上午好';if(h<14)return'中午好';if(h<18)return'下午好';if(h<22)return'晚上好';return'夜深了'})
-const moodEmoji=computed(()=>{const h=new Date().getHours();if(h>=2&&h<6)return'😵';if(h>=22||h<2)return'🌙';return'👾'})
-const roleEmoji=computed(()=>{const r=userStore.profile?.role;return r==='dad'?'👨':r==='grandma'?'👵':r==='grandpa'?'👴':r==='nanny'?'👩‍🍼':'👩'})
-const roleLabel=computed(()=>{const r=userStore.profile?.role;return r==='dad'?'爸爸':r==='grandma'?'奶奶':r==='grandpa'?'爷爷':r==='nanny'?'育儿嫂':'妈妈'})
-const dateStr=computed(()=>{const d=new Date();const days=['日','一','二','三','四','五','六'];return `${d.getMonth()+1}月${d.getDate()}日 · 星期${days[d.getDay()]}`})
+const greetLine2=computed(()=>{const h=new Date().getHours();if(h>=22||h<6)return'夜深了，辛苦了';if(h<9)return'新的一天开始了';if(h<14)return'上午过半，记得喂奶';return'下午时光，两个小家伙在干嘛？'})
+const roleEmoji=computed(()=>userStore.roleEmoji)
+const roleLabel=computed(()=>userStore.roleLabel)
+const dateStr=computed(()=>{const d=new Date();const days=['日','一','二','三','四','五','六'];return `${d.getMonth()+1}月${d.getDate()}日 星期${days[d.getDay()]}`})
 
 function babyStatus(b:any):string{if(!b)return'';const logs=recordsStore.recentLogsByBaby[b.id];if(!logs?.length)return'';const last=logs[logs.length-1];const m=Math.floor((Date.now()-last.createdAt)/60000);const a=last.type==='feeding'?'喂奶':last.type==='sleep'?'睡觉':'记录';if(m<1)return`刚刚${a}`;if(m<60)return`${m}分钟前${a}`;return`${Math.floor(m/60)}小时前${a}`}
 
 const syncRate=computed(()=>recordsStore.twinSyncRate)
-const insightText=computed(()=>{const s=syncRate.value;if(s>70)return`今天同步率 ${s}% · 越来越有默契了`;if(s>30)return`今天同步率 ${s}% · 打架战绩：平局`;if(s>0)return`今天各有各的节奏`;return'今天的两个小怪兽'})
+const insightText=computed(()=>{const s=syncRate.value;if(s>70)return`同步率 ${s}%，默契满满`;if(s>30)return`同步率 ${s}%，打架战绩：平局`;if(s>0)return'各有各的节奏';return'两个小怪兽，今天会同步吗？'})
 const bridgeState=computed(()=>{const aId=babyA.value?.id;const bId=babyB.value?.id;if(!aId||!bId)return'faint';const aLogs=recordsStore.recentLogsByBaby[aId]||[];const bLogs=recordsStore.recentLogsByBaby[bId]||[];const aRecent=aLogs.length&&(Date.now()-aLogs[aLogs.length-1].createdAt)<3600000;const bRecent=bLogs.length&&(Date.now()-bLogs[bLogs.length-1].createdAt)<3600000;if(aRecent&&bRecent)return'bright';if(aRecent)return'one-sided-a';if(bRecent)return'one-sided-b';if(aLogs.length||bLogs.length)return'steady';return'faint'})
 
-function dualRecord(t:'feeding'|'sleep'|'diaper'){if(babyA.value)recordsStore.quickLog(babyA.value.id,t);if(babyB.value)recordsStore.quickLog(babyB.value.id,t);uni.showToast({title:t==='feeding'?'都喂了 ✦':t==='sleep'?'都睡了 ✦':'都换了 ✦',icon:'success'})}
+const todaySummary=computed(()=>{
+  const today=recordsStore.logs.filter(l=>l.createdAt>=new Date().setHours(0,0,0,0))
+  if(!today.length)return''
+  const feeds=today.filter(l=>l.type==='feeding').length
+  const sleeps=today.filter(l=>l.type==='sleep').length
+  const diapers=today.filter(l=>l.type==='diaper').length
+  const parts:string[]=[]
+  if(feeds)parts.push(`${feeds}次喂奶`)
+  if(sleeps)parts.push(`${sleeps}次睡眠`)
+  if(diapers)parts.push(`${diapers}次换尿布`)
+  return parts.length?`今天 ${parts.join(' · ')}`:''
+})
+const tomorrowForecast=computed(()=>{
+  const allLogs=recordsStore.logs.filter(l=>l.type==='feeding'||l.type==='sleep')
+  if(allLogs.length<6)return''
+  const morningLogs=allLogs.filter(l=>{const h=new Date(l.createdAt).getHours();return h>=5&&h<9})
+  if(morningLogs.length<2)return''
+  const avgMin=morningLogs.reduce((s,l)=>s+new Date(l.createdAt).getHours()*60+new Date(l.createdAt).getMinutes(),0)/morningLogs.length
+  const h=Math.floor(avgMin/60);const m=Math.floor(avgMin%60)
+  return `明早约 ${h}:${String(m).padStart(2,'0')} 第一次喂奶`
+})
+const lastUpdateText=computed(()=>{
+  const logs=recordsStore.logs;if(!logs.length)return''
+  const m=Math.floor((Date.now()-logs[logs.length-1].createdAt)/60000)
+  if(m<1)return'刚刚';if(m<60)return`${m}分钟前`;return`${Math.floor(m/60)}小时前`
+})
+
+function dualRecord(t:'feeding'|'sleep'|'diaper'){if(babyA.value)recordsStore.quickLog(babyA.value.id,t);if(babyB.value)recordsStore.quickLog(babyB.value.id,t);syncStickers();uni.showToast({title:t==='feeding'?'都喂了':t==='sleep'?'都睡了':'都换了',icon:'success',duration:800})}
 
 const navigate=(url:string)=>uni.navigateTo({url})
 const goRecord=()=>navigate('/pages/record/index')
 const goGrowth=()=>navigate('/pages/growth/index')
 const goSnapshot=()=>navigate('/pages/snapshot/index')
-const goMore=()=>uni.showActionSheet({itemList:['萌芽日记','星尘日志','指挥官控制台','星光监测站','星际通讯','轨道决策','星座日志'],success:(res)=>uni.navigateTo({url:['/pages/sprout/index','/pages/contribution/index','/pages/duty/index','/pages/guardian/index','/pages/handover/index','/pages/school/index','/pages/milestones/index'][res.tapIndex]})})
-const goHelp=()=>uni.showModal({title:'需要帮忙？',content:'打电话给家里人，或者打开记录页点最大的按钮就行。',confirmText:'我知道了',showCancel:false})
+const goMore=()=>{const features=getDiscoverFeatures(userStore.profile?.role);if(features.length<=6){uni.showActionSheet({itemList:features.map(f=>f.label),success:(res)=>{if(features[res.tapIndex])uni.navigateTo({url:features[res.tapIndex].path})}})}else{const labels=features.map(f=>f.label);labels.push('取消');uni.showActionSheet({itemList:labels.slice(0,6),success:(res)=>{if(res.tapIndex<5&&features[res.tapIndex])uni.navigateTo({url:features[res.tapIndex].path});if(res.tapIndex===5){const rest=features.slice(5);const rl=rest.map(f=>f.label);rl.push('取消');uni.showActionSheet({itemList:rl,success:(r)=>{if(r.tapIndex<rest.length)uni.navigateTo({url:rest[r.tapIndex].path})}})}}})}}
+const goHelp=()=>{uni.showModal({title:'打电话给妈妈？',content:'将直接拨打妈妈的电话',confirmText:'打电话',cancelText:'不用了',success:(res)=>{if(res.confirm){uni.makePhoneCall({phoneNumber:userStore.profile?.phone||''})}}})}
 const switchRole=()=>{const roles=['👩 妈妈','👨 爸爸','👵 奶奶','👴 爷爷','👩‍🍼 育儿嫂','📝 重新创建家庭','🚪 退出登录'];uni.showActionSheet({itemList:roles,success:(res)=>{if(res.tapIndex===5){uni.reLaunch({url:'/pages/onboarding/family'})}else if(res.tapIndex===6){userStore.logout();uni.reLaunch({url:'/pages/login/index'})}else{const r=['mom','dad','grandma','grandpa','nanny'][res.tapIndex];userStore.setRole(r);uni.showToast({title:`已切换为${roles[res.tapIndex]}模式`,icon:'success',duration:1500})}}})}
 </script>
 
 <style scoped>
 .journal{position:relative}
 
-/* 暖色光斑 */
+/* 暖色光斑 — 不对称位置 */
 .bg-spot{position:absolute;pointer-events:none;z-index:0;border-radius:50%}
-.spot-a{width:500rpx;height:500rpx;top:80rpx;left:-200rpx;background:radial-gradient(circle,rgba(224,123,62,0.04) 0%,transparent 60%)}
-.spot-b{width:400rpx;height:400rpx;bottom:200rpx;right:-160rpx;background:radial-gradient(circle,rgba(92,154,110,0.03) 0%,transparent 60%)}
+.spot-a{width:560rpx;height:560rpx;top:60rpx;left:-260rpx;background:radial-gradient(circle,rgba(224,123,62,0.04) 0%,transparent 55%)}
+.spot-b{width:380rpx;height:380rpx;bottom:280rpx;right:-140rpx;background:radial-gradient(circle,rgba(92,154,110,0.03) 0%,transparent 55%)}
 
-/* 页眉 */
-.header{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:36rpx}
-.header-left{display:flex;flex-direction:column;gap:6rpx}
-.date-tag{font-family:var(--font-journal);font-size:24rpx;color:var(--ink-md);letter-spacing:1rpx;padding-bottom:4rpx;border-bottom:1.5px solid var(--dot)}
-.role-tag{font-size:20rpx;color:var(--ink-lt);padding:4rpx 12rpx;background:var(--cream);border-radius:8rpx;align-self:flex-start}
-.role-tag:active{background:var(--amber-lt);color:var(--amber)}
-.streak-stamp{background:var(--gold-lt);color:var(--gold);font-weight:700;font-size:22rpx;padding:8rpx 18rpx;border-radius:16rpx;letter-spacing:3rpx;font-family:var(--font-journal);box-shadow:0 2rpx 8rpx rgba(200,153,62,0.12);transform:rotate(3deg);animation:badgePop 0.5s var(--ease-bounce)}@keyframes badgePop{0%{transform:rotate(3deg)scale(0);opacity:0}70%{transform:rotate(-2deg)scale(1.15)}100%{transform:rotate(3deg)scale(1);opacity:1}}
+/* 页眉 masthead */
+.masthead{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:44rpx}
+.masthead-left{display:flex;flex-direction:column;gap:8rpx}
+.date-line{font-family:var(--font-journal);font-size:24rpx;color:var(--ink-md);letter-spacing:2rpx}
+.role-note{font-size:20rpx;color:var(--ink-lt);display:inline-flex;align-items:center;gap:6rpx}
+.role-note:active{color:var(--amber)}
+.alert-badge{display:inline-flex;align-items:center;justify-content:center;min-width:28rpx;height:28rpx;border-radius:14rpx;background:var(--twin-danger);color:#FFF;font-size:16rpx;font-weight:700;padding:0 4rpx}
+.masthead-right{display:flex;align-items:flex-end}
+.streak-stamp{background:var(--gold-lt);padding:6rpx 14rpx;border-radius:4rpx 12rpx 4rpx 12rpx;font-family:var(--font-journal);font-size:20rpx;color:var(--gold);font-weight:700;transform:rotate(2deg);box-shadow:0 2rpx 6rpx rgba(200,153,62,0.1);animation:stampIn .4s var(--ease-bounce)}
+@keyframes stampIn{0%{transform:rotate(2deg)scale(0);opacity:0}70%{transform:rotate(-1deg)scale(1.1)}100%{transform:rotate(2deg)scale(1);opacity:1}}
+.streak-start{font-size:20rpx;color:var(--ink-lt);font-family:var(--font-journal)}
 
-/* 问候 */
-.greet-zone{position:relative;z-index:1;margin-bottom:40rpx}
-.greet-hand{font-family:var(--font-journal);font-size:56rpx;font-weight:400;color:var(--ink);letter-spacing:-1rpx;line-height:1.15;display:block}
-.highlight{display:inline-block;position:relative}
-.highlight::after{content:'';position:absolute;bottom:2rpx;left:-4rpx;right:-4rpx;height:12rpx;background:var(--amber-lt);z-index:-1;border-radius:4rpx;opacity:0.6}
-.greet-quote{display:flex;align-items:center;gap:10rpx;margin-top:12rpx;font-size:28rpx;color:var(--ink-md)}
-.greet-emoji{font-size:40rpx;animation:gentleBob 2.5s ease-in-out infinite}
-@keyframes gentleBob{0%,100%{transform:translateY(0)rotate(0)}30%{transform:translateY(-6rpx)rotate(3deg)}60%{transform:translateY(2rpx)rotate(-2deg)}}
+/* 问候 — editorial left-aligned */
+.greeting{position:relative;z-index:1;margin-bottom:44rpx}
+.greet-line1{display:block;font-family:var(--font-journal);font-size:64rpx;font-weight:400;color:var(--ink);letter-spacing:-1rpx;line-height:1.1}
+.greet-line2{display:block;font-family:var(--font-journal);font-size:36rpx;color:var(--ink-md);margin-top:4rpx}
+.greet-sub{display:block;font-size:26rpx;color:var(--ink-lt);margin-top:16rpx;line-height:1.5;max-width:480rpx}
 
-/* 双宝卡片 */
-.twins-zone{position:relative;z-index:1;display:flex;gap:0;margin-bottom:28rpx}
-.twin-card{flex:1;position:relative;padding:28rpx 16rpx 20rpx}
-.twin-card:active{transform:scale(0.96);transition:transform 0.2s var(--ease-bounce)}
-.twin-card.card-b{margin-left:-10rpx;z-index:0}
-.twin-card.card-a{z-index:1}
-.card-bg{position:absolute;inset:0;border-radius:28rpx;transition:box-shadow 0.3s,transform 0.2s var(--ease-bounce)}
-.bg-a{background:var(--amber-lt);border:1.5px solid rgba(224,123,62,0.12);box-shadow:0 4rpx 16rpx rgba(224,123,62,0.06);transform:rotate(-0.5deg)}
-.bg-b{background:var(--rose-lt);border:1.5px solid rgba(212,128,104,0.12);box-shadow:0 4rpx 16rpx rgba(212,128,104,0.06);transform:rotate(1deg)}
+/* 双宝卡片 — asymmetric */
+.twins{position:relative;z-index:1;display:flex;align-items:flex-start;margin-bottom:8rpx}
+.twin-card{position:relative}
+.twin-card:active{transform:scale(.96);transition:transform .2s var(--ease-bounce)}
+.twin-card.card-a{flex:52;z-index:2;padding-right:0}
+.twin-card.card-b{flex:48;z-index:1;margin-left:-24rpx;margin-top:8rpx}
+
+.card-surface{
+  padding:28rpx 20rpx 22rpx;
+  border-radius:8rpx 24rpx 8rpx 24rpx;
+  position:relative;
+  box-shadow:0 2rpx 12rpx rgba(45,35,24,0.04),0 1rpx 0 rgba(45,35,24,0.02);
+}
+.card-a .card-surface{background:linear-gradient(175deg,var(--amber-lt) 0%,rgba(224,123,62,0.03) 100%);border:1.5px solid rgba(224,123,62,0.1);transform:rotate(-1.2deg)}
+.card-b .card-surface{background:linear-gradient(185deg,var(--rose-lt) 0%,rgba(212,128,104,0.03) 100%);border:1.5px solid rgba(212,128,104,0.1);transform:rotate(1.5deg)}
 
 /* 头像 */
-.avatar-wrap{position:relative;display:flex;justify-content:center;margin-bottom:16rpx}
-.avatar{width:96rpx;height:96rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;transition:transform 0.3s var(--ease-bounce)}
-.twin-card:active .avatar{transform:scale(1.1)}
-.av-a{background:var(--amber-md)}
-.av-b{background:var(--rose-md)}
-.av-emoji{font-size:48rpx;line-height:1}
-.avatar.running::before{content:'';position:absolute;inset:-8rpx;border-radius:50%;border:2rpx solid var(--mint);opacity:0.5;animation:ringPulse 2s ease-in-out infinite}
-@keyframes ringPulse{0%,100%{transform:scale(1);opacity:0.35}50%{transform:scale(1.12);opacity:0.85}}
+.avatar-ring{width:88rpx;height:88rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12rpx;transition:transform .3s var(--ease-bounce)}
+.twin-card:active .avatar-ring{transform:scale(1.08)}
+.card-a .avatar-ring{background:var(--amber-md)}
+.card-b .avatar-ring{background:var(--rose-md)}
+.avatar-ring.pulsing::before{content:'';position:absolute;inset:-6rpx;border-radius:50%;border:2rpx solid var(--mint);opacity:.45;animation:ringPulse 2.5s ease-in-out infinite}
+@keyframes ringPulse{0%,100%{transform:scale(1);opacity:.35}50%{transform:scale(1.1);opacity:.8}}
+.avatar-emoji{font-size:44rpx}
 
-.av-sparkle{position:absolute;font-size:22rpx;pointer-events:none;z-index:2}
-.av-sparkle.s1{top:-6rpx;right:-8rpx;animation:sparkleFloat 3s ease-in-out infinite}
-.av-sparkle.s2{bottom:-6rpx;left:-8rpx;animation:sparkleFloat 3.5s ease-in-out infinite 0.8s}
-@keyframes sparkleFloat{0%,100%{transform:translateY(0)scale(1);opacity:0.4}50%{transform:translateY(-8rpx)scale(1.3);opacity:1}}
+.twin-name{font-family:var(--font-journal);font-size:30rpx;font-weight:700;color:var(--ink);text-align:center;display:block;margin-bottom:4rpx}
+.twin-status-row{text-align:center}
+.status-live{font-size:22rpx;color:var(--mint);font-weight:600}
+.status-recent{font-size:22rpx;color:var(--ink-md)}
+.status-tap{font-size:22rpx;color:var(--ink-lt)}
 
-.twin-name{font-family:var(--font-journal);font-size:var(--font-card);font-weight:700;color:var(--ink);text-align:center;display:block;margin-bottom:2rpx}
-.twin-role{font-size:22rpx;color:var(--ink-lt);text-align:center;display:block;margin-bottom:8rpx}
-.twin-status{font-size:24rpx;text-align:center;display:flex;align-items:center;justify-content:center;gap:6rpx}
+/* LightBridge */
+.bridge-wrap{display:flex;justify-content:center;position:relative;z-index:1;margin-bottom:16rpx}
 
-/* 状态 */
-.st-dot{width:6rpx;height:6rpx;border-radius:50%;display:inline-block}
-.st-dot.green{background:var(--mint)}
-.status-running{color:var(--mint);font-weight:600}
-.status-idle{color:var(--ink-md)}
+/* 贴纸区域 */
+.sticker-zone{position:relative;z-index:1;margin-bottom:12rpx}
 
-/* 并蒂光桥 */
-.bridge-wrap{display:flex;justify-content:center;position:relative;z-index:1;margin-bottom:28rpx}
+/* 今日摘要 */
+.summary-line{text-align:left;margin-bottom:24rpx;position:relative;z-index:1}
+.summary-line text{font-family:var(--font-journal);font-size:24rpx;color:var(--ink-md)}
 
 /* 中央按钮 */
-.center-zone{flex:1;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;margin-bottom:20rpx}
-.btn-stage{position:relative;width:440rpx;height:440rpx;display:flex;align-items:center;justify-content:center}
-.orbit-ring{position:absolute;inset:0;border-radius:50%;border:2rpx dashed var(--dot);animation:spin 35s linear infinite;opacity:0.45}
-@keyframes spin{to{transform:rotate(360deg)}}
+.action-center{display:flex;align-items:center;justify-content:center;position:relative;z-index:1;margin-bottom:28rpx}
+.btn-stage{position:relative;width:420rpx;height:420rpx;display:flex;align-items:center;justify-content:center}
+.orbit-ring{position:absolute;inset:0;border-radius:50%;border:2rpx dashed var(--dot);opacity:.35}
+.main-btn{
+  width:300rpx;height:300rpx;border-radius:50%;
+  position:relative;z-index:2;
+  background:var(--amber);border:none;color:#FFF;font-family:var(--font-journal);
+  box-shadow:0 20rpx 56rpx rgba(224,123,62,0.2),0 6rpx 12rpx rgba(224,123,62,0.1),
+             inset 0 3rpx 0 rgba(255,255,255,.2),inset 0 -6rpx 12rpx rgba(0,0,0,.06);
+  transform:rotate(-2deg);
+  transition:transform .18s var(--ease-bounce),box-shadow .18s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6rpx;
+}
+.main-btn::after{content:'';position:absolute;top:14rpx;left:22%;right:22%;height:32%;background:radial-gradient(ellipse at center,rgba(255,255,255,.25) 0%,transparent 70%);border-radius:50%;pointer-events:none}
+.main-btn:active{transform:rotate(-2deg)scale(.86);box-shadow:0 6rpx 20rpx rgba(224,123,62,.16),0 2rpx 4rpx rgba(224,123,62,.08)}
+.btn-icon{font-size:56rpx;position:relative;z-index:1}
+.btn-text{font-size:32rpx;font-weight:700;letter-spacing:6rpx;position:relative;z-index:1}
 
-/* 交错入场 */
-.reveal-1{animation:revealUp 0.5s var(--ease-soft) both}
-.reveal-2{animation:revealUp 0.5s var(--ease-soft) 0.08s both}
-.reveal-3{animation:revealUp 0.5s var(--ease-soft) 0.16s both}
-.reveal-4{animation:revealUp 0.5s var(--ease-soft) 0.24s both}
-.reveal-5{animation:revealUp 0.5s var(--ease-soft) 0.32s both}
-.reveal-6{animation:revealUp 0.5s var(--ease-soft) 0.40s both}
-@keyframes revealUp{from{opacity:0;transform:translateY(16rpx)}to{opacity:1;transform:translateY(0)}}
+/* 快捷操作 — asymmetric sizes */
+.quick-bar{display:flex;gap:12rpx;justify-content:center;position:relative;z-index:1;margin-bottom:20rpx;align-items:center}
+.q-chip{padding:16rpx 24rpx;border-radius:20rpx;font-size:22rpx;font-weight:600;background:var(--cream);border:1.5px solid var(--dot);color:var(--ink-md);transition:transform .15s var(--ease-bounce),background .2s,border-color .2s}
+.q-chip:active{transform:scale(.9);background:var(--amber-lt);border-color:var(--amber);color:var(--amber)}
+.q-chip.q-primary{padding:18rpx 32rpx;font-size:26rpx;background:var(--amber-lt);border-color:var(--amber);color:var(--amber)}
 
-.float-el{position:absolute;font-size:28rpx;pointer-events:none}
-.f1{top:10rpx;left:30rpx;animation:orbFloat 4s ease-in-out infinite}
-.f2{top:30rpx;right:20rpx;animation:orbFloat 3.5s ease-in-out infinite 0.6s}
-@keyframes orbFloat{0%,100%{transform:translate(0,0)rotate(0);opacity:0.3}25%{transform:translate(6rpx,-10rpx)rotate(8deg);opacity:0.8}50%{transform:translate(-4rpx,-16rpx)rotate(-5deg);opacity:0.5}75%{transform:translate(-10rpx,-4rpx)rotate(-8deg);opacity:0.7}}
+/* 爸爸模式快捷 */
+.duty-card{display:flex;gap:8rpx;justify-content:center;position:relative;z-index:1;margin-bottom:20rpx;flex-wrap:wrap}
 
-.main-btn{width:320rpx;height:320rpx;border-radius:50%;position:relative;z-index:2;background:var(--amber);border:none;color:#FFF;font-family:var(--font-journal);box-shadow:0 24rpx 64rpx rgba(224,123,62,0.22),0 8rpx 16rpx rgba(224,123,62,0.12),inset 0 3rpx 0 rgba(255,255,255,0.2),inset 0 -6rpx 12rpx rgba(0,0,0,0.08);transform:rotate(-3deg);transition:transform 0.18s var(--ease-bounce),box-shadow 0.18s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10rpx}
-.main-btn::after{content:'';position:absolute;top:14rpx;left:22%;right:22%;height:35%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.28) 0%,transparent 70%);border-radius:50%;pointer-events:none}
-.main-btn:active{transform:rotate(-3deg)scale(0.86);box-shadow:0 6rpx 20rpx rgba(224,123,62,0.18),0 2rpx 4rpx rgba(224,123,62,0.1)}
-.btn-icon{font-size:64rpx;position:relative;z-index:1}
-.btn-text{font-size:36rpx;font-weight:700;letter-spacing:6rpx;position:relative;z-index:1}
+/* 预测 */
+.forecast-line{text-align:left;margin-bottom:16rpx;position:relative;z-index:1}
+.forecast-line text{font-size:22rpx;color:var(--ink-lt);font-style:italic}
 
-/* 快捷 */
-.quick-row{display:flex;gap:12rpx;justify-content:center;position:relative;z-index:1;margin-bottom:24rpx}
-.q-chip{padding:18rpx 28rpx;border-radius:20rpx;font-size:24rpx;font-weight:600;background:var(--cream);border:1.5px solid var(--dot);color:var(--ink-md);transition:transform 0.15s var(--ease-bounce),background 0.2s,border-color 0.2s}
-.q-chip:active{transform:scale(0.88);background:var(--amber-lt);border-color:var(--amber);color:var(--amber)}
+.journal-footer-text{display:block;text-align:right;font-size:18rpx;color:var(--ink-lt);margin-bottom:20rpx;padding-right:8rpx;position:relative;z-index:1}
 
-.egg{text-align:center;font-size:20rpx;color:var(--ink-lt);font-style:italic;margin-bottom:16rpx;opacity:0.4;position:relative;z-index:1}
+/* 底部导航 — journal tabs */
+.journal-nav{display:flex;justify-content:space-between;padding:20rpx 48rpx 0;border-top:1.5px solid var(--dot);position:relative;z-index:1}
+.jnav-item{font-family:var(--font-journal);font-size:26rpx;color:var(--ink-lt);letter-spacing:3rpx}
+.jnav-item.active{color:var(--amber);font-weight:700}
+.disclaimer-note{display:block;text-align:center;font-size:18rpx;color:var(--ink-lt);margin-bottom:16rpx;opacity:.5;position:relative;z-index:1}
 
-/* 底部 */
-.footer{display:flex;justify-content:center;gap:56rpx;padding-top:20rpx;border-top:1.5px solid var(--dot);position:relative;z-index:1}
-.f-item{font-family:var(--font-journal);font-size:28rpx;color:var(--ink-lt);letter-spacing:3rpx}
-.f-item.active{color:var(--amber);font-weight:700;position:relative}
-.f-item.active::after{content:'';position:absolute;bottom:-22rpx;left:50%;transform:translateX(-50%);width:6rpx;height:6rpx;border-radius:50%;background:var(--amber)}
+/* 入场 */
+.reveal-1{animation:revealUp .5s var(--ease-soft) both}
+.reveal-2{animation:revealUp .5s var(--ease-soft) .06s both}
+.reveal-3{animation:revealUp .5s var(--ease-soft) .12s both}
+.reveal-4{animation:revealUp .5s var(--ease-soft) .18s both}
+.reveal-5{animation:revealUp .5s var(--ease-soft) .24s both}
+.reveal-6{animation:revealUp .5s var(--ease-soft) .30s both}
+@keyframes revealUp{from{opacity:0;transform:translateY(18rpx)}to{opacity:1;transform:translateY(0)}}
 
 /* 奶奶模式 */
-.granny-shell{display:flex;flex-direction:column;justify-content:center;min-height:100vh;padding:80rpx 48rpx!important}
-.granny-actions{display:flex;flex-direction:column;gap:var(--space-md)}
-.granny-btn{text-align:center;padding:56rpx;background:var(--cream);border-radius:var(--radius-lg);border:4rpx solid var(--dot);display:flex;flex-direction:column;align-items:center;gap:var(--space-sm)}
-.granny-btn:active{border-color:var(--amber);transform:scale(0.97)}
+.granny-shell{display:flex;flex-direction:column;justify-content:center;min-height:100vh;padding:80rpx 56rpx!important}
+.granny-actions{display:flex;flex-direction:column;gap:40rpx}
+.granny-btn{text-align:center;padding:64rpx;background:var(--cream);border-radius:var(--radius-lg);border:4rpx solid var(--dot);display:flex;flex-direction:column;align-items:center;gap:16rpx}
+.granny-btn:active{border-color:var(--amber);transform:scale(.97)}
 .granny-help{border-color:var(--gold)}
-.granny-emoji{font-size:72rpx}
-.granny-label{font-size:48rpx;font-weight:700;color:var(--ink)}
+.granny-emoji{font-size:80rpx}
+.granny-label{font-family:var(--font-journal);font-size:52rpx;font-weight:700;color:var(--ink)}
+.last-update{text-align:center;font-size:28rpx;color:var(--ink-lt);margin-top:40rpx}
 
-/* === 角色：爸爸模式 — 去装饰、提效率 === */
-.role-dad .float-el,.role-dad .av-sparkle,.role-dad .orbit-ring{display:none}
-.role-dad .twin-card.card-b{margin-left:0}
-.role-dad .bg-a,.role-dad .bg-b{transform:none!important}
-.role-dad .main-btn{transform:none;width:280rpx;height:280rpx;border-radius:24rpx}
-.role-dad .greet-emoji,.role-dad .greet-quote{display:none}
-.role-dad .highlight::after{display:none}
-.role-dad .egg{display:none}
-.role-dad .greet-hand{font-size:40rpx}
+/* 爸爸模式 */
+.role-dad .greet-line2{display:none}
+.role-dad .greet-sub{display:none}
+.role-dad .greet-line1{font-size:44rpx}
+.role-dad .sticker-zone{display:none}
+.role-dad .summary-line{display:none}
+.role-dad .forecast-line{display:none}
+.role-dad .journal-footer-text{display:none}
+.role-dad .orbit-ring{display:none}
+.role-dad .card-surface{transform:none!important;border-radius:20rpx}
+.role-dad .main-btn{transform:none;width:240rpx;height:240rpx;border-radius:20rpx}
 .role-dad .main-btn::after{display:none}
 .role-dad .btn-icon{font-size:40rpx}
-.role-dad .btn-text{font-size:28rpx;letter-spacing:2rpx}
+.role-dad .btn-text{font-size:24rpx;letter-spacing:2rpx}
+.role-dad .twin-card.card-b{margin-left:0;margin-top:0}
 
-/* === 角色：奶奶模式增强 === */
-.role-granny .float-el,.role-granny .av-sparkle,.role-granny .orbit-ring{display:none}
-.role-granny .greet-emoji,.role-granny .greet-quote,.role-granny .egg{display:none}
-.role-granny .bridge-wrap{display:none}
-.role-granny .twin-card{flex:none;width:100%}
+/* 奶奶模式增强 */
+.role-granny .bg-spot,.role-granny .bridge-wrap,.role-granny .action-center,
+.role-granny .quick-bar,.role-granny .sticker-zone,.role-granny .summary-line,
+.role-granny .forecast-line,.role-granny .journal-footer-text,.role-granny .journal-nav{display:none}
 </style>

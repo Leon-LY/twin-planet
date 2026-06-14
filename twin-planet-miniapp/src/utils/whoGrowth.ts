@@ -422,13 +422,15 @@ export function calcDifferenceRate(
 // 颜色常量（与 twin-design 对齐）
 // ============================================================
 
+import { TWIN_COLORS, DIFF_COLORS as DESIGN_DIFF_COLORS } from '@/constants/design'
+
 export const BABY_COLORS = {
-  babyA: '#4299E1', // 安宁 — Sky Blue
-  babyB: '#F56565', // 安然 — Soft Pink
+  babyA: TWIN_COLORS.A, // 大宝 — 姜黄
+  babyB: TWIN_COLORS.B, // 二宝 — 豆沙
 } as const
 
 export const DIFF_COLORS: Record<DiffLevel, string> = {
-  green: '#48BB78',
-  yellow: '#ED8936',
-  red: '#F56565',
+  green: DESIGN_DIFF_COLORS.green,
+  yellow: DESIGN_DIFF_COLORS.yellow,
+  red: DESIGN_DIFF_COLORS.red,
 }

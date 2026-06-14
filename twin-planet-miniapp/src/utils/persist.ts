@@ -66,4 +66,8 @@ export const PERSIST_KEYS = {
   alerts: 'alerts',
   milestones: 'milestones',
   school_decision: 'school_decision',
+  growth: 'growth_measurements',
+  stickers: 'stickers',
+  handover: 'handover_messages',
+  token: 'token',
 } as const

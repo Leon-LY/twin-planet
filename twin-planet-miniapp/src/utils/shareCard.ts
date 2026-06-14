@@ -1,7 +1,19 @@
 /**
- * 并蒂时光对比卡 — Canvas 生成器
+ * 双宝时光对比卡 — Canvas 生成器
  * 生成一周双宝成长对比卡，保存到相册，供用户分享到微信群/朋友圈
+ * V4 暖纸手帐配色
  */
+
+import { TWIN_COLORS, SURFACE_COLORS } from '@/constants/design'
+import { saveToAlbum } from './media'
+
+const C = {
+  a: TWIN_COLORS.A,    // 大宝·姜黄
+  b: TWIN_COLORS.B,    // 二宝·豆沙
+  bg: SURFACE_COLORS.paper,
+  ink: SURFACE_COLORS.ink,
+  inkMd: SURFACE_COLORS.inkMd,
+} as const
 
 export interface WeekStats {
   babyAName: string
@@ -28,7 +40,7 @@ export function drawShareCard(
     const pad = 20
 
     // 背景
-    ctx.setFillStyle('#FAF7F2')
+    ctx.setFillStyle(C.bg)
     ctx.fillRect(0, 0, W, H)
 
     // 白色内容区
@@ -37,22 +49,22 @@ export function drawShareCard(
     ctx.fill()
 
     // 顶部品牌条
-    ctx.setFillStyle('#A45C40')
+    ctx.setFillStyle(C.a)
     ctx.fillRect(12, 12, W - 24, 4)
 
     // 标题
-    ctx.setFillStyle('#2D2B28')
+    ctx.setFillStyle(C.ink)
     ctx.setFontSize(18)
     ctx.setTextAlign('center')
-    ctx.fillText('并蒂时光', W / 2, 50)
+    ctx.fillText('双宝时光', W / 2, 50)
 
     // 副标题
-    ctx.setFillStyle('#9C9892')
+    ctx.setFillStyle(C.inkMd)
     ctx.setFontSize(12)
     ctx.fillText(`一起长大的第 ${stats.daysGrowing} 天`, W / 2, 72)
 
     // 分隔线
-    ctx.setStrokeStyle('#EFEBE4')
+    ctx.setStrokeStyle('#E8DCC8')
     ctx.setLineWidth(1)
     ctx.beginPath()
     ctx.moveTo(pad + 20, 90)
@@ -66,17 +78,17 @@ export function drawShareCard(
     const dataY = 115
 
     // 大宝色条
-    ctx.setFillStyle('#A45C40')
+    ctx.setFillStyle(C.a)
     ctx.fillRect(leftX, dataY - 5, 4, 24)
-    ctx.setFillStyle('#2D2B28')
+    ctx.setFillStyle(C.ink)
     ctx.setFontSize(16)
     ctx.setTextAlign('left')
     ctx.fillText(stats.babyAName, leftX + 12, dataY + 14)
 
     // 二宝色条
-    ctx.setFillStyle('#C7866A')
+    ctx.setFillStyle(C.b)
     ctx.fillRect(rightX, dataY - 5, 4, 24)
-    ctx.setFillStyle('#2D2B28')
+    ctx.setFillStyle(C.ink)
     ctx.fillText(stats.babyBName, rightX + 12, dataY + 14)
 
     // 数据行
@@ -89,40 +101,40 @@ export function drawShareCard(
     rows.forEach((row, i) => {
       const y = dataY + 50 + i * 52
       // 行背景
-      ctx.setFillStyle(i % 2 === 0 ? '#FAF7F2' : '#FFFFFF')
+      ctx.setFillStyle(i % 2 === 0 ? C.bg : '#FFFFFF')
       roundRect(ctx, pad + 16, y - 8, W - pad * 2 - 32, 44, 8)
       ctx.fill()
 
       // 标签
-      ctx.setFillStyle('#2D2B28')
+      ctx.setFillStyle(C.ink)
       ctx.setFontSize(13)
       ctx.fillText(row.label, pad + 28, y + 16)
 
       // 大宝数据
-      ctx.setFillStyle('#A45C40')
+      ctx.setFillStyle(C.a)
       ctx.setFontSize(14)
       ctx.setTextAlign('left')
       ctx.fillText(row.a, leftX + 24, y + 16)
 
       // 二宝数据
-      ctx.setFillStyle('#C7866A')
+      ctx.setFillStyle(C.b)
       ctx.fillText(row.b, rightX + 24, y + 16)
     })
 
     // 底部寄语
     const bottomY = dataY + 50 + rows.length * 52 + 30
-    ctx.setFillStyle('#9C9892')
+    ctx.setFillStyle(C.inkMd)
     ctx.setFontSize(11)
     ctx.setTextAlign('center')
     ctx.fillText('他们不一样，但他们一起长大。', W / 2, bottomY)
 
     // 品牌水印
-    ctx.setFillStyle('#C4C0BB')
+    ctx.setFillStyle('#D4C8B8')
     ctx.setFontSize(10)
-    ctx.fillText('—— 并蒂星球 · 中国首款双胞胎育儿伴侣', W / 2, bottomY + 24)
+    ctx.fillText('—— 双宝手帐 · 中国首款双胞胎育儿伴侣', W / 2, bottomY + 24)
 
     // 底部品牌色条
-    ctx.setFillStyle('#C7866A')
+    ctx.setFillStyle(C.b)
     ctx.fillRect(12, H - 20, W - 24, 4)
 
     ctx.draw(false, () => {
@@ -137,30 +149,7 @@ export function drawShareCard(
   })
 }
 
-/** 保存图片到相册 */
-export function saveToAlbum(filePath: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    uni.saveImageToPhotosAlbum({
-      filePath,
-      success: () => resolve(),
-      fail: (err) => {
-        if (err.errMsg?.includes('auth deny')) {
-          uni.showModal({
-            title: '需要相册权限',
-            content: '请在设置中允许并蒂星球访问你的相册',
-            confirmText: '去设置',
-            success: (res) => {
-              if (res.confirm) {
-                uni.openSetting({})
-              }
-            },
-          })
-        }
-        reject(err)
-      },
-    })
-  })
-}
+export { saveToAlbum }
 
 /** 绘制圆角矩形路径 */
 function roundRect(

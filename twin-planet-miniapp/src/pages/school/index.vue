@@ -80,12 +80,13 @@
       <input class="note-input" v-model="noteText" placeholder="记录决策原因..." placeholder-style="color: var(--twin-text-muted)" />
       <button class="btn-save" @click="saveDecision">💾 保存评估</button>
     </view>
+
+    <text class="disclaimer">以上分析基于宝宝互动数据，仅供参考，不构成教育建议。分班决定请与老师共同判断。</text>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useMilestonesStore, calcCouplingScores } from '@/stores/milestones'
 import { useInteractionsStore } from '@/stores/interactions'
 import { useBabiesStore } from '@/stores/babies'
@@ -97,10 +98,21 @@ const babiesStore = useBabiesStore()
 const selectedTerm = ref('2026-秋季')
 const sameClass = ref(true)
 const noteText = ref('')
-const terms = ['2026-春季', '2026-秋季', '2027-春季', '2027-秋季']
+
+// 动态生成学期列表（当前年份前后各1年）
+const nowYear = new Date().getFullYear()
+const terms = [`${nowYear}-春季`, `${nowYear}-秋季`, `${nowYear+1}-春季`, `${nowYear+1}-秋季`]
+
+// 计算宝宝实际月龄
+const babyAgeMonths = computed(() => {
+  const baby = babiesStore.babyA || babiesStore.babyB
+  if (!baby?.birthDate) return 36
+  const b = new Date(baby.birthDate); const n = new Date()
+  return (n.getFullYear() - b.getFullYear()) * 12 + (n.getMonth() - b.getMonth())
+})
 
 const dims = computed(() => {
-  const scores = store.getLatestCoupling() ?? calcCouplingScores(interactionsStore.sproutEntries.map(e => e.type), 48)
+  const scores = store.getLatestCoupling() ?? calcCouplingScores(interactionsStore.sproutEntries.map(e => e.type), babyAgeMonths.value)
   return [
     { key: 'emotional', label: '情绪依赖', score: scores.emotional, color: 'var(--twin-baby-b)' },
     { key: 'social', label: '社交重叠', score: scores.social, color: 'var(--twin-baby-a)' },
@@ -123,7 +135,7 @@ const verdictBg = computed(() => {
 })
 
 function saveDecision() {
-  const scores = store.getLatestCoupling() ?? calcCouplingScores(interactionsStore.sproutEntries.map(e => e.type), 48)
+  const scores = store.getLatestCoupling() ?? calcCouplingScores(interactionsStore.sproutEntries.map(e => e.type), babyAgeMonths.value)
   store.addSchoolDecision({ term: selectedTerm.value, sameClass: sameClass.value, couplingScore: scores, note: noteText.value })
   noteText.value = ''
   uni.showToast({ title: '✅ 评估已保存', icon: 'success' })
@@ -135,7 +147,7 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '入园助手' }) })
 <style scoped>
 .school-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 100rpx; }
 .section-header { text-align: center; margin-bottom: 28rpx; }
-.section-icon { font-size: 40px; }
+.section-icon { font-size: 80rpx; }
 .section-title { display: block; font-size: 44rpx; font-weight: 700; color: var(--twin-text); margin: 12rpx 0; }
 .section-desc { font-size: 26rpx; color: var(--twin-text-secondary); }
 
@@ -146,13 +158,13 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '入园助手' }) })
 .radar-card { background: var(--twin-card-bg); border-radius: 20rpx; padding: 24rpx; margin-bottom: 20rpx; }
 .radar-axis { display: flex; justify-content: space-between; font-size: 20rpx; color: var(--twin-text-secondary); margin-bottom: 12rpx; }
 .radar-bar-wrap { display: flex; align-items: center; gap: 12rpx; margin-bottom: 12rpx; }
-.bar-label { font-size: 24rpx; width: 120rpx; color: #4A5568; }
+.bar-label { font-size: 24rpx; width: 120rpx; color: var(--ink); }
 .bar-track { flex: 1; height: 16rpx; background: var(--twin-border); border-radius: 8rpx; }
 .bar-fill { height: 16rpx; border-radius: 8rpx; }
 .bar-val { font-size: 24rpx; font-weight: 700; width: 48rpx; text-align: right; color: var(--twin-text); }
 
 .coupling-verdict { padding: 16rpx 20rpx; border-radius: 12rpx; margin-top: 12rpx; }
-.verdict-text { font-size: 24rpx; color: #4A5568; line-height: 1.5; }
+.verdict-text { font-size: 24rpx; color: var(--ink); line-height: 1.5; }
 
 /* 同班/分班对比 */
 .compare-section { margin-bottom: 20rpx; }
@@ -163,7 +175,7 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '入园助手' }) })
 .col-title { display: block; font-size: 28rpx; font-weight: 700; margin-bottom: 10rpx; }
 .compare-col.blue .col-title { color: var(--twin-baby-a); }
 .compare-col.pink .col-title { color: var(--twin-baby-b); }
-.col-item { display: block; font-size: 22rpx; color: #4A5568; line-height: 1.8; }
+.col-item { display: block; font-size: 22rpx; color: var(--ink); line-height: 1.8; }
 .col-item.risk { color: var(--twin-text-secondary); }
 
 /* 评估记录 */
@@ -184,4 +196,5 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '入园助手' }) })
 .toggle-btn.active { border-color: var(--twin-baby-a); background: var(--twin-baby-a-light); color: var(--twin-text); font-weight: 600; }
 .note-input { width: 100%; padding: 20rpx 24rpx; background: var(--twin-hover); border-radius: 14rpx; font-size: 26rpx; margin-bottom: 16rpx; box-sizing: border-box; }
 .btn-save { width: 100%; padding: 24rpx 0; background: var(--twin-accent); color: var(--twin-card-bg); border: none; border-radius: 16rpx; font-size: 28rpx; font-weight: 600; }
+.disclaimer { display:block; text-align:center; font-size:20rpx; color:var(--ink-lt); margin-top:24rpx; line-height:1.5; }
 </style>

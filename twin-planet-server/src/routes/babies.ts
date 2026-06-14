@@ -1,97 +1,63 @@
-/**
- * 宝宝路由 — POST/GET/PUT /api/babies
- */
-import { Router } from 'express'
-import { eq, and, asc } from 'drizzle-orm'
-import { db, schema } from '../db'
-import { requireAuth } from '../middleware/auth'
+import { Router, Request, Response } from 'express'
+import { query } from '../config/database'
 import { ok, fail } from '../utils/response'
+import { authRequired } from '../middleware/auth'
 
-export const babyRoutes = Router()
-babyRoutes.use(requireAuth)
+export const babiesRouter = Router()
+babiesRouter.use(authRequired)
 
-// 获取当前用户的所有宝宝
-babyRoutes.get('/', async (req, res) => {
+// GET /api/babies
+babiesRouter.get('/', async (req: Request, res: Response) => {
   try {
-    const list = await db.query.babies.findMany({
-      where: eq(schema.babies.userId, req.user!.userId),
-      orderBy: [asc(schema.babies.birthOrder)],
-    })
-    return ok(res, list)
+    const result = await query(
+      'SELECT * FROM babies WHERE user_id = $1 ORDER BY birth_order',
+      [req.user!.userId]
+    )
+    return ok(res, result.rows)
   } catch (err: any) {
-    return fail(res, 'INTERNAL', err.message, 500)
+    return fail(res, '获取宝宝列表失败', 'FETCH_FAILED', 500)
   }
 })
 
-// 添加宝宝
-babyRoutes.post('/', async (req, res) => {
+// POST /api/babies
+babiesRouter.post('/', async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.userId
-    const { name, nickname, gender, birthDate, birthOrder, color, avatar, birthWeight, birthHeight, twinGroupId } = req.body
-
+    const { name, nickname, gender, birthDate, birthOrder, color, birthWeight, birthHeight } = req.body
     if (!name || !gender || !birthDate || !birthOrder) {
-      return fail(res, 'MISSING_FIELDS', '缺少必填字段：name, gender, birthDate, birthOrder')
+      return fail(res, '请填写宝宝的必要信息：名字、性别、出生日期、出生顺序')
     }
 
-    // 同一用户最多 2 个宝宝
-    const existing = await db.query.babies.findMany({
-      where: eq(schema.babies.userId, userId),
-    })
-    if (existing.length >= 2) {
-      return fail(res, 'LIMIT_EXCEEDED', '每个家庭最多添加 2 个宝宝')
-    }
-
-    const [baby] = await db.insert(schema.babies).values({
-      userId,
-      twinGroupId: twinGroupId || null,
-      name,
-      nickname: nickname || name,
-      gender,
-      birthDate,
-      birthOrder: birthOrder || 1,
-      color: color || (birthOrder === 1 ? '#4299E1' : '#F56565'),
-      avatar: avatar || '',
-      birthWeight: birthWeight || null,
-      birthHeight: birthHeight || null,
-      isActive: true,
-    }).returning()
-
-    return ok(res, baby, undefined)
+    const id = 'baby-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6)
+    const result = await query(
+      `INSERT INTO babies (id, user_id, name, nickname, gender, birth_date, birth_order, color, birth_weight, birth_height)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
+      [id, req.user!.userId, name, nickname || '', gender, birthDate, birthOrder, color || '#E07B3E', birthWeight || 0, birthHeight || 0]
+    )
+    return ok(res, result.rows[0], undefined)
   } catch (err: any) {
-    return fail(res, 'INTERNAL', err.message, 500)
+    return fail(res, '添加宝宝失败', 'CREATE_FAILED', 500)
   }
 })
 
-// 更新宝宝
-babyRoutes.put('/:id', async (req, res) => {
+// PUT /api/babies/:id
+babiesRouter.put('/:id', async (req: Request, res: Response) => {
   try {
-    const { id } = req.params
-    const { name, nickname, gender, birthDate, birthOrder, color, avatar, birthWeight, birthHeight, isActive } = req.body
+    const { name, nickname, avatar, isActive } = req.body
+    const updates: string[] = []; const values: any[] = []; let idx = 1
+    if (name !== undefined) { updates.push(`name = $${idx++}`); values.push(name) }
+    if (nickname !== undefined) { updates.push(`nickname = $${idx++}`); values.push(nickname) }
+    if (avatar !== undefined) { updates.push(`avatar = $${idx++}`); values.push(avatar) }
+    if (isActive !== undefined) { updates.push(`is_active = $${idx++}`); values.push(isActive) }
+    if (updates.length === 0) return fail(res, '没有要更新的字段')
+    values.push(req.params.id, req.user!.userId)
 
-    const baby = await db.query.babies.findFirst({
-      where: and(eq(schema.babies.id, id), eq(schema.babies.userId, req.user!.userId)),
-    })
-    if (!baby) return fail(res, 'NOT_FOUND', '宝宝不存在', 404)
-
-    const updateData: Record<string, any> = {}
-    if (name !== undefined) updateData.name = name
-    if (nickname !== undefined) updateData.nickname = nickname
-    if (gender !== undefined) updateData.gender = gender
-    if (birthDate !== undefined) updateData.birthDate = birthDate
-    if (birthOrder !== undefined) updateData.birthOrder = birthOrder
-    if (color !== undefined) updateData.color = color
-    if (avatar !== undefined) updateData.avatar = avatar
-    if (birthWeight !== undefined) updateData.birthWeight = birthWeight
-    if (birthHeight !== undefined) updateData.birthHeight = birthHeight
-    if (isActive !== undefined) updateData.isActive = isActive
-
-    const [updated] = await db.update(schema.babies)
-      .set(updateData)
-      .where(eq(schema.babies.id, id))
-      .returning()
-
-    return ok(res, updated)
+    const result = await query(
+      `UPDATE babies SET ${updates.join(', ')} WHERE id = $${idx++} AND user_id = $${idx} RETURNING *`,
+      values
+    )
+    if (result.rows.length === 0) return fail(res, '宝宝不存在', 'NOT_FOUND', 404)
+    return ok(res, result.rows[0])
   } catch (err: any) {
-    return fail(res, 'INTERNAL', err.message, 500)
+    return fail(res, '更新失败', 'UPDATE_FAILED', 500)
   }
 })

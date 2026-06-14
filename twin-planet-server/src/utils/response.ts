@@ -1,22 +1,16 @@
-/**
- * 统一 API 响应格式
- */
-import type { Response } from 'express'
+import { Response } from 'express'
 
-export interface ApiResponse<T = unknown> {
+export interface ApiResponse<T = any> {
   success: boolean
   data?: T
-  error?: { code: string; message: string }
-  meta?: { total?: number; page?: number }
+  error?: { message: string; code?: string }
+  meta?: { total?: number; page?: number; limit?: number }
 }
 
 export function ok<T>(res: Response, data: T, meta?: ApiResponse['meta']) {
-  const body: ApiResponse<T> = { success: true, data }
-  if (meta) body.meta = meta
-  return res.json(body)
+  return res.json({ success: true, data, meta })
 }
 
-export function fail(res: Response, code: string, message: string, status = 400) {
-  const body: ApiResponse = { success: false, error: { code, message } }
-  return res.status(status).json(body)
+export function fail(res: Response, message: string, code?: string, status = 400) {
+  return res.status(status).json({ success: false, error: { message, code } })
 }

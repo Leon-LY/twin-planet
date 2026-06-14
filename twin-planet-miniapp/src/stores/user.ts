@@ -7,6 +7,7 @@ import { ref, computed } from 'vue'
 import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 import { request, saveToken, clearToken } from '@/api/client'
 import type { LoginResponse } from '@/api/types'
+import { getRoleConfig, type RoleConfig } from '@/config/roles'
 
 export interface UserProfile {
   id: string
@@ -50,13 +51,11 @@ export const useUserStore = defineStore('user', () => {
   const isDad = computed(() => profile.value?.role === 'dad')
   const isMom = computed(() => profile.value?.role === 'mom')
 
-  const roleLabel = computed(() => {
-    const map: Record<string, string> = {
-      mom: '妈妈', dad: '爸爸', grandma: '奶奶', grandpa: '爷爷',
-      nanny: '育儿嫂', other: '家人',
-    }
-    return map[profile.value?.role ?? 'mom'] ?? '家人'
-  })
+  /** 当前角色完整配置 */
+  const roleConfig = computed<RoleConfig>(() => getRoleConfig(profile.value?.role))
+
+  const roleLabel = computed(() => roleConfig.value.label)
+  const roleEmoji = computed(() => roleConfig.value.emoji)
 
   const fontSize = computed(() => profile.value?.uiConfig?.fontSize ?? 14)
   const shouldShowTTS = computed(() => profile.value?.uiConfig?.showTTS ?? false)
@@ -128,7 +127,7 @@ export const useUserStore = defineStore('user', () => {
       preferredUiMode: enabled ? 'large' : 'normal',
       uiConfig: {
         ...profile.value.uiConfig,
-        fontSize: enabled ? 18 : 14,
+        fontSize: enabled ? 24 : 14,
         showTTS: enabled,
         simplifiedHome: enabled,
       },
@@ -152,7 +151,7 @@ export const useUserStore = defineStore('user', () => {
 
   return {
     isLoggedIn, profile, isNewUser,
-    isGrandmaMode, isDad, isMom, roleLabel, fontSize, shouldShowTTS,
+    isGrandmaMode, isDad, isMom, roleConfig, roleLabel, roleEmoji, fontSize, shouldShowTTS,
     loginByWechat, setRole, toggleLargeMode, setNickname, logout,
   }
 })

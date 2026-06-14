@@ -34,12 +34,8 @@ import { useUserStore } from '@/stores/user'
 const userStore = useUserStore()
 const loading = ref(false)
 
-// 开发环境检测：仅 development 模式显示跳过入口
-const isDev = ref(typeof import.meta !== 'undefined' && (import.meta as any).env?.DEV === true)
-// 安全兜底：如果无法检测环境变量，强制隐藏
-if (!isDev.value && typeof (import.meta as any)?.env?.DEV === 'undefined') {
-  isDev.value = false
-}
+// 开发环境检测：uni-app 支持 process.env.NODE_ENV
+const isDev = ref(process.env.NODE_ENV === 'development')
 
 async function doLogin() {
   loading.value = true
@@ -63,8 +59,7 @@ function navigateNext() {
 }
 
 function openPrivacy(type: string) {
-  // TODO: Phase 1 部署后替换为实际链接
-  uni.showToast({ title: '协议页面建设中', icon: 'none' })
+  uni.navigateTo({ url: '/pages/privacy/index' })
 }
 
 onMounted(() => {

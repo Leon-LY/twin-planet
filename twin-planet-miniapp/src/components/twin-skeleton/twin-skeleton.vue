@@ -65,15 +65,15 @@ defineProps<{
 <style scoped>
 .skeleton-wrapper { padding: 0 8rpx; }
 
-/* 骨架动画 — 宇宙紫/青色微光 */
+/* 骨架动画 — 暖纸微光 */
 .sk-line, .sk-circle, .sk-divider, .sk-arrow {
   background: linear-gradient(90deg,
-    var(--border-void) 25%,
-    rgba(168,85,247,0.08) 50%,
-    var(--border-void) 75%
+    var(--dot) 25%,
+    rgba(224,123,62,0.05) 50%,
+    var(--dot) 75%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.5s var(--ease-breathing) infinite;
+  animation: shimmer 1.5s var(--ease-soft) infinite;
 }
 .sk-line { height: 24rpx; border-radius: 8rpx; margin-bottom: 12rpx; }
 .sk-line.short { height: 18rpx; }
@@ -98,9 +98,9 @@ defineProps<{
 /* 双宝卡片 */
 .sk-twins {
   display: flex;
-  background: var(--surface-card);
-  border-radius: var(--radius-xl);
-  border: 2rpx solid var(--border-void);
+  background: var(--cream);
+  border-radius: var(--radius-lg);
+  border: 2rpx solid var(--dot);
   padding: 32rpx;
   margin-bottom: 32rpx;
 }
@@ -111,9 +111,9 @@ defineProps<{
 .sk-list-item {
   display: flex; align-items: center; gap: 24rpx;
   padding: 28rpx;
-  background: var(--surface-card);
-  border-radius: var(--radius-lg);
-  border: 1rpx solid var(--border-void);
+  background: var(--cream);
+  border-radius: var(--radius-md);
+  border: 1rpx solid var(--dot);
 }
 .sk-list-body { flex: 1; }
 
@@ -122,9 +122,9 @@ defineProps<{
 .sk-grid-item {
   display: flex; flex-direction: column; align-items: center; gap: 8rpx;
   padding: 36rpx 12rpx;
-  background: var(--surface-card);
-  border-radius: var(--radius-lg);
-  border: 1rpx solid var(--border-void);
+  background: var(--cream);
+  border-radius: var(--radius-md);
+  border: 1rpx solid var(--dot);
 }
 
 /* 日志 */
@@ -132,9 +132,9 @@ defineProps<{
 .sk-log-item {
   display: flex; align-items: center; gap: 16rpx;
   padding: 20rpx 24rpx;
-  background: var(--surface-card);
+  background: var(--cream);
   border-radius: var(--radius-md);
-  border: 1rpx solid var(--border-void);
+  border: 1rpx solid var(--dot);
 }
 
 @keyframes shimmer {

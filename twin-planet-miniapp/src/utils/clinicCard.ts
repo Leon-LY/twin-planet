@@ -2,7 +2,20 @@
  * V6.0 就诊速查卡
  * Canvas 2D 生成双胞胎对比摘要，供儿科医生查看
  * 纯前端，一键导出图片
+ * V4 暖纸手帐配色
  */
+
+import { TWIN_COLORS, SURFACE_COLORS } from '@/constants/design'
+import { saveToAlbum } from './media'
+
+const C = {
+  a: TWIN_COLORS.A,
+  b: TWIN_COLORS.B,
+  bg: SURFACE_COLORS.paper,
+  ink: SURFACE_COLORS.ink,
+  inkMd: SURFACE_COLORS.inkMd,
+  inkLt: SURFACE_COLORS.inkLt,
+} as const
 
 export interface ClinicCardData {
   babyAName: string
@@ -39,23 +52,23 @@ export function drawClinicCard(
     const ctx = uni.createCanvasContext(canvasId)
 
     // -- 背景 --
-    ctx.setFillStyle('#FAF7F2')
+    ctx.setFillStyle(C.bg)
     ctx.fillRect(0, 0, W, H)
 
     // -- 顶部品牌条 --
-    ctx.setFillStyle('#A45C40')
+    ctx.setFillStyle(C.a)
     ctx.fillRect(0, 0, W, 100)
 
     // 品牌名
     ctx.setFillStyle('#FFFFFF')
     ctx.setFontSize(22)
     ctx.setTextAlign('center')
-    ctx.fillText('并蒂星球 · 就诊速查卡', W / 2, 48)
+    ctx.fillText('双宝手帐 · 就诊速查卡', W / 2, 48)
 
     // 副标题
     ctx.setFontSize(12)
     ctx.setFillStyle('rgba(255,255,255,0.7)')
-    ctx.fillText('Twin Planet · Clinic Quick Card', W / 2, 72)
+    ctx.fillText('Twin Journal · Clinic Quick Card', W / 2, 72)
 
     // 日期范围
     ctx.setFillStyle('rgba(255,255,255,0.5)')
@@ -66,21 +79,21 @@ export function drawClinicCard(
     let y = 128
 
     // 分割线
-    ctx.setStrokeStyle('#E6E0D8')
+    ctx.setStrokeStyle('#E8DCC8')
     ctx.setLineWidth(1)
     ctx.moveTo(PAD, y)
     ctx.lineTo(W - PAD, y)
     ctx.stroke()
 
     y += 24
-    ctx.setFillStyle('#2D2B28')
+    ctx.setFillStyle(C.ink)
     ctx.setFontSize(15)
     ctx.setTextAlign('center')
     ctx.fillText(`${data.babyAName}  ·  ${data.babyBName}`, W / 2, y)
 
     y += 22
     ctx.setFontSize(11)
-    ctx.setFillStyle('#9C9892')
+    ctx.setFillStyle(C.inkMd)
     const genderLabel = (g: string) => g === 'male' ? '男' : g === 'female' ? '女' : '—'
     ctx.fillText(`${genderLabel(data.babyAGender)} · ${data.babyABirth}    |    ${genderLabel(data.babyBGender)} · ${data.babyBBirth}`, W / 2, y)
 
@@ -122,7 +135,7 @@ export function drawClinicCard(
 
     // -- 免责声明 --
     y += 44
-    ctx.setFillStyle('#C4C0BB')
+    ctx.setFillStyle(C.inkLt)
     ctx.setFontSize(9)
     ctx.setTextAlign('center')
     ctx.fillText('此卡片仅为数据摘要，不代表医学诊断。', W / 2, y)
@@ -131,14 +144,14 @@ export function drawClinicCard(
 
     // -- 底部品牌 --
     y += 28
-    ctx.setFillStyle('#9C9892')
+    ctx.setFillStyle(C.inkMd)
     ctx.setFontSize(10)
-    ctx.fillText('并蒂星球 · 中国首款双胞胎育儿伴侣', W / 2, y)
+    ctx.fillText('双宝手帐 · 中国首款双胞胎育儿伴侣', W / 2, y)
 
     // 底部色条
-    ctx.setFillStyle('#A45C40')
+    ctx.setFillStyle(C.a)
     ctx.fillRect(0, H - 4, W / 2, 4)
-    ctx.setFillStyle('#C7866A')
+    ctx.setFillStyle(C.b)
     ctx.fillRect(W / 2, H - 4, W / 2, 4)
 
     ctx.draw(false, () => {
@@ -157,7 +170,7 @@ export function drawClinicCard(
 }
 
 function drawSectionHeader(ctx: any, text: string, y: number) {
-  ctx.setFillStyle('#A45C40')
+  ctx.setFillStyle(C.a)
   ctx.setFontSize(11)
   ctx.setTextAlign('left')
   ctx.fillText(text, 24, y)
@@ -178,56 +191,34 @@ function drawDataRow(
   const col4 = 300
 
   // 标签
-  ctx.setFillStyle('#9C9892')
+  ctx.setFillStyle(C.inkMd)
   ctx.setFontSize(11)
   ctx.setTextAlign('left')
   ctx.fillText(label, col1, y)
 
   // 大宝值
-  ctx.setFillStyle('#A45C40')
+  ctx.setFillStyle(C.a)
   ctx.setFontSize(18)
   ctx.setFontWeight('bold')
   ctx.fillText(valA, col2, y)
   if (subA) {
-    ctx.setFillStyle('#A45C40')
+    ctx.setFillStyle(C.a)
     ctx.setFontSize(9)
     ctx.setFontWeight('normal')
     ctx.fillText(subA, col2 + 50, y)
   }
 
   // 二宝值
-  ctx.setFillStyle('#C7866A')
+  ctx.setFillStyle(C.b)
   ctx.setFontSize(18)
   ctx.setFontWeight('bold')
   ctx.fillText(valB, col3, y)
   if (subB) {
-    ctx.setFillStyle('#C7866A')
+    ctx.setFillStyle(C.b)
     ctx.setFontSize(9)
     ctx.setFontWeight('normal')
     ctx.fillText(subB, col3 + 50, y)
   }
 }
 
-/** 保存到相册 */
-export function saveToAlbum(filePath: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    uni.saveImageToPhotosAlbum({
-      filePath,
-      success: () => resolve(),
-      fail: (err) => {
-        if (err?.errMsg?.includes('auth deny')) {
-          uni.showModal({
-            title: '需要相册权限',
-            content: '请允许保存图片到相册',
-            success: (res) => {
-              if (res.confirm) {
-                uni.openSetting({})
-              }
-            },
-          })
-        }
-        reject(err)
-      },
-    })
-  })
-}
+export { saveToAlbum }

@@ -1,13 +1,14 @@
 <template>
   <view class="guard-page">
-    <view class="section-header">
-      <text class="section-icon">🛡️</text>
-      <text class="section-title">星光监测站</text>
+    <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
+    <view class="page-header">
+      <text class="page-title">守护中心</text>
+      <text class="page-subtitle">照顾好自己，才能照顾好两个小星球</text>
     </view>
 
-    <!-- ✨ 星光强度 -->
+    <!-- 🔋 电量表 -->
     <view class="energy-section">
-      <text class="section-label">✨ 星光强度</text>
+      <text class="section-label">🔋 电量表</text>
       <view class="energy-cards">
         <view class="energy-card">
           <text class="energy-who">👩 妈妈</text>
@@ -79,8 +80,9 @@
       <!-- 计时中 -->
       <view class="active-timer" v-if="store.activeSession">
         <text class="timer-baby-name">{{ store.activeSession.babyName }}</text>
+        <text class="timer-elapsed">{{ formatSessionTime(sessionElapsed) }}</text>
         <text class="timer-running">星尘降临中...</text>
-        <button class="btn-end" @click="endTime">结束星尘时光</button>
+        <button class="btn-end" @click="endTime">结束</button>
       </view>
 
       <!-- 今日记录 -->
@@ -96,12 +98,26 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useGuardianStore } from '@/stores/guardian'
 import { useBabiesStore } from '@/stores/babies'
 
 const store = useGuardianStore()
 const babiesStore = useBabiesStore()
+
+// 一对一计时器实时显示
+const sessionElapsed = ref(0)
+let sessionTimer: ReturnType<typeof setInterval> | null = null
+watch(() => store.activeSession, (s) => {
+  if (s) { sessionElapsed.value = 0; sessionTimer = setInterval(() => sessionElapsed.value++, 1000) }
+  else { if (sessionTimer) { clearInterval(sessionTimer); sessionTimer = null } }
+}, { immediate: true })
+onUnmounted(() => { if (sessionTimer) clearInterval(sessionTimer) })
+
+function formatSessionTime(s: number): string {
+  const m = Math.floor(s / 60); const sec = s % 60
+  return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+}
 
 function energyColor(lv: number) {
   if (lv >= 7) return 'var(--twin-accent)'
@@ -129,22 +145,23 @@ function endTime() {
 }
 
 onMounted(() => {
-  uni.setNavigationBarTitle({ title: '星光监测站' })
+  uni.setNavigationBarTitle({ title: '守护中心' })
   store.autoCalcEnergy('mom')
   store.autoCalcEnergy('dad')
 })
 </script>
 
 <style scoped>
-.guard-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
+.guard-page { min-height: 100vh; background: var(--paper); position:relative; padding: 32rpx 32rpx 80rpx; }
 .section-header { text-align: center; margin-bottom: 32rpx; }
-.section-icon { font-size: 40px; }
+.bg-spot{position:absolute;pointer-events:none;z-index:0;border-radius:50%} .spot-a{width:300rpx;height:300rpx;top:120rpx;right:-100rpx;background:radial-gradient(circle,rgba(212,128,104,0.03) 0%,transparent 60%)} .spot-b{width:260rpx;height:260rpx;bottom:300rpx;left:-100rpx;background:radial-gradient(circle,rgba(224,123,62,0.03) 0%,transparent 60%)} .page-header{margin-bottom:32rpx;position:relative;z-index:1} .page-title{display:block;font-family:var(--font-journal);font-size:var(--font-title);color:var(--ink)} .page-subtitle{font-size:var(--font-body);color:var(--ink-md);margin-top:4rpx}
+.section-icon { font-size: 80rpx; }
 .section-title { display: block; font-size: 44rpx; font-weight: 700; color: var(--twin-text); margin-top: 12rpx; }
 
 .section-label { display: block; font-size: 28rpx; font-weight: 600; color: var(--twin-text); margin-bottom: 16rpx; }
 .section-sub { display: block; font-size: 24rpx; color: var(--twin-text-secondary); margin-bottom: 16rpx; margin-top: -12rpx; }
 
-/* ✨ 星光强度 */
+/* 🔋 电量表 */
 .energy-section { margin-bottom: 40rpx; }
 .energy-cards { display: flex; gap: 16rpx; margin-bottom: 16rpx; }
 .energy-card {
@@ -190,7 +207,8 @@ onMounted(() => {
 .timer-btn.pink { background: var(--twin-baby-b-light); color: var(--twin-baby-b); }
 .active-timer { text-align: center; padding: 32rpx; background: var(--twin-card-bg); border-radius: 20rpx; margin-bottom: 16rpx; }
 .timer-baby-name { display: block; font-size: 36rpx; font-weight: 700; }
-.timer-running { display: block; font-size: 24rpx; color: var(--twin-accent); margin: 8rpx 0 16rpx; }
+.timer-elapsed { display:block; font-family:var(--font-journal); font-size:56rpx; color:var(--ink); margin:8rpx 0; letter-spacing:3rpx }
+.timer-running { display: block; font-size: 24rpx; color: var(--twin-accent); margin: 0 0 16rpx; }
 .btn-end { width: 100%; padding: 20rpx 0; background: var(--twin-baby-b); color: var(--twin-card-bg); border: none; border-radius: 16rpx; font-size: 28rpx; }
 
 .session-item { display: flex; justify-content: space-between; padding: 12rpx 16rpx; background: var(--twin-card-bg); border-radius: 10rpx; margin-bottom: 6rpx; }

@@ -1,11 +1,14 @@
-/**
- * JWT 认证中间件
- */
-import type { Request, Response, NextFunction } from 'express'
-import { verifyToken, type JwtPayload } from '../utils/jwt'
+import { Request, Response, NextFunction } from 'express'
+import jwt from 'jsonwebtoken'
 import { fail } from '../utils/response'
 
-// 扩展 Express Request 类型
+export interface JwtPayload {
+  userId: string
+  openid: string
+  role: string
+}
+
+// Extend Express Request
 declare global {
   namespace Express {
     interface Request {
@@ -14,29 +17,28 @@ declare global {
   }
 }
 
-/** 必须登录 */
-export function requireAuth(req: Request, res: Response, next: NextFunction) {
+export function authRequired(req: Request, res: Response, next: NextFunction) {
   const header = req.headers.authorization
-  if (!header || !header.startsWith('Bearer ')) {
-    return fail(res, 'UNAUTHORIZED', '请先登录', 401)
+  if (!header?.startsWith('Bearer ')) {
+    return fail(res, '未登录，请先授权', 'UNAUTHORIZED', 401)
   }
-
   try {
     const token = header.slice(7)
-    req.user = verifyToken(token)
+    const secret = process.env.JWT_SECRET || 'dev-secret'
+    req.user = jwt.verify(token, secret) as JwtPayload
     next()
   } catch {
-    return fail(res, 'TOKEN_EXPIRED', '登录已过期，请重新登录', 401)
+    return fail(res, '登录已过期，请重新登录', 'TOKEN_EXPIRED', 401)
   }
 }
 
-/** 可选登录（不强制，但如果有 token 就解析） */
-export function optionalAuth(req: Request, _res: Response, next: NextFunction) {
+export function authOptional(req: Request, _res: Response, next: NextFunction) {
   const header = req.headers.authorization
-  if (header && header.startsWith('Bearer ')) {
+  if (header?.startsWith('Bearer ')) {
     try {
-      req.user = verifyToken(header.slice(7))
-    } catch { /* token 无效也继续，但不注入 user */ }
+      const secret = process.env.JWT_SECRET || 'dev-secret'
+      req.user = jwt.verify(header.slice(7), secret) as JwtPayload
+    } catch { /* ignore invalid token */ }
   }
   next()
 }

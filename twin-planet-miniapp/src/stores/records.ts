@@ -8,7 +8,7 @@ import { ref, computed } from 'vue'
 import { useBabiesStore, type Baby } from './babies'
 import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 
-export type RecordType = 'feeding' | 'sleep' | 'diaper'
+export type RecordType = 'feeding' | 'sleep' | 'diaper' | 'temperature' | 'medicine' | 'bath'
 
 export interface TimerState {
   babyId: string
@@ -125,9 +125,15 @@ export const useRecordsStore = defineStore('records', () => {
       detail = sideLabel ? `${sideLabel}${amountStr} ${durationMin}分钟` : `喂养 ${durationMin}分钟`
     } else if (timer.type === 'sleep') {
       detail = `睡眠 ${durationMin}分钟`
-    } else {
+    } else if (timer.type === 'diaper') {
       const diaperLabel = timer.diaperType === 'wet' ? '💧' : timer.diaperType === 'dirty' ? '💩' : timer.diaperType === 'both' ? '💧💩' : ''
       detail = `换尿布${diaperLabel ? ' ' + diaperLabel : ''}`
+    } else if (timer.type === 'temperature') {
+      detail = '体温'
+    } else if (timer.type === 'medicine') {
+      detail = '用药'
+    } else if (timer.type === 'bath') {
+      detail = '洗澡'
     }
 
     const log: RecordLog = {
@@ -202,16 +208,19 @@ export const useRecordsStore = defineStore('records', () => {
     return lastLog
   }
 
-  /** 快速记录（无计时） */
-  function quickLog(babyId: string, type: RecordType, amountMl?: number) {
+  /** 快速记录（无计时），支持回溯时间偏移 */
+  function quickLog(babyId: string, type: RecordType, amountMl?: number, offsetMs?: number) {
     const baby = babiesStore.getBaby(babyId)
     if (!baby) return
 
-    const now = Date.now()
+    const now = Date.now() - (offsetMs || 0)
     let detail = ''
     if (type === 'feeding') detail = `快速记录${amountMl ? ` ${amountMl}ml` : ''}`
-    else if (type === 'sleep') detail = '快速记录'
-    else detail = '快速记录 · 换尿布'
+    else if (type === 'sleep') detail = '快速记录 · 睡眠'
+    else if (type === 'diaper') detail = '快速记录 · 换尿布'
+    else if (type === 'temperature') detail = '快速记录 · 体温'
+    else if (type === 'medicine') detail = '快速记录 · 用药'
+    else if (type === 'bath') detail = '快速记录 · 洗澡'
 
     const log: RecordLog = {
       id: `log-${now}`,

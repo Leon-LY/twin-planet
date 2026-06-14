@@ -91,6 +91,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useInteractionsStore, CONTRIBUTION_TYPES, type ContributionCategory } from '@/stores/interactions'
+import { timeStr, dateTimeStr as dateStr } from '@/utils/format'
 
 const store = useInteractionsStore()
 const selectedCat = ref<ContributionCategory>('other')
@@ -106,22 +107,13 @@ function addEntry() {
     return
   }
   store.addContribution({
-    userId: 'mock-user-001',
-    userName: '我',
+    userId: '',
+    userName: '',
     category: selectedCat.value,
     note: noteText.value.trim(),
   })
   noteText.value = ''
   uni.showToast({ title: '💪 已记录', icon: 'success', duration: 1000 })
-}
-
-function timeStr(ts: number): string {
-  const d = new Date(ts)
-  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
-}
-function dateStr(ts: number): string {
-  const d = new Date(ts)
-  return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
 onMounted(() => {
@@ -133,7 +125,7 @@ onMounted(() => {
 .contrib-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
 
 .section-header { text-align: center; margin-bottom: 32rpx; }
-.section-icon { font-size: 40px; }
+.section-icon { font-size: 80rpx; }
 .section-title { display: block; font-size: 44rpx; font-weight: 700; color: var(--twin-text); margin: 12rpx 0; }
 .section-desc { font-size: 26rpx; color: var(--twin-text-secondary); }
 
@@ -149,7 +141,7 @@ onMounted(() => {
 }
 .stat-num { font-size: 44rpx; font-weight: 700; color: var(--twin-accent); line-height: 1; }
 .stat-unit { font-size: 20rpx; color: var(--twin-accent); }
-.stat-text { flex: 1; font-size: 26rpx; color: #4A5568; line-height: 1.5; }
+.stat-text { flex: 1; font-size: 26rpx; color: var(--ink); line-height: 1.5; }
 
 /* 快速记录 */
 .add-section { margin-bottom: 40rpx; }
@@ -192,7 +184,7 @@ onMounted(() => {
 .contrib-time { display: block; font-size: 20rpx; color: var(--twin-text-secondary); margin-top: 4rpx; }
 
 .empty-state { text-align: center; padding: 80rpx 32rpx; }
-.empty-emoji { font-size: 48px; }
+.empty-emoji { font-size: 96rpx; }
 .empty-title { display: block; font-size: 32rpx; font-weight: 600; color: var(--twin-text); margin: 16rpx 0 8rpx; }
 .empty-desc { font-size: 26rpx; color: var(--twin-text-secondary); }
 </style>

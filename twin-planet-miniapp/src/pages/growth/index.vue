@@ -1,525 +1,272 @@
 <template>
   <view class="growth-page">
-    <!-- 页面头部 -->
     <view class="page-header">
-      <text class="page-title">对比生长曲线</text>
-      <text class="page-subtitle">WHO 国际标准 · 并蒂对比</text>
+      <text class="page-title">生长曲线</text>
+      <text class="page-subtitle">WHO 国际标准 · 双宝对比</text>
     </view>
 
     <!-- 指标切换 -->
     <view class="indicator-tabs">
-      <view
-        class="tab-item"
-        :class="{ active: indicator === 'weight' }"
-        @click="switchIndicator('weight')"
-      >
-        体重 (kg)
-      </view>
-      <view
-        class="tab-item"
-        :class="{ active: indicator === 'length' }"
-        @click="switchIndicator('length')"
-      >
-        身高 (cm)
-      </view>
+      <view class="tab-item" :class="{ active: indicator==='weight' }" @click="indicator='weight'">体重 (kg)</view>
+      <view class="tab-item" :class="{ active: indicator==='length' }" @click="indicator='length'">身高 (cm)</view>
     </view>
 
-    <!-- 曲线图 -->
-    <view class="chart-card">
+    <!-- 空状态：无数据 -->
+    <view v-if="!growthStore.hasRealData" class="empty-state">
+      <text class="empty-emoji">📋</text>
+      <text class="empty-title">还没有生长数据</text>
+      <text class="empty-desc">添加第一次测量，开始追踪双宝成长</text>
+    </view>
+
+    <!-- 图表卡片（有数据时显示） -->
+    <view class="chart-card" v-if="growthStore.hasRealData">
       <view class="chart-header">
         <view class="legend-row">
-          <view class="legend-item">
-            <view class="legend-dot" style="background: var(--twin-baby-a)" />
-            <text class="legend-label">安宁</text>
+          <view class="legend-item" v-if="babyA">
+            <view class="legend-dot" style="background:var(--amber)" />
+            <text class="legend-label">{{ babyA.nickname || babyA.name }}</text>
           </view>
-          <view class="legend-item">
-            <view class="legend-dot" style="background: var(--twin-baby-b)" />
-            <text class="legend-label">安然</text>
+          <view class="legend-item" v-if="babyB">
+            <view class="legend-dot" style="background:var(--rose)" />
+            <text class="legend-label">{{ babyB.nickname || babyB.name }}</text>
           </view>
         </view>
-        <view class="diff-badge" :class="'diff-' + diffResult.level">
-          <text>差异 {{ diffResult.rate.toFixed(1) }}%</text>
-        </view>
+        <view class="diff-text" v-if="diffText">{{ diffText }}</view>
       </view>
 
-      <ec-canvas
-        canvas-id="growth-chart"
-        :width="chartWidth"
-        :height="chartHeight"
-        :option="chartOption"
-      />
+      <ec-canvas canvas-id="growth-chart" :width="chartWidth" :height="chartHeight" :option="chartOption" />
 
-      <!-- 安全免责声明 -->
       <view class="disclaimer">
         <text class="disclaimer-icon">⚠️</text>
-        <text class="disclaimer-text">
-          颜色仅为统计标记，不代表医学诊断。曲线基于 WHO 儿童生长标准（2006），仅供参考。
-        </text>
+        <text class="disclaimer-text">曲线基于 WHO 儿童生长标准（2006），仅供参考，不构成医疗建议。</text>
       </view>
     </view>
 
-    <!-- 数据卡片 -->
-    <view class="data-cards">
-      <view class="data-card card-aning">
-        <view class="card-color-bar" style="background: var(--twin-baby-a)" />
-        <text class="card-name">李牧川 · 安宁</text>
-        <text class="card-gender">👦 男孩</text>
-        <view class="card-stats">
+    <!-- 双宝数据卡 -->
+    <view class="data-cards" v-if="babyA || babyB">
+      <view class="data-card" v-if="babyA" :style="{borderLeft:'4rpx solid var(--amber)'}">
+        <text class="card-name">{{ babyA.nickname || babyA.name }}</text>
+        <text class="card-gender">{{ babyA.gender==='male'?'👦':'👧' }} {{ babyA.gender==='male'?'男孩':'女孩' }}</text>
+        <view class="card-stats" v-if="latestA">
           <view class="stat-item">
-            <text class="stat-value">{{ latestAning[indicator] }}</text>
-            <text class="stat-unit">{{ indicator === 'weight' ? 'kg' : 'cm' }}</text>
+            <text class="stat-value">{{ indicator==='weight'?latestA.weight:latestA.height }}</text>
+            <text class="stat-unit">{{ indicator==='weight'?'kg':'cm' }}</text>
           </view>
-          <view class="stat-item">
-            <text class="stat-label">百分位</text>
-            <text class="stat-value-sm">{{ aningPercentile }}%</text>
-          </view>
+          <view class="stat-item"><text class="stat-label">百分位</text><text class="stat-value-sm">P{{ percentileA }}</text></view>
         </view>
+        <text v-else class="card-no-data">暂无数据</text>
       </view>
 
-      <view class="data-card card-anran">
-        <view class="card-color-bar" style="background: var(--twin-baby-b)" />
-        <text class="card-name">李牧岑 · 安然</text>
-        <text class="card-gender">👧 女孩</text>
-        <view class="card-stats">
+      <view class="data-card" v-if="babyB" :style="{borderLeft:'4rpx solid var(--rose)'}">
+        <text class="card-name">{{ babyB.nickname || babyB.name }}</text>
+        <text class="card-gender">{{ babyB.gender==='male'?'👦':'👧' }} {{ babyB.gender==='male'?'男孩':'女孩' }}</text>
+        <view class="card-stats" v-if="latestB">
           <view class="stat-item">
-            <text class="stat-value">{{ latestAnran[indicator] }}</text>
-            <text class="stat-unit">{{ indicator === 'weight' ? 'kg' : 'cm' }}</text>
+            <text class="stat-value">{{ indicator==='weight'?latestB.weight:latestB.height }}</text>
+            <text class="stat-unit">{{ indicator==='weight'?'kg':'cm' }}</text>
           </view>
-          <view class="stat-item">
-            <text class="stat-label">百分位</text>
-            <text class="stat-value-sm">{{ anranPercentile }}%</text>
-          </view>
+          <view class="stat-item"><text class="stat-label">百分位</text><text class="stat-value-sm">P{{ percentileB }}</text></view>
         </view>
+        <text v-else class="card-no-data">暂无数据</text>
       </view>
     </view>
 
-    <!-- 回来继续开发按钮 -->
-    <view class="next-actions">
-      <text class="next-hint">📋 Phase 0 生长曲线 Demo 已完成</text>
-      <text class="next-hint-sub">下一步：双轨喂养记录页面</text>
+    <!-- 快速添加测量 -->
+    <view class="add-section">
+      <view class="add-toggle" @click="showAdd=!showAdd">
+        <text>{{ showAdd?'收起':'+ 添加测量' }}</text>
+      </view>
+      <view v-if="showAdd" class="add-form">
+        <view class="add-row">
+          <view class="add-baby-chip" :class="{active:addBabyId===babyA?.id}" @click="addBabyId=babyA?.id" v-if="babyA">{{ babyA.nickname||babyA.name }}</view>
+          <view class="add-baby-chip" :class="{active:addBabyId===babyB?.id}" @click="addBabyId=babyB?.id" v-if="babyB">{{ babyB.nickname||babyB.name }}</view>
+        </view>
+        <view class="add-inputs">
+          <input class="add-input" type="digit" v-model="addWeight" placeholder="体重(kg)" />
+          <input class="add-input" type="digit" v-model="addHeight" placeholder="身高(cm)" />
+        </view>
+        <button class="add-btn" @click="submitMeasurement" :disabled="!canSubmit">保存测量</button>
+      </view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import {ref,computed,onMounted} from 'vue'
+import { onShareAppMessage } from '@dcloudio/uni-app'
 import EcCanvas from '@/components/ec-canvas/ec-canvas.vue'
+import {useBabiesStore} from '@/stores/babies'
+import {useGrowthStore} from '@/stores/growth'
 import {
-  getPercentileCurve,
-  getLMS,
-  calcZScore,
-  zScoreToPercentile,
-  calcDifferenceRate,
-  BABY_COLORS,
-  DIFF_COLORS,
-  type Gender,
-  type Indicator,
-  type DiffResult,
-  type GrowthDataPoint,
+  getPercentileCurve,getLMS,calcZScore,zScoreToPercentile,calcDifferenceRate,
+type Gender,type Indicator,type DiffResult,
 } from '@/utils/whoGrowth'
 
-// ============================================================
-// 状态
-// ============================================================
+const babiesStore=useBabiesStore()
+const growthStore=useGrowthStore()
+const babyA=computed(()=>babiesStore.babyA)
+const babyB=computed(()=>babiesStore.babyB)
 
-const indicator = ref<Indicator>('weight')
-const CHART_W = 345
-const CHART_H = 320
+const indicator=ref<Indicator>('weight')
+const CHART_W=345;const CHART_H=320
+const chartWidth=computed(()=>Math.min(uni.getSystemInfoSync().windowWidth-30,375))
+const chartHeight=ref(CHART_H)
 
-// 响应式图表尺寸
-const chartWidth = computed(() => {
-  const sys = uni.getSystemInfoSync()
-  return Math.min(sys.windowWidth - 30, 375) // 15px padding each side
-})
-const chartHeight = ref(CHART_H)
-
-// ============================================================
-// 模拟实测数据：龙凤胎，2022-07-07 出生，至今 ~48 个月
-// ============================================================
-
-function generateSimulatedData(
-  gender: Gender,
-  indicator: Indicator,
-): GrowthDataPoint[] {
-  const points: GrowthDataPoint[] = []
-  // 模拟 0-48 个月，每 3 个月一个测量点（实际场景不会每月都测）
-  const step = indicator === 'weight' ? 2 : 3 // 体重每2月，身高每3月
-  for (let m = 0; m <= 48; m += step) {
-    const lms = getLMS(gender, indicator, m)
-    if (!lms) continue
-    // 模拟实测值：在 P50 附近随机波动
-    const zNoise = (Math.random() - 0.45) * 1.2 // 轻微偏下
-    const measured = indicator === 'weight'
-      ? lms.M * Math.pow(1 + lms.L * lms.S * zNoise, 1 / lms.L)
-      : lms.M + lms.S * lms.M * zNoise
-    points.push({ ageMonths: m, value: Math.round(measured * 100) / 100 })
-  }
-  return points
+// 获取宝宝月龄
+function calcAgeMonths(birthDate:string):number{
+  const b=new Date(birthDate);const n=new Date()
+  return(n.getFullYear()-b.getFullYear())*12+(n.getMonth()-b.getMonth())
 }
 
-const simulatedBoyWeight = generateSimulatedData('male', 'weight')
-const simulatedGirlWeight = generateSimulatedData('female', 'weight')
-const simulatedBoyLength = generateSimulatedData('male', 'length')
-const simulatedGirlLength = generateSimulatedData('female', 'length')
+// 真实测量数据
+const dataA=computed(()=>babyA.value?growthStore.forBaby(babyA.value.id):[])
+const dataB=computed(()=>babyB.value?growthStore.forBaby(babyB.value.id):[])
+const latestA=computed(()=>babyA.value?growthStore.latestForBaby(babyA.value.id):null)
+const latestB=computed(()=>babyB.value?growthStore.latestForBaby(babyB.value.id):null)
 
-// 最新数据点
-const latestAning = computed(() => {
-  const data = indicator.value === 'weight' ? simulatedBoyWeight : simulatedBoyLength
-  return { [indicator.value]: data[data.length - 1]?.value ?? 0 }
-})
-const latestAnran = computed(() => {
-  const data = indicator.value === 'weight' ? simulatedGirlWeight : simulatedGirlLength
-  return { [indicator.value]: data[data.length - 1]?.value ?? 0 }
-})
-
-// 百分位
-const aningPercentile = computed(() => {
-  const lms = getLMS('male', indicator.value, 48)
-  if (!lms) return 0
-  const val = indicator.value === 'weight'
-    ? simulatedBoyWeight[simulatedBoyWeight.length - 1]?.value ?? 0
-    : simulatedBoyLength[simulatedBoyLength.length - 1]?.value ?? 0
-  const z = calcZScore(val, lms.L, lms.M, lms.S)
+// 百分位计算
+function calcPercentile(baby:any,latest:any):number{
+  if(!baby||!latest)return 0
+  const gender:Gender=baby.gender==='male'?'male':'female'
+  const ageMonths=calcAgeMonths(baby.birthDate)
+  const lms=getLMS(gender,indicator.value,Math.min(ageMonths,60))
+  if(!lms)return 0
+  const val=indicator.value==='weight'?latest.weight:latest.height
+  const z=calcZScore(val,lms.L,lms.M,lms.S)
   return Math.round(zScoreToPercentile(z))
-})
-const anranPercentile = computed(() => {
-  const lms = getLMS('female', indicator.value, 48)
-  if (!lms) return 0
-  const val = indicator.value === 'weight'
-    ? simulatedGirlWeight[simulatedGirlWeight.length - 1]?.value ?? 0
-    : simulatedGirlLength[simulatedGirlLength.length - 1]?.value ?? 0
-  const z = calcZScore(val, lms.L, lms.M, lms.S)
-  return Math.round(zScoreToPercentile(z))
+}
+const percentileA=computed(()=>calcPercentile(babyA.value,latestA.value))
+const percentileB=computed(()=>calcPercentile(babyB.value,latestB.value))
+
+// 自然语言差异（去焦虑化）
+const diffText=computed(()=>{
+  if(!latestA.value||!latestB.value)return''
+  const sameGender=babyA.value?.gender===babyB.value?.gender
+  const valA=indicator.value==='weight'?latestA.value.weight:latestA.value.height
+  const valB=indicator.value==='weight'?latestB.value.weight:latestB.value.height
+  const diff=calcDifferenceRate(valA,valB,sameGender)
+  const aName=babyA.value?.nickname||babyA.value?.name||'大宝'
+  const bName=babyB.value?.nickname||babyB.value?.name||'二宝'
+  if(diff.rate<3)return`${aName}和${bName}差不多`
+  if(diff.rate<8)return`${aName}稍微${valA>valB?'重':'轻'}一点`
+  return`${aName}比${bName}${valA>valB?'重':'轻'} ${diff.rate.toFixed(0)}%`
 })
 
-// 差异率
-const diffResult = computed<DiffResult>(() => {
-  return calcDifferenceRate(
-    latestAning.value[indicator.value] as number,
-    latestAnran.value[indicator.value] as number,
-    false, // 龙凤胎，不同性别
-  )
-})
-
-// ============================================================
 // ECharts 配置
-// ============================================================
+const chartOption=computed(()=>{
+  const indicatorLabel=indicator.value==='weight'?'体重 (kg)':'身高 (cm)'
+  const baby=babyA.value||babyB.value
+  const gender:Gender=baby?.gender==='male'?'male':'female'
+  const maxAge=Math.max(
+    babyA.value?calcAgeMonths(babyA.value.birthDate):24,
+    babyB.value?calcAgeMonths(babyB.value.birthDate):24
+  )
+  const p3=getPercentileCurve(gender,indicator.value,3)
+  const p50=getPercentileCurve(gender,indicator.value,50)
+  const p97=getPercentileCurve(gender,indicator.value,97)
 
-const chartOption = computed(() => {
-  const indicatorLabel = indicator.value === 'weight' ? '体重 (kg)' : '身长/身高 (cm)'
+  const series:any[]=[
+    {type:'line',name:'P3',data:p3.points.map(p=>[p.x,p.y]),lineStyle:{color:'var(--ink-lt)',width:.5,type:'dotted'},symbol:'none',silent:true},
+    {type:'line',name:'P50',data:p50.points.map(p=>[p.x,p.y]),lineStyle:{color:'var(--dot)',width:1,type:'dashed'},symbol:'none',silent:true},
+    {type:'line',name:'P97',data:p97.points.map(p=>[p.x,p.y]),lineStyle:{color:'var(--ink-lt)',width:.5,type:'dotted'},symbol:'none',silent:true},
+  ]
+  if(dataA.value.length){
+    series.push({
+      type:'scatter',name:babyA.value?.nickname||'大宝',
+      data:dataA.value.map(d=>[d.ageMonths,indicator.value==='weight'?d.weight:d.height]),
+      itemStyle:{color:'var(--amber)'},symbol:'circle',symbolSize:8,
+      emphasis:{symbolSize:12},
+    })
+  }
+  if(dataB.value.length){
+    series.push({
+      type:'scatter',name:babyB.value?.nickname||'二宝',
+      data:dataB.value.map(d=>[d.ageMonths,indicator.value==='weight'?d.weight:d.height]),
+      itemStyle:{color:'var(--rose)'},symbol:'circle',symbolSize:8,
+      emphasis:{symbolSize:12},
+    })
+  }
 
-  // WHO 百分位曲线
-  const p3Boy = getPercentileCurve('male', indicator.value, 3)
-  const p50Boy = getPercentileCurve('male', indicator.value, 50)
-  const p97Boy = getPercentileCurve('male', indicator.value, 97)
-
-  // 实测数据
-  const boyData = indicator.value === 'weight' ? simulatedBoyWeight : simulatedBoyLength
-  const girlData = indicator.value === 'weight' ? simulatedGirlWeight : simulatedGirlLength
-
-  const boyPoints = boyData.map((d) => [d.ageMonths, d.value])
-  const girlPoints = girlData.map((d) => [d.ageMonths, d.value])
-
-  return {
-    grid: {
-      left: 12,
-      right: 16,
-      top: 20,
-      bottom: 12,
-      containLabel: true,
-    },
-    xAxis: {
-      type: 'value',
-      name: '月龄',
-      nameTextStyle: { fontSize: 10, color: 'var(--twin-text-secondary)' },
-      min: 0,
-      max: 48,
-      axisLabel: { fontSize: 9, color: 'var(--twin-text-secondary)' },
-      axisLine: { lineStyle: { color: 'var(--twin-border)' } },
-      splitLine: { show: false },
-    },
-    yAxis: {
-      type: 'value',
-      name: indicatorLabel,
-      nameTextStyle: { fontSize: 10, color: 'var(--twin-text-secondary)' },
-      axisLabel: { fontSize: 9, color: 'var(--twin-text-secondary)' },
-      axisLine: { lineStyle: { color: 'var(--twin-border)' } },
-      splitLine: { lineStyle: { color: 'var(--twin-border)', type: 'dashed' } },
-    },
-    series: [
-      // WHO P3 参考带
-      {
-        type: 'line',
-        name: 'P3 参考',
-        data: p3Boy.points.map((p) => [p.x, p.y]),
-        lineStyle: { color: 'var(--twin-text-muted)', width: 0.5, type: 'dotted' },
-        symbol: 'none',
-        silent: true,
-      },
-      // WHO P50 参考线
-      {
-        type: 'line',
-        name: 'P50 中位',
-        data: p50Boy.points.map((p) => [p.x, p.y]),
-        lineStyle: { color: 'var(--twin-border)', width: 1, type: 'dashed' },
-        symbol: 'none',
-        silent: true,
-      },
-      // WHO P97 参考带
-      {
-        type: 'line',
-        name: 'P97 参考',
-        data: p97Boy.points.map((p) => [p.x, p.y]),
-        lineStyle: { color: 'var(--twin-text-muted)', width: 0.5, type: 'dotted' },
-        symbol: 'none',
-        silent: true,
-      },
-      // 安宁实测
-      {
-        type: 'line',
-        name: '安宁',
-        data: boyPoints,
-        lineStyle: { color: 'var(--twin-baby-a)', width: 2.5 },
-        itemStyle: { color: 'var(--twin-baby-a)' },
-        symbol: 'circle',
-        symbolSize: 5,
-        emphasis: { symbolSize: 8 },
-      },
-      // 安然实测
-      {
-        type: 'line',
-        name: '安然',
-        data: girlPoints,
-        lineStyle: { color: 'var(--twin-baby-b)', width: 2.5 },
-        itemStyle: { color: 'var(--twin-baby-b)' },
-        symbol: 'circle',
-        symbolSize: 5,
-        emphasis: { symbolSize: 8 },
-      },
-    ],
-    legend: { show: false },
-    tooltip: {
-      trigger: 'axis',
-      backgroundColor: 'var(--twin-card-bg)',
-      borderColor: 'var(--twin-border)',
-      textStyle: { color: 'var(--twin-text)', fontSize: 11 },
-    },
+  return{
+    grid:{left:12,right:16,top:20,bottom:12,containLabel:true},
+    xAxis:{type:'value',name:'月龄',nameTextStyle:{fontSize:10,color:'var(--ink-md)'},min:0,max:Math.max(maxAge+6,12),axisLabel:{fontSize:9,color:'var(--ink-md)'},axisLine:{lineStyle:{color:'var(--dot)'}},splitLine:{show:false}},
+    yAxis:{type:'value',name:indicatorLabel,nameTextStyle:{fontSize:10,color:'var(--ink-md)'},axisLabel:{fontSize:9,color:'var(--ink-md)'},axisLine:{lineStyle:{color:'var(--dot)'}},splitLine:{lineStyle:{color:'var(--dot)',type:'dashed'}}},
+    series,legend:{show:false},
+    tooltip:{trigger:'axis',backgroundColor:'var(--cream)',borderColor:'var(--dot)',textStyle:{color:'var(--ink)',fontSize:11}},
   }
 })
 
-// ============================================================
-// 方法
-// ============================================================
+// 添加测量表单
+const showAdd=ref(false)
+const addBabyId=ref('')
+const addWeight=ref('')
+const addHeight=ref('')
+const canSubmit=computed(()=>addBabyId.value&&(addWeight.value||addHeight.value))
 
-function switchIndicator(ind: Indicator) {
-  indicator.value = ind
+function submitMeasurement(){
+  if(!canSubmit.value)return
+  const baby=addBabyId.value===babyA.value?.id?babyA.value:babyB.value
+  if(!baby)return
+  growthStore.addMeasurement({
+    babyId:addBabyId.value,
+    date:new Date().toISOString().slice(0,10),
+    ageMonths:calcAgeMonths(baby.birthDate),
+    weight:parseFloat(addWeight.value)||0,
+    height:parseFloat(addHeight.value)||0,
+  })
+  addWeight.value='';addHeight.value='';showAdd.value=false
+  uni.showToast({title:'已保存 ✦',icon:'success',duration:1000})
 }
 
-onMounted(() => {
-  uni.setNavigationBarTitle({ title: '生长曲线' })
-})
+onMounted(()=>{uni.setNavigationBarTitle({title:'生长曲线'});if(babyA.value)addBabyId.value=babyA.value.id})
+onShareAppMessage(()=>({title:'双宝生长曲线 · WHO国际标准对比',path:'/pages/growth/index',imageUrl:''}))
 </script>
 
 <style scoped>
-.growth-page {
-  min-height: 100vh;
-  background: var(--twin-bg);
-  padding: 16px 15px 40px;
-}
+.growth-page{min-height:100vh;background:var(--paper);padding:32rpx 28rpx calc(64rpx + env(safe-area-inset-bottom))}
+.page-header{margin-bottom:24rpx}
+.page-title{display:block;font-family:var(--font-journal);font-size:var(--font-title);color:var(--ink)}
+.page-subtitle{font-size:var(--font-body);color:var(--ink-md);margin-top:4rpx}
 
-/* 页面头部 */
-.page-header {
-  margin-bottom: 16px;
-}
-.page-title {
-  display: block;
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--twin-text);
-}
-.page-subtitle {
-  font-size: 12px;
-  color: var(--twin-text-secondary);
-  margin-top: 4px;
-}
+.indicator-tabs{display:flex;gap:12rpx;margin-bottom:24rpx}
+.tab-item{flex:1;text-align:center;padding:20rpx 0;border-radius:var(--radius-md);font-size:var(--font-body);font-weight:600;color:var(--ink-md);background:var(--cream);border:2rpx solid var(--dot);transition:all .2s var(--ease-soft)}
+.tab-item.active{background:var(--ink);color:#FFF;border-color:var(--ink)}
 
-/* 指标切换 */
-.indicator-tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-.tab-item {
-  flex: 1;
-  text-align: center;
-  padding: 10px 0;
-  border-radius: 10px;
-  font-size: 14px;
-  color: var(--twin-text-secondary);
-  background: var(--twin-card-bg);
-  border: 1px solid var(--twin-border);
-  transition: all 0.2s;
-}
-.tab-item.active {
-  background: var(--twin-text);
-  color: var(--twin-card-bg);
-  border-color: var(--twin-text);
-}
+.empty-state{text-align:center;padding:120rpx 40rpx}
+.empty-emoji{font-size:80rpx;display:block;margin-bottom:16rpx}
+.empty-title{font-family:var(--font-journal);font-size:var(--font-card);color:var(--ink);display:block}
+.empty-desc{font-size:var(--font-body);color:var(--ink-md);margin-top:8rpx}
 
-/* 图表卡片 */
-.chart-card {
-  background: var(--twin-card-bg);
-  border-radius: 14px;
-  padding: 14px 10px 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-.chart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
-  padding: 0 4px;
-}
-.legend-row {
-  display: flex;
-  gap: 16px;
-}
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.legend-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-.legend-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--twin-text);
-}
+.chart-card{background:var(--cream);border-radius:var(--radius-lg);padding:28rpx 20rpx 12rpx;margin-bottom:20rpx;border:2rpx solid var(--dot)}
+.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12rpx;padding:0 8rpx}
+.legend-row{display:flex;gap:24rpx}
+.legend-item{display:flex;align-items:center;gap:8rpx}
+.legend-dot{width:12rpx;height:12rpx;border-radius:50%}
+.legend-label{font-size:var(--font-body);font-weight:600;color:var(--ink)}
+.diff-text{font-size:var(--font-caption);color:var(--mint);font-weight:600;font-family:var(--font-journal)}
+.disclaimer{display:flex;align-items:flex-start;gap:8rpx;padding:12rpx 8rpx 4rpx;margin-top:8rpx;border-top:1px solid var(--dot)}
+.disclaimer-icon{font-size:24rpx;flex-shrink:0}
+.disclaimer-text{font-size:var(--font-caption);color:var(--ink-md);line-height:1.5}
 
-/* 差异徽标 */
-.diff-badge {
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-}
-.diff-green {
-  background: var(--twin-accent-light);
-  color: #38A169;
-}
-.diff-yellow {
-  background: var(--twin-warning-light);
-  color: #DD6B20;
-}
-.diff-red {
-  background: var(--twin-baby-b-light);
-  color: #E53E3E;
-}
+.data-cards{display:flex;gap:14rpx;margin-bottom:24rpx}
+.data-card{flex:1;background:var(--cream);border-radius:var(--radius-md);padding:28rpx;border:2rpx solid var(--dot)}
+.card-name{display:block;font-family:var(--font-journal);font-size:var(--font-card);color:var(--ink);font-weight:700}
+.card-gender{font-size:var(--font-caption);color:var(--ink-md);margin-top:2rpx}
+.card-stats{display:flex;justify-content:space-between;align-items:baseline;margin-top:16rpx}
+.stat-value{font-size:48rpx;font-weight:700;color:var(--ink)}
+.stat-unit{font-size:var(--font-caption);color:var(--ink-md);margin-left:4rpx}
+.stat-label{display:block;font-size:var(--font-caption);color:var(--ink-lt);margin-bottom:4rpx}
+.stat-value-sm{font-size:28rpx;font-weight:600;color:var(--mint)}
+.card-no-data{font-size:var(--font-caption);color:var(--ink-lt);margin-top:16rpx;display:block}
 
-/* 免责声明 */
-.disclaimer {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  padding: 10px 8px 4px;
-  margin-top: 4px;
-  border-top: 1px solid var(--twin-border);
-}
-.disclaimer-icon {
-  font-size: 12px;
-  flex-shrink: 0;
-}
-.disclaimer-text {
-  font-size: 10px;
-  color: var(--twin-text-secondary);
-  line-height: 1.5;
-}
-
-/* 数据卡片 */
-.data-cards {
-  display: flex;
-  gap: 10px;
-  margin-top: 14px;
-}
-.data-card {
-  flex: 1;
-  background: var(--twin-card-bg);
-  border-radius: 12px;
-  padding: 14px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-.card-color-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  border-radius: 2px;
-}
-.card-name {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--twin-text);
-  margin-bottom: 2px;
-}
-.card-gender {
-  font-size: 11px;
-  color: var(--twin-text-secondary);
-}
-.card-stats {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-top: 10px;
-}
-.stat-value {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--twin-text);
-}
-.stat-unit {
-  font-size: 12px;
-  color: var(--twin-text-secondary);
-  margin-left: 3px;
-}
-.stat-label {
-  display: block;
-  font-size: 10px;
-  color: var(--twin-text-secondary);
-  margin-bottom: 2px;
-}
-.stat-value-sm {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--twin-accent);
-}
-
-/* 下一步 */
-.next-actions {
-  margin-top: 24px;
-  padding: 16px;
-  background: var(--twin-card-bg);
-  border-radius: 12px;
-  text-align: center;
-  border: 2px dashed var(--twin-border);
-}
-.next-hint {
-  display: block;
-  font-size: 13px;
-  color: var(--twin-text);
-  font-weight: 600;
-}
-.next-hint-sub {
-  display: block;
-  font-size: 11px;
-  color: var(--twin-text-secondary);
-  margin-top: 4px;
-}
+.add-section{margin-top:8rpx}
+.add-toggle{text-align:center;padding:20rpx;font-size:var(--font-body);color:var(--amber);font-weight:600}
+.add-form{background:var(--cream);border:2rpx solid var(--dot);border-radius:var(--radius-md);padding:28rpx}
+.add-row{display:flex;gap:16rpx;margin-bottom:20rpx}
+.add-baby-chip{flex:1;text-align:center;padding:16rpx;border-radius:var(--radius-sm);font-size:var(--font-body);font-weight:600;background:var(--paper);color:var(--ink-md);border:2rpx solid var(--dot);transition:all .15s var(--ease-bounce)}
+.add-baby-chip.active{border-color:var(--amber);color:var(--amber);background:var(--amber-lt)}
+.add-inputs{display:flex;gap:12rpx;margin-bottom:16rpx}
+.add-input{flex:1;padding:16rpx 20rpx;background:var(--paper);border:2rpx solid var(--dot);border-radius:var(--radius-sm);font-size:var(--font-body);color:var(--ink)}
+.add-btn{width:100%;padding:22rpx;background:var(--amber);color:#FFF;border:none;border-radius:var(--radius-md);font-size:var(--font-body);font-weight:700}
+.add-btn[disabled]{opacity:.4}
 </style>

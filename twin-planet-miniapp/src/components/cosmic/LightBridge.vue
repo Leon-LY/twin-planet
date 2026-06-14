@@ -20,7 +20,6 @@
       class="light-bridge-line"
       :class="[stateClass, { 'anim-bridge': animated }]"
     />
-    <!-- 光桥两端连接点 -->
     <view class="bridge-node bridge-node-top" :class="nodeTopClass" />
     <view class="bridge-node bridge-node-bottom" :class="nodeBottomClass" />
   </view>
@@ -69,36 +68,34 @@ const nodeBottomClass = computed(() => props.state === 'one-sided-b' ? 'active-b
   border-radius: 3rpx;
   background: linear-gradient(
     to bottom,
-    var(--twin-a) 0%,
-    var(--cosmic-gold) 50%,
-    var(--twin-b) 100%
+    var(--amber) 0%,
+    var(--gold) 50%,
+    var(--rose) 100%
   );
   opacity: 0.7;
-  box-shadow: 0 0 12rpx rgba(255,210,63,0.1);
-  transition: opacity var(--dur-flow) var(--ease-orbit),
-              box-shadow var(--dur-flow) var(--ease-orbit);
+  box-shadow: 0 0 12rpx var(--gold-lt);
+  transition: opacity var(--dur-normal) var(--ease-soft),
+              box-shadow var(--dur-normal) var(--ease-soft);
 }
 
-/* 状态变体 */
 .light-bridge-line.bright {
   opacity: 1;
   width: 8rpx;
-  box-shadow: 0 0 24rpx rgba(255,210,63,0.5),
-              0 0 48rpx rgba(255,210,63,0.2),
-              0 0 80rpx rgba(255,107,53,0.1);
+  box-shadow: 0 0 24rpx rgba(200,153,62,0.5),
+              0 0 48rpx rgba(200,153,62,0.2);
   background: linear-gradient(
     to bottom,
-    var(--twin-a) 0%,
-    var(--cosmic-gold) 25%,
+    var(--amber) 0%,
+    var(--gold) 25%,
     #FFFFFF 50%,
-    var(--cosmic-gold) 75%,
-    var(--twin-b) 100%
+    var(--gold) 75%,
+    var(--rose) 100%
   );
 }
 
 .light-bridge-line.steady {
   opacity: 0.7;
-  box-shadow: 0 0 16rpx rgba(255,210,63,0.2);
+  box-shadow: 0 0 16rpx var(--gold-lt);
 }
 
 .light-bridge-line.faint {
@@ -109,70 +106,30 @@ const nodeBottomClass = computed(() => props.state === 'one-sided-b' ? 'active-b
 
 .light-bridge-line.one-sided-a {
   opacity: 0.5;
-  background: linear-gradient(to bottom, var(--twin-a), var(--cosmic-gold), transparent);
+  background: linear-gradient(to bottom, var(--amber), var(--gold), transparent);
 }
 .light-bridge-line.one-sided-b {
   opacity: 0.5;
-  background: linear-gradient(to bottom, transparent, var(--cosmic-gold), var(--twin-b));
+  background: linear-gradient(to bottom, transparent, var(--gold), var(--rose));
 }
 
-/* 端点发光节点 */
-.bridge-node {
-  position: absolute;
-  width: 16rpx; height: 16rpx;
-  border-radius: 50%;
-  background: var(--cosmic-gold);
-  opacity: 0.6;
-  left: 50%; transform: translateX(-50%);
-  box-shadow: 0 0 12rpx rgba(255,210,63,0.4);
-}
-.bridge-node-top { top: -6rpx; }
-.bridge-node-bottom { bottom: -6rpx; }
-.bridge-node.active-a { background: var(--twin-a); box-shadow: 0 0 16rpx var(--twin-a-glow); }
-.bridge-node.active-b { background: var(--twin-b); box-shadow: 0 0 16rpx var(--twin-b-glow); }
-
-/* 脉动动画 */
-.anim-bridge { animation: bridgePulse 3s var(--ease-pulse) infinite; }
-
-.light-bridge-line.one-sided-a {
-  background: linear-gradient(
-    to bottom,
-    var(--twin-a) 0%,
-    var(--cosmic-gold) 40%,
-    transparent 100%
-  );
-  opacity: 0.5;
-}
-
-.light-bridge-line.one-sided-b {
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    var(--cosmic-gold) 60%,
-    var(--twin-b) 100%
-  );
-  opacity: 0.5;
-}
-
-/* 连接端点 */
 .bridge-node {
   position: absolute;
   width: 10rpx;
   height: 10rpx;
   border-radius: 50%;
-  background: var(--cosmic-gold);
+  background: var(--gold);
   opacity: 0.5;
   left: 50%;
   transform: translateX(-50%);
 }
 .bridge-node-top { top: -2rpx; }
 .bridge-node-bottom { bottom: -2rpx; }
-.bridge-node.active-a { background: var(--twin-a); box-shadow: 0 0 12rpx var(--twin-a-glow); }
-.bridge-node.active-b { background: var(--twin-b); box-shadow: 0 0 12rpx var(--twin-b-glow); }
+.bridge-node.active-a { background: var(--amber); box-shadow: 0 0 12rpx rgba(224,123,62,0.4); }
+.bridge-node.active-b { background: var(--rose); box-shadow: 0 0 12rpx rgba(212,128,104,0.4); }
 
-/* 脉动动画 */
 .anim-bridge {
-  animation: bridgePulse var(--dur-breathe) var(--ease-pulse) infinite;
+  animation: bridgePulse 3s var(--ease-soft) infinite;
 }
 
 @keyframes bridgePulse {

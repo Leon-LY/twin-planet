@@ -69,9 +69,13 @@ import { onMounted } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { useDutyStore, CATEGORY_META } from '@/stores/duty'
 import { useAlertsStore } from '@/stores/alerts'
+import { useStickersStore } from '@/stores/stickers'
+import { useRecordsStore } from '@/stores/records'
 
 const store = useDutyStore()
 const alertsStore = useAlertsStore()
+const stickersStore = useStickersStore()
+const recordsStore = useRecordsStore()
 
 function startDuty() {
   store.initDuty()
@@ -88,8 +92,17 @@ function resetDuty() {
 }
 
 function finishDuty() {
+  // 完成值班 = 获得贴纸
+  const t0=new Date().setHours(0,0,0,0);const today=recordsStore.logs.filter(l=>l.createdAt>=t0)
+  stickersStore.sync({
+    todayLogCount:today.length,streakDays:recordsStore.streakDays,
+    totalLogCount:recordsStore.logs.length,twinSyncCount:0,
+    sproutCount:0,dutyDoneCount:1,
+    babyAHasRecord:false,babyBHasRecord:false,
+    babyARecentRecord:false,babyBRecentRecord:false,
+  })
   uni.showToast({ title: '🏆 你太棒了！', icon: 'success', duration: 2000 })
-  setTimeout(() => { uni.navigateBack() }, 1500)
+  setTimeout(() => { uni.navigateBack({ fail: () => uni.reLaunch({ url: '/pages/index/index' }) }) }, 1500)
 }
 
 onMounted(() => {
