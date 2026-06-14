@@ -41,6 +41,11 @@
           </view>
         </view>
 
+        <!-- 品牌吉祥物 -->
+        <view class="mascot-area reveal-2" v-if="userStore.roleConfig.homeLayout==='full'">
+          <TwinMascot size="sm" :linked="true" mood="happy" />
+        </view>
+
         <!-- 问候 — editorial, left-aligned, dramatic scale -->
         <view class="greeting reveal-2">
           <text class="greet-line1">{{ greeting }}</text>
@@ -184,6 +189,7 @@ import { saveExportData, syncRecords, pullRecords } from '@/utils/syncService'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
 import LightBridge from '@/components/cosmic/LightBridge.vue'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
+import TwinMascot from '@/components/journal/TwinMascot.vue'
 
 const loading=ref(true);const userStore=useUserStore()
 const themeClass=computed(()=>{const c=['page-root'];const h=new Date().getHours();if(h>=22||h<6)c.push('theme-dark');if(userStore.isGrandmaMode)c.push('font-large','role-granny');else if(userStore.isDad)c.push('role-dad');return c.join(' ')})
@@ -351,6 +357,15 @@ const switchRole = () => {
 .streak-stamp{background:var(--gold-lt);padding:6rpx 14rpx;border-radius:4rpx 12rpx 4rpx 12rpx;font-family:var(--font-journal);font-size:20rpx;color:var(--gold);font-weight:700;transform:rotate(2deg);box-shadow:0 2rpx 6rpx rgba(200,153,62,0.1);animation:stampIn .4s var(--ease-bounce)}
 @keyframes stampIn{0%{transform:rotate(2deg)scale(0);opacity:0}70%{transform:rotate(-1deg)scale(1.1)}100%{transform:rotate(2deg)scale(1);opacity:1}}
 .streak-start{font-size:20rpx;color:var(--ink-lt);font-family:var(--font-journal)}
+
+/* 吉祥物区域 */
+.mascot-area {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20rpx;
+  position: relative;
+  z-index: 1;
+}
 
 /* 问候 — editorial left-aligned */
 .greeting{position:relative;z-index:1;margin-bottom:44rpx}

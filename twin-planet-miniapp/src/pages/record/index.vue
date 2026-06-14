@@ -115,10 +115,10 @@ const stickerShow=ref(false);const stickerEmoji=ref('⭐')
 let stickerTimer:ReturnType<typeof setTimeout>|null=null
 function popSticker(emoji:string){if(stickerTimer)clearTimeout(stickerTimer);stickerEmoji.value=emoji;stickerShow.value=true;stickerTimer=setTimeout(()=>{stickerShow.value=false},750)}
 
-const tick=ref(0);let h:ReturnType<typeof setInterval>|null=null
-watch(()=>recordsStore.isRunning,r=>{if(r){haptic.heartbeatStart();h=setInterval(()=>tick.value++,1000)}else{haptic.heartbeatStop();if(h){clearInterval(h);h=null}}},{immediate:true})
-onUnmounted(()=>{if(h)clearInterval(h);haptic.heartbeatStop();if(stickerTimer)clearTimeout(stickerTimer)})
-const runningElapsed=computed(()=>{tick.value;return recordsStore.runningTimer?.elapsed??0})
+// 🔧 tick 由 recordsStore._tick 全局管理，页面不再维护独立 interval
+watch(()=>recordsStore.isRunning,r=>{if(r){haptic.heartbeatStart()}else{haptic.heartbeatStop()}},{immediate:true})
+onUnmounted(()=>{haptic.heartbeatStop();if(stickerTimer)clearTimeout(stickerTimer)})
+const runningElapsed=computed(()=>recordsStore.runningTimer?.elapsed??0)
 const runningName=computed(()=>{const t=recordsStore.runningTimer;return t?getName(t.babyId):''})
 const runningTwin=computed(()=>(recordsStore.runningTimer?.babyId===twins.value[0]?.id?'a':'b')as'a'|'b')
 const timerType=computed(()=>recordsStore.runningTimer?.type as 'feeding'|'sleep'|undefined)
