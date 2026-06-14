@@ -96,15 +96,9 @@
           </view>
         </view>
 
-        <!-- 品牌吉祥物 -->
-        <view class="mascot-area reveal-2" v-if="userStore.roleConfig.homeLayout==='full'">
-          <TwinMascot size="sm" :linked="true" />
-        </view>
-
-        <!-- 问候 — editorial, left-aligned, dramatic scale -->
+        <!-- 问候 — 手帐扉页 -->
         <view class="greeting reveal-2">
-          <text class="greet-line1">{{ greeting }}</text>
-          <text class="greet-line2">{{ greetLine2 }}</text>
+          <text class="greet-line1">{{ greetFull }}</text>
           <text class="greet-sub">{{ insightText }}</text>
         </view>
 
@@ -437,6 +431,8 @@ const alertCount=computed(()=>alertsStore.unreadCount)
 
 const greeting=computed(()=>{const h=new Date().getHours();if(h<6)return'凌晨好';if(h<9)return'早上好';if(h<12)return'上午好';if(h<14)return'中午好';if(h<18)return'下午好';if(h<22)return'晚上好';return'夜深了'})
 const greetLine2=computed(()=>{const h=new Date().getHours();const r=userStore.profile?.role;const g=greeting.value;if(r==='dad'){if(h>=22||h<6)return'值班中，撑住 💪';if(h<9)return'早上好，今天你是超级奶爸';return'数据看板已就绪 📊'}if(r==='grandma'||r==='grandpa')return'';if(h>=22||h<6)return'辛苦啦，早点休息 🌙';if(h<9)return'新的一天，两个小怪兽醒了没';if(h<14)return'上午过半，奶茶续命时间 🧋';return`${g}，小怪兽们在干嘛呢`})
+// 合并版问候 —— 标准模式用一行代替两行
+const greetFull=computed(()=>{const h=new Date().getHours();const r=userStore.profile?.role;if(r==='dad'){if(h>=22||h<6)return'夜深了 · 值班中，撑住 💪';if(h<9)return'早上好，今天你是超级奶爸';return'下午好 · 数据看板已就绪 📊'}if(r==='grandma'||r==='grandpa'){if(h<6)return'凌晨好';if(h<9)return'早上好';if(h<12)return'上午好';if(h<14)return'中午好';if(h<18)return'下午好';if(h<22)return'晚上好';return'夜深了'}if(h>=22||h<6)return'夜深了，辛苦啦 🌙';if(h<9)return'早上好，新的一天，两个小怪兽醒了没';if(h<14)return'上午好，奶茶续命时间 🧋';if(h<18)return'下午好，小怪兽们在干嘛呢';return'晚上好，小怪兽们在干嘛呢'})
 const roleEmoji=computed(()=>userStore.roleEmoji)
 const roleLabel=computed(()=>userStore.roleLabel)
 const dateStr=computed(()=>{const d=new Date();const days=['日','一','二','三','四','五','六'];return `${d.getMonth()+1}月${d.getDate()}日 星期${days[d.getDay()]}`})
@@ -664,7 +660,7 @@ const switchRole = () => {
 
 /* 问候 — editorial left-aligned */
 .greeting{position:relative;z-index:1;margin-bottom:44rpx}
-.greet-line1{display:block;font-family:var(--font-journal);font-size:64rpx;font-weight:400;color:var(--ink);letter-spacing:-1rpx;line-height:1.1}
+.greet-line1{display:block;font-family:var(--font-journal);font-size:48rpx;font-weight:400;color:var(--ink);letter-spacing:-1rpx;line-height:1.3}
 .greet-line2{display:block;font-family:var(--font-journal);font-size:36rpx;color:var(--ink-md);margin-top:4rpx}
 .greet-sub{display:block;font-size:26rpx;color:var(--ink-lt);margin-top:16rpx;line-height:1.5;max-width:480rpx}
 
