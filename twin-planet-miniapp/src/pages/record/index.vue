@@ -187,21 +187,21 @@ function doAction(t:RecordType){
       showGrannyConfirm(nm+' '+(t==='feeding'?'吃奶了 ⏱️':'睡觉了 ⏱️'))
     }else{popSticker(t==='feeding'?'🍼':'😴')}
   }else{
-    recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();showUndoBar();false&&(t,'quick')
+    recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();showUndoBar();trackRecordCreated(t,'quick')
     if(isGrandma.value){
       const nm=selBabyName.value
-      const lb: Record<string,string> = {diaper:'换尿布',temperature:'量体温',medicine:'吃药',bath:'洗澡'}
+      const lb={diaper:'换尿布',temperature:'量体温',medicine:'吃药',bath:'洗澡'}
       showGrannyConfirm(nm+' '+(lb[t]||'记录')+' ✅')
     }else{
-      const m: Record<string,string> = {diaper:'🧷',temperature:'🌡️',medicine:'💊',bath:'🛁'}
+      const m={diaper:'🧷',temperature:'🌡️',medicine:'💊',bath:'🛁'}
       popSticker(m[t]||'⭐')
     }
   }
 }
-function quickNight(){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,'feeding');haptic.sparkle();syncStickers();showUndoBar();false&&('feeding','quick');popSticker('🌙')}
-function dualLog(t:RecordType){const a=twins.value[0],b=twins.value[1];if(a)recordsStore.quickLog(a.id,t);if(b)recordsStore.quickLog(b.id,t);haptic.doubleBeat();syncStickers();showUndoBar();false&&(t,"dual");popSticker('🔗')}
+function quickNight(){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,'feeding');haptic.sparkle();syncStickers();showUndoBar();trackRecordCreated('feeding','quick');popSticker('🌙')}
+function dualLog(t:RecordType){const a=twins.value[0],b=twins.value[1];if(a)recordsStore.quickLog(a.id,t);if(b)recordsStore.quickLog(b.id,t);haptic.doubleBeat();syncStickers();showUndoBar();trackRecordCreated(t,"dual");popSticker('🔗')}
 const retroType=ref<RecordType>('feeding')
-function retro(m:number){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,retroType.value,undefined,m*60000);haptic.sparkle();syncStickers();showUndoBar();false&&(retroType.value,"retro");popSticker('⏰')}
+function retro(m:number){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,retroType.value,undefined,m*60000);haptic.sparkle();syncStickers();showUndoBar();trackRecordCreated(retroType.value,"retro");popSticker('⏰')}
 	const todayStart=computed(()=>new Date().setHours(0,0,0,0))
 	const recentLogs=computed(()=>{const t0=todayStart.value;return recordsStore.logs.filter(l=>l.createdAt>=t0).sort((a,b)=>b.createdAt-a.createdAt)})
 	onMounted(()=>{uni.setNavigationBarTitle({title:"记录"});if(twins.value[0])sel.value=twins.value[0].id})
