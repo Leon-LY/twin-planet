@@ -165,8 +165,10 @@ const isNight=computed(()=>{const h=new Date().getHours();return h>=22||h<6})
 const stickerShow=ref(false);const stickerEmoji=ref('🌟');const stickerLabel=ref('');const stickerProgress=ref('')
 let stickerTimer:ReturnType<typeof setTimeout>|null=null
 function popSticker(emoji:string,label?:string){if(stickerTimer)clearTimeout(stickerTimer);stickerEmoji.value=emoji;stickerLabel.value=label||'';stickerProgress.value='';stickerShow.value=true;stickerTimer=setTimeout(()=>{stickerShow.value=false},1200)}
-	function showStickerUnlock(s){popSticker(s.emoji,s.label);stickerProgress.value="收集进度 "+stickersStore.completionRate+"%"}
-	watch(function(){return stickersStore.lastUnlocked},function(ns){if(ns&&ns.length>0)showStickerUnlock(ns[ns.length-1])},{deep:true})
+const showStickerUnlock=(s:{emoji:string;label:string})=>{popSticker(s.emoji,s.label);stickerProgress.value='收集进度 '+stickersStore.completionRate+'%'}
+watch(()=>stickersStore.lastUnlocked,(ns:any)=>{if(ns&&ns.length>0)showStickerUnlock(ns[ns.length-1])},{deep:true})
+const stopOne=(id?:string)=>{recordsStore.stopTimer(id)}
+const stopAll=()=>{recordsStore.stopTimer()}
 
 // 🔧 tick 由 recordsStore._tick 全局管理，页面不再维护独立 interval
 watch(()=>recordsStore.isRunning,r=>{if(r){haptic.heartbeatStart()}else{haptic.heartbeatStop()}},{immediate:true})
