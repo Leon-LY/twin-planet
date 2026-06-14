@@ -73,10 +73,6 @@
       </view>
     </view>
 
-    <view class="bridge-wrap reveal-4">
-      <LightBridge :state="bridgeState" :height="36" :animated="true" />
-    </view>
-
     <view class="sticker-zone reveal-4" v-if="userStore.roleConfig.homeLayout==='full'">
       <StickerStrip :stickers="stickersStore.todayStickers" :showMore="true" @viewAll="$emit('navigate','/pages/stickers/index')" />
     </view>
@@ -179,7 +175,6 @@ import { useAlertsStore } from '@/stores/alerts'
 import { useStickersStore } from '@/stores/stickers'
 import { useQuickRef } from '@/composables/useQuickRef'
 import { getDiscoverFeatures } from '@/config/roles'
-import LightBridge from '@/components/cosmic/LightBridge.vue'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
 
 const emit = defineEmits<{
@@ -255,20 +250,6 @@ const insightText = computed(() => {
   if (s>0) return '各有各的节奏，挺好的'
   return '两个小怪兽，今天会同步吗？'
 })
-
-const bridgeState = computed(() => {
-  const aId = babyA.value?.id; const bId = babyB.value?.id
-  if (!aId || !bId) return 'faint'
-  const aLogs = recordsStore.recentLogsByBaby[aId] || []
-  const bLogs = recordsStore.recentLogsByBaby[bId] || []
-  const aRecent = aLogs.length && (Date.now() - aLogs[aLogs.length - 1].createdAt) < 3600000
-  const bRecent = bLogs.length && (Date.now() - bLogs[bLogs.length - 1].createdAt) < 3600000
-  if (aRecent && bRecent) return 'bright'
-  if (aRecent) return 'one-sided-a'; if (bRecent) return 'one-sided-b'
-  if (aLogs.length || bLogs.length) return 'steady'
-  return 'faint'
-})
-
 const todaySummary = computed(() => {
   const today = recordsStore.logs.filter(l => l.createdAt >= new Date().setHours(0,0,0,0))
   if (!today.length) return ''
@@ -408,8 +389,6 @@ const goMore = () => {
 .status-warn{color:var(--gold)!important;font-weight:600}
 .status-urgent{color:var(--twin-danger)!important;font-weight:700}
 .status-tap{font-size:22rpx;color:var(--ink-lt)}
-
-.bridge-wrap{display:flex;justify-content:center;position:relative;z-index:1;margin-bottom:16rpx}
 .sticker-zone{position:relative;z-index:1;margin-bottom:12rpx}
 
 .quick-ref{display:flex;gap:16rpx;flex-wrap:wrap;justify-content:center;margin-bottom:20rpx;position:relative;z-index:1}
