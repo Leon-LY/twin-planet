@@ -1,9 +1,13 @@
 <script>
+import { monitorStorage } from '@/utils/storageMonitor'
+
 export default {
   onLaunch() {
     this._syncTheme()
     // 每小时检查一次暗色模式切换
     this._themeTimer = setInterval(() => this._syncTheme(), 60 * 60 * 1000)
+    // 检查存储配额（首次启动时）
+    setTimeout(() => monitorStorage(), 3000)
   },
   onShow() {
     this._syncTheme()

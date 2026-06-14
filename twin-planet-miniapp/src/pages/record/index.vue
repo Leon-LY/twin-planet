@@ -73,6 +73,17 @@
           <text class="clock-sep">:</text>
           <text class="clock-sec">{{ formatElapsed(runningElapsed).split(':')[1] }}</text>
         </view>
+        <!-- 喂养计时：选择侧别 + 奶量 -->
+        <view class="feed-controls" v-if="timerType==='feeding'">
+          <view class="feed-sides">
+            <text class="feed-side" :class="{on:feedSide==='left'}" @click="setFeedSide('left')">左</text>
+            <text class="feed-side" :class="{on:feedSide==='right'}" @click="setFeedSide('right')">右</text>
+            <text class="feed-side" :class="{on:feedSide==='bottle'}" @click="setFeedSide('bottle')">🍼</text>
+          </view>
+          <view class="feed-amounts" v-if="feedSide">
+            <text v-for="ml in [60,90,120,150]" :key="ml" class="feed-ml" :class="{on:feedAmount===ml}" @click="setFeedAmount(ml)">{{ ml }}ml</text>
+          </view>
+        </view>
         <button class="end-btn" @click="stopOne(recordsStore.runningTimer?.babyId)">停止记录</button>
       </view>
     </template>
@@ -136,6 +147,9 @@ const timerType=computed(()=>recordsStore.runningTimer?.type as 'feeding'|'sleep
 const elapsedRef=computed(()=>runningElapsed.value)
 const {label:poeticLabel}=usePoeticTime(elapsedRef,timerType)
 
+const feedSide=ref<'left'|'right'|'bottle'|''>('');const feedAmount=ref(0)
+function setFeedSide(s:'left'|'right'|'bottle'){feedSide.value=s;const id=recordsStore.runningTimer?.babyId;if(id)recordsStore.setTimerField(id,'feedingSide',s)}
+function setFeedAmount(ml:number){feedAmount.value=ml;const id=recordsStore.runningTimer?.babyId;if(id)recordsStore.setTimerField(id,'amountMl',ml)}
 function getName(id:string){return twins.value.find(b=>b.id===id)?.nickname||''}
 function doAction(t:RecordType){const id=sel.value||twins.value[0]?.id;if(!id){uni.showToast({title:'请先在首页创建宝宝',icon:'none'});return}if(t==='feeding'||t==='sleep'){recordsStore.startTimer(id,t);haptic.thump();popSticker(t==='feeding'?'🍼':'😴')}else{recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();const m:Record<string,string>={diaper:'🧷',temperature:'🌡️',medicine:'💊',bath:'🛁'};popSticker(m[t]||'⭐')}}
 function quickNight(t:RecordType='feeding'){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();const m:Record<string,string>={feeding:'🍼',diaper:'🧷',sleep:'😴'};popSticker(m[t]||'🌙')}
@@ -177,6 +191,15 @@ const stopAll=()=>{recordsStore.stopTimer()}
 .retro-note{display:flex;align-items:center;gap:12rpx;flex-wrap:wrap;justify-content:center;position:relative;z-index:1;padding:8rpx 0}.retro-dash{color:var(--ink-lt);font-size:20rpx;opacity:.5}.retro-label{font-size:22rpx;color:var(--ink-lt)}.retro-presets{display:flex;gap:8rpx}.retro-chip{padding:10rpx 18rpx;font-size:22rpx;color:var(--ink-md);background:var(--cream);border:1.5px solid var(--dot);border-radius:18rpx;font-weight:500;transition:transform .15s var(--ease-bounce),border-color .2s}.retro-chip:active{transform:scale(.9);border-color:var(--amber);color:var(--amber)}
 
 .timer-hero{display:flex;flex-direction:column;align-items:center;padding:48rpx 0;position:relative;z-index:1}.hero-face{width:220rpx;height:220rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:20rpx}.hero-face.bg-a{background:var(--amber-md)}.hero-face.bg-b{background:var(--rose-md)}.hero-emoji{font-size:108rpx;animation:faceRock 3s ease-in-out infinite}@keyframes faceRock{0%,100%{transform:rotate(0)}50%{transform:rotate(2deg)}}.hero-baby-name{font-family:var(--font-journal);font-size:40rpx;color:var(--ink)}.hero-phase{font-size:28rpx;color:var(--mint);margin-top:4rpx;font-weight:600}.hero-clock{display:flex;align-items:baseline;margin-top:8rpx;gap:0}.clock-min{font-family:var(--font-journal);font-size:72rpx;color:var(--ink);letter-spacing:4rpx}.clock-sep{font-size:40rpx;color:var(--ink-lt);margin:0 4rpx;animation:sepBlink 1s step-end infinite}@keyframes sepBlink{0%,100%{opacity:1}50%{opacity:.2}}.clock-sec{font-family:var(--font-journal);font-size:48rpx;color:var(--ink-md)}.end-btn{margin-top:28rpx;padding:18rpx 48rpx;background:transparent;border:2rpx solid var(--twin-danger);border-radius:28rpx;color:var(--twin-danger);font-size:28rpx;font-weight:600;transition:transform .15s var(--ease-bounce)}.end-btn:active{transform:scale(.94);background:rgba(212,112,107,.06)}
+.feed-controls{margin-top:20rpx;display:flex;flex-direction:column;align-items:center;gap:12rpx}
+.feed-sides{display:flex;gap:8rpx}
+.feed-side{width:72rpx;height:72rpx;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--cream);border:2rpx solid var(--dot);font-size:28rpx;font-weight:700;color:var(--ink-md);transition:all .15s var(--ease-bounce)}
+.feed-side:active{transform:scale(.88)}
+.feed-side.on{border-color:var(--amber);background:var(--amber-lt);color:var(--amber)}
+.feed-amounts{display:flex;gap:8rpx}
+.feed-ml{padding:8rpx 18rpx;border-radius:16rpx;background:var(--cream);border:1.5px solid var(--dot);font-size:24rpx;color:var(--ink-md);font-weight:600;transition:all .15s var(--ease-bounce)}
+.feed-ml:active{transform:scale(.9)}
+.feed-ml.on{border-color:var(--mint);background:var(--mint-lt);color:var(--mint)}
 
 .dual-zone{display:flex;gap:12rpx;margin-bottom:12rpx;position:relative;z-index:1}.dual-card{flex:1;display:flex;flex-direction:column;align-items:center;gap:10rpx;padding:20rpx 8rpx;border-radius:24rpx}.dual-card.dc-a{background:var(--amber-lt);border:2rpx solid rgba(224,123,62,.1)}.dual-card.dc-b{background:var(--rose-lt);border:2rpx solid rgba(212,128,104,.1)}.dc-face{width:96rpx;height:96rpx;border-radius:50%;display:flex;align-items:center;justify-content:center}.dc-face.bg-a{background:var(--amber-md)}.dc-face.bg-b{background:var(--rose-md)}.dc-emoji{font-size:48rpx;animation:faceRock 3s ease-in-out infinite}.dc-name{font-family:var(--font-journal);font-size:24rpx;font-weight:700;color:var(--ink)}.dc-time{font-family:var(--font-journal);font-size:36rpx;color:var(--ink);letter-spacing:2rpx}.dc-stop{padding:16rpx 28rpx;border-radius:20rpx;border:2px solid var(--twin-danger);font-size:26rpx;color:var(--twin-danger);font-weight:600;min-width:88rpx;text-align:center}.dc-stop:active{background:rgba(212,112,107,.06);transform:scale(.92)}.stop-all{width:100%;padding:16rpx;background:transparent;border:2rpx solid var(--twin-danger);border-radius:24rpx;font-size:28rpx;font-weight:600;color:var(--twin-danger);position:relative;z-index:1}
 

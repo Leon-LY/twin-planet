@@ -1,5 +1,6 @@
 <!-- 双宝记 v5 · Editorial Journal -->
 <template>
+  <canvas canvas-id="index-share-canvas" style="position:fixed;left:-9999px;top:-9999px;width:345px;height:480px"></canvas>
   <view :class="[themeClass, { 'font-large': isGrandma }]">
     <template v-if="loading">
       <view class="page-shell"><TwinSkeleton type="brand" /><TwinSkeleton type="twins" /></view>
@@ -316,6 +317,7 @@ import { useStickerSync } from '@/composables/useStickerSync'
 import { useQuickRef } from '@/composables/useQuickRef'
 import { getDiscoverFeatures } from '@/config/roles'
 import { saveExportData, syncRecords, pullRecords } from '@/utils/syncService'
+import { drawShareCard } from '@/utils/shareCard'
 import { createInvite, joinFamily } from '@/api/family'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
 import LightBridge from '@/components/cosmic/LightBridge.vue'
@@ -376,25 +378,47 @@ async function ensureInviteToken() {
   return ''
 }
 
-onMounted(()=>{const tick=setInterval(()=>{nowTick.value=Date.now()},30000);setTimeout(()=>{loading.value=false;syncStickers();initSync().catch(()=>{});checkCelebrate();checkInviteAndAccept();ensureInviteToken().catch(()=>{})},400)})
+onMounted(()=>{const tick=setInterval(()=>{nowTick.value=Date.now()},30000);setTimeout(()=>{loading.value=false;syncStickers();initSync().catch(()=>{});checkCelebrate();checkInviteAndAccept();ensureInviteToken().catch(()=>{});genShareCard().catch(()=>{})},400)})
+// 预渲染分享卡片缓存
+const shareCardPath = ref('')
+async function genShareCard() {
+  if (!babyA.value || !babyB.value) return
+  try {
+    const today = new Date().setHours(0,0,0,0)
+    const todayLogs = recordsStore.logs.filter(l => l.createdAt >= today)
+    const stats = {
+      babyAName: babyA.value.nickname || babyA.value.name,
+      babyBName: babyB.value.nickname || babyB.value.name,
+      babyAFeedings: todayLogs.filter(l => l.babyId===babyA.value!.id && l.type==='feeding').length,
+      babyBFeedings: todayLogs.filter(l => l.babyId===babyB.value!.id && l.type==='feeding').length,
+      babyASleepMin: todayLogs.filter(l => l.babyId===babyA.value!.id && l.type==='sleep').reduce((s,l)=>s+l.durationMin,0),
+      babyBSleepMin: todayLogs.filter(l => l.babyId===babyB.value!.id && l.type==='sleep').reduce((s,l)=>s+l.durationMin,0),
+      babyADiapers: todayLogs.filter(l => l.babyId===babyA.value!.id && l.type==='diaper').length,
+      babyBDiapers: todayLogs.filter(l => l.babyId===babyB.value!.id && l.type==='diaper').length,
+      daysGrowing: Math.floor((Date.now() - new Date(babyA.value.birthDate).getTime()) / 86400000),
+      syncRate: recordsStore.twinSyncRate,
+      newStickers: stickersStore.todayCount,
+    }
+    shareCardPath.value = await drawShareCard('index-share-canvas', stats)
+  } catch { shareCardPath.value = '' }
+}
+
 onShareAppMessage(() => {
   const aName=babyA.value?.nickname||'大宝';const bName=babyB.value?.nickname||'二宝'
   const token = inviteToken.value
   const days = streakDays.value
   const stickers = stickersStore.todayCount
-  // 动态标题：包含今日数据和连续天数
   const parts = [`${aName}和${bName}的成长手帳`]
   if (days > 0) parts.push(`连续${days}天`)
   if (stickers > 0) parts.push(`🌟×${stickers}`)
   const title = parts.join(' · ') + ' · 一起来记录吧 🪐'
-  // 附带邀请令牌和分享来源
   let path = token ? `/pages/index/index?invite=${token}` : '/pages/index/index'
   path += `${path.includes('?') ? '&' : '?'}from=share`
+  // 用预渲染的动态卡片替代静态品牌图
   return {
     title,
     path,
-    // 🔧 TODO: 接入 shareCard.ts 动态生成双宝对比卡片替代静态图
-    imageUrl:'/static/share-brand.png',
+    imageUrl: shareCardPath.value || '/static/share-brand.png',
   }
 })
 

@@ -289,6 +289,14 @@ export const useRecordsStore = defineStore('records', () => {
     selectedBabyId.value = babyId
   }
 
+  /** 运行时更新计时器字段（喂养侧、奶量等） */
+  function setTimerField(babyId: string, field: keyof TimerState, value: any) {
+    const t = _timers.value[babyId]
+    if (!t) return
+    _timers.value = { ..._timers.value, [babyId]: { ...t, [field]: value } }
+    _saveActiveTimers()
+  }
+
   /** 停止计时器并保存记录。不传 babyId 则停止全部 */
   function stopTimer(babyId?: string): RecordLog | null {
     if (babyId) {
@@ -415,7 +423,7 @@ export const useRecordsStore = defineStore('records', () => {
     _timers, logs, selectedBabyId,
     isRunning, runningTimer, runningTimers, recentLogsByBaby,
     isBabyRunning, getTimer,
-    startTimer, stopTimer, quickLog, mergeServerLogs,
+    startTimer, stopTimer, quickLog, mergeServerLogs, setTimerField,
     journalInsight, twinSyncRate, streakDays,
   }
 })
