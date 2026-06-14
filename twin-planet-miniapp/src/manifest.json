@@ -48,10 +48,8 @@
             "minified" : true
         },
         "usingComponents" : true,
-        "lazyCodeLoading" : "requiredComponents",
-        "optimization" : {
-            "subPackages" : true
-        },
+        
+        
         "permission": {},
         "requiredPrivateInfos" : [],
         "plugins" : {}
