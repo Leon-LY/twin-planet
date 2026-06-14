@@ -1,10 +1,11 @@
 <template>
   <view class="contrib-page">
+    <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
     <!-- 头部 -->
-    <view class="section-header">
-      <text class="section-icon">💪</text>
-      <text class="section-title">今天我做了什么</text>
-      <text class="section-desc">看见每一位家人的付出</text>
+    <view class="page-header">
+      <text class="page-icon">💪</text>
+      <text class="page-title">今天我做了什么</text>
+      <text class="page-subtitle">看见每一位家人的付出</text>
     </view>
 
     <!-- 今日统计 -->

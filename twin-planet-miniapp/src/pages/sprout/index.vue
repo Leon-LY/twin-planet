@@ -1,10 +1,11 @@
 <template>
   <view class="sprout-page">
+    <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
     <!-- 头部 -->
-    <view class="section-header">
-      <text class="section-icon">🌱</text>
-      <text class="section-title">萌芽日记</text>
-      <text class="section-desc">记录两个宝宝之间的互动瞬间</text>
+    <view class="page-header">
+      <text class="page-icon">🌱</text>
+      <text class="page-title">萌芽日记</text>
+      <text class="page-subtitle">记录两个宝宝之间的互动瞬间</text>
     </view>
 
     <!-- 添加按钮 -->

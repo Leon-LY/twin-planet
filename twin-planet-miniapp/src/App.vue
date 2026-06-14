@@ -101,6 +101,21 @@ page {
 .btn-outline{display:flex;align-items:center;justify-content:center;min-height:var(--touch-min);padding:20rpx 32rpx;background:transparent;color:var(--ink);border:2rpx solid var(--dot);border-radius:var(--radius-full);font-size:var(--font-body);font-weight:500;transition:transform var(--dur-fast) var(--ease-bounce)}
 .btn-outline:active{transform:scale(0.94);border-color:var(--amber)}
 
+/* 全局暖光斑 */
+.bg-spot{position:absolute;pointer-events:none;z-index:0;border-radius:50%}
+.spot-a{width:360rpx;height:360rpx;top:100rpx;right:-120rpx;background:radial-gradient(circle,rgba(212,128,104,0.03) 0%,transparent 60%)}
+.spot-b{width:300rpx;height:300rpx;bottom:240rpx;left:-100rpx;background:radial-gradient(circle,rgba(224,123,62,0.03) 0%,transparent 60%)}
+
+/* 全局手写体页头 */
+.page-header{position:relative;z-index:1;margin-bottom:36rpx;padding-bottom:20rpx;border-bottom:2rpx dashed var(--dot)}
+.page-title{display:block;font-family:var(--font-journal);font-size:var(--font-title);color:var(--ink);font-weight:400}
+.page-subtitle{display:block;font-size:var(--font-body);color:var(--ink-md);margin-top:8rpx}
+.page-icon{font-size:80rpx;display:block;margin-bottom:8rpx}
+
+/* 全局淡入 */
+.page-enter{animation:revealUp .5s var(--ease-soft) both}
+@keyframes revealUp{from{opacity:0;transform:translateY(18rpx)}to{opacity:1;transform:translateY(0)}}
+
 /* 暗色模式 */
 .theme-dark{
   --paper:#1E1C18;--cream:#282520;--ink:#EBE5D8;--ink-md:#9C9488;--ink-lt:#6B6558;--dot:#3D3830;

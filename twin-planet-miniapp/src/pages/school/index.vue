@@ -1,9 +1,10 @@
 <template>
   <view class="school-page">
-    <view class="section-header">
-      <text class="section-icon">🏫</text>
-      <text class="section-title">入园助手</text>
-      <text class="section-desc">分班决策，不需要 3 岁就定终身</text>
+    <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
+    <view class="page-header">
+      <text class="page-icon">🏫</text>
+      <text class="page-title">入园助手</text>
+      <text class="page-subtitle">分班决策，不需要 3 岁就定终身</text>
     </view>
 
     <!-- 耦合度雷达图 -->

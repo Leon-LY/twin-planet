@@ -1,9 +1,9 @@
 <template>
   <view class="ms-page">
-    <view class="section-header">
-      <text class="section-icon">🌟</text>
-      <text class="section-title">双宝能力观察</text>
-      <text class="section-desc">不是比较，是欣赏每个孩子的独特轨迹</text>
+    <view class="page-header">
+      <text class="page-icon">🌟</text>
+      <text class="page-title">双宝能力观察</text>
+      <text class="page-subtitle">不是比较，是欣赏每个孩子的独特轨迹</text>
     </view>
 
     <!-- 宝宝切换 -->

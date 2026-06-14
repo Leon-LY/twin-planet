@@ -88,7 +88,10 @@ export const useUserStore = defineStore('user', () => {
       isNewUser.value = false
       _save()
     } catch (err: any) {
-      // 网络不通时回退到本地 mock（开发阶段兜底）
+      // 仅开发环境允许 mock 登录
+      if (process.env.NODE_ENV !== 'development') {
+        throw err
+      }
       console.warn('[user] Backend login failed, using local fallback:', err.message)
       profile.value = {
         id: 'local-user-001',

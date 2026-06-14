@@ -24,7 +24,7 @@ export const ROLE_CONFIGS: Record<Role, RoleConfig> = {
     label: '妈妈',
     emoji: '👩',
     homeLayout: 'full',
-    features: ['record', 'growth', 'sprout', 'contribution', 'handover', 'guardian', 'snapshot', 'school', 'milestones', 'stickers'],
+    features: ['record', 'growth', 'sprout', 'contribution', 'handover', 'guardian', 'snapshot', 'stickers'],
     quickActions: ['feeding', 'sleep', 'diaper'],
     greetingStyle: 'warm',
   },
@@ -33,7 +33,7 @@ export const ROLE_CONFIGS: Record<Role, RoleConfig> = {
     label: '爸爸',
     emoji: '👨',
     homeLayout: 'compact',
-    features: ['record', 'growth', 'duty', 'handover', 'snapshot', 'school', 'stickers'],
+    features: ['record', 'growth', 'duty', 'handover', 'snapshot', 'stickers'],
     quickActions: ['feeding', 'sleep', 'diaper'],
     greetingStyle: 'efficient',
   },
@@ -94,8 +94,6 @@ export function getDiscoverFeatures(role?: string): Array<{ label: string; path:
     { key: 'duty', label: '值班清单', path: '/pages/duty/index' },
     { key: 'guardian', label: '守护中心', path: '/pages/guardian/index' },
     { key: 'handover', label: '语音便签', path: '/pages/handover/index' },
-    { key: 'school', label: '入园助手', path: '/pages/school/index' },
-    { key: 'milestones', label: '能力观察', path: '/pages/milestones/index' },
     { key: 'stickers', label: '贴纸收集册', path: '/pages/stickers/index' },
   ]
   return allFeatures.filter(f => config.features.includes(f.key))
