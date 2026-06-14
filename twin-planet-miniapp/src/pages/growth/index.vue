@@ -14,8 +14,8 @@
     <!-- 空状态：无数据 -->
     <view v-if="!growthStore.hasRealData" class="empty-state">
       <text class="empty-emoji">📋</text>
-      <text class="empty-title">还没有生长数据</text>
-      <text class="empty-desc">添加第一次测量，开始追踪双宝成长</text>
+      <text class="empty-title">等待第一次测量</text>
+      <text class="empty-desc">每次测量都是一颗成长的小星星 ✦</text>
     </view>
 
     <!-- 图表卡片（有数据时显示） -->
@@ -58,7 +58,7 @@
           <view class="stat-item"><text class="stat-label">百分位</text><text class="stat-value-sm">P{{ percentileA }}</text>
 	          <text class="percentile-hint" v-if="percentileA">{{ percentileHint(percentileA) }}</text></view>
         </view>
-        <text v-else class="card-no-data">暂无数据</text>
+        <text v-else class="card-no-data">等待记录 ✦</text>
       </view>
 
       <view class="data-card" v-if="babyB" :style="{borderLeft:'4rpx solid var(--rose)'}">
@@ -72,7 +72,7 @@
           <view class="stat-item"><text class="stat-label">百分位</text><text class="stat-value-sm">P{{ percentileB }}</text>
 	          <text class="percentile-hint" v-if="percentileB">{{ percentileHint(percentileB) }}</text></view>
         </view>
-        <text v-else class="card-no-data">暂无数据</text>
+        <text v-else class="card-no-data">等待记录 ✦</text>
       </view>
     </view>
 

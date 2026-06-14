@@ -41,11 +41,46 @@
           </view>
         </view>
 
+        <!-- 品牌吉祥物 -->
+        <view class="mascot-area reveal-2" v-if="userStore.roleConfig.homeLayout==='full'">
+          <TwinMascot size="sm" :linked="true" />
+        </view>
+
         <!-- 问候 — editorial, left-aligned, dramatic scale -->
         <view class="greeting reveal-2">
           <text class="greet-line1">{{ greeting }}</text>
           <text class="greet-line2">{{ greetLine2 }}</text>
           <text class="greet-sub">{{ insightText }}</text>
+        </view>
+
+        <!-- 🆕 新手引导 — 首次使用教学 -->
+        <view class="welcome-guide reveal-2" v-if="showWelcome && userStore.roleConfig.homeLayout==='full'">
+          <view class="welcome-card">
+            <view class="welcome-top">
+              <text class="welcome-wave">👋</text>
+              <view class="welcome-text">
+                <text class="welcome-title">欢迎来到双宝手帐</text>
+                <text class="welcome-desc">一本可以玩的成长记录本，从今天开始吧</text>
+              </view>
+              <view class="welcome-close" @click="dismissWelcome"><text>✕</text></view>
+            </view>
+            <view class="welcome-steps">
+              <view class="w-step">
+                <text class="ws-num">1</text>
+                <text class="ws-text">点击下方大按钮<br><text class="ws-hl">记录喂奶/睡觉</text></text>
+              </view>
+              <view class="ws-arrow">→</view>
+              <view class="w-step">
+                <text class="ws-num">2</text>
+                <text class="ws-text">每天记录<br><text class="ws-hl">收集贴纸</text></text>
+              </view>
+              <view class="ws-arrow">→</view>
+              <view class="w-step">
+                <text class="ws-num">3</text>
+                <text class="ws-text">7天后生成<br><text class="ws-hl">第一张双宝卡</text></text>
+              </view>
+            </view>
+          </view>
         </view>
 
         <!-- 双宝卡片 — asymmetric, hand-rotated, overlapping -->
@@ -147,13 +182,43 @@
 
         <!-- 底部工具行 -->
         <view class="footer-tools reveal-6" v-if="userStore.roleConfig.homeLayout==='full'">
-          <text class="ft-link" @click="goExport">📤 导出备份</text>
-          <text class="ft-dot">·</text>
-          <text class="ft-link" @click="navigate('/pages/privacy/index')">隐私政策</text>
+          <button class="ft-invite" open-type="share">
+            <text>👨‍👩‍👧‍👦 邀请另一半一起记录</text>
+          </button>
+          <view class="ft-row">
+            <text class="ft-link" @click="goExport">📤 导出备份</text>
+            <text class="ft-dot">·</text>
+            <text class="ft-link" @click="navigate('/pages/privacy/index')">隐私政策</text>
+          </view>
         </view>
 
         <!-- 免责声明 -->
         <text class="disclaimer-note reveal-6" v-if="userStore.roleConfig.homeLayout==='full'">本应用不提供医疗建议，所有数据仅供参考</text>
+
+        <!-- 邀请接受弹窗 -->
+        <view class="celebrate-overlay" v-if="showInvitePrompt" @click="showInvitePrompt=false">
+          <view class="celebrate-card" @click.stop>
+            <text class="celebrate-emoji">👨‍👩‍👧‍👦</text>
+            <text class="celebrate-title">有人邀请你一起记录！</text>
+            <text class="celebrate-desc">加入家庭后，你们可以一起记录双宝的日常</text>
+            <view class="invite-actions">
+              <button class="invite-accept" @click="acceptInvite">加入家庭</button>
+              <button class="invite-decline" @click="showInvitePrompt=false">以后再说</button>
+            </view>
+          </view>
+        </view>
+
+        <!-- 里程碑庆祝弹窗 -->
+        <view class="celebrate-overlay" v-if="showCelebrate" @click="showCelebrate=false">
+          <view class="celebrate-card">
+            <text class="celebrate-emoji">{{ celebrateEmoji }}</text>
+            <text class="celebrate-title">{{ celebrateTitle }}</text>
+            <text class="celebrate-desc">{{ celebrateDesc }}</text>
+            <view class="celebrate-stars">
+              <text class="cs">⭐</text><text class="cs">🌟</text><text class="cs">⭐</text>
+            </view>
+          </view>
+        </view>
 
         <text class="journal-footer-text" v-if="streakDays > 0">连续记录第 {{ streakDays }} 天 ✦</text>
 
@@ -181,9 +246,11 @@ import { useStickerSync } from '@/composables/useStickerSync'
 import { useQuickRef } from '@/composables/useQuickRef'
 import { getDiscoverFeatures } from '@/config/roles'
 import { saveExportData, syncRecords, pullRecords } from '@/utils/syncService'
+import { createInvite, joinFamily } from '@/api/family'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
 import LightBridge from '@/components/cosmic/LightBridge.vue'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
+import TwinMascot from '@/components/journal/TwinMascot.vue'
 
 const loading=ref(true);const userStore=useUserStore()
 const themeClass=computed(()=>{const c=['page-root'];const h=new Date().getHours();if(h>=22||h<6)c.push('theme-dark');if(userStore.isGrandmaMode)c.push('font-large','role-granny');else if(userStore.isDad)c.push('role-dad');return c.join(' ')})
@@ -206,13 +273,104 @@ async function initSync(){
     syncRecords(recordsStore.logs.slice(-20))
   } catch { /* 静默 */ }
 }
-onMounted(()=>{setTimeout(()=>{loading.value=false;syncStickers();initSync().catch(()=>{})},400)})
-onShareAppMessage(()=>({title:'🪐 双宝星球 · 两个小怪兽的成长记录',path:'/pages/index/index',imageUrl:'/static/share-brand.png'}))
+// 邀请令牌 — 预生成用于分享，从 globalData 检测被邀请
+const inviteToken = ref('')
+const showInvitePrompt = ref(false)
+
+async function checkInviteAndAccept() {
+  // 检测是否有邀请令牌
+  try {
+    const app = getApp()
+    const token = app?.globalData?.__inviteToken
+    if (token && userStore.isLoggedIn) {
+      showInvitePrompt.value = true
+      inviteToken.value = token
+      // 清除，避免重复弹窗
+      app.globalData.__inviteToken = null
+    }
+  } catch {}
+}
+async function acceptInvite() {
+  try {
+    const res = await joinFamily(inviteToken.value)
+    if (res.success) {
+      uni.showToast({ title: '成功加入家庭！', icon: 'success' })
+      showInvitePrompt.value = false
+    } else {
+      uni.showToast({ title: res.error?.message || '加入失败', icon: 'none' })
+    }
+  } catch {
+    uni.showToast({ title: '网络问题，稍后再试吧', icon: 'none' })
+  }
+}
+
+// 预生成邀请令牌用于分享
+async function ensureInviteToken() {
+  if (inviteToken.value) return inviteToken.value
+  try {
+    const res = await createInvite()
+    if (res.success && res.data) {
+      inviteToken.value = res.data.token
+      return res.data.token
+    }
+  } catch { /* 离线或无家庭时静默失败 */ }
+  return ''
+}
+
+onMounted(()=>{setTimeout(()=>{loading.value=false;syncStickers();initSync().catch(()=>{});checkCelebrate();checkInviteAndAccept();ensureInviteToken().catch(()=>{})},400)})
+onShareAppMessage(() => {
+  const aName=babyA.value?.nickname||'大宝';const bName=babyB.value?.nickname||'二宝'
+  const token = inviteToken.value
+  const path = token ? `/pages/index/index?invite=${token}` : '/pages/index/index'
+  return {
+    title:`${aName}和${bName}的成长手帐 · 一起来记录吧 🪐`,
+    path,
+    imageUrl:'/static/share-brand.png',
+  }
+})
 
 const babiesStore=useBabiesStore();const recordsStore=useRecordsStore()
 const alertsStore=useAlertsStore();const stickersStore=useStickersStore()
 const { syncStickers } = useStickerSync()
 const { quickRef } = useQuickRef()
+
+// 新手引导：首次使用显示教学卡片，进行第一次记录后或手动关闭后消失
+const WELCOME_KEY = 'tp_welcome_dismissed'
+const showWelcome = ref(false)
+try {
+  const dismissed = uni.getStorageSync(WELCOME_KEY)
+  const hasRecords = recordsStore.logs.length > 0
+  showWelcome.value = !dismissed && !hasRecords
+} catch { showWelcome.value = true }
+function dismissWelcome() {
+  showWelcome.value = false
+  try { uni.setStorageSync(WELCOME_KEY, '1') } catch {}
+}
+
+// 里程碑庆祝 — 连续7/30/100天触发一次性弹窗
+const CELEBRATE_KEY = 'tp_celebrated'
+const showCelebrate = ref(false)
+const celebrateEmoji = ref('🎉')
+const celebrateTitle = ref('')
+const celebrateDesc = ref('')
+const MILESTONES: Record<number, { emoji: string; title: string; desc: string }> = {
+  7: { emoji: '🌟', title: '一周全勤！', desc: '连续7天记录，你已经是个了不起的守护者了' },
+  30: { emoji: '🏆', title: '月度之星！', desc: '连续30天记录，这份坚持太厉害了' },
+  100: { emoji: '👑', title: '百天守护！', desc: '100天的陪伴，两个小怪兽有你真幸福' },
+}
+function checkCelebrate() {
+  const days = streakDays.value
+  if (!MILESTONES[days]) return
+  try {
+    const celebrated: number[] = JSON.parse(uni.getStorageSync(CELEBRATE_KEY) || '[]')
+    if (celebrated.includes(days)) return
+    const m = MILESTONES[days]
+    celebrateEmoji.value = m.emoji; celebrateTitle.value = m.title; celebrateDesc.value = m.desc
+    showCelebrate.value = true
+    celebrated.push(days)
+    uni.setStorageSync(CELEBRATE_KEY, JSON.stringify(celebrated))
+  } catch {}
+}
 
 const isGrandma=computed(()=>userStore.isGrandmaMode)
 const babyA=computed(()=>babiesStore.babyA);const babyB=computed(()=>babiesStore.babyB)
@@ -309,7 +467,7 @@ const goExport = async () => {
       showCancel: false
     })
   } catch {
-    uni.showToast({ title: '导出失败，请重试', icon: 'none' })
+    uni.showToast({ title: '导出遇到问题，稍后再试吧', icon: 'none' })
   }
 }
 const switchRole = () => {
@@ -351,6 +509,100 @@ const switchRole = () => {
 .streak-stamp{background:var(--gold-lt);padding:6rpx 14rpx;border-radius:4rpx 12rpx 4rpx 12rpx;font-family:var(--font-journal);font-size:20rpx;color:var(--gold);font-weight:700;transform:rotate(2deg);box-shadow:0 2rpx 6rpx rgba(200,153,62,0.1);animation:stampIn .4s var(--ease-bounce)}
 @keyframes stampIn{0%{transform:rotate(2deg)scale(0);opacity:0}70%{transform:rotate(-1deg)scale(1.1)}100%{transform:rotate(2deg)scale(1);opacity:1}}
 .streak-start{font-size:20rpx;color:var(--ink-lt);font-family:var(--font-journal)}
+
+/* 吉祥物区域 */
+.mascot-area {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20rpx;
+  position: relative;
+  z-index: 1;
+}
+
+/* 新手引导卡片 */
+.welcome-guide {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 32rpx;
+}
+.welcome-card {
+  background: linear-gradient(135deg, var(--amber-lt) 0%, var(--cream) 50%, var(--rose-lt) 100%);
+  border-radius: var(--radius-lg);
+  border: 2rpx solid var(--dot);
+  padding: 28rpx 24rpx 24rpx;
+  animation: welcomeIn .6s var(--ease-soft);
+}
+@keyframes welcomeIn {
+  from { opacity: 0; transform: translateY(-12rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.welcome-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+}
+.welcome-wave { font-size: 48rpx; flex-shrink: 0; }
+.welcome-text { flex: 1; }
+.welcome-title {
+  display: block;
+  font-family: var(--font-journal);
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.welcome-desc {
+  display: block;
+  font-size: 24rpx;
+  color: var(--ink-md);
+  margin-top: 4rpx;
+}
+.welcome-close {
+  width: 48rpx; height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 24rpx;
+  color: var(--ink-lt);
+}
+.welcome-close:active { background: var(--dot); }
+.welcome-steps {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  justify-content: center;
+}
+.w-step {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+.ws-num {
+  width: 44rpx; height: 44rpx;
+  border-radius: 50%;
+  background: var(--amber);
+  color: #FFF;
+  font-size: 24rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ws-text {
+  font-size: 22rpx;
+  color: var(--ink-md);
+  line-height: 1.4;
+}
+.ws-hl {
+  color: var(--amber);
+  font-weight: 600;
+}
+.ws-arrow {
+  font-size: 24rpx;
+  color: var(--ink-lt);
+}
 
 /* 问候 — editorial left-aligned */
 .greeting{position:relative;z-index:1;margin-bottom:44rpx}
@@ -437,9 +689,83 @@ const switchRole = () => {
 .journal-nav{display:flex;justify-content:space-between;padding:20rpx 48rpx 0;border-top:1.5px solid var(--dot);position:relative;z-index:1}
 .jnav-item{font-family:var(--font-journal);font-size:26rpx;color:var(--ink-lt);letter-spacing:3rpx}
 .jnav-item.active{color:var(--amber);font-weight:700}
-.footer-tools{display:flex;justify-content:center;gap:12rpx;margin-bottom:12rpx;position:relative;z-index:1} .ft-link{font-size:20rpx;color:var(--ink-lt)} .ft-link:active{color:var(--amber)} .ft-dot{font-size:20rpx;color:var(--ink-lt)}
+.footer-tools{display:flex;flex-direction:column;align-items:center;gap:12rpx;margin-bottom:12rpx;position:relative;z-index:1}
+.ft-invite{
+  width:100%;max-width:560rpx;padding:16rpx 0;
+  background:linear-gradient(135deg,var(--amber-lt),var(--rose-lt));
+  border:2rpx solid var(--dot);border-radius:20rpx;
+  font-size:24rpx;font-weight:600;color:var(--ink);
+  line-height:1.4;
+}
+.ft-invite::after{border:none}
+.ft-invite:active{opacity:.7}
+.ft-row{display:flex;gap:12rpx}
+.ft-link{font-size:20rpx;color:var(--ink-lt)} .ft-link:active{color:var(--amber)} .ft-dot{font-size:20rpx;color:var(--ink-lt)}
 .disclaimer-note{display:block;text-align:center;font-size:18rpx;color:var(--ink-lt);margin-bottom:16rpx;opacity:.5;position:relative;z-index:1}
 .all-good{text-align:left;margin-bottom:12rpx;position:relative;z-index:1}.all-good text{font-family:var(--font-journal);font-size:24rpx;color:var(--mint);font-weight:600}
+
+/* 里程碑庆祝覆盖层 */
+.celebrate-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(45,35,24,.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999;
+  animation: fadeIn .3s var(--ease-soft);
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.celebrate-card {
+  background: var(--paper);
+  border-radius: var(--radius-lg);
+  padding: 64rpx 48rpx 48rpx;
+  text-align: center;
+  margin: 0 48rpx;
+  box-shadow: 0 16rpx 48rpx rgba(45,35,24,.15);
+  animation: celebBounce .5s var(--ease-bounce);
+}
+@keyframes celebBounce {
+  0% { transform: scale(.5); opacity: 0; }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.celebrate-emoji { font-size: 120rpx; display: block; margin-bottom: 16rpx; }
+.celebrate-title { display: block; font-family: var(--font-journal); font-size: 44rpx; color: var(--ink); font-weight: 700; }
+.celebrate-desc { display: block; font-size: 28rpx; color: var(--ink-md); margin-top: 12rpx; line-height: 1.5; }
+.celebrate-stars { margin-top: 24rpx; display: flex; gap: 16rpx; justify-content: center; }
+.cs { font-size: 48rpx; animation: starSpin 1s ease-in-out infinite; }
+.cs:nth-child(2) { animation-delay: .2s; font-size: 56rpx; }
+.cs:nth-child(3) { animation-delay: .4s; }
+@keyframes starSpin {
+  0%, 100% { transform: rotate(0) scale(1); }
+  50% { transform: rotate(15deg) scale(1.2); }
+}
+
+/* 邀请弹窗按钮 */
+.invite-actions {
+  margin-top: 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+.invite-accept {
+  width: 100%;
+  padding: 24rpx 0;
+  background: var(--amber);
+  color: #FFF;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 30rpx;
+  font-weight: 700;
+}
+.invite-accept::after { border: none; }
+.invite-decline {
+  width: 100%;
+  padding: 16rpx 0;
+  background: transparent;
+  color: var(--ink-md);
+  border: none;
+  font-size: 24rpx;
+}
+.invite-decline::after { border: none; }
 
 /* 入场 */
 .reveal-1{animation:revealUp .5s var(--ease-soft) both}
