@@ -93,7 +93,7 @@
               <text class="twin-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
               <view class="twin-status-row">
                 <text v-if="isRunningA" class="status-live">计时中</text>
-                <text v-else-if="babyStatus(babyA)" class="status-recent">{{ babyStatus(babyA) }}</text>
+                <text v-else-if="babyStatus(babyA)" :class="['status-recent', babyUrgency(babyA)==='urgent'?'status-urgent':babyUrgency(babyA)==='warn'?'status-warn':'']">{{ babyStatus(babyA) }}</text>
                 <text v-else class="status-tap">轻触记录</text>
               </view>
             </view>
@@ -107,7 +107,7 @@
               <text class="twin-name">{{ babyB?.nickname || babyB?.name || '二宝' }}</text>
               <view class="twin-status-row">
                 <text v-if="isRunningB" class="status-live">计时中</text>
-                <text v-else-if="babyStatus(babyB)" class="status-recent">{{ babyStatus(babyB) }}</text>
+                <text v-else-if="babyStatus(babyB)" :class="['status-recent', babyUrgency(babyB)==='urgent'?'status-urgent':babyUrgency(babyB)==='warn'?'status-warn':'']">{{ babyStatus(babyB) }}</text>
                 <text v-else class="status-tap">轻触记录</text>
               </view>
             </view>
@@ -317,7 +317,7 @@ async function ensureInviteToken() {
   return ''
 }
 
-onMounted(()=>{setTimeout(()=>{loading.value=false;syncStickers();initSync().catch(()=>{});checkCelebrate();checkInviteAndAccept();ensureInviteToken().catch(()=>{})},400)})
+onMounted(()=>{const tick=setInterval(()=>{nowTick.value=Date.now()},30000);setTimeout(()=>{loading.value=false;syncStickers();initSync().catch(()=>{});checkCelebrate();checkInviteAndAccept();ensureInviteToken().catch(()=>{})},400)})
 onShareAppMessage(() => {
   const aName=babyA.value?.nickname||'大宝';const bName=babyB.value?.nickname||'二宝'
   const token = inviteToken.value
@@ -385,7 +385,9 @@ const roleEmoji=computed(()=>userStore.roleEmoji)
 const roleLabel=computed(()=>userStore.roleLabel)
 const dateStr=computed(()=>{const d=new Date();const days=['日','一','二','三','四','五','六'];return `${d.getMonth()+1}月${d.getDate()}日 星期${days[d.getDay()]}`})
 
-function babyStatus(b:any):string{if(!b)return'';const logs=recordsStore.recentLogsByBaby[b.id];if(!logs?.length)return'';const last=logs[logs.length-1];const m=Math.floor((Date.now()-last.createdAt)/60000);const a=last.type==='feeding'?'喂奶':last.type==='sleep'?'睡觉':'记录';if(m<1)return`刚刚${a}`;if(m<60)return`${m}分钟前${a}`;return`${Math.floor(m/60)}小时前${a}`}
+const nowTick=ref(Date.now())
+function babyStatus(b:any):string{if(!b)return'';const logs=recordsStore.recentLogsByBaby[b.id];if(!logs?.length)return'';const last=logs[logs.length-1];const m=Math.floor((nowTick.value-last.createdAt)/60000);const a=last.type==='feeding'?'喂奶':last.type==='sleep'?'睡觉':'记录';if(m<1)return`刚刚${a}`;if(m<60)return`${m}分钟前${a}`;const hr=Math.floor(m/60);const min=m%60;return`距上次${a} ${hr}小时${min}分`}
+function babyUrgency(b:any):string{if(!b)return'';const logs=recordsStore.recentLogsByBaby[b.id];if(!logs?.length)return'';const last=logs[logs.length-1];if(last.type!=='feeding')return'';const h=(nowTick.value-last.createdAt)/3600000;if(h>4)return'urgent';if(h>3)return'warn';return''}
 
 const syncRate=computed(()=>recordsStore.twinSyncRate)
 const insightText=computed(()=>{const s=syncRate.value;if(s>70)return`同步率 ${s}% · 神同步！不愧是双胞胎`;if(s>30)return`同步率 ${s}% · 今天打架战绩：平局 🤼`;if(s>0)return'各有各的节奏，挺好的';return'两个小怪兽，今天会同步吗？'})
@@ -639,6 +641,8 @@ const switchRole = () => {
 .twin-status-row{text-align:center}
 .status-live{font-size:22rpx;color:var(--mint);font-weight:600}
 .status-recent{font-size:22rpx;color:var(--ink-md)}
+.status-warn{color:var(--gold)!important;font-weight:600}
+.status-urgent{color:var(--twin-danger)!important;font-weight:700}
 .status-tap{font-size:22rpx;color:var(--ink-lt)}
 
 /* LightBridge */

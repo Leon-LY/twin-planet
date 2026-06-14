@@ -49,6 +49,19 @@
         </view>
       </view>
 
+      <!-- 智能推荐：根据时间+历史推荐最可能的操作（1 tap 直达） -->
+      <view class="smart-bar" v-if="smartSuggestions.length">
+        <text class="smart-hint">💡 试试一键记录：</text>
+        <view class="smart-chips">
+          <view v-for="s in smartSuggestions" :key="s.babyId+s.type" class="smart-chip"
+            @click="recordsStore.quickLog(s.babyId, s.type); haptic.sparkle()">
+            <text class="sc-emoji">{{ s.emoji }}</text>
+            <text class="sc-text">{{ s.babyName }} · {{ s.type==='feeding'?'喂奶':'睡觉' }}</text>
+            <text class="sc-reason">{{ s.reason }}</text>
+          </view>
+        </view>
+      </view>
+
       <view class="stamp-grid">
         <view v-for="(a,i) in actions" :key="a.type" class="stamp-btn"
           :class="{ 'stamp-primary': i===0, 'stamp-secondary': i===1, 'stamp-small': i>=4 }"
@@ -173,6 +186,19 @@ const retroType=ref<RecordType>('feeding')
 function retro(m:number){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,retroType.value,undefined,m*60000);haptic.sparkle();syncStickers();popSticker('⏰')}
 	const todayStart=computed(()=>new Date().setHours(0,0,0,0))
 	const recentLogs=computed(()=>{const t0=todayStart.value;return recordsStore.logs.filter(l=>l.createdAt>=t0).sort((a,b)=>b.createdAt-a.createdAt)})
+		// 智能推荐：根据历史记录+时间间隔，推荐最可能的操作（1 tap 直达）
+		const smartSuggestions=computed(()=>{
+		  const now=Date.now();const FEED_GAP=2.5*3600000;const SLEEP_GAP=3*3600000
+		  const result=[]
+		  for(const t of twins.value){
+		    const logs=recordsStore.logs.filter(function(l){return l.babyId===t.id})
+		    const lastFeed=logs.filter(function(l){return l.type==="feeding"}).sort(function(a,b){return b.createdAt-a.createdAt})[0]
+		    if(!lastFeed||now-lastFeed.createdAt>FEED_GAP)result.push({babyId:t.id,babyName:t.nickname||t.name,type:"feeding",emoji:"🍼",reason:!lastFeed?"还没有喂奶记录":Math.floor((now-lastFeed.createdAt)/3600000)+"小时前"})
+		    const lastSleep=logs.filter(function(l){return l.type==="sleep"}).sort(function(a,b){return b.createdAt-a.createdAt})[0]
+		    if(!lastSleep||now-lastSleep.createdAt>SLEEP_GAP)result.push({babyId:t.id,babyName:t.nickname||t.name,type:"sleep",emoji:"😴",reason:!lastSleep?"还没有睡眠记录":Math.floor((now-lastSleep.createdAt)/3600000)+"小时前"})
+		  }
+		  return result.slice(0,2)
+		})
 	onMounted(()=>{uni.setNavigationBarTitle({title:"记录"});if(twins.value[0])sel.value=twins.value[0].id})
 onShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id})
 </script>
@@ -191,6 +217,16 @@ onShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id})
 .baby-tabs{display:flex;gap:0;margin-bottom:32rpx;position:relative;z-index:1}
 .baby-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:8rpx;padding:20rpx;border-radius:20rpx 20rpx 0 0;opacity:.45;transition:opacity .2s,border-color .2s;border-bottom:3rpx solid transparent}
 .baby-tab.active{opacity:1}.baby-tab.tab-a.active{border-bottom-color:var(--amber);background:linear-gradient(to top,var(--amber-lt),transparent 60%)}.baby-tab.tab-b.active{border-bottom-color:var(--rose);background:linear-gradient(to top,var(--rose-lt),transparent 60%)}.tab-emoji{font-size:40rpx;transition:transform .3s var(--ease-bounce)}.baby-tab:active .tab-emoji{transform:scale(1.2)}.tab-name{font-family:var(--font-journal);font-size:26rpx;font-weight:700;color:var(--ink)}.tab-check{font-size:20rpx;color:var(--mint)}
+
+/* 智能推荐 */
+.smart-bar{display:flex;flex-direction:column;gap:12rpx;margin-bottom:24rpx;position:relative;z-index:1}
+.smart-hint{font-size:22rpx;color:var(--ink-lt)}
+.smart-chips{display:flex;gap:12rpx}
+.smart-chip{flex:1;display:flex;align-items:center;gap:10rpx;padding:18rpx 20rpx;background:linear-gradient(135deg,var(--amber-lt),var(--mint-lt));border:2rpx solid var(--amber);border-radius:var(--radius-md);transition:transform .15s var(--ease-bounce)}
+.smart-chip:active{transform:scale(.95)}
+.sc-emoji{font-size:36rpx}
+.sc-text{font-family:var(--font-journal);font-size:26rpx;font-weight:700;color:var(--ink)}
+.sc-reason{font-size:20rpx;color:var(--ink-md);margin-left:auto}
 
 .stamp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10rpx;margin-bottom:20rpx;position:relative;z-index:1}
 .stamp-btn{display:flex;flex-direction:column;align-items:center;gap:6rpx;padding:28rpx 8rpx;background:var(--cream);border:2rpx solid var(--dot);border-radius:20rpx;transition:transform .15s var(--ease-bounce),border-color .2s,background .2s}
