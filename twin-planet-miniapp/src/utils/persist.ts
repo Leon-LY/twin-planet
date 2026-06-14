@@ -60,7 +60,9 @@ export const PERSIST_KEYS = {
   family: 'family',
   babies: 'babies',
   records: 'records',
-  interactions: 'interactions',
+  interactions: 'interactions',  // 向后兼容，已拆分为 sprout + contribution
+  sprout: 'sprout',
+  contribution: 'contribution',
   duty: 'duty',
   guardian: 'guardian',
   alerts: 'alerts',

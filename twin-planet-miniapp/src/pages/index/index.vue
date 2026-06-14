@@ -259,13 +259,16 @@
 
         <!-- 里程碑庆祝弹窗 -->
         <view class="celebrate-overlay" v-if="showCelebrate" @click="showCelebrate=false">
-          <view class="celebrate-card">
+          <view class="celebrate-card" @click.stop>
             <text class="celebrate-emoji">{{ celebrateEmoji }}</text>
             <text class="celebrate-title">{{ celebrateTitle }}</text>
             <text class="celebrate-desc">{{ celebrateDesc }}</text>
             <view class="celebrate-stars">
               <text class="cs">⭐</text><text class="cs">🌟</text><text class="cs">⭐</text>
             </view>
+            <button v-if="milestoneAction" class="milestone-action-btn" @click="doMilestoneAction">
+              {{ milestoneAction }}
+            </button>
           </view>
         </view>
 
@@ -327,7 +330,6 @@ import { createInvite, joinFamily } from '@/api/family'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
 import LightBridge from '@/components/cosmic/LightBridge.vue'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
-import TwinMascot from '@/components/journal/TwinMascot.vue'
 
 const loading=ref(true);const userStore=useUserStore()
 const themeClass=computed(()=>{const c=['page-root'];const h=new Date().getHours();if(h>=22||h<6)c.push('theme-dark');if(userStore.isGrandmaMode)c.push('font-large','role-granny');else if(userStore.isDad)c.push('role-dad');return c.join(' ')})
@@ -430,11 +432,12 @@ const showCelebrate = ref(false)
 const celebrateEmoji = ref('🎉')
 const celebrateTitle = ref('')
 const celebrateDesc = ref('')
-const MILESTONES: Record<number, { emoji: string; title: string; desc: string }> = {
-  7: { emoji: '🌟', title: '一周全勤！', desc: '连续7天记录，你已经是个了不起的守护者了' },
+const MILESTONES: Record<number, { emoji: string; title: string; desc: string; action?: string }> = {
+  7: { emoji: '🌟', title: '一周全勤！', desc: '连续7天记录，你已经是个了不起的守护者了', action: '生成双宝周报 📊' },
   30: { emoji: '🏆', title: '月度之星！', desc: '连续30天记录，这份坚持太厉害了' },
   100: { emoji: '👑', title: '百天守护！', desc: '100天的陪伴，两个小怪兽有你真幸福' },
 }
+const milestoneAction = ref('')
 function checkCelebrate() {
   const days = streakDays.value
   if (!MILESTONES[days]) return
@@ -443,6 +446,7 @@ function checkCelebrate() {
     if (celebrated.includes(days)) return
     const m = MILESTONES[days]
     celebrateEmoji.value = m.emoji; celebrateTitle.value = m.title; celebrateDesc.value = m.desc
+    milestoneAction.value = m.action || ''
     showCelebrate.value = true
     celebrated.push(days)
     uni.setStorageSync(CELEBRATE_KEY, JSON.stringify(celebrated))
@@ -577,6 +581,22 @@ function logoutApp() {
   userStore.logout()
   uni.reLaunch({ url: '/pages/login/index' })
 }
+function doMilestoneAction() {
+  showCelebrate.value = false
+  // 7天里程碑 → 引导分享双宝周报
+  uni.showModal({
+    title: '双宝周报',
+    content: '即将生成第一份双宝成长周报，可以保存到相册或分享给家人。',
+    confirmText: '生成周报',
+    success: (res) => {
+      if (res.confirm) {
+        // 跳转到快照页（那里有完整的分享卡片功能）
+        uni.navigateTo({ url: '/pages/snapshot/index' })
+        uni.showToast({ title: '在快照页点击分享即可生成卡片', icon: 'none', duration: 2000 })
+      }
+    }
+  })
+}
 </script>
 
 <style scoped>
@@ -599,14 +619,6 @@ function logoutApp() {
 @keyframes stampIn{0%{transform:rotate(2deg)scale(0);opacity:0}70%{transform:rotate(-1deg)scale(1.1)}100%{transform:rotate(2deg)scale(1);opacity:1}}
 .streak-start{font-size:20rpx;color:var(--ink-lt);font-family:var(--font-journal);background:var(--cream);padding:6rpx 14rpx;border-radius:12rpx;border:1.5px dashed var(--dot)}
 
-/* 吉祥物区域 */
-.mascot-area {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 20rpx;
-  position: relative;
-  z-index: 1;
-}
 
 /* 新手引导卡片 */
 .welcome-guide {
@@ -696,7 +708,6 @@ function logoutApp() {
 /* 问候 — editorial left-aligned */
 .greeting{position:relative;z-index:1;margin-bottom:44rpx}
 .greet-line1{display:block;font-family:var(--font-journal);font-size:48rpx;font-weight:400;color:var(--ink);letter-spacing:-1rpx;line-height:1.3}
-.greet-line2{display:block;font-family:var(--font-journal);font-size:36rpx;color:var(--ink-md);margin-top:4rpx}
 .greet-sub{display:block;font-size:26rpx;color:var(--ink-lt);margin-top:16rpx;line-height:1.5;max-width:480rpx}
 
 /* 双宝卡片 — asymmetric */
@@ -829,6 +840,19 @@ function logoutApp() {
   0%, 100% { transform: rotate(0) scale(1); }
   50% { transform: rotate(15deg) scale(1.2); }
 }
+.milestone-action-btn {
+  margin-top: 28rpx;
+  width: 100%;
+  padding: 22rpx 0;
+  background: var(--amber);
+  color: #FFF;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 30rpx;
+  font-weight: 700;
+}
+.milestone-action-btn::after { border: none; }
+.milestone-action-btn:active { transform: scale(.94); }
 
 /* 邀请弹窗按钮 */
 .invite-actions {
@@ -878,7 +902,6 @@ function logoutApp() {
 .last-update{text-align:center;font-size:28rpx;color:var(--ink-lt);margin-top:40rpx}
 
 /* 爸爸模式 */
-.role-dad .greet-line2{display:none}
 .role-dad .greet-sub{display:none}
 .role-dad .greet-line1{font-size:44rpx}
 .role-dad .sticker-zone{display:none}
