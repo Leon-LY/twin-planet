@@ -1,7 +1,7 @@
 {
     "name" : "双宝记录",
     "appid" : "wxee2ef767a77058db",
-    "description" : "双胞胎家庭专属育儿伴侣——并蒂而生，同步成长。品牌名：并蒂星球",
+    "description" : "双胞胎宝宝的喂养、睡眠、生长曲线记录工具。支持双宝同时计时、WHO生长对比、语音交接班、贴纸收集。妈妈记录、爸爸值班、奶奶也能用。",
     "versionName" : "0.1.0",
     "versionCode" : "100",
     "transformPx" : false,
@@ -61,7 +61,14 @@
         "lazyCodeLoading" : "requiredComponents",
         "optimization" : {
             "subPackages" : true
-        }
+        },
+        "permission" : {
+            "scope.record" : {
+                "desc" : "用于语音交接班——录一段话留给换班的家人"
+            }
+        },
+        "requiredPrivateInfos" : ["chooseAddress", "getLocation"],
+        "plugins" : {}
     },
     "mp-alipay" : {
         "usingComponents" : true
