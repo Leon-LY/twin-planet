@@ -155,14 +155,14 @@ import { useRecordsStore } from '@/stores/records'
 import { useAlertsStore } from '@/stores/alerts'
 import { useStickersStore } from '@/stores/stickers'
 import { getDiscoverFeatures } from '@/config/roles'
-import { saveExportData } from '@/utils/syncService'
+import { saveExportData, syncRecords } from '@/utils/syncService'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
 import LightBridge from '@/components/cosmic/LightBridge.vue'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
 
 const loading=ref(true);const userStore=useUserStore()
 const themeClass=computed(()=>{const c=['page-root'];const h=new Date().getHours();if(h>=22||h<6)c.push('theme-dark');if(userStore.isGrandmaMode)c.push('font-large','role-granny');else if(userStore.isDad)c.push('role-dad');return c.join(' ')})
-onMounted(()=>{setTimeout(()=>{loading.value=false;syncStickers()},400)})
+onMounted(()=>{setTimeout(()=>{loading.value=false;syncStickers();try{syncRecords(recordsStore.logs.slice(-20))}catch{/*静默*/}},400)})
 onShareAppMessage(()=>({title:'双宝手帐 · 中国首款双胞胎育儿伴侣',path:'/pages/index/index',imageUrl:''}))
 
 const babiesStore=useBabiesStore();const recordsStore=useRecordsStore()
