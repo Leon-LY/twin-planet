@@ -2,7 +2,7 @@
 <template>
   <view :class="[themeClass, { 'font-large': isGrandma }]">
     <template v-if="loading">
-      <view class="page-shell"><text class="heading-xl">加载中...</text></view>
+      <view class="page-shell"><TwinSkeleton type="brand" /><TwinSkeleton type="twins" /></view>
     </template>
 
     <template v-else-if="isGrandma">
@@ -290,10 +290,7 @@ import { getDiscoverFeatures } from '@/config/roles'
 import { saveExportData, syncRecords, pullRecords } from '@/utils/syncService'
 import { createInvite, joinFamily } from '@/api/family'
 import { trackCelebration, trackShare } from '@/utils/analytics'
-// RM TwinSkeleton '@/components/twin-skeleton/twin-skeleton.vue'
-// RM LightBridge '@/components/cosmic/LightBridge.vue'
-// RM StickerStrip '@/components/journal/StickerStrip.vue'
-// RM TwinMascot '@/components/journal/TwinMascot.vue'
+import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
 
 const loading=ref(true);const userStore=useUserStore()
 const themeClass=computed(()=>{const c=['page-root'];const h=new Date().getHours();if(h>=22||h<6)c.push('theme-dark');if(userStore.isGrandmaMode)c.push('font-large','role-granny');else if(userStore.isDad)c.push('role-dad');return c.join(' ')})
