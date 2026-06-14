@@ -41,10 +41,7 @@
           </view>
         </view>
 
-        <!-- 品牌吉祥物 -->
-        <view class="mascot-area reveal-2" v-if="userStore.roleConfig.homeLayout==='full'">
-          <TwinMascot size="sm" :linked="true" />
-        </view>
+        <!-- 品牌吉祥物 (temporarily disabled for debugging) -->
 
         <!-- 问候 — editorial, left-aligned, dramatic scale -->
         <view class="greeting reveal-2">
@@ -296,7 +293,7 @@ import { trackCelebration, trackShare } from '@/utils/analytics'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
 import LightBridge from '@/components/cosmic/LightBridge.vue'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
-import TwinMascot from '@/components/journal/TwinMascot.vue'
+// import TwinMascot from '@/components/journal/TwinMascot.vue'
 
 const loading=ref(true);const userStore=useUserStore()
 const themeClass=computed(()=>{const c=['page-root'];const h=new Date().getHours();if(h>=22||h<6)c.push('theme-dark');if(userStore.isGrandmaMode)c.push('font-large','role-granny');else if(userStore.isDad)c.push('role-dad');return c.join(' ')})
