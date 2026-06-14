@@ -2,7 +2,7 @@
   <view class="login-page">
     <view class="brand-hero">
       <view class="brand-icon">🌺🌺</view>
-      <text class="brand-name">双宝星球</text>
+      <text class="brand-name">双宝记</text>
       <text class="brand-slogan">两个小怪兽，一起长大 🪐</text>
       <text class="brand-desc">双胞胎的快乐星球</text>
     </view>

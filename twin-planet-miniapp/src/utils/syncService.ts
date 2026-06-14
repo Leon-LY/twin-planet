@@ -83,8 +83,9 @@ export async function syncGrowthMeasurements(measurements: any[]): Promise<numbe
 export function exportAllData(): string {
   const allData: Record<string, any> = {}
   // 🔧 从 PERSIST_KEYS 动态构建，不再硬编码
-  const keys = Object.values(PERSIST_KEYS).map(k => 'tp_' + k)
-  // 🔒 不导出 token（防止账户劫持）
+  const keys = Object.values(PERSIST_KEYS)
+    .map(k => 'tp_' + k)
+    .filter(k => k !== 'tp_token') // 🔒 不导出 JWT token（防止账户劫持）
   keys.push('tp_active_baby', 'tp_active_timer', 'tp_active_session')
 
   for (const key of keys) {

@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { query } from '../config/database'
+import { config } from '../config'
 import { ok, fail } from '../utils/response'
 import { authRequired } from '../middleware/auth'
 
@@ -36,8 +37,12 @@ authRouter.post('/wechat-login', async (req: Request, res: Response) => {
       user = result.rows[0]
     }
 
-    // 生成 JWT
-    const secret = process.env.JWT_SECRET || 'dev-secret'
+    // 生成 JWT — 使用 config 统一管理的密钥，无硬编码 fallback
+    const secret = config.jwtSecret || process.env.JWT_SECRET
+    if (!secret) {
+      console.error('[Auth] JWT_SECRET not configured!')
+      return fail(res, '服务器配置错误', 'CONFIG_ERROR', 500)
+    }
     const token = jwt.sign(
       { userId: user.id, openid: user.openid, role: user.role },
       secret,

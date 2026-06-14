@@ -78,7 +78,7 @@ app.use('/api/handover', handoverRouter)
 app.use(errorHandler)
 
 app.listen(PORT, () => {
-  console.log(`[双宝手帐] Server running on http://localhost:${PORT}`)
+  console.log(`[双宝记] Server running on http://localhost:${PORT}`)
 })
 
 export default app

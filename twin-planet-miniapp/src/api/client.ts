@@ -5,11 +5,11 @@
 import type { ApiResponse } from './types'
 import { PERSIST_KEYS } from '@/utils/persist'
 
-// 🔒 后端地址从环境变量或配置读取，不带协议和 IP 硬编码
-// 生产环境：通过域名 + HTTPS 访问
-// 开发环境：通过局域网 IP + HTTP 访问
+// 🔒 后端地址：生产用 HTTPS 域名，开发用 localhost
 const BASE_URL = (typeof process !== 'undefined' && process.env?.API_BASE_URL)
-  || 'http://49.232.49.175:3003/api'
+  || (process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3003/api'
+    : 'https://twinplanet.cn/api')
 
 const TOKEN_KEY = 'tp_' + PERSIST_KEYS.token
 

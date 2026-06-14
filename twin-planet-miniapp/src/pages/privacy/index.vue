@@ -1,6 +1,6 @@
 <template>
   <view class="privacy-page">
-    <text class="title">双宝星球 · 用户协议与隐私政策</text>
+    <text class="title">双宝记 · 用户协议与隐私政策</text>
     <text class="update-date">最后更新：2026年6月14日</text>
 
     <text class="section-title">一、信息收集</text>
@@ -31,7 +31,7 @@
     </view>
 
     <text class="section-title">四、免责声明</text>
-    <text class="body">双宝星球是一款育儿辅助工具，不提供医疗建议。所有生长数据对比基于WHO儿童生长标准（2006），仅供参考。如对宝宝的健康有任何疑虑，请咨询专业儿科医生。</text>
+    <text class="body">双宝记是一款育儿辅助工具，不提供医疗建议。所有生长数据对比基于WHO儿童生长标准（2006），仅供参考。如对宝宝的健康有任何疑虑，请咨询专业儿科医生。</text>
 
     <text class="section-title">五、联系我们</text>
     <text class="body">如有任何问题或建议，请通过以下方式联系我们：</text>

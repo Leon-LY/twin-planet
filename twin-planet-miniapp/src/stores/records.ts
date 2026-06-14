@@ -67,15 +67,33 @@ export const useRecordsStore = defineStore('records', () => {
     _tickHandle = null
   }
 
-  // 恢复持久化的计时器（App 被杀后恢复）
+  // 恢复持久化的计时器（App 被杀后恢复所有活跃计时器）
   try {
-    const raw = uni.getStorageSync('tp_active_timer')
-    if (raw) {
-      const saved = JSON.parse(raw)
-      if (saved.babyId && saved.type && saved.startedAt) {
-        _timers.value = { [saved.babyId]: { babyId: saved.babyId, type: saved.type, startedAt: saved.startedAt, elapsed: 0, timerHandle: null as any } }
+    // 先尝试新格式（数组）
+    const raw = uni.getStorageSync('tp_active_timers')
+    const saved = raw ? JSON.parse(raw) : null
+    if (Array.isArray(saved) && saved.length > 0) {
+      const restored: Record<string, TimerState> = {}
+      for (const t of saved) {
+        if (t.babyId && t.type && t.startedAt) {
+          restored[t.babyId] = { babyId: t.babyId, type: t.type, startedAt: t.startedAt, elapsed: 0, timerHandle: null as any }
+        }
+      }
+      if (Object.keys(restored).length > 0) {
+        _timers.value = restored
         _ensureTick()
-        console.log('[records] Restored active timer for', saved.babyId)
+        console.log('[records] Restored', Object.keys(restored).length, 'active timers')
+      }
+    } else {
+      // 回退：旧格式（单个对象）
+      const oldRaw = uni.getStorageSync('tp_active_timer')
+      if (oldRaw) {
+        const old = JSON.parse(oldRaw)
+        if (old.babyId && old.type && old.startedAt) {
+          _timers.value = { [old.babyId]: { babyId: old.babyId, type: old.type, startedAt: old.startedAt, elapsed: 0, timerHandle: null as any } }
+          _ensureTick()
+          console.log('[records] Restored (legacy) timer for', old.babyId)
+        }
       }
     }
   } catch {}
@@ -202,7 +220,9 @@ export const useRecordsStore = defineStore('records', () => {
     // 清除持久化的计时器 + 停止全局心跳
     if (Object.keys(newTimers).length === 0) {
       _stopTick()
-      try { uni.removeStorageSync('tp_active_timer') } catch {}
+      try { uni.removeStorageSync('tp_active_timers'); uni.removeStorageSync('tp_active_timer') } catch {}
+    } else {
+      _persistTimers()
     }
 
     return log
@@ -227,9 +247,21 @@ export const useRecordsStore = defineStore('records', () => {
         timerHandle: null as any, // 不再使用独立 interval handle
       },
     }
-    // 持久化计时器状态，防止 App 被杀后丢失
-    try { uni.setStorageSync('tp_active_timer', JSON.stringify({ babyId, type, startedAt: Date.now() })) } catch {}
+    // 🔧 持久化所有活跃计时器（不只是最后一个）
+    _persistTimers()
     selectedBabyId.value = babyId
+  }
+
+  /** 持久化所有活跃计时器到 storage */
+  function _persistTimers() {
+    try {
+      const active = Object.values(_timers.value).map(t => ({
+        babyId: t.babyId, type: t.type, startedAt: t.startedAt,
+      }))
+      if (active.length > 0) {
+        uni.setStorageSync('tp_active_timers', JSON.stringify(active))
+      }
+    } catch {}
   }
 
   /** 停止计时器并保存记录。不传 babyId 则停止全部 */
@@ -245,6 +277,17 @@ export const useRecordsStore = defineStore('records', () => {
       if (log) lastLog = log
     }
     return lastLog
+  }
+
+  /** 撤销最近一条记录（30秒内可撤销） */
+  function undoLastLog(): RecordLog | null {
+    if (logs.value.length === 0) return null
+    const last = logs.value[logs.value.length - 1]
+    const elapsed = Date.now() - last.createdAt
+    if (elapsed > 30000) return null // 超过30秒不可撤销
+    logs.value = logs.value.slice(0, -1)
+    _saveLogs()
+    return last
   }
 
   /** 快速记录（无计时），支持回溯时间偏移 */
@@ -331,7 +374,7 @@ export const useRecordsStore = defineStore('records', () => {
     _timers, logs, selectedBabyId,
     isRunning, runningTimer, runningTimers, recentLogsByBaby,
     isBabyRunning, getTimer,
-    startTimer, stopTimer, quickLog,
+    startTimer, stopTimer, quickLog, undoLastLog,
     cosmicInsight, twinSyncRate, streakDays,
   }
 })

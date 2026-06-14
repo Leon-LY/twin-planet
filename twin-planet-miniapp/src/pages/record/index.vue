@@ -66,6 +66,11 @@
         </view>
       </view>
 
+      <!-- 撤销提示 -->
+      <view class="undo-bar" v-if="showUndo" @click="doUndo">
+        <text>↩ 撤销刚才的记录</text>
+      </view>
+
       <view class="retro-note">
         <text class="retro-dash">--</text>
         <text class="retro-label">刚才忘了？</text>
@@ -147,6 +152,11 @@ const stickerShow=ref(false);const stickerEmoji=ref('⭐')
 let stickerTimer:ReturnType<typeof setTimeout>|null=null
 function popSticker(emoji:string){if(stickerTimer)clearTimeout(stickerTimer);stickerEmoji.value=emoji;stickerShow.value=true;stickerTimer=setTimeout(()=>{stickerShow.value=false},750)}
 
+// 撤销：最近30秒内的记录可撤销
+const showUndo=ref(false);let undoTimer:ReturnType<typeof setTimeout>|null=null
+function showUndoBar(){showUndo.value=true;if(undoTimer)clearTimeout(undoTimer);undoTimer=setTimeout(()=>{showUndo.value=false},30000)}
+function doUndo(){const log=recordsStore.undoLastLog();if(log){showUndo.value=false;uni.showToast({title:'已撤销',icon:'success',duration:1000})}}
+
 // 🔧 tick 由 recordsStore._tick 全局管理，页面不再维护独立 interval
 watch(()=>recordsStore.isRunning,r=>{if(r){haptic.heartbeatStart()}else{haptic.heartbeatStop()}},{immediate:true})
 onUnmounted(()=>{haptic.heartbeatStop();if(stickerTimer)clearTimeout(stickerTimer)})
@@ -158,11 +168,11 @@ const elapsedRef=computed(()=>runningElapsed.value)
 const {label:poeticLabel}=usePoeticTime(elapsedRef,timerType)
 
 function getName(id:string){return twins.value.find(b=>b.id===id)?.nickname||''}
-function doAction(t:RecordType){const id=sel.value||twins.value[0]?.id;if(!id)return;if(t==='feeding'||t==='sleep'){recordsStore.startTimer(id,t);haptic.thump();popSticker(t==='feeding'?'🍼':'😴')}else{recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();const m:Record<string,string>={diaper:'🧷',temperature:'🌡️',medicine:'💊',bath:'🛁'};popSticker(m[t]||'⭐')}}
-function quickNight(){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,'feeding');haptic.sparkle();syncStickers();popSticker('🌙')}
-function dualLog(t:RecordType){const a=twins.value[0],b=twins.value[1];if(a)recordsStore.quickLog(a.id,t);if(b)recordsStore.quickLog(b.id,t);haptic.doubleBeat();syncStickers();popSticker('🔗')}
+function doAction(t:RecordType){const id=sel.value||twins.value[0]?.id;if(!id)return;if(t==='feeding'||t==='sleep'){recordsStore.startTimer(id,t);haptic.thump();popSticker(t==='feeding'?'🍼':'😴')}else{recordsStore.quickLog(id,t);haptic.sparkle();syncStickers();showUndoBar();const m:Record<string,string>={diaper:'🧷',temperature:'🌡️',medicine:'💊',bath:'🛁'};popSticker(m[t]||'⭐')}}
+function quickNight(){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,'feeding');haptic.sparkle();syncStickers();showUndoBar();popSticker('🌙')}
+function dualLog(t:RecordType){const a=twins.value[0],b=twins.value[1];if(a)recordsStore.quickLog(a.id,t);if(b)recordsStore.quickLog(b.id,t);haptic.doubleBeat();syncStickers();showUndoBar();popSticker('🔗')}
 const retroType=ref<RecordType>('feeding')
-function retro(m:number){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,retroType.value,undefined,m*60000);haptic.sparkle();syncStickers();popSticker('⏰')}
+function retro(m:number){const id=sel.value||twins.value[0]?.id;if(!id)return;recordsStore.quickLog(id,retroType.value,undefined,m*60000);haptic.sparkle();syncStickers();showUndoBar();popSticker('⏰')}
 	const todayStart=computed(()=>new Date().setHours(0,0,0,0))
 	const recentLogs=computed(()=>{const t0=todayStart.value;return recordsStore.logs.filter(l=>l.createdAt>=t0).sort((a,b)=>b.createdAt-a.createdAt)})
 	onMounted(()=>{uni.setNavigationBarTitle({title:"记录"});if(twins.value[0])sel.value=twins.value[0].id})
@@ -189,6 +199,8 @@ tonShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id})
 .dual-row{display:flex;gap:10rpx;margin-bottom:20rpx;position:relative;z-index:1;align-items:center}.dual-chip{flex:1;text-align:center;padding:14rpx 8rpx;background:var(--cream);border:1.5px solid var(--dot);border-radius:24rpx;font-size:22rpx;color:var(--ink-md);font-weight:600;transition:transform .15s var(--ease-bounce)}.dual-chip:active{transform:scale(.93);border-color:var(--amber);color:var(--amber)}.dual-primary{padding:18rpx 12rpx;font-size:26rpx;background:var(--amber-lt);border-color:var(--amber);color:var(--amber)}.dual-chip:not(.dual-primary){font-size:20rpx}
 
 .night-quick{text-align:center;margin-bottom:16rpx;position:relative;z-index:1}.night-btn{display:inline-block;padding:20rpx 40rpx;background:linear-gradient(135deg,rgba(45,35,24,0.03),rgba(45,35,24,0.06));border:2rpx solid var(--dot);border-radius:28rpx;font-size:26rpx;color:var(--ink-md)}.night-btn:active{background:var(--amber-lt);border-color:var(--amber)}.night-sub{display:block;font-size:20rpx;color:var(--ink-lt);margin-top:4rpx}
+
+.undo-bar{text-align:center;padding:16rpx;margin-bottom:12rpx;position:relative;z-index:1;font-size:26rpx;color:var(--mint);font-weight:600}.undo-bar:active{opacity:.7}
 
 .retro-note{display:flex;align-items:center;gap:10rpx;flex-wrap:wrap;justify-content:center;position:relative;z-index:1;padding:8rpx 0}.retro-dash{color:var(--ink-lt);font-size:20rpx;opacity:.5}.retro-label{font-size:22rpx;color:var(--ink-lt)}.retro-type-row{display:flex;gap:6rpx}.retro-type-dot{width:44rpx;height:44rpx;display:flex;align-items:center;justify-content:center;font-size:24rpx;border-radius:50%;background:var(--cream);border:1.5px solid var(--dot);transition:border-color .2s,background .2s}.retro-type-dot:active{transform:scale(.85)}.retro-type-dot.on{border-color:var(--amber);background:var(--amber-lt)}.retro-times{display:flex;gap:6rpx}.retro-min{padding:6rpx 14rpx;font-size:20rpx;color:var(--ink-lt);background:var(--cream);border:1px solid var(--dot);border-radius:16rpx;transition:transform .15s var(--ease-bounce)}.retro-min:active{transform:scale(.9);border-color:var(--amber)}
 
