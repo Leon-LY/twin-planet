@@ -142,8 +142,8 @@ page {
   --space-lg:60rpx;
 }
 /* 奶奶模式 — 禁用动画 */
-.font-large .bg-spot { animation: none !important; }
-.font-large .page-enter { animation: none !important; }
+
+
 
 
 /* 奶奶模式高对比度 */

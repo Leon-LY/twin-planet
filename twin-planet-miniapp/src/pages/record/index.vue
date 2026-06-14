@@ -4,8 +4,37 @@
     <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
     <view v-if="stickerShow" class="sticker-pop"><text class="sticker-pop-emoji">{{ stickerEmoji }}</text></view>
 
-    <!-- IDLE -->
-    <template v-if="!recordsStore.isRunning">
+    <!-- IDLE: 奶奶模式 — 极简3按钮 -->
+    <template v-if="!recordsStore.isRunning && isGrandma">
+      <view class="granny-record">
+        <text class="granny-record-title">记录 {{ selBabyName || '宝宝' }}</text>
+        <view class="granny-baby-switch" v-if="twins.length >= 2">
+          <view class="granny-switch-btn" :class="{ on: sel===twins[0]?.id }" @click="sel=twins[0]?.id">
+            {{ twins[0]?.nickname || '大宝' }}
+          </view>
+          <view class="granny-switch-btn" :class="{ on: sel===twins[1]?.id }" @click="sel=twins[1]?.id">
+            {{ twins[1]?.nickname || '二宝' }}
+          </view>
+        </view>
+        <view class="granny-actions">
+          <view class="granny-record-btn" @click="doAction('feeding')">
+            <text class="granny-btn-emoji">🍼</text>
+            <text class="granny-btn-label">吃奶了</text>
+          </view>
+          <view class="granny-record-btn" @click="doAction('sleep')">
+            <text class="granny-btn-emoji">😴</text>
+            <text class="granny-btn-label">睡觉了</text>
+          </view>
+          <view class="granny-record-btn" @click="doAction('diaper')">
+            <text class="granny-btn-emoji">🧷</text>
+            <text class="granny-btn-label">换尿布</text>
+          </view>
+        </view>
+      </view>
+    </template>
+
+    <!-- IDLE: 标准模式 -->
+    <template v-if="!recordsStore.isRunning && !isGrandma">
       <view class="baby-tabs">
         <view class="baby-tab" v-for="(t,i) in twins" :key="t.id"
           :class="{ active: sel===t.id, 'tab-a':i===0, 'tab-b':i===1 }" @click="sel=t.id">
@@ -99,13 +128,16 @@ import {onShow} from '@dcloudio/uni-app'
 import { onShareAppMessage } from '@dcloudio/uni-app'
 import {useBabiesStore} from '@/stores/babies'
 import {useRecordsStore,type RecordType} from '@/stores/records'
+import {useUserStore} from '@/stores/user'
 import {timeAgo, formatElapsed} from '@/utils/format'
 import {useHaptic} from '@/composables/useHaptic'
 import {usePoeticTime} from '@/composables/usePoeticTime'
 import {useStickersStore} from '@/stores/stickers'
 import {useStickerSync} from '@/composables/useStickerSync'
-const babiesStore=useBabiesStore();const recordsStore=useRecordsStore();const stickersStore=useStickersStore();const {syncStickers}=useStickerSync();const sel=ref('')
-const twins=computed(()=>[babiesStore.babyA,babiesStore.babyB].filter(Boolean))
+const babiesStore=useBabiesStore();const recordsStore=useRecordsStore();const stickersStore=useStickersStore();const userStore=useUserStore();const {syncStickers}=useStickerSync();const sel=ref('')
+// 奶奶模式
+const isGrandma=computed(()=>userStore.isGrandmaMode)
+const selBabyName=computed(()=>{const id=sel.value;const b=twins.value.find(t=>t.id===id);return b?.nickname||b?.name||''})
 const actions=[{type:'feeding',emoji:'🍼',label:'喂奶'},{type:'sleep',emoji:'😴',label:'睡觉'},{type:'diaper',emoji:'🧷',label:'尿布'},{type:'temperature',emoji:'🌡️',label:'体温'},{type:'medicine',emoji:'💊',label:'用药'},{type:'bath',emoji:'🛁',label:'洗澡'}]
 const retroActions=actions.slice(0,4)
 const haptic=useHaptic()
@@ -115,10 +147,10 @@ const stickerShow=ref(false);const stickerEmoji=ref('⭐')
 let stickerTimer:ReturnType<typeof setTimeout>|null=null
 function popSticker(emoji:string){if(stickerTimer)clearTimeout(stickerTimer);stickerEmoji.value=emoji;stickerShow.value=true;stickerTimer=setTimeout(()=>{stickerShow.value=false},750)}
 
-const tick=ref(0);let h:ReturnType<typeof setInterval>|null=null
-watch(()=>recordsStore.isRunning,r=>{if(r){haptic.heartbeatStart();h=setInterval(()=>tick.value++,1000)}else{haptic.heartbeatStop();if(h){clearInterval(h);h=null}}},{immediate:true})
-onUnmounted(()=>{if(h)clearInterval(h);haptic.heartbeatStop();if(stickerTimer)clearTimeout(stickerTimer)})
-const runningElapsed=computed(()=>{tick.value;return recordsStore.runningTimer?.elapsed??0})
+// 🔧 tick 由 recordsStore._tick 全局管理，页面不再维护独立 interval
+watch(()=>recordsStore.isRunning,r=>{if(r){haptic.heartbeatStart()}else{haptic.heartbeatStop()}},{immediate:true})
+onUnmounted(()=>{haptic.heartbeatStop();if(stickerTimer)clearTimeout(stickerTimer)})
+const runningElapsed=computed(()=>recordsStore.runningTimer?.elapsed??0)
 const runningName=computed(()=>{const t=recordsStore.runningTimer;return t?getName(t.babyId):''})
 const runningTwin=computed(()=>(recordsStore.runningTimer?.babyId===twins.value[0]?.id?'a':'b')as'a'|'b')
 const timerType=computed(()=>recordsStore.runningTimer?.type as 'feeding'|'sleep'|undefined)
@@ -165,4 +197,74 @@ tonShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id})
 .dual-zone{display:flex;gap:12rpx;margin-bottom:12rpx;position:relative;z-index:1}.dual-card{flex:1;display:flex;flex-direction:column;align-items:center;gap:10rpx;padding:20rpx 8rpx;border-radius:24rpx}.dual-card.dc-a{background:var(--amber-lt);border:2rpx solid rgba(224,123,62,.1)}.dual-card.dc-b{background:var(--rose-lt);border:2rpx solid rgba(212,128,104,.1)}.dc-face{width:96rpx;height:96rpx;border-radius:50%;display:flex;align-items:center;justify-content:center}.dc-face.bg-a{background:var(--amber-md)}.dc-face.bg-b{background:var(--rose-md)}.dc-emoji{font-size:48rpx;animation:faceRock 3s ease-in-out infinite}.dc-name{font-family:var(--font-journal);font-size:24rpx;font-weight:700;color:var(--ink)}.dc-time{font-family:var(--font-journal);font-size:36rpx;color:var(--ink);letter-spacing:2rpx}.dc-stop{padding:6rpx 20rpx;border-radius:16rpx;border:1.5px solid var(--twin-danger);font-size:20rpx;color:var(--twin-danger)}.dc-stop:active{background:rgba(212,112,107,.06)}.stop-all{width:100%;padding:16rpx;background:transparent;border:2rpx solid var(--twin-danger);border-radius:24rpx;font-size:28rpx;font-weight:600;color:var(--twin-danger);position:relative;z-index:1}
 
 .timeline{padding-top:16rpx;position:relative;z-index:1}.tl-section{display:block;font-family:var(--font-journal);font-size:22rpx;color:var(--ink-lt);font-weight:600;margin-bottom:10rpx;padding-left:2rpx}.tl-item{display:flex;align-items:center;gap:12rpx;padding:10rpx 0}.tl-dot{width:7rpx;height:7rpx;border-radius:50%;flex-shrink:0}.tl-text{flex:1;font-size:26rpx;color:var(--ink)}.tl-when{flex-shrink:0;font-size:20rpx;color:var(--ink-lt)}
+
+/* 奶奶模式 — 极简3按钮 */
+.granny-record {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60rpx 0;
+  position: relative;
+  z-index: 1;
+}
+.granny-record-title {
+  font-family: var(--font-journal);
+  font-size: 56rpx;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 32rpx;
+}
+.granny-baby-switch {
+  display: flex;
+  gap: 24rpx;
+  margin-bottom: 64rpx;
+}
+.granny-switch-btn {
+  padding: 24rpx 48rpx;
+  border-radius: var(--radius-md);
+  font-size: 40rpx;
+  font-weight: 700;
+  background: var(--cream);
+  color: var(--ink-md);
+  border: 4rpx solid var(--dot);
+  transition: all .2s;
+}
+.granny-switch-btn.on {
+  border-color: var(--amber);
+  color: var(--amber);
+  background: var(--amber-lt);
+}
+.granny-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 56rpx;
+  width: 100%;
+  max-width: 560rpx;
+}
+.granny-record-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  padding: 56rpx 0;
+  background: var(--cream);
+  border: 4rpx solid var(--dot);
+  border-radius: var(--radius-lg);
+  transition: transform .15s;
+}
+.granny-record-btn:active {
+  transform: scale(.95);
+  border-color: var(--amber);
+  background: var(--amber-lt);
+}
+.granny-btn-emoji {
+  font-size: 96rpx;
+}
+.granny-btn-label {
+  font-family: var(--font-journal);
+  font-size: 48rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
 </style>
