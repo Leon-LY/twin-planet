@@ -150,6 +150,7 @@ import { useRecordsStore } from '@/stores/records'
 import { useAlertsStore } from '@/stores/alerts'
 import { useStickersStore } from '@/stores/stickers'
 import { getDiscoverFeatures } from '@/config/roles'
+import { saveExportData } from '@/utils/syncService'
 import TwinSkeleton from '@/components/twin-skeleton/twin-skeleton.vue'
 import LightBridge from '@/components/cosmic/LightBridge.vue'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
@@ -229,8 +230,9 @@ const navigate=(url:string)=>uni.navigateTo({url})
 const goRecord=()=>navigate('/pages/record/index')
 const goGrowth=()=>navigate('/pages/growth/index')
 const goSnapshot=()=>navigate('/pages/snapshot/index')
-const goMore=()=>{const features=getDiscoverFeatures(userStore.profile?.role);if(features.length<=6){uni.showActionSheet({itemList:features.map(f=>f.label),success:(res)=>{if(features[res.tapIndex])uni.navigateTo({url:features[res.tapIndex].path})}})}else{const labels=features.map(f=>f.label);labels.push('取消');uni.showActionSheet({itemList:labels.slice(0,6),success:(res)=>{if(res.tapIndex<5&&features[res.tapIndex])uni.navigateTo({url:features[res.tapIndex].path});if(res.tapIndex===5){const rest=features.slice(5);const rl=rest.map(f=>f.label);rl.push('取消');uni.showActionSheet({itemList:rl,success:(r)=>{if(r.tapIndex<rest.length)uni.navigateTo({url:rest[r.tapIndex].path})}})}}})}}
+const goMore=()=>{const features=getDiscoverFeatures(userStore.profile?.role);const labels=features.map(f=>f.label);labels.push('📤 导出数据备份');labels.push('取消');uni.showActionSheet({itemList:labels,success:(res)=>{const idx=res.tapIndex;if(idx<features.length){uni.navigateTo({url:features[idx].path})}else if(idx===features.length){goExport()}}})}
 const goHelp=()=>{uni.showModal({title:'打电话给妈妈？',content:'将直接拨打妈妈的电话',confirmText:'打电话',cancelText:'不用了',success:(res)=>{if(res.confirm){uni.makePhoneCall({phoneNumber:userStore.profile?.phone||''})}}})}
+const goExport=async()=>{try{const path=await saveExportData();uni.showModal({title:'数据已导出',content:`文件已保存，可通过微信发送到新手机导入。\n路径：${path}`,confirmText:'知道了',showCancel:false})}catch{uni.showToast({title:'导出失败，请重试',icon:'none'})}}
 const switchRole=()=>{const roles=['👩 妈妈','👨 爸爸','👵 奶奶','👴 爷爷','👩‍🍼 育儿嫂','📝 重新创建家庭','🚪 退出登录'];uni.showActionSheet({itemList:roles,success:(res)=>{if(res.tapIndex===5){uni.reLaunch({url:'/pages/onboarding/family'})}else if(res.tapIndex===6){userStore.logout();uni.reLaunch({url:'/pages/login/index'})}else{const r=['mom','dad','grandma','grandpa','nanny'][res.tapIndex];userStore.setRole(r);uni.showToast({title:`已切换为${roles[res.tapIndex]}模式`,icon:'success',duration:1500})}}})}
 </script>
 
