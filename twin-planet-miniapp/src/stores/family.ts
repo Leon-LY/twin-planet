@@ -13,6 +13,18 @@ export interface TwinGroup {
   createdAt: string
 }
 
+/** 获取当前用户 ID */
+function getUserId(): string {
+  try {
+    const raw = uni.getStorageSync('tp_user')
+    if (raw) {
+      const profile = JSON.parse(raw)
+      if (profile.id) return profile.id
+    }
+  } catch {}
+  return 'local-' + Date.now()
+}
+
 export const useFamilyStore = defineStore('family', () => {
   const _p = createPersistence<TwinGroup>(PERSIST_KEYS.family)
 
@@ -29,7 +41,7 @@ export const useFamilyStore = defineStore('family', () => {
   function createGroup(name: string) {
     currentGroup.value = {
       id: `group-${Date.now()}`,
-      userId: 'mock-user-001',
+      userId: getUserId(),
       name,
       babyIds: [],
       createdAt: new Date().toISOString(),
