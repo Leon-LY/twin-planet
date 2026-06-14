@@ -55,6 +55,10 @@
       >
         下一步 · 添加宝宝
       </button>
+      <!-- 🆕 加入已有家庭 -->
+      <view class="join-family-hint" @click="checkInviteForJoin">
+        <text>已有家庭？通过邀请加入 →</text>
+      </view>
     </view>
   </view>
 </template>
@@ -63,12 +67,43 @@
 import { ref, computed, onMounted } from 'vue'
 import { useFamilyStore } from '@/stores/family'
 import { useUserStore, type UserProfile } from '@/stores/user'
+import { joinFamily } from '@/api/family'
 
 const familyStore = useFamilyStore()
 const userStore = useUserStore()
 
 const familyName = ref('')
 const selectedRole = ref<UserProfile['role']>('mom')
+
+// 检查是否有邀请令牌（从分享链接打开时）
+function checkInviteForJoin() {
+  try {
+    const app = getApp()
+    const token = app?.globalData?.__inviteToken
+    if (token) {
+      uni.showModal({
+        title: '发现家庭邀请',
+        content: '检测到邀请链接，是否加入家庭？加入后可直接查看双宝记录。',
+        confirmText: '加入家庭',
+        cancelText: '创建新家庭',
+        success: async (res) => {
+          if (res.confirm) {
+            const result = await joinFamily(token)
+            if (result.success) {
+              familyStore.currentGroup = { id: result.data?.familyId || '', userId: '', name: '', babyIds: [], createdAt: '' }
+              uni.showToast({ title: '成功加入家庭！', icon: 'success' })
+              uni.navigateTo({ url: '/pages/onboarding/babies' })
+            } else {
+              uni.showToast({ title: result.error?.message || '邀请已过期', icon: 'none' })
+            }
+          }
+        }
+      })
+    } else {
+      uni.showToast({ title: '请让家人通过「邀请另一半」分享链接给你', icon: 'none', duration: 2500 })
+    }
+  } catch {}
+}
 
 const roles = [
   { value: 'mom' as const, icon: '👩‍👧‍👦', label: '妈妈' },
@@ -159,4 +194,6 @@ onMounted(() => {
   font-size: 36rpx; font-weight: 600;
 }
 .btn-primary[disabled] { background: var(--twin-text-muted); }
+.join-family-hint { text-align:center; margin-top:24rpx; padding:12rpx 0; }
+.join-family-hint text { font-size:26rpx; color:var(--amber); font-weight:500; }
 </style>

@@ -153,7 +153,7 @@
         <!-- 中央按钮 -->
         <view class="action-center reveal-5">
           <view class="btn-stage">
-            <view class="orbit-ring" />
+            <view class="orbit-ring" :class="{ pulsing: recordsStore.isRunning }" />
             <button class="main-btn" @click="goRecord">
               <text class="btn-icon">✋</text>
               <text class="btn-text">记一笔</text>
@@ -224,10 +224,34 @@
 
         <!-- 底部导航 — journal-style page tabs -->
         <view class="journal-nav">
-          <text class="jnav-item active">星球</text>
+          <text class="jnav-item active">手帐</text>
           <text class="jnav-item" @click="goGrowth">生长</text>
           <text class="jnav-item" @click="goSnapshot">快照</text>
-          <text class="jnav-item" @click="goMore">更多</text>
+          <text class="jnav-item" @click="showMoreSheet=true">更多</text>
+        </view>
+
+        <!-- 🆕 自定义「更多」底部弹出面板 (替代原生ActionSheet) -->
+        <view class="more-overlay" v-if="showMoreSheet" @click="showMoreSheet=false">
+          <view class="more-sheet" @click.stop>
+            <view class="more-handle" />
+            <text class="more-title">更多功能</text>
+            <view class="more-grid">
+              <view v-for="f in discoverFeatures" :key="f.path" class="more-item" @click="showMoreSheet=false;navigate(f.path)">
+                <text class="more-item-icon">{{ f.icon }}</text>
+                <text class="more-item-label">{{ f.label }}</text>
+              </view>
+            </view>
+            <view class="more-divider" />
+            <view class="more-actions">
+              <view class="more-action" @click="showMoreSheet=false;goExport()">
+                <text>📤 导出数据备份</text>
+              </view>
+              <view class="more-action" @click="showMoreSheet=false;navigate('/pages/privacy/index')">
+                <text>🔒 隐私政策</text>
+              </view>
+            </view>
+            <view class="more-cancel" @click="showMoreSheet=false">取消</view>
+          </view>
         </view>
       </view>
     </template>
@@ -425,7 +449,19 @@ const navigate=(url:string)=>uni.navigateTo({url})
 const goRecord=()=>navigate('/pages/record/index')
 const goGrowth=()=>navigate('/pages/growth/index')
 const goSnapshot=()=>navigate('/pages/snapshot/index')
-const goMore=()=>{const features=getDiscoverFeatures(userStore.profile?.role);const labels=features.map(f=>f.label);labels.push('📤 导出数据备份');labels.push('取消');uni.showActionSheet({itemList:labels,success:(res)=>{const idx=res.tapIndex;if(idx<features.length){uni.navigateTo({url:features[idx].path})}else if(idx===features.length){goExport()}}})}
+const showMoreSheet=ref(false)
+
+// 发现页功能列表（带图标）
+const FEATURE_ICONS: Record<string, string> = {
+  sprout:'🌱', contribution:'⭐', duty:'🦸', guardian:'🔋',
+  handover:'🎙️', stickers:'🏅', school:'🏫', milestones:'📊',
+}
+const discoverFeatures=computed(()=>{
+  return getDiscoverFeatures(userStore.profile?.role).map(f=>({
+    ...f, icon: FEATURE_ICONS[f.path.split('/').pop()||''] || '📋',
+  }))
+})
+
 const goHelp = () => {
   uni.showActionSheet({
     itemList: ['📞 打电话给妈妈','💬 发消息到家庭群','📋 查看使用说明'],
@@ -654,7 +690,9 @@ const switchRole = () => {
 /* 中央按钮 */
 .action-center{display:flex;align-items:center;justify-content:center;position:relative;z-index:1;margin-bottom:28rpx}
 .btn-stage{position:relative;width:420rpx;height:420rpx;display:flex;align-items:center;justify-content:center}
-.orbit-ring{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:50%;border:2rpx dashed var(--dot);opacity:.35}
+.orbit-ring{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:50%;border:2rpx dashed var(--dot);opacity:.35;transition:opacity .3s,border-color .3s}
+.orbit-ring.pulsing{border-color:var(--mint);opacity:.6;animation:orbitGlow 3s ease-in-out infinite}
+@keyframes orbitGlow{0%,100%{opacity:.35;border-color:var(--dot)}50%{opacity:.7;border-color:var(--mint)}}
 .main-btn{
   width:300rpx;height:300rpx;border-radius:50%;
   position:relative;z-index:2;
@@ -689,6 +727,51 @@ const switchRole = () => {
 .journal-nav{display:flex;justify-content:space-between;padding:20rpx 48rpx 0;border-top:1.5px solid var(--dot);position:relative;z-index:1}
 .jnav-item{font-family:var(--font-journal);font-size:26rpx;color:var(--ink-lt);letter-spacing:3rpx}
 .jnav-item.active{color:var(--amber);font-weight:700}
+
+/* 自定义「更多」底部弹出面板 */
+.more-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(45,35,24,.35);z-index:999;
+  display:flex;align-items:flex-end;justify-content:center;
+  animation:fadeIn .2s var(--ease-soft);
+}
+.more-sheet{
+  width:100%;max-width:750rpx;
+  background:var(--paper);
+  border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+  padding:0 32rpx calc(32rpx + env(safe-area-inset-bottom));
+  animation:slideUp .3s var(--ease-soft);
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.more-handle{
+  width:64rpx;height:8rpx;border-radius:4rpx;
+  background:var(--dot);margin:16rpx auto 24rpx;
+}
+.more-title{
+  display:block;font-family:var(--font-journal);font-size:var(--font-card);
+  color:var(--ink);font-weight:700;text-align:center;margin-bottom:28rpx;
+}
+.more-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:16rpx;
+  margin-bottom:20rpx;
+}
+.more-item{
+  display:flex;flex-direction:column;align-items:center;gap:8rpx;
+  padding:24rpx 8rpx;background:var(--cream);border-radius:var(--radius-sm);
+  border:2rpx solid var(--dot);
+}
+.more-item:active{background:var(--amber-lt);border-color:var(--amber)}
+.more-item-icon{font-size:40rpx}
+.more-item-label{font-size:22rpx;color:var(--ink);font-weight:600}
+.more-divider{height:2rpx;background:var(--dot);margin:12rpx 0}
+.more-actions{display:flex;flex-direction:column;gap:4rpx}
+.more-action{padding:20rpx 16rpx;font-size:26rpx;color:var(--ink-md)}
+.more-action:active{color:var(--amber)}
+.more-cancel{
+  text-align:center;padding:24rpx 0 8rpx;
+  font-size:28rpx;color:var(--ink-lt);font-weight:600;
+}
+.more-cancel:active{color:var(--ink)}
 .footer-tools{display:flex;flex-direction:column;align-items:center;gap:12rpx;margin-bottom:12rpx;position:relative;z-index:1}
 .ft-invite{
   width:100%;max-width:560rpx;padding:16rpx 0;

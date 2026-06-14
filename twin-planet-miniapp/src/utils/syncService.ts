@@ -25,17 +25,29 @@ function saveSyncState(state: SyncState) {
   uni.setStorageSync(SYNC_STATE_KEY, JSON.stringify(state))
 }
 
+/** 带指数退避的通用重试包装 */
+async function withRetry<T>(fn: () => Promise<T>, maxRetries = 2): Promise<T> {
+  for (let i = 0; i <= maxRetries; i++) {
+    try {
+      return await fn()
+    } catch (err) {
+      if (i === maxRetries) throw err
+      await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000)) // 1s, 2s, 4s
+    }
+  }
+  throw new Error('unreachable')
+}
+
 /** 同步喂养/睡眠等日常记录 */
 export async function syncRecords(records: any[]): Promise<number> {
   const token = getToken()
   if (!token || records.length === 0) return 0
 
   try {
-    const res = await request<{ synced: number }>('/records/batch', {
+    const res = await withRetry(() => request<{ synced: number }>('/records/batch', {
       method: 'POST', data: { records },
-    })
+    }))
     if (res.success && res.data) {
-      // 🔧 推送成功后更新同步状态
       const state = getSyncState()
       state.lastSyncAt = Date.now()
       if (records.length > 0) {
