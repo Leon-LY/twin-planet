@@ -63,7 +63,7 @@ export function drawClinicCard(
     ctx.setFillStyle('#FFFFFF')
     ctx.setFontSize(22)
     ctx.setTextAlign('center')
-    ctx.fillText('双宝星球 · 就诊速查卡', W / 2, 48)
+    ctx.fillText('双宝记 · 就诊速查卡', W / 2, 48)
 
     // 副标题
     ctx.setFontSize(12)
@@ -146,7 +146,7 @@ export function drawClinicCard(
     y += 28
     ctx.setFillStyle(C.inkMd)
     ctx.setFontSize(10)
-    ctx.fillText('双宝星球 · 中国首款双胞胎育儿伴侣', W / 2, y)
+    ctx.fillText('双宝记', W / 2, y)
 
     // 底部色条
     ctx.setFillStyle(C.a)

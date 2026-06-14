@@ -1,4 +1,4 @@
-<!-- 双宝星球 · 吉祥物 — 使用手绘级 PNG 素材 -->
+<!-- 双宝记 · 吉祥物 — 使用手绘级 PNG 素材 -->
 <template>
   <view class="mascot-wrap" :class="[`size-${size}`, { linked: linked }]">
     <!-- 大宝 -->

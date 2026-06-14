@@ -8,8 +8,8 @@ export function createApp() {
 
   // 全局错误边界
   app.config.errorHandler = (err, _vm, info) => {
-    console.error('[双宝星球] 全局错误:', err)
-    console.error('[双宝星球] 错误信息:', info)
+    console.error('[双宝记] 全局错误:', err)
+    console.error('[双宝记] 错误信息:', info)
   }
 
   return { app }

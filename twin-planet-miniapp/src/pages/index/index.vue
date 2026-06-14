@@ -1,4 +1,4 @@
-<!-- 双宝星球 v5 · Editorial Journal -->
+<!-- 双宝记 v5 · Editorial Journal -->
 <template>
   <view :class="[themeClass, { 'font-large': isGrandma }]">
     <template v-if="loading">
@@ -7,7 +7,7 @@
 
     <template v-else-if="isGrandma">
       <view class="page-shell granny-shell">
-        <text class="heading-xl" style="text-align:center;display:block;margin-bottom:8rpx">双宝星球</text>
+        <text class="heading-xl" style="text-align:center;display:block;margin-bottom:8rpx">双宝记</text>
         <text class="body-text" style="text-align:center;display:block;margin-bottom:64rpx">{{ greeting }}</text>
         <view class="granny-actions">
           <view class="granny-btn" @click="goRecord"><text class="granny-emoji">✋</text><text class="granny-label">记一笔</text></view>

@@ -82,7 +82,7 @@ onMounted(() => {
 })
 
 onShareAppMessage(() => ({
-  title: '🪐 双宝星球 · 我的贴纸收集册',
+  title: '🪐 双宝记 · 我的贴纸收集册',
   path: '/pages/index/index',
   imageUrl: '/static/share-brand.png',
 }))
