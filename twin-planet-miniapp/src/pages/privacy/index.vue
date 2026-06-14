@@ -56,7 +56,7 @@ async function handleExport() {
         const path = await saveExportData()
         uni.showToast({ title: '已导出到：' + path, icon: 'success', duration: 2000 })
       } catch {
-        uni.showToast({ title: '导出失败，请重试', icon: 'none' })
+        uni.showToast({ title: '导出遇到问题，稍后再试吧', icon: 'none' })
       }
     }
   })
@@ -75,7 +75,7 @@ function handleDelete() {
           uni.reLaunch({ url: '/pages/index/index' })
         }, 1000)
       } catch {
-        uni.showToast({ title: '清除失败，请重试', icon: 'none' })
+        uni.showToast({ title: '清除遇到问题，稍后再试吧', icon: 'none' })
       }
     }
   })

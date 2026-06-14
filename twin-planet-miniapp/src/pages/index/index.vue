@@ -358,7 +358,7 @@ const goExport = async () => {
       showCancel: false
     })
   } catch {
-    uni.showToast({ title: '导出失败，请重试', icon: 'none' })
+    uni.showToast({ title: '导出遇到问题，稍后再试吧', icon: 'none' })
   }
 }
 const switchRole = () => {

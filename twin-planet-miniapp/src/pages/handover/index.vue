@@ -48,7 +48,7 @@
 
     <view class="empty-state" v-else>
       <text class="empty-emoji">📻</text>
-      <text class="empty-title">还没有交接记录</text>
+      <text class="empty-title">等待第一段语音</text>
       <text class="empty-desc">录一段话留给换班的家人吧</text>
     </view>
   </view>

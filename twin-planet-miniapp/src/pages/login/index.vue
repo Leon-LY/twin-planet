@@ -43,7 +43,7 @@ async function doLogin() {
     await userStore.loginByWechat()
     navigateNext()
   } catch {
-    uni.showToast({ title: '登录失败，请重试', icon: 'none' })
+    uni.showToast({ title: '登录遇到问题，检查网络后再试试吧', icon: 'none' })
   } finally {
     loading.value = false
   }

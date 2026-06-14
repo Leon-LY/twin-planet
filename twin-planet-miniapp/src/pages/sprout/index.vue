@@ -75,7 +75,7 @@
     <!-- 空状态 -->
     <view class="empty-state" v-else>
       <text class="empty-emoji">📖</text>
-      <text class="empty-title">还没有萌芽日记</text>
+      <text class="empty-title">等待第一颗小萌芽</text>
       <text class="empty-desc">记录双胞胎之间的互动瞬间：第一次分享、争抢玩具、互相模仿...</text>
     </view>
   </view>
