@@ -18,6 +18,61 @@
       </view>
     </template>
 
+    <!-- 爸爸模式：战术面板 — 清单优先、数据驱动、无装饰 -->
+    <template v-else-if="isDad && !loading">
+      <view class="page-shell dad-shell">
+        <view class="dad-header">
+          <view class="masthead-left">
+            <text class="date-line">{{ dateStr }}</text>
+            <text class="dad-greeting">{{ greeting }} · {{ greetLine2 }}</text>
+          </view>
+          <view class="masthead-right">
+            <view class="streak-stamp" v-if="streakDays > 0"><text>连续 {{ streakDays }} 天</text></view>
+          </view>
+        </view>
+        <view class="twins dad-twins">
+          <view class="twin-card card-a" @click="goRecord">
+            <view class="card-surface">
+              <view class="avatar-ring" :class="{ pulsing: isRunningA }"><text class="avatar-emoji">{{ isRunningA ? '😋' : '😛' }}</text></view>
+              <text class="twin-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
+              <view class="twin-status-row">
+                <text v-if="isRunningA" class="status-live">计时中</text>
+                <text v-else-if="babyStatus(babyA)" :class="['status-recent', babyUrgency(babyA)==='urgent'?'status-urgent':babyUrgency(babyA)==='warn'?'status-warn':'']">{{ babyStatus(babyA) }}</text>
+                <text v-else class="status-tap">轻触记录</text>
+              </view>
+            </view>
+          </view>
+          <view class="twin-card card-b" @click="goRecord">
+            <view class="card-surface">
+              <view class="avatar-ring" :class="{ pulsing: isRunningB }"><text class="avatar-emoji">{{ isRunningB ? '😴' : '😪' }}</text></view>
+              <text class="twin-name">{{ babyB?.nickname || babyB?.name || '二宝' }}</text>
+              <view class="twin-status-row">
+                <text v-if="isRunningB" class="status-live">计时中</text>
+                <text v-else-if="babyStatus(babyB)" :class="['status-recent', babyUrgency(babyB)==='urgent'?'status-urgent':babyUrgency(babyB)==='warn'?'status-warn':'']">{{ babyStatus(babyB) }}</text>
+                <text v-else class="status-tap">轻触记录</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        <view class="dad-snapshot" v-if="todaySummary"><text class="ds-text">{{ todaySummary }}</text></view>
+        <view class="dad-actions">
+          <button class="dad-duty-btn" @click="navigate('/pages/duty/index')">
+            <text class="dd-icon">📋</text><text class="dd-label">值班清单</text>
+          </button>
+        </view>
+        <view class="quick-bar" v-if="babyA && babyB">
+          <view class="q-chip q-primary" @click="dualRecord('feeding')">🍼 都喂了</view>
+          <view class="q-chip" @click="dualRecord('sleep')">😴 都睡了</view>
+          <view class="q-chip" @click="dualRecord('diaper')">🧷 都换了</view>
+        </view>
+        <view class="dad-footer">
+          <text class="ft-link" @click="goSnapshot">📸 查看快照</text>
+          <text class="ft-dot">·</text>
+          <text class="ft-link" @click="goGrowth">📊 生长曲线</text>
+        </view>
+      </view>
+    </template>
+
     <template v-else-if="!loading">
       <view class="page-shell journal">
         <!-- 暖色光斑 — 不对称位置 -->
@@ -373,6 +428,7 @@ function checkCelebrate() {
 }
 
 const isGrandma=computed(()=>userStore.isGrandmaMode)
+const isDad=computed(()=>userStore.isDad&&!userStore.isGrandmaMode)
 const babyA=computed(()=>babiesStore.babyA);const babyB=computed(()=>babiesStore.babyB)
 const streakDays=computed(()=>recordsStore.streakDays)
 const isRunningA=computed(()=>babyA.value?recordsStore.isBabyRunning(babyA.value.id):false)
@@ -805,6 +861,23 @@ const switchRole = () => {
 .role-dad .btn-icon{font-size:40rpx}
 .role-dad .btn-text{font-size:24rpx;letter-spacing:2rpx}
 .role-dad .twin-card.card-b{margin-left:0;margin-top:0}
+
+/* 爸爸战术面板 */
+.dad-shell{padding:32rpx 28rpx calc(64rpx + env(safe-area-inset-bottom))}
+.dad-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28rpx}
+.dad-greeting{display:block;font-family:var(--font-journal);font-size:36rpx;color:var(--ink);font-weight:700;margin-top:4rpx}
+.dad-twins{margin-bottom:16rpx}
+.dad-twins .card-surface{border-radius:20rpx;transform:none!important}
+.dad-twins .twin-card.card-b{margin-left:0;margin-top:0}
+.dad-snapshot{text-align:center;margin-bottom:20rpx;padding:16rpx;background:var(--cream);border-radius:var(--radius-sm);border:1.5px solid var(--dot)}
+.ds-text{font-family:var(--font-journal);font-size:24rpx;color:var(--ink-md)}
+.dad-actions{display:flex;justify-content:center;margin-bottom:20rpx}
+.dad-duty-btn{display:flex;align-items:center;gap:16rpx;padding:28rpx 64rpx;background:var(--amber);border:none;border-radius:20rpx;color:#FFF;font-family:var(--font-journal);box-shadow:0 8rpx 24rpx rgba(224,123,62,0.2)}
+.dad-duty-btn::after{border:none}
+.dad-duty-btn:active{transform:scale(.94)}
+.dd-icon{font-size:48rpx}
+.dd-label{font-size:36rpx;font-weight:700;letter-spacing:4rpx}
+.dad-footer{display:flex;justify-content:center;gap:16rpx;margin-top:28rpx}
 
 /* 奶奶模式增强 */
 .role-granny .bg-spot,.role-granny .bridge-wrap,.role-granny .action-center,
