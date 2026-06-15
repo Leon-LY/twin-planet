@@ -51,11 +51,6 @@
         "optimization" : {
             "subPackages" : true
         },
-        "permission": {
-            "scope.record": {
-                "desc": "用于录制交接班语音便签"
-            }
-        },
         "requiredPrivateInfos" : [],
         "__usePrivacyCheck__": true,
         "plugins" : {}
