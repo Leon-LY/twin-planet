@@ -2,8 +2,15 @@
   <view class="sprout-page page-enter">
     <!-- 头部 -->
     <view class="page-header">
-      <text class="page-icon">🌱</text>
-      <text class="page-title">萌芽日记</text>
+      <view class="header-top">
+        <view class="header-title-group">
+          <text class="page-icon">🌱</text>
+          <text class="page-title">萌芽日记</text>
+        </view>
+        <button class="btn-share" open-type="share">
+          <text>📤 分享</text>
+        </button>
+      </view>
       <text class="page-subtitle">记录两个宝宝之间的互动瞬间</text>
     </view>
 
@@ -82,6 +89,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { onShareAppMessage } from '@dcloudio/uni-app'
 import { useBabiesStore } from '@/stores/babies'
 import { useInteractionsStore, INTERACTION_TYPES, type InteractionType } from '@/stores/interactions'
 import { timeStr } from '@/utils/format'
@@ -120,10 +128,36 @@ function addEntry() {
 onMounted(() => {
   uni.setNavigationBarTitle({ title: '萌芽日记' })
 })
+
+onShareAppMessage(() => {
+  const latest = store.recentSprouts[0]
+  if (latest) {
+    const typeLabel = INTERACTION_TYPES[latest.type].label
+    return {
+      title: `${latest.babyAName}今天${typeLabel}了！`,
+    }
+  }
+  return {
+    title: '记录双宝的每一个萌芽时刻',
+  }
+})
 </script>
 
 <style scoped>
 .sprout-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
+
+/* 头部 */
+.header-top { display: flex; align-items: center; justify-content: space-between; }
+.header-title-group { display: flex; align-items: center; gap: 12rpx; }
+.btn-share {
+  display: flex; align-items: center; gap: 4rpx;
+  padding: 8rpx 20rpx; border-radius: 32rpx;
+  border: 2rpx solid var(--twin-baby-a);
+  background: transparent;
+  font-size: 22rpx; color: var(--twin-baby-a);
+  line-height: 1.4; margin: 0;
+}
+.btn-share::after { border: none; }
 
 /* 添加区 */
 .add-section { margin-bottom: 40rpx; }

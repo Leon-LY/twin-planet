@@ -2,8 +2,15 @@
   <view class="contrib-page page-enter">
     <!-- 头部 -->
     <view class="page-header">
-      <text class="page-icon">💪</text>
-      <text class="page-title">今天我做了什么</text>
+      <view class="header-top">
+        <view class="header-title-group">
+          <text class="page-icon">💪</text>
+          <text class="page-title">今天我做了什么</text>
+        </view>
+        <button class="btn-share" open-type="share">
+          <text>📤 分享</text>
+        </button>
+      </view>
       <text class="page-subtitle">看见每一位家人的付出</text>
     </view>
 
@@ -90,6 +97,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { onShareAppMessage } from '@dcloudio/uni-app'
 import { useInteractionsStore, CONTRIBUTION_TYPES, type ContributionCategory } from '@/stores/interactions'
 import { timeStr, dateTimeStr as dateStr } from '@/utils/format'
 
@@ -120,11 +128,36 @@ function addEntry() {
 onMounted(() => {
   uni.setNavigationBarTitle({ title: '今天我做了什么' })
 })
+
+onShareAppMessage(() => {
+  const latest = store.todayContributions[0] || store.recentContributions[0]
+  if (latest) {
+    const catLabel = CONTRIBUTION_TYPES[latest.category].label
+    return {
+      title: `今天我做了${catLabel}，记录双宝的成长点滴`,
+    }
+  }
+  return {
+    title: '看见每一位家人的付出',
+  }
+})
 </script>
 
 <style scoped>
 .contrib-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
 
+/* 头部 */
+.header-top { display: flex; align-items: center; justify-content: space-between; }
+.header-title-group { display: flex; align-items: center; gap: 12rpx; }
+.btn-share {
+  display: flex; align-items: center; gap: 4rpx;
+  padding: 8rpx 20rpx; border-radius: 32rpx;
+  border: 2rpx solid var(--twin-baby-a);
+  background: transparent;
+  font-size: 22rpx; color: var(--twin-baby-a);
+  line-height: 1.4; margin: 0;
+}
+.btn-share::after { border: none; }
 
 /* 今日统计 */
 .today-stats {
