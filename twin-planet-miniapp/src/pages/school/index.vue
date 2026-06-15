@@ -178,7 +178,7 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '入园助手' }) })
 /* 评估记录 */
 .assess-section { margin-bottom: 20rpx; }
 .assess-list { display: flex; flex-direction: column; gap: 8rpx; }
-.assess-card { background: var(--twin-card-bg); border-radius: 14rpx; padding: 16rpx 20rpx; }
+.assess-card { background: linear-gradient(180deg,rgba(255,255,255,0.45) 0%,var(--twin-card-bg) 100%); border-radius: 14rpx; padding: 16rpx 20rpx; box-shadow:0 1rpx 0 rgba(0,0,0,.03),0 2rpx 8rpx rgba(0,0,0,.04); }
 .assess-header { display: flex; justify-content: space-between; margin-bottom: 8rpx; }
 .assess-term { font-size: 26rpx; font-weight: 600; color: var(--twin-text); }
 .assess-choice { font-size: 24rpx; color: var(--twin-baby-a); }
@@ -187,11 +187,12 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '入园助手' }) })
 
 /* 新建评估 */
 .new-assess { background: var(--twin-card-bg); border-radius: 20rpx; padding: 24rpx; }
-.picker-row { display: flex; justify-content: space-between; padding: 16rpx 0; font-size: 28rpx; color: var(--twin-text); border-bottom: 2rpx solid var(--twin-border); margin-bottom: 16rpx; }
+.picker-row { display: flex; justify-content: space-between; padding: 16rpx 20rpx; font-size: 28rpx; color: var(--twin-text); border-bottom: 2rpx solid var(--twin-border); margin-bottom: 16rpx; background:var(--twin-card-bg); border-radius:12rpx; box-shadow:inset 0 2rpx 6rpx rgba(0,0,0,.04),0 1rpx 0 rgba(255,255,255,.6); }
 .toggle-row { display: flex; gap: 12rpx; margin-bottom: 16rpx; }
-.toggle-btn { flex: 1; text-align: center; padding: 20rpx 0; background: var(--twin-card-bg); border: 4rpx solid var(--twin-border); border-radius: 16rpx; font-size: 26rpx; color: var(--twin-text-tertiary); }
-.toggle-btn.active { border-color: var(--twin-baby-a); background: var(--twin-baby-a-light); color: var(--twin-text); font-weight: 600; }
-.note-input { width: 100%; padding: 20rpx 24rpx; background: var(--twin-hover); border-radius: 14rpx; font-size: 26rpx; margin-bottom: 16rpx; box-sizing: border-box; }
-.btn-save { width: 100%; padding: 24rpx 0; background: var(--twin-accent); color: var(--twin-card-bg); border: none; border-radius: 16rpx; font-size: 28rpx; font-weight: 600; }
+.toggle-btn { flex: 1; text-align: center; padding: 20rpx 0; background: linear-gradient(180deg,rgba(255,255,255,0.5) 0%,var(--twin-card-bg) 100%); border: 4rpx solid var(--twin-border); border-radius: 16rpx; font-size: 26rpx; color: var(--twin-text-tertiary); box-shadow:0 2rpx 6rpx rgba(0,0,0,.05),0 1rpx 0 rgba(255,255,255,.8); transition:all .15s cubic-bezier(.25,.1,.1,1); }
+.toggle-btn.active { border-color: var(--twin-baby-a); background: var(--twin-baby-a-light); color: var(--twin-text); font-weight: 600; box-shadow:inset 0 2rpx 4rpx rgba(0,0,0,.06); transform:scale(.97); }
+.note-input { width: 100%; padding: 20rpx 24rpx; background: var(--twin-hover); border-radius: 14rpx; font-size: 26rpx; margin-bottom: 16rpx; box-sizing: border-box; box-shadow:inset 0 2rpx 6rpx rgba(0,0,0,.04),0 1rpx 0 rgba(255,255,255,.6); }
+.btn-save { width: 100%; padding: 24rpx 0; background: linear-gradient(180deg,rgba(255,255,255,.16) 0%,transparent 55%,rgba(0,0,0,.05) 100%),var(--twin-accent); color: var(--twin-card-bg); border: none; border-radius: 16rpx; font-size: 28rpx; font-weight: 600; box-shadow:0 3rpx 8rpx rgba(0,0,0,.08),0 1rpx 0 rgba(255,255,255,.15); transition:all .15s cubic-bezier(.25,.1,.1,1); }
+.btn-save:active{box-shadow:inset 0 3rpx 6rpx rgba(0,0,0,.1);transform:scale(.97);}
 .disclaimer { display:block; text-align:center; font-size:20rpx; color:var(--ink-lt); margin-top:24rpx; line-height:1.5; }
 </style>
