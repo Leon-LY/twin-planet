@@ -4,7 +4,7 @@
  * 2026-06-15 补充 0-30 月龄 CDC 里程碑 + 三态支持
  */
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 import { useBabiesStore } from '@/stores/babies'
 import { useInteractionsStore, type InteractionType } from '@/stores/interactions'

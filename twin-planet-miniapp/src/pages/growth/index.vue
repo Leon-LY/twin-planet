@@ -135,18 +135,8 @@ const chartHeight=ref(CHART_H)
 
 // 获取宝宝月龄（早产儿 <37 周使用矫正月龄）
 const TERM_WEEKS = 37
-function calcAgeMonths(birthDate:string, gestationalWeeks?:number):number{
-  const b=new Date(birthDate);const n=new Date()
-  const chronAge=(n.getFullYear()-b.getFullYear())*12+(n.getMonth()-b.getMonth())
-  // 早产儿矫正：矫正月龄 = 实际月龄 - (40 - 胎龄) / 4
-  if (gestationalWeeks && gestationalWeeks < TERM_WEEKS) {
-    const prematurityMonths = (40 - gestationalWeeks) / 4
-    const corrected = chronAge - prematurityMonths
-    return Math.max(0, Math.round(corrected))
-  }
-  return chronAge
-}
-
+// calcAgeMonths 已移至 @/utils/format 供全局复用 (P1-4)
+// 早产儿矫正月龄 = 实际月龄 - (40 - 胎龄周数) / 4
 // 真实测量数据
 const dataA=computed(()=>babyA.value?growthStore.forBaby(babyA.value.id):[])
 const dataB=computed(()=>babyB.value?growthStore.forBaby(babyB.value.id):[])
