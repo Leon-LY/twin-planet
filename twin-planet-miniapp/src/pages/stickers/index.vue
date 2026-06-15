@@ -154,28 +154,51 @@ onShareAppMessage(() => ({
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6rpx;
-  padding: 20rpx 8rpx;
-  background: var(--cream);
+  justify-content: center;
+  gap: 4rpx;
+  aspect-ratio: 1;
+  padding: 8rpx;
   border-radius: var(--radius-sm);
-  border: 2rpx solid var(--dot);
-  opacity: 0.35;
+  border: 2rpx dashed var(--dot);
+  background: transparent;
+  opacity: 0.55;
 }
 .sticker-cell.earned {
   opacity: 1;
-  border-color: var(--gold);
-  background: var(--gold-lt);
+  border: 3rpx solid #FFF;
+  border-radius: 14rpx 4rpx 14rpx 4rpx;
+  background: linear-gradient(160deg, var(--gold-lt) 0%, rgba(200,153,62,0.04) 100%);
+  box-shadow:
+    0 0 0 1rpx rgba(0,0,0,0.03),
+    0 3rpx 8rpx rgba(0,0,0,0.08),
+    0 6rpx 16rpx rgba(0,0,0,0.04);
+  transform: rotate(-1.2deg);
 }
-/* 已收集: 金色圆圈 */
+.sticker-cell.earned:nth-child(2n) { transform: rotate(0.8deg); border-radius: 6rpx 16rpx 6rpx 16rpx; }
+.sticker-cell.earned:nth-child(3n) { transform: rotate(-1.8deg); border-radius: 16rpx 6rpx 16rpx 6rpx; }
+.sticker-cell.earned::after {
+  content: '';
+  position: absolute;
+  top: 6rpx; left: 20%; right: 20%; height: 30%;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.4) 0%, transparent 100%);
+  border-radius: 50%;
+  pointer-events: none;
+}
 .cell-emoji {
-  width:72rpx;height:72rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:22rpx;font-weight:700;font-family:var(--font-journal);
-  background:var(--cream);color:var(--ink-lt);border:2rpx solid var(--dot);
+  width:64rpx;height:64rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:26rpx;
+  background:transparent;color:var(--ink-lt);
+  border:2rpx dashed var(--dot);
+  opacity: 0.5;
 }
 .cell-emoji.earned {
-  background:var(--gold-lt);color:var(--gold);border-color:var(--gold);
+  width:56rpx;height:56rpx;
+  font-size:32rpx;
+  background:var(--gold-lt);color:var(--gold);
+  border:2rpx solid var(--gold);
+  opacity:1;
 }
-.cell-label { font-size: 18rpx; color: var(--ink-lt); text-align: center; }
+.cell-label { font-size: 16rpx; color: var(--ink-lt); text-align: center; max-width: 100rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cell-label.earned { color: var(--ink); font-weight: 600; }
 
 .empty { text-align: center; padding: 80rpx 32rpx; }

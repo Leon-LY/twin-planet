@@ -172,73 +172,93 @@ page {
     radial-gradient(circle 8rpx at center, transparent 5rpx, var(--dot) 5.5rpx, var(--dot) 6.5rpx, transparent 7rpx) repeat-y 0 0 / 8rpx calc(100% / 3);
 }
 
-/* 和纸胶带 — 撕边质感 + 纸面投影 */
+/* 和纸胶带 — 撕裂边缘 + 纤维肌理 + 物理厚度 */
 .journal-tape {
   position: absolute;
-  top: -14rpx;
+  top: -12rpx;
   left: 50%;
   transform: translateX(-50%) rotate(-2.8deg);
-  width: 65%;
-  height: 32rpx;
-  /* 四角不同圆角模拟手撕不规则 */
-  border-radius: 5rpx 2rpx 4rpx 1rpx;
+  width: 68%;
+  height: 28rpx;
   z-index: 2;
   pointer-events: none;
-  /* 纸面投影：胶带贴在纸上的微弱阴影 */
-  box-shadow:
-    0 1rpx 2rpx rgba(0,0,0,0.04),
-    0 2rpx 4rpx rgba(0,0,0,0.03);
   animation: tapeUnroll .6s var(--ease-peel) both;
+  /* 不规则圆角 — 模拟手撕 */
+  border-radius: 8rpx 1rpx 6rpx 2rpx;
+  /* 双层投影：贴合阴影 + 厚度阴影 */
+  box-shadow:
+    0 1rpx 0 rgba(0,0,0,0.04),
+    0 2rpx 4rpx rgba(0,0,0,0.05),
+    0 4rpx 8rpx rgba(0,0,0,0.02);
 }
-/* 胶带肌理层 — 模拟和纸纤维 + 边缘色深 */
+/* 撕裂端锯齿 — 在胶带左端用圆点模拟撕痕 */
 .journal-tape::before {
+  content: '';
+  position: absolute;
+  left: -1rpx;
+  top: 2rpx;
+  bottom: 2rpx;
+  width: 6rpx;
+  background:
+    radial-gradient(circle 1.5rpx at 3rpx 4rpx, rgba(0,0,0,0.06) 0.5rpx, transparent 1rpx),
+    radial-gradient(circle 2rpx at 3rpx 14rpx, rgba(0,0,0,0.05) 0.5rpx, transparent 1rpx),
+    radial-gradient(circle 1.5rpx at 3rpx 22rpx, rgba(0,0,0,0.06) 0.5rpx, transparent 1rpx);
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 0 0 0 2rpx;
+}
+/* 纤维肌理 — 微小噪点模拟和纸 */
+.journal-tape::after {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  /* 从边缘到中心的微弱渐变，模拟纸胶带边缘略深 */
-  background: radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.04) 100%);
-  pointer-events: none;
-}
-/* 胶带边缘微光 — 光线打在胶带厚度上 */
-.journal-tape::after {
-  content: '';
-  position: absolute;
-  top: 1rpx;
-  left: 3rpx;
-  right: 3rpx;
-  height: 2rpx;
-  background: rgba(255,255,255,0.25);
-  border-radius: 1rpx;
+  background:
+    radial-gradient(circle 0.6rpx at 20% 30%, rgba(255,255,255,0.2) 0, transparent 1rpx),
+    radial-gradient(circle 0.5rpx at 60% 55%, rgba(0,0,0,0.05) 0, transparent 1rpx),
+    radial-gradient(circle 0.6rpx at 80% 40%, rgba(255,255,255,0.15) 0, transparent 1rpx),
+    radial-gradient(circle 0.4rpx at 35% 70%, rgba(0,0,0,0.04) 0, transparent 1rpx),
+    radial-gradient(circle 0.5rpx at 70% 25%, rgba(255,255,255,0.18) 0, transparent 1rpx);
   pointer-events: none;
 }
 
 .journal-tape.tape-amber {
   background: linear-gradient(175deg,
-    rgba(224,123,62,0.22) 0%,
-    rgba(224,123,62,0.14) 40%,
-    rgba(224,123,62,0.18) 100%);
+    rgba(224,123,62,0.28) 0%,
+    rgba(224,123,62,0.18) 20%,
+    rgba(224,123,62,0.12) 55%,
+    rgba(224,123,62,0.20) 85%,
+    rgba(224,123,62,0.26) 100%);
 }
 .journal-tape.tape-rose {
   background: linear-gradient(175deg,
-    rgba(212,128,104,0.22) 0%,
-    rgba(212,128,104,0.14) 40%,
-    rgba(212,128,104,0.18) 100%);
+    rgba(212,128,104,0.28) 0%,
+    rgba(212,128,104,0.18) 20%,
+    rgba(212,128,104,0.12) 55%,
+    rgba(212,128,104,0.20) 85%,
+    rgba(212,128,104,0.26) 100%);
   transform: translateX(-50%) rotate(2.6deg);
+  border-radius: 2rpx 7rpx 1rpx 4rpx;
 }
 .journal-tape.tape-mint {
   background: linear-gradient(175deg,
-    rgba(92,154,110,0.18) 0%,
-    rgba(92,154,110,0.10) 40%,
-    rgba(92,154,110,0.14) 100%);
+    rgba(92,154,110,0.22) 0%,
+    rgba(92,154,110,0.14) 20%,
+    rgba(92,154,110,0.08) 55%,
+    rgba(92,154,110,0.16) 85%,
+    rgba(92,154,110,0.20) 100%);
   transform: translateX(-50%) rotate(-1.8deg);
+  border-radius: 5rpx 3rpx 7rpx 1rpx;
 }
 .journal-tape.tape-gold {
   background: linear-gradient(175deg,
-    rgba(200,153,62,0.24) 0%,
-    rgba(200,153,62,0.14) 40%,
-    rgba(200,153,62,0.20) 100%);
+    rgba(200,153,62,0.30) 0%,
+    rgba(200,153,62,0.18) 20%,
+    rgba(200,153,62,0.12) 55%,
+    rgba(200,153,62,0.22) 85%,
+    rgba(200,153,62,0.28) 100%);
   transform: translateX(-50%) rotate(1.5deg);
+  border-radius: 3rpx 5rpx 2rpx 6rpx;
 }
 
 /* 印章效果 — 不规则圆角 + 微旋转 + 颜色溢出感 */

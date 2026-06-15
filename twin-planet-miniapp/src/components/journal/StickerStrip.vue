@@ -4,8 +4,13 @@
     <view class="strip-label">今日贴纸</view>
     <scroll-view scroll-x class="strip-scroll">
       <view class="strip-row">
-        <view v-for="s in stickers" :key="s.id" class="sticker-item" :class="{ new: isNew(s) }">
+        <view v-for="(s, i) in stickers" :key="s.id"
+          class="sticker-item" :class="[shapeClass(i), { new: isNew(s) }]">
+          <!-- 贴纸光泽层 -->
+          <view class="sticker-shine" />
+          <!-- 贴纸图案 -->
           <text class="sticker-emoji">{{ s.emoji }}</text>
+          <!-- 贴纸标签 -->
           <text class="sticker-label">{{ s.label }}</text>
         </view>
       </view>
@@ -18,7 +23,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { Sticker } from '@/stores/stickers'
 
 const props = defineProps<{
@@ -30,7 +34,12 @@ defineEmits<{ viewAll: [] }>()
 
 const now = Date.now()
 function isNew(s: Sticker): boolean {
-  return now - s.earnedAt < 5000 // 5秒内算"新获得"
+  return now - s.earnedAt < 5000
+}
+
+const shapes = ['shape-a','shape-b','shape-c','shape-d','shape-e','shape-f']
+function shapeClass(i: number): string {
+  return shapes[i % shapes.length]
 }
 </script>
 
@@ -40,37 +49,19 @@ function isNew(s: Sticker): boolean {
   position: relative;
   z-index: 1;
 }
-/* 贴纸区底部衬一条"胶带撕痕" */
-.sticker-strip::before {
-  content: '';
-  position: absolute;
-  bottom: 8rpx;
-  left: 0;
-  right: 0;
-  height: 4rpx;
-  background: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 16rpx,
-    var(--dot) 16rpx,
-    var(--dot) 18rpx
-  );
-  opacity: 0.5;
-}
 .sticker-strip.empty {
   text-align: center;
 }
-.sticker-strip.empty::before { display: none; }
 .strip-empty-text {
-  font-size: var(--font-caption);
+  font-size: 22rpx;
   color: var(--ink-lt);
   font-family: var(--font-journal);
 }
 .strip-label {
   font-family: var(--font-journal);
-  font-size: var(--font-caption);
+  font-size: 20rpx;
   color: var(--ink-md);
-  margin-bottom: 12rpx;
+  margin-bottom: 14rpx;
   padding-left: 4rpx;
 }
 .strip-scroll {
@@ -78,46 +69,90 @@ function isNew(s: Sticker): boolean {
 }
 .strip-row {
   display: inline-flex;
-  gap: 16rpx;
+  gap: 20rpx;
+  padding: 4rpx 2rpx 8rpx;
 }
+
+/* ===== 贴纸本体 ===== */
 .sticker-item {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4rpx;
-  padding: 12rpx 16rpx;
-  background: var(--cream);
-  border-radius: 4rpx 12rpx 4rpx 12rpx;
-  border: 2rpx solid var(--dot);
-  min-width: 100rpx;
-  transition: transform .3s var(--ease-bounce), border-color .3s;
-  transform: rotate(-0.8deg);
-  box-shadow: 0 2rpx 6rpx rgba(45,35,24,0.04);
+  justify-content: center;
+  gap: 2rpx;
+  width: 96rpx;
+  height: 96rpx;
+  /* 贴纸白边 — 贴纸纸基 */
+  background: var(--paper);
+  border: 3rpx solid #FFF;
+  box-shadow:
+    0 0 0 1rpx rgba(0,0,0,0.04),
+    0 2rpx 6rpx rgba(0,0,0,0.07),
+    0 4rpx 12rpx rgba(0,0,0,0.04);
+  flex-shrink: 0;
+  transition: transform .2s var(--ease-bounce);
+  overflow: hidden;
 }
-.sticker-item:nth-child(2n) { transform: rotate(0.6deg); }
-.sticker-item:nth-child(3n) { transform: rotate(-1.2deg); }
-.sticker-item:nth-child(5n) { transform: rotate(0.3deg); }
+/* 6种形状变体 */
+.sticker-item.shape-a { border-radius: 50%; }
+.sticker-item.shape-b { border-radius: 40% 60% 55% 45%; }
+.sticker-item.shape-c { border-radius: 14rpx 4rpx 14rpx 4rpx; }
+.sticker-item.shape-d { border-radius: 6rpx 16rpx 6rpx 16rpx; }
+.sticker-item.shape-e { border-radius: 50% 50% 45% 45%; }
+.sticker-item.shape-f { border-radius: 8rpx; }
+
+/* 每张贴纸不同旋转 */
+.sticker-item.shape-a { transform: rotate(-2deg); }
+.sticker-item.shape-b { transform: rotate(1.5deg); }
+.sticker-item.shape-c { transform: rotate(-1deg); }
+.sticker-item.shape-d { transform: rotate(2.5deg); }
+.sticker-item.shape-e { transform: rotate(-2.8deg); }
+.sticker-item.shape-f { transform: rotate(0.5deg); }
+
 .sticker-item.new {
-  border-color: var(--gold);
   animation: stickerPeel .6s var(--ease-peel) both;
 }
+
+/* 贴纸光泽 — 顶部高光模拟塑料膜 */
+.sticker-shine {
+  position: absolute;
+  top: 4rpx;
+  left: 20%;
+  right: 20%;
+  height: 30%;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.5) 0%, transparent 100%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 贴纸图案 — emoji 为主体 */
 .sticker-emoji {
-  width: 56rpx; height: 56rpx; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20rpx; font-weight: 700;
-  background: var(--gold-lt); color: var(--gold);
-  border: 1.5px solid var(--gold);
-  font-family: var(--font-journal);
+  font-size: 40rpx;
+  position: relative;
+  z-index: 0;
+  filter: drop-shadow(0 1rpx 1rpx rgba(0,0,0,0.1));
 }
+
+/* 贴纸标签 — 极小文字 */
 .sticker-label {
-  font-size: 18rpx;
-  color: var(--ink-md);
+  font-size: 16rpx;
+  color: var(--ink-lt);
   white-space: nowrap;
+  font-family: var(--font-journal);
+  position: relative;
+  z-index: 0;
+  max-width: 80rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
 }
+
 .strip-more {
   text-align: right;
-  font-size: var(--font-caption);
+  font-size: 20rpx;
   color: var(--amber);
-  margin-top: 8rpx;
+  margin-top: 10rpx;
 }
 </style>
