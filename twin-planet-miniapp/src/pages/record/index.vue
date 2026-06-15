@@ -401,7 +401,7 @@ const stopAll=()=>{recordsStore.stopTimer();resetContext()}
 .baby-tab.active{opacity:1}.baby-tab.tab-a.active{border-bottom-color:var(--amber);background:linear-gradient(to top,var(--amber-lt),transparent 60%)}.baby-tab.tab-b.active{border-bottom-color:var(--rose);background:linear-gradient(to top,var(--rose-lt),transparent 60%)}.tab-emoji{font-size:40rpx;transition:transform .3s var(--ease-bounce)}.baby-tab:active .tab-emoji{transform:scale(1.2)}.tab-name{font-family:var(--font-journal);font-size:26rpx;font-weight:700;color:var(--ink)}.tab-check{font-size:20rpx;color:var(--mint)}
 
 /* 区域标签 */
-.section-label{font-size:22rpx;color:var(--ink-lt);margin-bottom:12rpx;padding-left:4rpx;font-weight:600;position:relative;z-index:1}
+.section-label{font-size:24rpx;color:var(--ink-md);margin-bottom:14rpx;padding-left:8rpx;font-weight:700;position:relative;z-index:1;font-family:var(--font-journal);letter-spacing:1rpx}
 
 /* 计时型操作 */
 .timer-actions{display:flex;gap:12rpx;margin-bottom:20rpx;position:relative;z-index:1}
@@ -442,7 +442,7 @@ const stopAll=()=>{recordsStore.stopTimer();resetContext()}
 .ctx-btn:active{transform:scale(.94)}
 .ctx-btn.primary{background:var(--amber);color:#fff}
 .ctx-btn.secondary{background:transparent;border:2rpx solid var(--amber);color:var(--amber)}
-.ctx-close{position:absolute;top:16rpx;right:20rpx;width:40rpx;height:40rpx;display:flex;align-items:center;justify-content:center;font-size:28rpx;color:var(--ink-lt);border-radius:50%}
+.ctx-close{position:absolute;top:12rpx;right:12rpx;width:56rpx;height:56rpx;display:flex;align-items:center;justify-content:center;font-size:32rpx;color:var(--ink-lt);border-radius:50%}
 .ctx-close:active{background:rgba(0,0,0,.04)}
 
 /* 双胞胎快捷 */

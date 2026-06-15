@@ -175,9 +175,9 @@ const goDuty = () => emit('navigate', '/pages/duty/index')
 .dad-duty-btn::after{border:none}
 .dad-duty-btn:active{transform:scale(.94)}
 .dd-icon{font-size:48rpx}
-.dd-label{font-size:36rpx;font-weight:700;letter-spacing:4rpx}
+.dd-label{font-size:36rpx;font-weight:700;letter-spacing:2rpx}
 .quick-bar{display:flex;gap:12rpx;justify-content:center;margin-bottom:20rpx}
-.q-chip{padding:16rpx 24rpx;border-radius:20rpx;font-size:22rpx;font-weight:600;background:var(--cream);border:1.5px solid var(--dot);color:var(--ink-md);transition:transform .15s var(--ease-bounce)}
+.q-chip{padding:16rpx 24rpx;border-radius:var(--radius-md);font-size:24rpx;font-weight:600;background:var(--cream);border:1.5px solid var(--dot);color:var(--ink-md);transition:transform .15s var(--ease-bounce)}
 .q-chip:active{transform:scale(.9);background:var(--amber-lt);border-color:var(--amber);color:var(--amber)}
 .q-chip.q-primary{padding:18rpx 32rpx;font-size:26rpx;background:var(--amber-lt);border-color:var(--amber);color:var(--amber)}
 .dad-footer{display:flex;justify-content:center;gap:16rpx;margin-top:28rpx}
