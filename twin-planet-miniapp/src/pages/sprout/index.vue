@@ -132,11 +132,19 @@ onMounted(() => {
 .type-chips { display: flex; gap: 12rpx; }
 .type-chip {
   display: inline-flex; align-items: center; gap: 8rpx;
-  padding: 16rpx 24rpx; background: var(--twin-card-bg);
-  border: 4rpx solid var(--twin-border); border-radius: 40rpx;
+  padding: 16rpx 24rpx; border-radius: 40rpx;
   font-size: 24rpx; color: var(--twin-text-tertiary); white-space: nowrap;
+  /* 凸起表面 */
+  background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 40%, rgba(0,0,0,0.02) 100%), var(--twin-card-bg);
+  border: 4rpx solid var(--twin-border);
+  box-shadow: 0 1rpx 0 rgba(0,0,0,0.03), 0 1.5rpx 3px rgba(0,0,0,0.02);
 }
-.type-chip.selected { border-color: var(--twin-accent); background: var(--twin-accent-light); color: var(--twin-text); }
+.type-chip:active { box-shadow: 0 0.5rpx 0 rgba(0,0,0,0.03); transform: translateY(1rpx); }
+.type-chip.selected {
+  border-color: var(--twin-accent); color: var(--twin-text);
+  background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 50%, rgba(0,0,0,0.04) 100%), var(--twin-accent-light);
+  box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.04), 0 0.5rpx 0 rgba(0,0,0,0.02);
+}
 .chip-emoji { font-size: 28rpx; }
 .chip-label { font-size: 24rpx; }
 
@@ -145,11 +153,20 @@ onMounted(() => {
   flex: 1; padding: 24rpx 28rpx; background: var(--twin-card-bg);
   border: 4rpx solid var(--twin-border); border-radius: 24rpx;
   font-size: 28rpx; color: var(--twin-text);
+  /* 凹陷书写区 */
+  box-shadow: inset 0 2rpx 6rpx rgba(0,0,0,0.04), 0 1rpx 0 rgba(255,255,255,0.6);
 }
 .btn-send {
-  padding: 0 32rpx; background: var(--twin-accent); border-radius: 24rpx;
+  padding: 0 32rpx; border-radius: 24rpx;
   display: flex; align-items: center; justify-content: center;
   color: #FFF; font-size: 28rpx; font-weight: 600;
+  /* 凸起3D按钮 */
+  background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 50%, rgba(0,0,0,0.06) 100%), var(--twin-accent);
+  box-shadow: 0 2rpx 0 rgba(0,0,0,0.06), 0 4rpx 12rpx rgba(0,0,0,0.08);
+}
+.btn-send:active {
+  box-shadow: 0 0.5rpx 0 rgba(0,0,0,0.06), 0 1rpx 3rpx rgba(0,0,0,0.06);
+  transform: translateY(1.5rpx);
 }
 .input-hint { display: block; text-align: right; font-size: 20rpx; color: var(--twin-text-muted); margin-top: 8rpx; }
 
@@ -158,12 +175,21 @@ onMounted(() => {
 .timeline { padding-left: 32rpx; }
 .timeline-item { display: flex; gap: 20rpx; padding-bottom: 28rpx; }
 .timeline-line { display: flex; flex-direction: column; align-items: center; width: 24rpx; flex-shrink: 0; }
-.timeline-dot { width: 16rpx; height: 16rpx; border-radius: 50%; background: var(--twin-text-muted); margin-top: 8rpx; }
-.timeline-dot.first { background: var(--twin-accent); width: 20rpx; height: 20rpx; }
+.timeline-dot {
+  width: 16rpx; height: 16rpx; border-radius: 50%; background: var(--twin-text-muted); margin-top: 8rpx;
+  box-shadow: 0 1rpx 0 rgba(0,0,0,0.03), 0 2rpx 4rpx rgba(0,0,0,0.03);
+}
+.timeline-dot.first {
+  background: var(--twin-accent); width: 20rpx; height: 20rpx;
+  box-shadow: 0 2rpx 0 rgba(0,0,0,0.04), 0 3rpx 6rpx rgba(0,0,0,0.05);
+}
 .timeline-bar { flex: 1; width: 2rpx; background: var(--twin-border); margin-top: 4rpx; }
 .timeline-card {
-  flex: 1; background: var(--twin-card-bg); border-radius: 16rpx; padding: 20rpx 24rpx;
+  flex: 1; border-radius: 16rpx; padding: 20rpx 24rpx;
   border-left: 6rpx solid var(--twin-accent);
+  /* 纸质深度 */
+  background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 30%, rgba(0,0,0,0.01) 100%), var(--twin-card-bg);
+  box-shadow: 0 1rpx 0 rgba(0,0,0,0.03), 0 2rpx 8rpx rgba(0,0,0,0.04);
 }
 .timeline-header { display: flex; align-items: center; gap: 8rpx; margin-bottom: 8rpx; }
 .timeline-emoji { font-size: 24rpx; }

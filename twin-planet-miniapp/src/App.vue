@@ -411,10 +411,488 @@ page {
 .body-text{font-size:var(--font-body);color:var(--ink-md);line-height:var(--leading-body)}
 .caption{font-size:var(--font-caption);color:var(--ink-lt)}
 
-.btn-primary{display:flex;align-items:center;justify-content:center;min-height:var(--touch-min);padding:24rpx 40rpx;background:var(--amber);color:#FFF;border:none;border-radius:var(--radius-full);font-size:var(--font-body);font-weight:700;letter-spacing:3rpx;box-shadow:0 8rpx 24rpx rgba(224,123,62,0.2);transition:transform var(--dur-fast) var(--ease-bounce)}
-.btn-primary:active{transform:scale(0.94)}
-.btn-outline{display:flex;align-items:center;justify-content:center;min-height:var(--touch-min);padding:20rpx 32rpx;background:transparent;color:var(--ink);border:2rpx solid var(--dot);border-radius:var(--radius-full);font-size:var(--font-body);font-weight:500;transition:transform var(--dur-fast) var(--ease-bounce)}
-.btn-outline:active{transform:scale(0.94);border-color:var(--amber)}
+/* ═══════════════════════════════════════════
+   物理按钮系统 · Physical Button System
+   每个按钮都是纸面上的实体物件：凸起 = 可按，凹陷 = 已按
+   ═══════════════════════════════════════════ */
+
+/* 主按钮 — 凸起的蜡封印章。顶部受光、底部投影、按下时陷入纸面 */
+.btn-primary{
+  display:flex;align-items:center;justify-content:center;
+  min-height:var(--touch-min);padding:24rpx 40rpx;
+  /* 曲面渐变：上亮下暗模拟凸起圆柱 */
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.18) 0%,
+    rgba(255,255,255,0.04) 30%,
+    transparent 55%,
+    rgba(0,0,0,0.06) 100%
+  ), var(--amber);
+  color:#FFF;border:none;border-radius:var(--radius-full);
+  font-size:var(--font-body);font-weight:700;letter-spacing:3rpx;
+  /* 多层阴影：底面厚度 + 悬浮投影 + 环境光 */
+  box-shadow:
+    inset 0 1rpx 0 rgba(255,255,255,0.25),
+    0 3rpx 0 rgba(192,104,52,0.5),
+    0 4rpx 8rpx rgba(0,0,0,0.06),
+    0 8rpx 24rpx rgba(224,123,62,0.2);
+  transition: all var(--dur-fast) var(--ease-stamp);
+  position:relative;
+}
+.btn-primary::after{
+  content:'';position:absolute;top:8rpx;left:18%;right:18%;height:40%;
+  background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,0.22) 0%,transparent 100%);
+  border-radius:50%;pointer-events:none;
+}
+/* 按下：阴影收缩 → 按钮陷入纸面 */
+.btn-primary:active{
+  transform:scale(0.94);
+  box-shadow:
+    inset 0 2rpx 6rpx rgba(0,0,0,0.12),
+    0 1rpx 0 rgba(192,104,52,0.4),
+    0 2rpx 4rpx rgba(0,0,0,0.04);
+}
+
+/* 描边按钮 — 纸面凸起边框。轻微浮起 + 按压边框变色 */
+.btn-outline{
+  display:flex;align-items:center;justify-content:center;
+  min-height:var(--touch-min);padding:20rpx 32rpx;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.5) 0%,
+    transparent 40%,
+    rgba(0,0,0,0.02) 100%
+  ), var(--paper);
+  color:var(--ink);border:2rpx solid var(--dot);
+  border-radius:var(--radius-full);
+  font-size:var(--font-body);font-weight:500;
+  box-shadow:
+    0 2rpx 0 rgba(0,0,0,0.04),
+    0 3rpx 8rpx rgba(0,0,0,0.03);
+  transition: all var(--dur-fast) var(--ease-stamp);
+}
+.btn-outline:active{
+  transform:scale(0.94);
+  border-color:var(--amber);
+  box-shadow:
+    inset 0 1rpx 4rpx rgba(0,0,0,0.06),
+    0 0 0 rgba(0,0,0,0);
+  background:var(--amber-lt);
+}
+
+/* 危险按钮 — 凸起红色，同主按钮物理感 */
+.btn-danger{
+  display:flex;align-items:center;justify-content:center;
+  min-height:var(--touch-min);padding:24rpx 40rpx;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.16) 0%,
+    rgba(255,255,255,0.03) 30%,
+    transparent 55%,
+    rgba(0,0,0,0.08) 100%
+  ), var(--twin-danger);
+  color:#FFF;border:none;border-radius:var(--radius-full);
+  font-size:var(--font-body);font-weight:700;
+  box-shadow:
+    inset 0 1rpx 0 rgba(255,255,255,0.2),
+    0 3rpx 0 rgba(180,90,85,0.5),
+    0 4rpx 8rpx rgba(0,0,0,0.06),
+    0 8rpx 20rpx rgba(212,112,107,0.2);
+  transition:all var(--dur-fast) var(--ease-stamp);
+}
+.btn-danger:active{
+  transform:scale(0.94);
+  box-shadow:
+    inset 0 2rpx 6rpx rgba(0,0,0,0.12),
+    0 1rpx 0 rgba(180,90,85,0.4),
+    0 2rpx 4rpx rgba(0,0,0,0.04);
+}
+
+/* 幽灵按钮 — 扁平文字，按压微微凹陷 */
+.btn-ghost{
+  display:flex;align-items:center;justify-content:center;
+  padding:16rpx 28rpx;background:transparent;color:var(--ink-md);
+  border:none;font-size:var(--font-body);font-weight:500;
+  border-radius:var(--radius-sm);
+  transition:all var(--dur-fast) var(--ease-soft);
+}
+.btn-ghost:active{
+  background:rgba(0,0,0,0.04);
+  color:var(--amber);
+  box-shadow:inset 0 1rpx 3rpx rgba(0,0,0,0.04);
+}
+
+/* 小型操作按钮 — 凸起的小物件 */
+.btn-sm{
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:6rpx;padding:14rpx 24rpx;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.6) 0%, transparent 40%,
+    rgba(0,0,0,0.03) 100%
+  ), var(--cream);
+  border:1.5rpx solid var(--dot);
+  border-radius:var(--radius-full);
+  font-size:var(--font-sm);font-weight:600;color:var(--ink);
+  box-shadow:
+    0 1.5rpx 0 rgba(0,0,0,0.04),
+    0 2rpx 6rpx rgba(0,0,0,0.03);
+  transition:all var(--dur-fast) var(--ease-stamp);
+}
+.btn-sm:active{
+  transform:scale(0.92);
+  box-shadow:inset 0 1rpx 3rpx rgba(0,0,0,0.06);
+  background:var(--amber-lt);
+}
+.btn-sm.primary{
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.15) 0%, transparent 55%,
+    rgba(0,0,0,0.05) 100%
+  ), var(--amber);
+  color:#FFF;border-color:var(--amber);
+  box-shadow:
+    inset 0 1rpx 0 rgba(255,255,255,0.2),
+    0 2rpx 0 rgba(192,104,52,0.5),
+    0 3rpx 8rpx rgba(224,123,62,0.15);
+}
+.btn-sm.primary:active{
+  box-shadow:inset 0 2rpx 4rpx rgba(0,0,0,0.12);
+}
+
+/* ═══════════════════════════════════════════
+   物理输入框系统 · Recessed Writing Surface
+   输入区 = 纸面上凹陷的书写区域
+   ═══════════════════════════════════════════ */
+
+.input-field{
+  width:100%;padding:20rpx 24rpx;box-sizing:border-box;
+  /* 凹陷纸面：顶部内阴影（光线照入凹槽）+ 底部微凸边缘 */
+  background: linear-gradient(180deg,
+    rgba(0,0,0,0.015) 0%, transparent 8%
+  ), var(--paper);
+  border:2rpx solid var(--dot);
+  border-radius:var(--radius-sm);
+  font-size:var(--font-body);color:var(--ink);
+  font-family:var(--font-journal);
+  box-shadow:
+    inset 0 2rpx 6rpx rgba(0,0,0,0.04),
+    inset 0 0 0 1rpx rgba(0,0,0,0.02),
+    0 1rpx 0 rgba(255,255,255,0.6);
+  transition:all var(--dur-fast) var(--ease-soft);
+}
+/* 聚焦：凹槽更深，边框变暖 */
+.input-field:focus{
+  border-color:var(--amber);
+  box-shadow:
+    inset 0 3rpx 8rpx rgba(0,0,0,0.06),
+    inset 0 0 0 1rpx rgba(0,0,0,0.03),
+    0 0 0 3rpx var(--amber-lt),
+    0 1rpx 0 rgba(255,255,255,0.6);
+}
+
+/* 输入区 — 带横线纸纹（适合多行/备注） */
+.input-lined{
+  width:100%;padding:20rpx 24rpx;box-sizing:border-box;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent, transparent 38rpx,
+      var(--dot) 38rpx, var(--dot) 39rpx
+    );
+  background-color:var(--paper);
+  background-position:0 10rpx;
+  border:2rpx solid var(--dot);
+  border-radius:var(--radius-sm);
+  font-size:var(--font-body);color:var(--ink);
+  font-family:var(--font-journal);
+  line-height:39rpx;
+  box-shadow:
+    inset 0 2rpx 6rpx rgba(0,0,0,0.04),
+    0 1rpx 0 rgba(255,255,255,0.6);
+}
+.input-lined:focus{
+  border-color:var(--amber);
+  box-shadow:
+    inset 0 3rpx 8rpx rgba(0,0,0,0.06),
+    0 0 0 3rpx var(--amber-lt);
+}
+
+/* ═══════════════════════════════════════════
+   物理卡片系统 · Layered Paper Cards
+   每张卡片 = 桌面上叠放的纸页
+   ═══════════════════════════════════════════ */
+
+/* 基础纸卡 — 轻微浮起 + 微旋转模拟手工摆放 */
+.card-paper{
+  background:var(--cream);
+  border:1.5rpx solid var(--dot);
+  border-radius:var(--radius-md);
+  padding:24rpx;
+  /* 纸层叠阴影：贴合阴影 + 悬浮投影 + 环境光 */
+  box-shadow:
+    0 1rpx 0 rgba(0,0,0,0.03),
+    0 2rpx 8rpx rgba(0,0,0,0.04),
+    0 4rpx 16rpx rgba(0,0,0,0.03);
+  position:relative;
+  transition:transform var(--dur-fast) var(--ease-soft);
+}
+/* ::before = 下一张纸（微偏移） */
+.card-paper::before{
+  content:'';position:absolute;inset:-1rpx;border-radius:inherit;
+  background:var(--cream);
+  border:1rpx solid var(--dot);
+  z-index:-1;
+  transform:rotate(0.4deg) translate(2rpx,2rpx);
+  box-shadow:0 1rpx 0 rgba(0,0,0,0.02);
+  pointer-events:none;
+}
+
+/* 强调卡 — 带彩色上边（来自便签纸设计） */
+.card-accent{
+  background:var(--cream);
+  border:1.5rpx solid var(--dot);
+  border-top:6rpx solid var(--amber);
+  border-radius:0 0 var(--radius-md) var(--radius-md);
+  padding:24rpx;
+  box-shadow:
+    0 1rpx 0 rgba(0,0,0,0.03),
+    0 3rpx 10rpx rgba(0,0,0,0.04);
+}
+.card-accent.rose{border-top-color:var(--rose)}
+.card-accent.mint{border-top-color:var(--mint)}
+.card-accent.gold{border-top-color:var(--gold)}
+
+/* 紧凑纸卡 — 列表/条目用，轻量浮起 */
+.card-entry{
+  background:var(--cream);
+  border:1rpx solid var(--dot);
+  border-radius:var(--radius-sm);
+  padding:16rpx 20rpx;
+  box-shadow:
+    0 1rpx 0 rgba(0,0,0,0.02),
+    0 2rpx 4rpx rgba(0,0,0,0.02);
+  transition:all var(--dur-fast) var(--ease-soft);
+}
+.card-entry:active{
+  box-shadow:inset 0 1rpx 3rpx rgba(0,0,0,0.04);
+  background:var(--paper);
+}
+
+/* ═══════════════════════════════════════════
+   物理标签/芯片系统 · Raised Labels & Chips
+   芯片 = 贴在纸面上的小标签，轻微凸起
+   ═══════════════════════════════════════════ */
+
+/* 基础芯片 — 凸起的小纸标签 */
+.chip{
+  display:inline-flex;align-items:center;gap:4rpx;
+  padding:8rpx 16rpx;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.5) 0%, transparent 40%,
+    rgba(0,0,0,0.02) 100%
+  ), var(--cream);
+  border:1.5rpx solid var(--dot);
+  border-radius:var(--radius-full);
+  font-size:var(--font-caption);color:var(--ink-md);font-weight:500;
+  box-shadow:
+    0 1rpx 0 rgba(0,0,0,0.03),
+    0 1.5rpx 3rpx rgba(0,0,0,0.02);
+  transition:all var(--dur-fast) var(--ease-stamp);
+}
+.chip:active{
+  transform:scale(0.94);
+  box-shadow:inset 0 1rpx 3rpx rgba(0,0,0,0.05);
+}
+/* 选中态 — 按下贴平 + 颜色变化 */
+.chip.on{
+  background:var(--amber-lt);
+  border-color:var(--amber);
+  color:var(--amber);
+  box-shadow:
+    inset 0 1rpx 2rpx rgba(224,123,62,0.08),
+    0 0 0 1rpx rgba(224,123,62,0.08);
+}
+.chip.on.mint{background:var(--mint-lt);border-color:var(--mint);color:var(--mint);box-shadow:inset 0 1rpx 2rpx rgba(92,154,110,0.08),0 0 0 1rpx rgba(92,154,110,0.08)}
+.chip.on.rose{background:var(--rose-lt);border-color:var(--rose);color:var(--rose);box-shadow:inset 0 1rpx 2rpx rgba(212,128,104,0.08),0 0 0 1rpx rgba(212,128,104,0.08)}
+
+/* 标签芯片 — 带有撕纸边缘感的不规则标签 */
+.chip-tag{
+  display:inline-flex;align-items:center;gap:4rpx;
+  padding:8rpx 16rpx;
+  background:var(--cream);
+  border:1.5rpx solid var(--dot);
+  border-radius:3rpx 12rpx 3rpx 12rpx;
+  font-size:var(--font-caption);color:var(--ink);font-weight:600;
+  box-shadow:
+    0 1rpx 0 rgba(0,0,0,0.03),
+    0 2rpx 4rpx rgba(0,0,0,0.02);
+  transform:rotate(-0.3deg);
+}
+.chip-tag:nth-child(2n){transform:rotate(0.4deg);border-radius:12rpx 3rpx 12rpx 3rpx}
+.chip-tag:nth-child(3n){transform:rotate(-0.6deg)}
+
+/* ═══════════════════════════════════════════
+   物理关闭按钮 · Physical Close Button
+   小圆形贴纸/铜钉，不是裸字形
+   ═══════════════════════════════════════════ */
+
+.close-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:56rpx;height:56rpx;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.6) 0%, transparent 50%,
+    rgba(0,0,0,0.03) 100%
+  ), var(--cream);
+  border:1.5rpx solid var(--dot);
+  border-radius:50%;
+  font-size:28rpx;color:var(--ink-md);
+  box-shadow:
+    0 1.5rpx 0 rgba(0,0,0,0.04),
+    0 2rpx 6rpx rgba(0,0,0,0.04);
+  transition:all var(--dur-fast) var(--ease-stamp);
+  position:relative;
+}
+.close-btn::after{
+  content:'';position:absolute;top:28%;left:25%;right:25%;height:30%;
+  background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,0.5) 0%,transparent 100%);
+  border-radius:50%;pointer-events:none;
+}
+.close-btn:active{
+  transform:scale(0.88);
+  box-shadow:
+    inset 0 1rpx 4rpx rgba(0,0,0,0.08),
+    0 0 0 rgba(0,0,0,0);
+  background:rgba(0,0,0,0.04);
+}
+
+/* ═══════════════════════════════════════════
+   物理分段控件 · Physical Segment Toggle
+   选中项 = 浮在最上层的纸片
+   ═══════════════════════════════════════════ */
+
+.segment{
+  display:inline-flex;background:var(--dot);border-radius:var(--radius-full);
+  padding:3rpx;gap:2rpx;
+  box-shadow:inset 0 2rpx 4rpx rgba(0,0,0,0.04);
+}
+.segment-item{
+  padding:14rpx 28rpx;border-radius:var(--radius-full);
+  font-size:var(--font-sm);font-weight:500;color:var(--ink-md);
+  transition:all var(--dur-fast) var(--ease-stamp);
+  position:relative;
+}
+.segment-item.active{
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.5) 0%, var(--cream) 30%,
+    var(--cream) 70%, rgba(0,0,0,0.02) 100%
+  );
+  color:var(--ink);font-weight:700;
+  box-shadow:
+    0 2rpx 0 rgba(0,0,0,0.04),
+    0 3rpx 8rpx rgba(0,0,0,0.06),
+    0 1rpx 0 rgba(255,255,255,0.4);
+}
+
+/* ═══════════════════════════════════════════
+   物理进度条 · Ink-Filling Groove
+   轨道 = 纸面凹槽，填充 = 墨水/颜料上升
+   ═══════════════════════════════════════════ */
+
+.progress-track{
+  width:100%;height:12rpx;
+  background:var(--dot);
+  border-radius:6rpx;
+  overflow:hidden;
+  box-shadow:
+    inset 0 2rpx 4rpx rgba(0,0,0,0.06),
+    0 1rpx 0 rgba(255,255,255,0.5);
+}
+.progress-fill{
+  height:100%;border-radius:6rpx;
+  /* 液面高光 — 填充物表面反光 */
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.25) 0%, transparent 40%,
+    rgba(0,0,0,0.08) 100%
+  ), var(--gold);
+  box-shadow:inset 0 1rpx 0 rgba(255,255,255,0.2);
+  transition:width .5s var(--ease-ink);
+}
+.progress-fill.amber{background:linear-gradient(180deg,rgba(255,255,255,0.22) 0%,transparent 40%,rgba(0,0,0,0.08) 100%),var(--amber)}
+.progress-fill.mint{background:linear-gradient(180deg,rgba(255,255,255,0.22) 0%,transparent 40%,rgba(0,0,0,0.08) 100%),var(--mint)}
+.progress-fill.rose{background:linear-gradient(180deg,rgba(255,255,255,0.22) 0%,transparent 40%,rgba(0,0,0,0.08) 100%),var(--rose)}
+
+/* ═══════════════════════════════════════════
+   物理复选框 · Stamped Checkbox
+   空框 = 纸面凹痕轮廓，选中 = 盖章填入
+   ═══════════════════════════════════════════ */
+
+.check-stamp{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:40rpx;height:40rpx;
+  background:var(--paper);
+  border:2rpx solid var(--dot);
+  border-radius:6rpx;
+  box-shadow:
+    inset 0 1rpx 3rpx rgba(0,0,0,0.04),
+    0 1rpx 0 rgba(255,255,255,0.6);
+  font-size:24rpx;color:transparent;
+  transition:all var(--dur-fast) var(--ease-stamp);
+  flex-shrink:0;
+}
+.check-stamp.checked{
+  background:var(--mint-lt);
+  border-color:var(--mint);
+  color:var(--mint);
+  box-shadow:
+    inset 0 1rpx 2rpx rgba(92,154,110,0.1),
+    0 0 0 2rpx var(--mint-lt);
+  animation:stampDown .35s var(--ease-stamp) both;
+}
+
+/* ═══════════════════════════════════════════
+   物理切换开关 · Toggle Tab Bar
+   标签栏 = 纸面凸起的标签页
+   ═══════════════════════════════════════════ */
+
+.tab-bar{
+  display:flex;gap:4rpx;
+  padding:4rpx;
+  background:var(--dot);
+  border-radius:var(--radius-sm);
+  box-shadow:inset 0 2rpx 4rpx rgba(0,0,0,0.04);
+}
+.tab-item{
+  flex:1;text-align:center;
+  padding:14rpx 16rpx;
+  font-size:var(--font-sm);font-weight:500;color:var(--ink-md);
+  border-radius:10rpx;
+  transition:all var(--dur-fast) var(--ease-stamp);
+}
+.tab-item.active{
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.5) 0%, var(--paper) 40%,
+    var(--paper) 60%, rgba(0,0,0,0.02) 100%
+  );
+  color:var(--ink);font-weight:700;
+  box-shadow:
+    0 2rpx 0 rgba(0,0,0,0.04),
+    0 3rpx 6rpx rgba(0,0,0,0.04);
+}
+
+/* ═══════════════════════════════════════════
+   装饰性分隔线 · Journal Dividers
+   ═══════════════════════════════════════════ */
+
+.divider-dot{
+  height:1rpx;border:none;
+  background:repeating-linear-gradient(
+    90deg,var(--dot) 0,var(--dot) 3rpx,transparent 3rpx,transparent 8rpx
+  );
+  margin:24rpx 0;
+}
+.divider-stitch{
+  height:1rpx;border:none;
+  background:repeating-linear-gradient(
+    90deg,var(--ink-lt) 0,var(--ink-lt) 6rpx,transparent 6rpx,transparent 12rpx
+  );
+  margin:20rpx 0;
+}
 
 /* 全局暖光斑 */
 .bg-spot{position:absolute;pointer-events:none;z-index:0;border-radius:50%;animation:spot-drift 30s ease-in-out infinite alternate}
@@ -778,4 +1256,59 @@ page {
 .theme-dark .journal-curl::after {
   filter: drop-shadow(-2rpx 2rpx 4rpx rgba(0,0,0,0.2));
 }
+
+/* 暗色模式 — 物理按钮系统 */
+.theme-dark .btn-primary{
+  box-shadow:
+    inset 0 1rpx 0 rgba(255,255,255,0.12),
+    0 3rpx 0 rgba(160,85,42,0.5),
+    0 4rpx 8rpx rgba(0,0,0,0.15),
+    0 8rpx 24rpx rgba(0,0,0,0.2);
+}
+.theme-dark .btn-primary:active{
+  box-shadow:
+    inset 0 2rpx 6rpx rgba(0,0,0,0.2),
+    0 1rpx 0 rgba(160,85,42,0.3),
+    0 2rpx 4rpx rgba(0,0,0,0.08);
+}
+.theme-dark .btn-primary::after{opacity:0.5}
+.theme-dark .btn-outline{
+  background:linear-gradient(180deg,rgba(255,255,255,0.08) 0%,transparent 40%,rgba(0,0,0,0.06) 100%),var(--paper);
+}
+.theme-dark .btn-outline:active{background:rgba(232,145,90,0.1)}
+.theme-dark .btn-sm{background:linear-gradient(180deg,rgba(255,255,255,0.06) 0%,transparent 40%,rgba(0,0,0,0.06) 100%),var(--cream)}
+.theme-dark .btn-sm:active{background:rgba(232,145,90,0.1)}
+.theme-dark .close-btn{background:linear-gradient(180deg,rgba(255,255,255,0.08) 0%,transparent 50%,rgba(0,0,0,0.06) 100%),var(--cream)}
+.theme-dark .close-btn::after{opacity:0.4}
+
+/* 暗色模式 — 物理输入框 */
+.theme-dark .input-field{
+  background:linear-gradient(180deg,rgba(0,0,0,0.04) 0%,transparent 8%),var(--paper);
+  box-shadow:inset 0 2rpx 6rpx rgba(0,0,0,0.2),inset 0 0 0 1rpx rgba(0,0,0,0.08),0 1rpx 0 rgba(255,255,255,0.06);
+}
+.theme-dark .input-field:focus{
+  box-shadow:inset 0 3rpx 8rpx rgba(0,0,0,0.25),0 0 0 3rpx rgba(232,145,90,0.15);
+}
+.theme-dark .input-lined{box-shadow:inset 0 2rpx 6rpx rgba(0,0,0,0.2),0 1rpx 0 rgba(255,255,255,0.04)}
+
+/* 暗色模式 — 物理卡片/芯片/控件 */
+.theme-dark .card-paper{
+  box-shadow:0 1rpx 0 rgba(255,255,255,0.02),0 2rpx 8rpx rgba(0,0,0,0.15),0 4rpx 16rpx rgba(0,0,0,0.1);
+}
+.theme-dark .card-paper::before{opacity:0.4}
+.theme-dark .card-accent{box-shadow:0 1rpx 0 rgba(255,255,255,0.02),0 3rpx 10rpx rgba(0,0,0,0.12)}
+.theme-dark .card-entry{box-shadow:0 1rpx 0 rgba(255,255,255,0.02),0 2rpx 4rpx rgba(0,0,0,0.1)}
+.theme-dark .card-entry:active{box-shadow:inset 0 1rpx 3rpx rgba(0,0,0,0.15)}
+.theme-dark .chip{box-shadow:0 1rpx 0 rgba(255,255,255,0.03),0 1.5rpx 3rpx rgba(0,0,0,0.08)}
+.theme-dark .chip:active{box-shadow:inset 0 1rpx 3rpx rgba(0,0,0,0.12)}
+.theme-dark .chip.on{box-shadow:inset 0 1rpx 2rpx rgba(232,145,90,0.15),0 0 0 1rpx rgba(232,145,90,0.12)}
+.theme-dark .chip-tag{box-shadow:0 1rpx 0 rgba(255,255,255,0.03),0 2rpx 4rpx rgba(0,0,0,0.08)}
+.theme-dark .segment{box-shadow:inset 0 2rpx 4rpx rgba(0,0,0,0.12)}
+.theme-dark .segment-item.active{box-shadow:0 2rpx 0 rgba(0,0,0,0.08),0 3rpx 8rpx rgba(0,0,0,0.15),0 1rpx 0 rgba(255,255,255,0.06)}
+.theme-dark .tab-bar{box-shadow:inset 0 2rpx 4rpx rgba(0,0,0,0.12)}
+.theme-dark .tab-item.active{box-shadow:0 2rpx 0 rgba(0,0,0,0.08),0 3rpx 6rpx rgba(0,0,0,0.1)}
+.theme-dark .progress-track{box-shadow:inset 0 2rpx 4rpx rgba(0,0,0,0.15),0 1rpx 0 rgba(255,255,255,0.04)}
+.theme-dark .progress-fill{box-shadow:inset 0 1rpx 0 rgba(255,255,255,0.12)}
+.theme-dark .check-stamp{box-shadow:inset 0 1rpx 3rpx rgba(0,0,0,0.12),0 1rpx 0 rgba(255,255,255,0.04)}
+.theme-dark .check-stamp.checked{box-shadow:inset 0 1rpx 2rpx rgba(109,174,124,0.15),0 0 0 2rpx rgba(109,174,124,0.1)}
 </style>

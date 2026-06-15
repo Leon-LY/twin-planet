@@ -41,8 +41,8 @@ const lastUpdateText = computed(() => {
 <style scoped>
 .granny-shell{display:flex;flex-direction:column;justify-content:center;min-height:100vh;padding:80rpx 56rpx}
 .granny-actions{display:flex;flex-direction:column;gap:40rpx}
-.granny-btn{text-align:center;padding:64rpx;background:var(--cream);border-radius:var(--radius-lg);border:4rpx solid var(--dot);display:flex;flex-direction:column;align-items:center;gap:16rpx}
-.granny-btn:active{border-color:var(--amber);transform:scale(.97)}
+.granny-btn{text-align:center;padding:64rpx;background:linear-gradient(180deg,rgba(255,255,255,0.5) 0%,transparent 35%,rgba(0,0,0,0.03) 100%),var(--cream);border-radius:var(--radius-lg);border:3rpx solid var(--dot);display:flex;flex-direction:column;align-items:center;gap:16rpx;box-shadow:0 4rpx 0 rgba(0,0,0,0.06),0 6rpx 16rpx rgba(0,0,0,0.04),0 10rpx 28rpx rgba(0,0,0,0.03)}
+.granny-btn:active{border-color:var(--amber);transform:scale(.97);box-shadow:0 2rpx 0 rgba(0,0,0,0.04),0 3rpx 8rpx rgba(0,0,0,0.03)}
 .granny-help{border-color:var(--gold)}
 .granny-emoji{font-size:80rpx}
 .granny-label{font-family:var(--font-journal);font-size:52rpx;font-weight:700;color:var(--ink)}

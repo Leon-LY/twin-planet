@@ -152,12 +152,12 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '入园助手' }) })
 .card-sub { display: block; font-size: 22rpx; color: var(--twin-text-secondary); margin-bottom: 16rpx; margin-top: -8rpx; }
 
 /* 雷达图模拟 */
-.radar-card { background: var(--twin-card-bg); border-radius: 20rpx; padding: 24rpx; margin-bottom: 20rpx; }
+.radar-card { background: linear-gradient(180deg,rgba(255,255,255,0.45) 0%,var(--twin-card-bg) 100%); border-radius: 20rpx; padding: 24rpx; margin-bottom: 20rpx; box-shadow:0 1rpx 0 rgba(0,0,0,.03),0 2rpx 8rpx rgba(0,0,0,.04); }
 .radar-axis { display: flex; justify-content: space-between; font-size: 20rpx; color: var(--twin-text-secondary); margin-bottom: 12rpx; }
 .radar-bar-wrap { display: flex; align-items: center; gap: 12rpx; margin-bottom: 12rpx; }
 .bar-label { font-size: 24rpx; width: 120rpx; color: var(--ink); }
-.bar-track { flex: 1; height: 16rpx; background: var(--twin-border); border-radius: 8rpx; }
-.bar-fill { height: 16rpx; border-radius: 8rpx; }
+.bar-track { flex: 1; height: 16rpx; background: var(--twin-border); border-radius: 8rpx; box-shadow:inset 0 2rpx 4rpx rgba(0,0,0,.06); }
+.bar-fill { height: 16rpx; border-radius: 8rpx; box-shadow:inset 0 1rpx 0 rgba(255,255,255,.35),inset 0 -1rpx 0 rgba(0,0,0,.06); }
 .bar-val { font-size: 24rpx; font-weight: 700; width: 48rpx; text-align: right; color: var(--twin-text); }
 
 .coupling-verdict { padding: 16rpx 20rpx; border-radius: 12rpx; margin-top: 12rpx; }
@@ -166,7 +166,7 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '入园助手' }) })
 /* 同班/分班对比 */
 .compare-section { margin-bottom: 20rpx; }
 .compare-cols { display: flex; gap: 12rpx; }
-.compare-col { flex: 1; background: var(--twin-card-bg); border-radius: 16rpx; padding: 16rpx 14rpx; }
+.compare-col { flex: 1; background: linear-gradient(180deg,rgba(255,255,255,0.5) 0%,var(--twin-card-bg) 100%); border-radius: 16rpx; padding: 16rpx 14rpx; box-shadow:0 1rpx 0 rgba(0,0,0,.03),0 2rpx 8rpx rgba(0,0,0,.04); }
 .compare-col.amber { border-top: 6rpx solid var(--twin-baby-a); }
 .compare-col.rose { border-top: 6rpx solid var(--twin-baby-b); }
 .col-title { display: block; font-size: 28rpx; font-weight: 700; margin-bottom: 10rpx; }

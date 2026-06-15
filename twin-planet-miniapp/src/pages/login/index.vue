@@ -8,14 +8,14 @@
     </view>
 
     <view class="login-actions">
-      <button class="btn-wechat" @click="doLogin" :loading="loading">
+      <button class="btn-wechat" hover-class="btn-press" @click="doLogin" :loading="loading">
         <text class="btn-text">微信一键登录</text>
       </button>
 
       <!-- 离线降级 — 登录失败后显示 -->
       <view class="offline-entry" v-if="showOffline">
         <view class="offline-divider"><text>登录遇到问题？</text></view>
-        <button class="btn-offline" @click="doOffline">
+        <button class="btn-offline" hover-class="btn-press" @click="doOffline">
           <text>📱 离线使用，数据存手机</text>
         </button>
         <text class="offline-hint">无需网络，记录和贴纸功能正常使用</text>

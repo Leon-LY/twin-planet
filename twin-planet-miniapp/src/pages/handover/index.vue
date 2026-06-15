@@ -309,10 +309,24 @@ onShareAppMessage(() => ({
 
 .recorder-section { margin-bottom: 40rpx; }
 .recorder-card {
-  background: var(--cream); border-radius: var(--radius-lg); padding: 48rpx 32rpx;
-  text-align: center; border: 4rpx solid var(--dot); transition: border-color .3s var(--ease-soft);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 30%, rgba(45,35,24,0.015) 100%),
+    var(--cream);
+  border-radius: var(--radius-lg); padding: 48rpx 32rpx;
+  text-align: center; border: 4rpx solid var(--dot);
+  box-shadow:
+    0 1rpx 0 rgba(45,35,24,0.02),
+    0 2rpx 8rpx rgba(45,35,24,0.04),
+    0 4rpx 16rpx rgba(45,35,24,0.03);
+  transition: all .3s var(--ease-soft);
 }
-.recorder-card.recording { border-color: var(--rose); }
+.recorder-card.recording {
+  border-color: var(--rose);
+  box-shadow:
+    0 1rpx 0 rgba(212,128,104,0.04),
+    0 2rpx 8rpx rgba(212,128,104,0.06),
+    0 4rpx 20rpx rgba(212,128,104,0.06);
+}
 .recorder-visual { height: 160rpx; display: flex; align-items: center; justify-content: center; margin-bottom: 24rpx; }
 .recorder-icon { font-size: 64rpx; }
 .audio-waves { display: flex; align-items: center; gap: 8rpx; }
@@ -320,21 +334,83 @@ onShareAppMessage(() => ({
 @keyframes wave { from { height: 16rpx; } to { height: 80rpx; } }
 .recorder-time { font-size: 56rpx; font-weight: 700; color: var(--ink); margin-bottom: 16rpx; font-family: var(--font-journal); letter-spacing: 4rpx; }
 .recorder-hint { font-size: var(--font-body); color: var(--ink-md); margin-bottom: 32rpx; }
-.btn-record { display: inline-flex; padding: 24rpx 64rpx; background: var(--amber); border-radius: var(--radius-full); color: #FFF; font-size: var(--font-card); font-weight: 600; transition: transform .15s var(--ease-bounce); }
-.btn-record:active { transform: scale(.94); }
+.btn-record {
+  display: inline-flex; padding: 24rpx 64rpx;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.16) 0%, transparent 55%, rgba(0,0,0,0.05) 100%),
+    var(--amber);
+  border-radius: var(--radius-full); color: #FFF; font-size: var(--font-card); font-weight: 600;
+  box-shadow:
+    0 2rpx 0 #C8702E,
+    0 4rpx 12rpx rgba(224,123,62,0.18),
+    0 1rpx 0 rgba(255,255,255,0.12) inset;
+  transition: all .15s var(--ease-stamp);
+}
+.btn-record:active {
+  transform: scale(.96) translateY(1rpx);
+  box-shadow:
+    0 1rpx 0 #C8702E,
+    0 1rpx 3rpx rgba(224,123,62,0.1);
+}
 .recorder-btns { display: flex; justify-content: center; gap: 24rpx; }
-.btn-cancel { padding: 20rpx 40rpx; background: var(--dot); border-radius: var(--radius-full); font-size: var(--font-body); color: var(--ink-md); }
-.btn-cancel:active { opacity: .7; }
-.btn-done { padding: 20rpx 40rpx; background: var(--mint); border-radius: var(--radius-full); color: #FFF; font-size: var(--font-body); font-weight: 600; }
-.btn-done:active { opacity: .7; }
+.btn-cancel {
+  padding: 20rpx 40rpx;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 50%, rgba(45,35,24,0.03) 100%),
+    var(--dot);
+  border-radius: var(--radius-full); font-size: var(--font-body); color: var(--ink-md);
+  box-shadow:
+    0 1rpx 0 rgba(45,35,24,0.04),
+    0 2rpx 6rpx rgba(45,35,24,0.03);
+  transition: all .15s var(--ease-stamp);
+}
+.btn-cancel:active {
+  transform: translateY(1rpx);
+  box-shadow:
+    0 0 0 rgba(45,35,24,0.04),
+    0 1rpx 2rpx rgba(45,35,24,0.02);
+  opacity: .85;
+}
+.btn-done {
+  padding: 20rpx 40rpx;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.16) 0%, transparent 55%, rgba(0,0,0,0.05) 100%),
+    var(--mint);
+  border-radius: var(--radius-full); color: #FFF; font-size: var(--font-body); font-weight: 600;
+  box-shadow:
+    0 2rpx 0 #4E8A5E,
+    0 4rpx 12rpx rgba(92,154,110,0.18),
+    0 1rpx 0 rgba(255,255,255,0.12) inset;
+  transition: all .15s var(--ease-stamp);
+}
+.btn-done:active {
+  transform: scale(.96) translateY(1rpx);
+  box-shadow:
+    0 1rpx 0 #4E8A5E,
+    0 1rpx 3rpx rgba(92,154,110,0.1);
+}
 
 .section-label { display: block; font-family: var(--font-journal); font-size: var(--font-card); font-weight: 600; color: var(--ink); margin-bottom: 16rpx; }
 .message-card {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 24rpx; background: var(--cream); border-radius: var(--radius-md);
-  margin-bottom: 10rpx; border-left: 6rpx solid var(--dot); transition: all .2s var(--ease-soft);
+  padding: 24rpx;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 40%, rgba(45,35,24,0.01) 100%),
+    var(--cream);
+  border-radius: var(--radius-md);
+  margin-bottom: 10rpx; border-left: 6rpx solid var(--dot);
+  box-shadow:
+    0 1rpx 0 rgba(45,35,24,0.02),
+    0 2rpx 8rpx rgba(45,35,24,0.03);
+  transition: all .2s var(--ease-soft);
 }
-.message-card.unread { border-left-color: var(--amber); }
+.message-card.unread {
+  border-left-color: var(--amber);
+  box-shadow:
+    0 1rpx 0 rgba(224,123,62,0.03),
+    0 2rpx 8rpx rgba(224,123,62,0.04),
+    0 4rpx 16rpx rgba(45,35,24,0.03);
+}
 .message-card.playing { border-left-color: var(--mint); background: var(--mint-lt); }
 .msg-left { display: flex; align-items: center; gap: 16rpx; flex: 1; }
 .msg-avatar { width: 64rpx; height: 64rpx; border-radius: 50%; background: var(--amber-lt); display: flex; align-items: center; justify-content: center; font-size: 28rpx; }
@@ -355,9 +431,35 @@ onShareAppMessage(() => ({
 
 .note-section{margin-bottom:32rpx}
 .note-input-row{display:flex;gap:12rpx;align-items:center}
-.note-input{flex:1;padding:16rpx 20rpx;background:var(--cream);border:2rpx solid var(--dot);border-radius:var(--radius-md);font-size:28rpx;color:var(--ink)}
-.note-send{padding:16rpx 24rpx;background:var(--amber);border-radius:var(--radius-md);color:#FFF;font-size:28rpx;font-weight:700}
-.note-send:active{transform:scale(.94)}
+.note-input{
+  flex:1;padding:16rpx 20rpx;
+  background: var(--cream);
+  border: 2rpx solid var(--dot);
+  border-radius: var(--radius-md);
+  font-size: 28rpx; color: var(--ink);
+  box-shadow:
+    inset 0 2rpx 4rpx rgba(45,35,24,0.04),
+    inset 0 1rpx 0 rgba(45,35,24,0.02);
+  transition: all .2s var(--ease-soft);
+}
+.note-send{
+  padding: 16rpx 24rpx;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.16) 0%, transparent 55%, rgba(0,0,0,0.05) 100%),
+    var(--amber);
+  border-radius: var(--radius-md); color: #FFF; font-size: 28rpx; font-weight: 700;
+  box-shadow:
+    0 2rpx 0 #C8702E,
+    0 3rpx 10rpx rgba(224,123,62,0.15),
+    0 1rpx 0 rgba(255,255,255,0.12) inset;
+  transition: all .15s var(--ease-stamp);
+}
+.note-send:active{
+  transform: scale(.96) translateY(1rpx);
+  box-shadow:
+    0 1rpx 0 #C8702E,
+    0 1rpx 3rpx rgba(224,123,62,0.08);
+}
 .msg-text{font-size:26rpx;color:var(--ink);line-height:1.5;margin-top:4rpx;background:var(--amber-lt);padding:8rpx 12rpx;border-radius:8rpx;display:block}
 .share-section{display:flex;flex-direction:column;align-items:center;gap:8rpx;margin-top:48rpx;padding-top:32rpx;border-top:2rpx dashed var(--dot)}
 .share-btn{width:100%;padding:20rpx;background:var(--cream);border:2rpx solid var(--dot);border-radius:var(--radius-md);font-size:28rpx;font-weight:600;color:var(--ink);text-align:center}

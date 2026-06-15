@@ -130,12 +130,18 @@ onMounted(() => {
 /* 今日统计 */
 .today-stats {
   display: flex; align-items: center; gap: 20rpx;
-  padding: 24rpx; background: var(--twin-card-bg); border-radius: 20rpx;
+  padding: 24rpx; border-radius: 20rpx;
   margin-bottom: 32rpx; border: 4rpx solid var(--twin-accent);
+  /* 纸质深度 */
+  background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 30%, rgba(0,0,0,0.01) 100%), var(--twin-card-bg);
+  box-shadow: 0 1rpx 0 rgba(0,0,0,0.03), 0 2rpx 8rpx rgba(0,0,0,0.04);
 }
 .stat-circle {
-  width: 96rpx; height: 96rpx; border-radius: 50%; background: var(--twin-accent-light);
+  width: 96rpx; height: 96rpx; border-radius: 50%;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
+  /* 凸起圆环 */
+  background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 40%, rgba(0,0,0,0.03) 100%), var(--twin-accent-light);
+  box-shadow: 0 2rpx 0 rgba(0,0,0,0.03), 0 3rpx 6rpx rgba(0,0,0,0.03);
 }
 .stat-num { font-size: 44rpx; font-weight: 700; color: var(--twin-accent); line-height: 1; }
 .stat-unit { font-size: 20rpx; color: var(--twin-accent); }
@@ -146,11 +152,19 @@ onMounted(() => {
 .section-label { display: block; font-size: 26rpx; font-weight: 600; color: var(--twin-text); margin-bottom: 20rpx; }
 .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12rpx; margin-bottom: 20rpx; }
 .cat-card {
-  text-align: center; padding: 20rpx 8rpx; background: var(--twin-card-bg);
-  border: 4rpx solid var(--twin-border); border-radius: 16rpx;
+  text-align: center; padding: 20rpx 8rpx; border-radius: 16rpx;
   display: flex; flex-direction: column; align-items: center; gap: 6rpx;
+  /* 凸起表面 */
+  background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 40%, rgba(0,0,0,0.02) 100%), var(--twin-card-bg);
+  border: 4rpx solid var(--twin-border);
+  box-shadow: 0 1rpx 0 rgba(0,0,0,0.03), 0 1.5rpx 3px rgba(0,0,0,0.02);
 }
-.cat-card.active { border-color: var(--twin-accent); background: var(--twin-accent-light); }
+.cat-card:active { box-shadow: 0 0.5rpx 0 rgba(0,0,0,0.03); transform: translateY(1rpx); }
+.cat-card.active {
+  border-color: var(--twin-accent);
+  background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 50%, rgba(0,0,0,0.04) 100%), var(--twin-accent-light);
+  box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.04), 0 0.5rpx 0 rgba(0,0,0,0.02);
+}
 .cat-emoji { font-size: 36rpx; }
 .cat-label { font-size: 22rpx; color: var(--twin-text-tertiary); }
 .cat-card.active .cat-label { color: var(--twin-text); font-weight: 600; }
@@ -160,11 +174,19 @@ onMounted(() => {
   width: 100%; padding: 24rpx 28rpx; background: var(--twin-card-bg);
   border: 4rpx solid var(--twin-border); border-radius: 24rpx;
   font-size: 28rpx; color: var(--twin-text); box-sizing: border-box;
+  /* 凹陷书写区 */
+  box-shadow: inset 0 2rpx 6rpx rgba(0,0,0,0.04), 0 1rpx 0 rgba(255,255,255,0.6);
 }
 .btn-record {
-  width: 100%; padding: 24rpx 0; background: var(--twin-accent);
-  color: var(--twin-card-bg); border: none; border-radius: 24rpx;
-  font-size: 30rpx; font-weight: 600;
+  width: 100%; padding: 24rpx 0; border: none; border-radius: 24rpx;
+  color: var(--twin-card-bg); font-size: 30rpx; font-weight: 600;
+  /* 凸起3D按钮 */
+  background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 50%, rgba(0,0,0,0.06) 100%), var(--twin-accent);
+  box-shadow: 0 2rpx 0 rgba(0,0,0,0.06), 0 4rpx 12rpx rgba(0,0,0,0.08);
+}
+.btn-record:active {
+  box-shadow: 0 0.5rpx 0 rgba(0,0,0,0.06), 0 1rpx 3rpx rgba(0,0,0,0.06);
+  transform: translateY(1.5rpx);
 }
 
 /* 列表 */
@@ -172,8 +194,11 @@ onMounted(() => {
 .recent-list { margin-bottom: 32rpx; }
 .contrib-item {
   display: flex; align-items: center; gap: 16rpx;
-  padding: 20rpx 24rpx; background: var(--twin-card-bg); border-radius: 16rpx;
+  padding: 20rpx 24rpx; border-radius: 16rpx;
   margin-bottom: 8rpx; border-left: 6rpx solid var(--twin-accent);
+  /* 纸质深度 */
+  background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 30%, rgba(0,0,0,0.01) 100%), var(--twin-card-bg);
+  box-shadow: 0 1rpx 0 rgba(0,0,0,0.03), 0 2rpx 8rpx rgba(0,0,0,0.04);
 }
 .contrib-item.faded { border-left-color: var(--twin-border); opacity: 0.7; }
 .contrib-emoji { font-size: 32rpx; flex-shrink: 0; }
