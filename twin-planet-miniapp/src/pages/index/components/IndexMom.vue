@@ -22,6 +22,7 @@
       <view class="journal-tape tape-amber" />
       <text class="greet-line1">{{ greetFull }}</text>
       <text class="greet-sub">{{ insightText }}</text>
+      <text class="seasonal-hint" v-if="seasonalHint">{{ seasonalHint }}</text>
       <view class="today-meta journal-margin" v-if="todaySummary || allGood || tomorrowForecast">
         <text class="today-summary" v-if="todaySummary">{{ todaySummary }}</text>
         <text class="today-allgood" v-if="allGood">🟢 两个小家伙今天都很好</text>
@@ -174,6 +175,7 @@ import { useAlertsStore } from '@/stores/alerts'
 import { useStickersStore } from '@/stores/stickers'
 import { useQuickRef } from '@/composables/useQuickRef'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
+import { getSeasonalHint } from '@/config/seasonal'
 
 const emit = defineEmits<{
   navigate: [url: string]
@@ -248,6 +250,9 @@ const insightText = computed(() => {
   if (s>0) return '各自精彩的一天~'
   return '今天两只小怪兽的故事又要开始啦'
 })
+
+const seasonalHint = computed(() => getSeasonalHint())
+
 const todaySummary = computed(() => {
   const today = recordsStore.logs.filter(l => l.createdAt >= new Date().setHours(0,0,0,0))
   if (!today.length) return ''
@@ -348,6 +353,7 @@ const goMore = () => emit('navigate', '/pages/discover/index')
 .today-card{position:relative;z-index:1;margin-bottom:32rpx;padding:24rpx;background:linear-gradient(135deg,var(--cream),var(--paper));border-radius:var(--radius-md);border:1.5px solid var(--dot)}
 .greet-line1{display:block;font-family:var(--font-journal);font-size:48rpx;font-weight:400;color:var(--ink);letter-spacing:-1rpx;line-height:1.3}
 .greet-sub{display:block;font-size:26rpx;color:var(--ink-lt);margin-top:12rpx;line-height:1.5;max-width:480rpx}
+.seasonal-hint{display:block;font-size:22rpx;color:var(--ink-md);margin-top:12rpx;line-height:1.5;font-family:var(--font-journal)}
 .today-meta{display:flex;flex-direction:column;gap:8rpx;margin-top:16rpx;padding-top:14rpx;border-top:1px dashed var(--dot)}
 .today-summary{font-family:var(--font-journal);font-size:24rpx;color:var(--ink)}
 .today-allgood{font-family:var(--font-journal);font-size:24rpx;color:var(--mint);font-weight:600}

@@ -17,6 +17,7 @@ export interface SproutEntry {
   babyAName: string
   babyBName: string
   note: string
+  mood?: string
   recordedAt: number
 }
 

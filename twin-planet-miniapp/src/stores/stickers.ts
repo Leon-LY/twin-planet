@@ -7,6 +7,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
+import { isSolarTermStartDay } from '@/config/seasonal'
 
 export interface Sticker {
   id: string
@@ -121,6 +122,11 @@ export const STICKER_RULES: StickerRule[] = [
   {
     trigger: 'invite_accepted', emoji: '🎁', label: '欢迎加入', category: 'special',
     check: (c) => !!c.inviteAccepted,
+  },
+  // === 节气贴纸（P2-6） ===
+  {
+    trigger: 'solar_term', emoji: '🗓️', label: '节气守护', category: 'special',
+    check: (c) => c.todayLogCount >= 1 && isSolarTermStartDay(),
   },
   // === 隐藏惊喜贴纸（5% 概率触发） ===
   {

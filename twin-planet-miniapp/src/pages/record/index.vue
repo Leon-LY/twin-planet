@@ -144,6 +144,13 @@
           <text class="retro-chip" @click="retro(15,'sleep')">😴 15分前</text>
         </view>
       </view>
+
+      <!-- 知识卡片 -->
+      <view class="knowledge-card" v-if="knowledgeVisible">
+        <text class="knowledge-icon">💡</text>
+        <text class="knowledge-text">{{ knowledgeText }}</text>
+        <text class="knowledge-close" @click="closeKnowledge">✕</text>
+      </view>
     </template>
 
     <!-- ===== SINGLE TIMER ===== -->
@@ -235,6 +242,7 @@ import {usePoeticTime} from '@/composables/usePoeticTime'
 import {useStickersStore} from '@/stores/stickers'
 import {useStickerSync} from '@/composables/useStickerSync'
 import {trackRecordCreated, trackPageView} from '@/utils/analytics'
+import {pickKnowledge} from '@/config/knowledge'
 
 const babiesStore=useBabiesStore();const recordsStore=useRecordsStore();const stickersStore=useStickersStore();const {syncStickers}=useStickerSync()
 const sel=ref('')
@@ -272,10 +280,27 @@ const typeLabel:Record<string,string>={feeding:'喂奶',sleep:'睡眠',diaper:'�
 function showUndo(log:RecordLog){if(undoTimer)clearTimeout(undoTimer);undoLogId.value=log.id;undoMessage.value=`已记录 ${log.babyName} ${typeLabel[log.type]||log.type}`;undoVisible.value=true;undoTimer=setTimeout(()=>{undoVisible.value=false},3000)}
 function doUndo(){if(undoLogId.value){recordsStore.removeLog(undoLogId.value);uni.showToast({title:'已撤销',icon:'none',duration:1500})}undoVisible.value=false;if(undoTimer)clearTimeout(undoTimer)}
 
+// ---- 知识卡片 ----
+const knowledgeText=ref('')
+const knowledgeVisible=ref(false)
+const knowledgeShownTypes=ref<Set<string>>(new Set())
+let knowledgeTimer:ReturnType<typeof setTimeout>|null=null
+function showKnowledge(type:string){
+  if(knowledgeShownTypes.value.has(type))return
+  const tip=pickKnowledge(type)
+  if(!tip)return
+  knowledgeShownTypes.value=new Set([...knowledgeShownTypes.value,type])
+  knowledgeText.value=tip
+  knowledgeVisible.value=true
+  if(knowledgeTimer)clearTimeout(knowledgeTimer)
+  knowledgeTimer=setTimeout(()=>{knowledgeVisible.value=false},5000)
+}
+function closeKnowledge(){knowledgeVisible.value=false;if(knowledgeTimer)clearTimeout(knowledgeTimer)}
+
 // ---- 计时器 ----
 const tick=ref(0);let h:ReturnType<typeof setInterval>|null=null
 watch(()=>recordsStore.isRunning,r=>{if(r){haptic.heartbeatStart();h=setInterval(()=>tick.value++,1000)}else{haptic.heartbeatStop();if(h){clearInterval(h);h=null}}},{immediate:true})
-onUnmounted(()=>{if(h)clearInterval(h);haptic.heartbeatStop();if(stickerTimer)clearTimeout(stickerTimer);if(undoTimer)clearTimeout(undoTimer)})
+onUnmounted(()=>{if(h)clearInterval(h);haptic.heartbeatStop();if(stickerTimer)clearTimeout(stickerTimer);if(undoTimer)clearTimeout(undoTimer);if(knowledgeTimer)clearTimeout(knowledgeTimer)})
 onHide(()=>{if(h){clearInterval(h);h=null};haptic.heartbeatStop()})
 const runningElapsed=computed(()=>{tick.value;return recordsStore.runningTimer?.elapsed??0})
 const runningName=computed(()=>{const t=recordsStore.runningTimer;return t?getName(t.babyId):''})
@@ -363,14 +388,14 @@ function doQuickBath(){
 }
 
 function finishAction(t:RecordType,mode:string,emoji:string){
-  haptic.sparkle();syncStickers();trackRecordCreated(t,mode);popSticker(emoji);resetContext()
+  haptic.sparkle();syncStickers();trackRecordCreated(t,mode);popSticker(emoji);resetContext();showKnowledge(t)
 }
 
 function quickNight(t:RecordType='feeding'){
   const id=sel.value||twins.value[0]?.id;if(!id)return
   const log=recordsStore.quickLog(id,t)
   if(log)showUndo(log)
-  haptic.sparkle();syncStickers()
+  haptic.sparkle();syncStickers();showKnowledge(t)
   const m:Record<string,string>={feeding:'🍼',diaper:'🧷',sleep:'😴'};popSticker(m[t]||'🌙')
 }
 
@@ -382,7 +407,7 @@ function dualLog(t:RecordType){
   if(a)lastLog=recordsStore.quickLog(a.id,t)
   if(b)lastLog=recordsStore.quickLog(b.id,t)
   if(lastLog)showUndo(lastLog)
-  haptic.doubleBeat();syncStickers();trackRecordCreated(t,'dual');popSticker('🔗')
+  haptic.doubleBeat();syncStickers();trackRecordCreated(t,'dual');popSticker('🔗');showKnowledge(t)
 }
 
 function retro(m:number,t:RecordType='feeding'){
@@ -535,6 +560,14 @@ const stopAll=()=>{const log=recordsStore.stopTimer();if(log)showUndo(log);reset
 .dc-stop:active{transform:scale(.92);box-shadow:inset 0 2rpx 4rpx rgba(0,0,0,0.1)}
 .stop-all{width:100%;padding:16rpx;background:var(--paper);border:2rpx solid var(--twin-danger);border-radius:24rpx;font-size:26rpx;font-weight:600;color:var(--twin-danger);position:relative;z-index:1;box-shadow:0 1rpx 0 rgba(0,0,0,0.03);transition:all .15s var(--ease-stamp)}
 .stop-all:active{box-shadow:inset 0 1rpx 3rpx rgba(0,0,0,0.06)}
+
+/* 知识卡片 */
+.knowledge-card{display:flex;align-items:flex-start;gap:14rpx;padding:20rpx 22rpx;margin-bottom:16rpx;background:linear-gradient(135deg,rgba(254,249,240,0.9),rgba(255,245,232,0.95));border:1.5px solid var(--dot);border-radius:18rpx;position:relative;z-index:1;animation:knowledgeIn .4s var(--ease-soft);box-shadow:0 2rpx 0 rgba(0,0,0,0.03),0 3rpx 8rpx rgba(0,0,0,0.04)}
+@keyframes knowledgeIn{from{opacity:0;transform:translateY(-10rpx)}to{opacity:1;transform:translateY(0)}}
+.knowledge-icon{font-size:36rpx;flex-shrink:0;line-height:1.3}
+.knowledge-text{flex:1;font-size:24rpx;color:var(--ink-md);line-height:1.6;font-family:var(--font-journal)}
+.knowledge-close{flex-shrink:0;font-size:24rpx;color:var(--ink-lt);padding:4rpx 8rpx;border-radius:50%;transition:all .15s}
+.knowledge-close:active{color:var(--ink);background:rgba(0,0,0,0.04)}
 
 /* 时间线 */
 .timeline{padding-top:16rpx;position:relative;z-index:1}

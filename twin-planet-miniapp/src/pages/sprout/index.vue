@@ -31,6 +31,19 @@
         </view>
       </scroll-view>
 
+      <view class="mood-row">
+        <text class="mood-label">情绪</text>
+        <view class="mood-emojis">
+          <text
+            v-for="emoji in MOOD_EMOJIS"
+            :key="emoji"
+            class="mood-emoji"
+            :class="{ active: selectedMood === emoji }"
+            @click="toggleMood(emoji)"
+          >{{ emoji }}</text>
+        </view>
+      </view>
+
       <view class="note-input-row">
         <input
           class="note-input"
@@ -68,6 +81,7 @@
               <text class="timeline-time">{{ timeStr(entry.recordedAt) }}</text>
             </view>
             <text class="timeline-note">{{ entry.note }}</text>
+            <text class="timeline-mood" v-if="entry.mood">{{ entry.mood }}</text>
             <view class="timeline-twins">
               <text class="twin-tag amber">{{ entry.babyAName }}</text>
               <text class="tag-arrow">↔</text>
@@ -101,6 +115,13 @@ const { syncStickers } = useStickerSync()
 
 const selectedType = ref<InteractionType>('share')
 const noteText = ref('')
+const selectedMood = ref('')
+
+const MOOD_EMOJIS = ['😊', '😐', '😢', '😡', '🤗', '😴']
+
+function toggleMood(emoji: string) {
+  selectedMood.value = selectedMood.value === emoji ? '' : emoji
+}
 
 function addEntry() {
   if (!noteText.value.trim()) return
@@ -117,9 +138,11 @@ function addEntry() {
     babyAName: babyA.nickname || babyA.name,
     babyBName: babyB.nickname || babyB.name,
     note: noteText.value.trim(),
+    mood: selectedMood.value || undefined,
   })
 
   noteText.value = ''
+  selectedMood.value = ''
   // 同步贴纸
   syncStickers({ sproutCount: store.sproutEntries.length })
   uni.showToast({ title: '🌱 已记录', icon: 'success', duration: 1000 })
@@ -181,6 +204,27 @@ onShareAppMessage(() => {
 .chip-emoji { font-size: 28rpx; }
 .chip-label { font-size: 24rpx; }
 
+.mood-row { display: flex; align-items: center; gap: 16rpx; margin-bottom: 16rpx; }
+.mood-label { font-size: 24rpx; color: var(--twin-text-secondary); font-weight: 600; flex-shrink: 0; }
+.mood-emojis { display: flex; gap: 12rpx; }
+.mood-emoji {
+  font-size: 40rpx; width: 64rpx; height: 64rpx;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 40%, rgba(0,0,0,0.02) 100%), var(--twin-card-bg);
+  border: 2rpx solid var(--twin-border);
+  box-shadow: 0 1rpx 0 rgba(0,0,0,0.03), 0 1.5rpx 3rpx rgba(0,0,0,0.02);
+  transition: all .15s var(--ease-stamp);
+  opacity: 0.55;
+}
+.mood-emoji:active { transform: scale(.88); }
+.mood-emoji.active {
+  opacity: 1;
+  border-color: var(--twin-accent);
+  background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 50%, rgba(0,0,0,0.04) 100%), var(--twin-accent-light);
+  box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.04), 0 0 0 2rpx rgba(92,154,110,0.08);
+}
+
 .note-input-row { display: flex; gap: 12rpx; }
 .note-input {
   flex: 1; padding: 24rpx 28rpx; background: var(--twin-card-bg);
@@ -229,6 +273,7 @@ onShareAppMessage(() => {
 .timeline-type { font-size: 24rpx; font-weight: 600; color: var(--twin-text); }
 .timeline-time { font-size: 20rpx; color: var(--twin-text-secondary); margin-left: auto; }
 .timeline-note { font-size: 26rpx; color: var(--ink); line-height: 1.6; }
+.timeline-mood { display: inline-block; font-size: 32rpx; margin-top: 8rpx; }
 .timeline-twins { display: flex; align-items: center; gap: 8rpx; margin-top: 12rpx; }
 .twin-tag { font-size: 22rpx; padding: 4rpx 16rpx; border-radius: 20rpx; }
 .twin-tag.amber { background: var(--twin-baby-a-light); color: var(--twin-baby-a); }
