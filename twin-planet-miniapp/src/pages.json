@@ -8,6 +8,13 @@
 			}
 		},
 		{
+			"path": "pages/record/granny",
+			"style": {
+				"navigationBarTitleText": "记一笔",
+				"navigationBarBackgroundColor": "#FEF9F0"
+			}
+		},
+		{
 			"path": "pages/login/index",
 			"style": {
 				"navigationBarTitleText": "欢迎",

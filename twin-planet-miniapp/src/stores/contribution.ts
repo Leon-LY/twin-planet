@@ -44,20 +44,25 @@ export const useContributionStore = defineStore('contribution', () => {
     ).reverse()
   })
 
-  function add(data: Omit<ContributionEntry, 'id' | 'recordedAt' | 'userName'> & { userName?: string }) {
+  function add(data: Omit<ContributionEntry, 'id' | 'recordedAt' | 'userName' | 'userId'> & { userName?: string; userId?: string }) {
+    // P1-3 修复: 自动注入当前用户身份
     let userName = data.userName
-    if (!userName) {
+    let userId = data.userId
+    if (!userName || !userId) {
       try {
         const userStore = useUserStore()
-        userName = userStore.profile?.nickname || userStore.roleLabel
+        if (!userName) userName = userStore.profile?.nickname || userStore.roleLabel
+        if (!userId) userId = (userStore.profile as any)?.openid || 'unknown'
       } catch {
-        userName = '家人'
+        if (!userName) userName = '家人'
+        if (!userId) userId = 'unknown'
       }
     }
     entries.value = [...entries.value, {
       ...data,
       id: `contrib-${Date.now()}`,
       userName,
+      userId,
       recordedAt: Date.now(),
     }]
     _p.save(entries.value)

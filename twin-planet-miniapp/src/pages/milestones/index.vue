@@ -30,9 +30,9 @@
         <!-- 展开的里程碑列表 -->
         <view class="domain-detail" v-if="expandedDomain === domain">
           <text class="detail-examples">{{ info.examples }}</text>
-          <view v-for="norm in getNorms(domain as MilestoneDomain)" :key="norm.ageMonths" class="norm-item" :class="{ achieved: isAchieved(activeBaby!.id, domain as MilestoneDomain, norm.title) }">
+          <view v-for="norm in getNorms(domain as MilestoneDomain)" :key="norm.ageMonths" class="norm-item" :class="statusClass(getStatus(activeBaby!.id, domain as MilestoneDomain, norm.title))">
             <view class="norm-check" @click.stop="toggleMilestone(domain as MilestoneDomain, norm)">
-              <text>{{ isAchieved(activeBaby!.id, domain as MilestoneDomain, norm.title) ? '✅' : '⬜' }}</text>
+              <text>{{ statusIcon(getStatus(activeBaby!.id, domain as MilestoneDomain, norm.title)) }}</text>
             </view>
             <text class="norm-title">{{ norm.title }}</text>
             <text class="norm-age">{{ norm.ageMonths }}月</text>
@@ -68,7 +68,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useBabiesStore } from '@/stores/babies'
-import { useMilestonesStore, MILESTONE_DOMAINS, MILESTONE_NORMS, type MilestoneDomain } from './store'
+import { useMilestonesStore, MILESTONE_DOMAINS, MILESTONE_NORMS, type MilestoneDomain, type Milestone } from './store'
 import { dateStr } from '@/utils/format'
 
 const babiesStore = useBabiesStore()
@@ -95,24 +95,66 @@ function getNorms(domain: MilestoneDomain) {
   return MILESTONE_NORMS[domain]
 }
 
-function isAchieved(babyId: string, domain: MilestoneDomain, title: string) {
-  return store.milestones.some(m => m.babyId === babyId && m.domain === domain && m.title === title)
+function getStatus(babyId: string, domain: MilestoneDomain, title: string): Milestone['status'] {
+  return store.getMilestoneStatus(babyId, domain, title)
+}
+
+function statusIcon(status: Milestone['status']): string {
+  if (status === 'achieved') return '✅'
+  if (status === 'emerging') return '🌱'
+  return '⬜'
+}
+
+function statusClass(status: Milestone['status']): string {
+  if (status === 'achieved') return 'status-achieved'
+  if (status === 'emerging') return 'status-emerging'
+  return ''
 }
 
 function toggleDomain(domain: MilestoneDomain) {
   expandedDomain.value = expandedDomain.value === domain ? null : domain
 }
 
+/** 三态循环：not_yet → emerging → achieved → not_yet */
 function toggleMilestone(domain: MilestoneDomain, norm: { ageMonths: number; title: string; desc: string }) {
-  if (isAchieved(activeBabyId.value, domain, norm.title)) return
-  store.addMilestone({ babyId: activeBabyId.value, domain, title: norm.title, note: norm.desc, achievedAt: Date.now(), ageNorm: [norm.ageMonths - 6, norm.ageMonths + 6] })
-  uni.showToast({ title: '🌟 ' + norm.title, icon: 'success', duration: 1000 })
+  const babyId = activeBabyId.value
+  const current = store.findMilestone(babyId, domain, norm.title)
+
+  if (!current) {
+    // not_yet → emerging
+    store.addMilestone({
+      babyId,
+      domain,
+      title: norm.title,
+      note: norm.desc,
+      achievedAt: Date.now(),
+      ageNorm: [Math.max(0, norm.ageMonths - 6), norm.ageMonths + 6],
+      status: 'emerging',
+    })
+    uni.showToast({ title: '🌱 标记为"发展中"', icon: 'none', duration: 1200 })
+  } else if (current.status === 'emerging') {
+    // emerging → achieved
+    store.updateMilestoneStatus(current.id, 'achieved')
+    uni.showToast({ title: '✅ 已达标！', icon: 'success', duration: 1200 })
+  } else {
+    // achieved → not_yet (remove record)
+    store.removeMilestone(current.id)
+    uni.showToast({ title: '⬜ 已重置', icon: 'none', duration: 1000 })
+  }
 }
 
 function addCustom(domain: MilestoneDomain) {
   const text = customNotes[domain]?.trim()
   if (!text) return
-  store.addMilestone({ babyId: activeBabyId.value, domain, title: text, note: '自定义', achievedAt: Date.now(), ageNorm: [0, 0] })
+  store.addMilestone({
+    babyId: activeBabyId.value,
+    domain,
+    title: text,
+    note: '自定义',
+    achievedAt: Date.now(),
+    ageNorm: [0, 0],
+    status: 'achieved',
+  })
   customNotes[domain] = ''
   uni.showToast({ title: '已添加', icon: 'success' })
 }
@@ -141,9 +183,10 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '能力观察' }) })
 
 .domain-detail { margin-top: 16rpx; padding-top: 16rpx; border-top: 2rpx solid var(--twin-border); }
 .detail-examples { display: block; font-size: 22rpx; color: var(--twin-text-secondary); margin-bottom: 12rpx; }
-.norm-item { display: flex; align-items: center; gap: 12rpx; padding: 10rpx 0; }
-.norm-item.achieved { opacity: 0.5; }
-.norm-check { font-size: 28rpx; }
+.norm-item { display: flex; align-items: center; gap: 12rpx; padding: 10rpx 8rpx; border-radius: 8rpx; transition: background 0.2s; }
+.norm-item.status-achieved { background: linear-gradient(90deg, rgba(92,154,110,0.08), transparent); }
+.norm-item.status-emerging { background: linear-gradient(90deg, rgba(200,153,62,0.08), transparent); }
+.norm-check { font-size: 28rpx; flex-shrink: 0; }
 .norm-title { flex: 1; font-size: 26rpx; color: var(--ink); }
 .norm-age { font-size: 22rpx; color: var(--twin-text-muted); }
 

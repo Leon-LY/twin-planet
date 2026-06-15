@@ -5,11 +5,10 @@
 import type { ApiResponse } from './types'
 import { PERSIST_KEYS } from '@/utils/persist'
 
-// 🔒 后端地址从环境变量或配置读取，不带协议和 IP 硬编码
-// 生产环境：通过域名 + HTTPS 访问
-// 开发环境：通过局域网 IP + HTTP 访问
+// 🔒 P1-5 修复: 移除硬编码服务器 IP 和 HTTP 明文 fallback
+// 生产环境必须通过域名 + HTTPS 访问，开发环境通过环境变量注入
 const BASE_URL = (typeof process !== 'undefined' && process.env?.API_BASE_URL)
-  || 'http://49.232.49.175:3003/api'
+  || 'https://api.twin-planet.example.com/api'  // 占位域名，部署时替换
 
 const TOKEN_KEY = 'tp_' + PERSIST_KEYS.token
 

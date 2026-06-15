@@ -164,15 +164,29 @@ export function exportAllData(): string {
 /** 保存导出数据到剪贴板或文件 */
 export function saveExportData(): Promise<string> {
   return new Promise((resolve, reject) => {
-    const json = exportAllData()
-    const fs = uni.getFileSystemManager()
-    const path = `${wx.env.USER_DATA_PATH}/twin-planet-backup-${Date.now()}.json`
-    fs.writeFile({
-      filePath: path,
-      data: json,
-      encoding: 'utf8',
-      success: () => resolve(path),
-      fail: (err) => reject(err),
+    // 🔒 P1-5 修复: 导出前警告隐私风险
+    uni.showModal({
+      title: '数据导出',
+      content: '即将导出包含双胞胎姓名、出生日期、喂养记录等家庭隐私数据的 JSON 文件。\n\n请勿通过微信或云存储明文传输此文件。',
+      confirmText: '确认导出',
+      cancelText: '取消',
+      success: (modalRes) => {
+        if (!modalRes.confirm) {
+          reject(new Error('用户取消导出'))
+          return
+        }
+        const json = exportAllData()
+        const fs = uni.getFileSystemManager()
+        const path = `${wx.env.USER_DATA_PATH}/twin-planet-backup-${Date.now()}.json`
+        fs.writeFile({
+          filePath: path,
+          data: json,
+          encoding: 'utf8',
+          success: () => resolve(path),
+          fail: (err) => reject(err),
+        })
+      },
+      fail: () => reject(new Error('弹窗失败')),
     })
   })
 }

@@ -242,7 +242,8 @@ const feedSide=ref<'left'|'right'|'bottle'|''>('')
 const feedAmount=ref(0)
 const diaperType=ref<'wet'|'dirty'|'both'|''>('')
 const tempValue=ref(0)
-const tempPresets=[36.0,36.5,37.0,37.5,38.0,38.5,39.0,39.5,40.0]
+// P1-6 修复: 移除 40.0°C 危险预设，范围 36.0-39.5
+const tempPresets=[36.0,36.5,37.0,37.5,38.0,38.5,39.0,39.5]
 const medName=ref('')
 const medDosage=ref('')
 const medPresets=['布洛芬','对乙酰氨基酚','维生素D','益生菌','蒙脱石散','生理盐水']
@@ -320,6 +321,8 @@ function doDiaperQuick(t:'wet'|'dirty'|'both'){
 function doTempQuick(){
   const id=sel.value||twins.value[0]?.id;if(!id)return
   if(!tempValue.value){uni.showToast({title:'请选择温度值',icon:'none'});return}
+  // P1-6 修复: ≥38.5°C 弹出发热警示
+  if(tempValue.value>=38.5){uni.showToast({title:'宝宝发烧了，建议联系家长或就医',icon:'none',duration:3000})}
   recordsStore.quickLog(id,'temperature',{temperatureValue:tempValue.value})
   finishAction('temperature','quick','🌡️')
 }
@@ -350,10 +353,12 @@ function quickNight(t:RecordType='feeding'){
   const m:Record<string,string>={feeding:'🍼',diaper:'🧷',sleep:'😴'};popSticker(m[t]||'🌙')
 }
 
+// P0-3 修复: 快速双记仅标记类型，不再将当前面板的 feedSide/feedAmount 复制给两个宝宝
+// 详细上下文（左/右/瓶喂 + 奶量）通过单独计时完成
 function dualLog(t:RecordType){
   const a=twins.value[0],b=twins.value[1]
-  if(a)recordsStore.quickLog(a.id,t,{feedingSide:feedSide.value||undefined,amountMl:feedAmount.value||undefined})
-  if(b)recordsStore.quickLog(b.id,t,{feedingSide:feedSide.value||undefined,amountMl:feedAmount.value||undefined})
+  if(a)recordsStore.quickLog(a.id,t)
+  if(b)recordsStore.quickLog(b.id,t)
   haptic.doubleBeat();syncStickers();trackRecordCreated(t,'dual');popSticker('🔗')
 }
 

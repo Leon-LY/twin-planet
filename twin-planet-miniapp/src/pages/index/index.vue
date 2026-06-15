@@ -168,7 +168,7 @@ onShareAppMessage(() => {
 
 // ---- 导航 ----
 const navigate = (url: string) => uni.navigateTo({ url })
-const goRecord = () => navigate('/pages/record/index')
+const goRecord = () => navigate('/pages/record/granny')
 const goGrowth = () => navigate('/pages/growth/index')
 const goSnapshot = () => navigate('/pages/snapshot/index')
 const goHelp = () => {

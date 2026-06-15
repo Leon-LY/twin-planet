@@ -48,3 +48,22 @@ export function timeOnly(ts: number): string {
   const d = new Date(ts)
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
+
+/**
+ * 精确月龄计算（含早产儿矫正）
+ * P1-4: 从 growth/index.vue 提取为全局工具，供 milestones 等页面复用
+ * @returns 月龄（保留1位小数）
+ */
+export function calcAgeMonths(birthDate: string, gestationalWeeks?: number): number {
+  const b = new Date(birthDate)
+  const n = new Date()
+  const msPerDay = 86400000
+  const daysDiff = (n.getTime() - b.getTime()) / msPerDay
+  const chronAge = Math.round((daysDiff / 30.4375) * 10) / 10
+  if (gestationalWeeks && gestationalWeeks < 37) {
+    const prematurityMonths = (40 - gestationalWeeks) / 4
+    const corrected = chronAge - prematurityMonths
+    return Math.max(0, Math.round(corrected * 10) / 10)
+  }
+  return chronAge
+}

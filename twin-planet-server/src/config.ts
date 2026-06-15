@@ -13,7 +13,7 @@ function requireEnv(key: string): string {
 export const config = {
   port: parseInt(process.env.PORT || '3003', 10),
   databaseUrl: process.env.DATABASE_URL || '',
-  jwtSecret: process.env.JWT_SECRET || '',
+  jwtSecret: requireEnv('JWT_SECRET'),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '30d',
   wechat: {
     appid: process.env.WECHAT_APPID || '',

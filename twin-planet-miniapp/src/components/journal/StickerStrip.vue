@@ -132,7 +132,7 @@ function shapeClass(i: number): string {
   font-size: 40rpx;
   position: relative;
   z-index: 0;
-  filter: drop-shadow(0 1rpx 1rpx rgba(0,0,0,0.1));
+  text-shadow: 0 1rpx 1rpx rgba(0,0,0,0.1);
 }
 
 /* 贴纸标签 — 极小文字 */

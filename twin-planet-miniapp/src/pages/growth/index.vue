@@ -120,6 +120,7 @@ import {
 type Gender,type Indicator,type DiffResult,
 } from './utils/whoGrowth'
 import { drawClinicCard } from './utils/clinicCard'
+import { calcAgeMonths } from '@/utils/format'
 
 const babiesStore=useBabiesStore()
 const growthStore=useGrowthStore()

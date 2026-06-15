@@ -319,7 +319,7 @@ page {
   border-style: solid;
   border-width: 0 0 32rpx 32rpx;
   border-color: transparent transparent var(--paper) transparent;
-  filter: drop-shadow(-2rpx 2rpx 3rpx rgba(0,0,0,0.1));
+  box-shadow: -2rpx 2rpx 3rpx rgba(0,0,0,0.1);
   border-radius: 0 0 4rpx 0;
 }
 
@@ -1059,11 +1059,11 @@ page {
 
 /* 贴纸撕开 — 从右下角揭起 */
 @keyframes stickerPeel {
-  0%   { transform: rotate(0) translate(0,0); opacity: 0.6; filter: brightness(1); }
-  25%  { transform: rotate(-18deg) translate(-16rpx, -24rpx); opacity: 1; filter: brightness(1.08); }
+  0%   { transform: rotate(0) translate(0,0); opacity: 0.6; }
+  25%  { transform: rotate(-18deg) translate(-16rpx, -24rpx); opacity: 1; }
   50%  { transform: rotate(-8deg) translate(-8rpx, -12rpx); opacity: 1; }
   80%  { transform: rotate(2deg) translate(2rpx, 4rpx); }
-  100% { transform: rotate(0) translate(0,0); opacity: 1; filter: brightness(1); }
+  100% { transform: rotate(0) translate(0,0); opacity: 1; }
 }
 
 /* 纸角折入 — 贺卡翻开效果（用于庆祝弹窗） */
@@ -1253,7 +1253,7 @@ page {
   border-color: var(--ink-md);
 }
 .theme-dark .journal-curl::after {
-  filter: drop-shadow(-2rpx 2rpx 4rpx rgba(0,0,0,0.2));
+  box-shadow: -2rpx 2rpx 4rpx rgba(0,0,0,0.2);
 }
 
 /* 暗色模式 — 物理按钮系统 */
