@@ -397,7 +397,7 @@ const goMore = () => {
 .qr-text{font-size:24rpx;color:var(--ink-md);font-weight:500}
 
 .action-center{display:flex;align-items:center;justify-content:center;position:relative;z-index:1;margin-bottom:28rpx}
-.main-btn{width:300rpx;height:300rpx;border-radius:50%;position:relative;z-index:2;background:var(--amber);border:none;color:#FFF;font-family:var(--font-journal);box-shadow:0 20rpx 56rpx rgba(224,123,62,0.2),0 6rpx 12rpx rgba(224,123,62,0.1),inset 0 3rpx 0 rgba(255,255,255,.2),inset 0 -6rpx 12rpx rgba(0,0,0,.06);transform:rotate(-2deg);transition:transform .18s var(--ease-bounce),box-shadow .18s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6rpx}
+.main-btn{width:300rpx;height:300rpx;border-radius:50%;position:relative;z-index:2;background:var(--amber);border:none;color:#FFF;font-family:var(--font-journal);box-shadow:0 20rpx 56rpx rgba(224,123,62,0.2),0 6rpx 12rpx rgba(224,123,62,0.1),inset 0 3rpx 0 rgba(255,255,255,.2),inset 0 -6rpx 12rpx rgba(0,0,0,.06);transform:rotate(-2deg);transition:transform .18s var(--ease-bounce),box-shadow .18s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6rpx;animation:btnBreathe 3.5s var(--ease-soft) infinite}
 .main-btn::after{content:'';position:absolute;top:14rpx;left:22%;right:22%;height:32%;background:radial-gradient(ellipse at center,rgba(255,255,255,.25) 0%,transparent 70%);border-radius:50%;pointer-events:none}
 .main-btn:active{transform:rotate(-2deg)scale(.86);box-shadow:0 6rpx 20rpx rgba(224,123,62,.16),0 2rpx 4rpx rgba(224,123,62,.08)}
 .btn-icon{font-size:56rpx;position:relative;z-index:1}
@@ -419,8 +419,7 @@ const goMore = () => {
 
 .celebrate-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(45,35,24,.45);display:flex;align-items:center;justify-content:center;z-index:999;animation:fadeIn .3s var(--ease-soft)}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.celebrate-card{background:var(--paper);border-radius:var(--radius-lg);padding:64rpx 48rpx 48rpx;text-align:center;margin:0 48rpx;box-shadow:0 16rpx 48rpx rgba(45,35,24,.15);animation:celebBounce .5s var(--ease-bounce)}
-@keyframes celebBounce{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+.celebrate-card{background:var(--paper);border-radius:var(--radius-lg);padding:64rpx 48rpx 48rpx;text-align:center;margin:0 48rpx;box-shadow:0 16rpx 48rpx rgba(45,35,24,.15);animation:cornerFold .55s var(--ease-page) both}
 .celebrate-emoji{font-size:120rpx;display:block;margin-bottom:16rpx}
 .celebrate-title{display:block;font-family:var(--font-journal);font-size:44rpx;color:var(--ink);font-weight:700}
 .celebrate-desc{display:block;font-size:28rpx;color:var(--ink-md);margin-top:12rpx;line-height:1.5}

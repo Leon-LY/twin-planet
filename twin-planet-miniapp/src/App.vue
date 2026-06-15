@@ -475,6 +475,117 @@ page {
   animation: paperJiggle .25s var(--ease-stamp) both;
 }
 
+/* ═══════════════════════════════════════════
+   Motion AI Kit · 增强动效
+   ═══════════════════════════════════════════ */
+
+/* 骨架屏闪烁 — 暖光扫过纸面 */
+@keyframes shimmer {
+  0%   { background-position: -150% 0; }
+  100% { background-position: 150% 0; }
+}
+.skeleton-shimmer {
+  background: linear-gradient(
+    105deg,
+    var(--cream) 0%,
+    var(--cream) 35%,
+    var(--paper) 48%,
+    var(--cream) 52%,
+    var(--cream) 100%
+  );
+  background-size: 300% 100%;
+  animation: shimmer 2s var(--ease-soft) infinite;
+}
+
+/* 主按钮呼吸 — 阴影脉动暗示"按我" */
+@keyframes btnBreathe {
+  0%,100% { box-shadow: 0 20rpx 56rpx rgba(224,123,62,0.2), 0 6rpx 12rpx rgba(224,123,62,0.1); }
+  50%     { box-shadow: 0 26rpx 68rpx rgba(224,123,62,0.3), 0 8rpx 18rpx rgba(224,123,62,0.15); }
+}
+.btn-breathe {
+  animation: btnBreathe 3s var(--ease-soft) infinite;
+}
+
+/* 庆贺彩纸 — 从中心向四周飞散（用CSS变量控制方向） */
+@keyframes confettiBurst {
+  0%   { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+  100% { transform: translate(var(--cx, 40rpx), var(--cy, -80rpx)) rotate(var(--cr, 180deg)) scale(0); opacity: 0; }
+}
+.confetti-piece {
+  position: absolute;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 2rpx;
+  animation: confettiBurst .8s var(--ease-stamp) both;
+  pointer-events: none;
+}
+
+/* 贴纸撕开 — 从右下角揭起 */
+@keyframes stickerPeel {
+  0%   { transform: rotate(0) translate(0,0); opacity: 0.6; filter: brightness(1); }
+  25%  { transform: rotate(-18deg) translate(-16rpx, -24rpx); opacity: 1; filter: brightness(1.08); }
+  50%  { transform: rotate(-8deg) translate(-8rpx, -12rpx); opacity: 1; }
+  80%  { transform: rotate(2deg) translate(2rpx, 4rpx); }
+  100% { transform: rotate(0) translate(0,0); opacity: 1; filter: brightness(1); }
+}
+
+/* 纸角折入 — 贺卡翻开效果（用于庆祝弹窗） */
+@keyframes cornerFold {
+  0%   { transform: scale(0.85) rotate(-3deg); opacity: 0; }
+  40%  { transform: scale(1.03) rotate(0.5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+/* 墨水晕开 — 阴影从中心向四周扩散 */
+@keyframes inkBleed {
+  0%   { box-shadow: 0 0 0 0 var(--amber-lt); }
+  100% { box-shadow: 0 0 0 12rpx transparent; }
+}
+
+/* ═══════════════════════════════════════════
+   Better Icons · 图标系统
+   ═══════════════════════════════════════════ */
+
+/* 统一 emoji 尺寸体系 */
+.emoji-micro  { font-size: 18rpx; }  /* 微标注 */
+.emoji-sm     { font-size: 24rpx; }  /* 小图标（行内） */
+.emoji-md     { font-size: 40rpx; }  /* 中图标（按钮/卡片） */
+.emoji-lg     { font-size: 56rpx; }  /* 大图标（特征） */
+.emoji-xl     { font-size: 80rpx; }  /* 超大（页头） */
+.emoji-hero   { font-size: 120rpx; } /* 英雄（庆祝） */
+
+/* CSS 状态指示器 — 替代小emoji的点状状态 */
+.status-dot {
+  display: inline-block;
+  width: 14rpx; height: 14rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-dot.live    { background: var(--mint); box-shadow: 0 0 8rpx var(--mint); }
+.status-dot.warn    { background: var(--gold); }
+.status-dot.urgent  { background: var(--twin-danger); animation: dotPulse 1.2s ease-in-out infinite; }
+.status-dot.idle    { background: var(--ink-lt); }
+
+@keyframes dotPulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%     { opacity: 0.4; transform: scale(0.65); }
+}
+
+/* 纸页标签 — 替代emoji的小书签标记 */
+.page-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 4rpx 12rpx;
+  background: var(--amber-lt);
+  border: 1px solid var(--amber);
+  border-radius: 3rpx 10rpx 3rpx 3rpx;
+  font-size: 20rpx;
+  font-weight: 700;
+  color: var(--amber);
+  font-family: var(--font-journal);
+}
+
 /* 奶奶模式 — 全局大字 */
 .font-large {
   --font-caption:28rpx;
@@ -521,7 +632,11 @@ page {
 .font-large .journal-stamp,
 .font-large .journal-card,
 .font-large .sticker-item.new,
-.font-large .sticker-pop-emoji { animation: none !important; }
+.font-large .sticker-pop-emoji,
+.font-large .btn-breathe,
+.font-large .skeleton-shimmer,
+.font-large .confetti-piece,
+.font-large .celebrate-card { animation: none !important; }
 
 .font-large view,
 .font-large text,

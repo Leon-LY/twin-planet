@@ -99,7 +99,7 @@ function isNew(s: Sticker): boolean {
 .sticker-item:nth-child(5n) { transform: rotate(0.3deg); }
 .sticker-item.new {
   border-color: var(--gold);
-  animation: stickerPlace .55s var(--ease-stamp) both;
+  animation: stickerPeel .6s var(--ease-peel) both;
 }
 .sticker-emoji {
   width: 56rpx; height: 56rpx; border-radius: 50%;
