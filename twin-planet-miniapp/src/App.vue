@@ -1194,6 +1194,32 @@ page {
 .font-large rich-text,
 .font-large icon { animation-duration: 0s !important; transition-duration: 0s !important; }
 
+/* P1-2: 大字模式穿透 scoped 硬编码字号 */
+.font-large .section-label,
+.font-large .ctx-title,
+.font-large .ctx-chip,
+.font-large .ta-label,
+.font-large .qa-label,
+.font-large .tl-text,
+.font-large .tl-when,
+.font-large .tl-section,
+.font-large .ctx-btn,
+.font-large .night-chip,
+.font-large .night-label,
+.font-large .retro-chip,
+.font-large .retro-label,
+.font-large .dc-name,
+.font-large .dc-ctx,
+.font-large .dc-stop,
+.font-large .feed-ml { font-size: var(--font-body) !important; }
+.font-large .ctx-chip.sm { font-size: var(--font-caption) !important; }
+.font-large .ctx-chip.lg { font-size: var(--font-card) !important; }
+.font-large .dual-chip { font-size: var(--font-caption) !important; }
+.font-large .dual-primary { font-size: var(--font-body) !important; }
+.font-large .clock-elapsed { font-size: var(--font-hero) !important; }
+.font-large .hero-baby-name { font-size: var(--font-title) !important; }
+.font-large .stop-all { font-size: var(--font-body) !important; }
+
 /* 奶奶模式高对比度 */
 .role-granny {
   --amber: #C06A2E;

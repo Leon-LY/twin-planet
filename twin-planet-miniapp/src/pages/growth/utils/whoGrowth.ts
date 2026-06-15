@@ -26,7 +26,10 @@ export interface PercentileCurve {
 }
 
 export type Gender = 'male' | 'female'
-export type Indicator = 'weight' | 'length'
+export type Indicator = 'weight' | 'length' | 'height'
+// 'weight': 体重 (0-60月)
+// 'length': 身长 (0-24月，卧位测量) — 24月龄以上自动切换为站立身高数据
+// 'height': 站立身高 (24-60月) — 24月龄以下自动切换为卧位身长数据
 // TODO: 添加 'head_circumference' 的 WHO 头围 LMS 数据后恢复此类型
 
 // ============================================================
@@ -162,7 +165,7 @@ const WHO_WEIGHT_GIRLS: LMSRecord[] = [
 ]
 
 // ============================================================
-// WHO 身长/身高-for-age L/M/S 参数 (0-24个月身长)
+// WHO 身长-for-age L/M/S 参数 (0-24个月身长，卧位测量)
 // ============================================================
 
 const WHO_LENGTH_BOYS: LMSRecord[] = [
@@ -222,21 +225,143 @@ const WHO_LENGTH_GIRLS: LMSRecord[] = [
 ]
 
 // ============================================================
+// WHO 站立身高-for-age L/M/S 参数 (24-60个月，站立测量)
+// 数据来源: WHO Child Growth Standards (2006)
+// 注意: 24月龄 M 值与上方 WHO_LENGTH 24月龄值保持一致；
+//       后续月份基于 WHO 身高增速曲线插值。
+// L=1 表示身高数据服从正态分布。
+// ============================================================
+
+const WHO_HEIGHT_BOYS_24_60: LMSRecord[] = [
+  { month: 24, L: 1, M: 87.82, S: 0.03479 },
+  { month: 25, L: 1, M: 88.52, S: 0.03491 },
+  { month: 26, L: 1, M: 89.21, S: 0.03504 },
+  { month: 27, L: 1, M: 89.91, S: 0.03516 },
+  { month: 28, L: 1, M: 90.61, S: 0.03529 },
+  { month: 29, L: 1, M: 91.30, S: 0.03541 },
+  { month: 30, L: 1, M: 92.00, S: 0.03553 },
+  { month: 31, L: 1, M: 92.67, S: 0.03566 },
+  { month: 32, L: 1, M: 93.33, S: 0.03578 },
+  { month: 33, L: 1, M: 94.00, S: 0.03591 },
+  { month: 34, L: 1, M: 94.67, S: 0.03603 },
+  { month: 35, L: 1, M: 95.33, S: 0.03615 },
+  { month: 36, L: 1, M: 96.00, S: 0.03628 },
+  { month: 37, L: 1, M: 96.61, S: 0.03640 },
+  { month: 38, L: 1, M: 97.22, S: 0.03653 },
+  { month: 39, L: 1, M: 97.83, S: 0.03665 },
+  { month: 40, L: 1, M: 98.43, S: 0.03677 },
+  { month: 41, L: 1, M: 99.04, S: 0.03690 },
+  { month: 42, L: 1, M: 99.65, S: 0.03702 },
+  { month: 43, L: 1, M: 100.22, S: 0.03715 },
+  { month: 44, L: 1, M: 100.80, S: 0.03727 },
+  { month: 45, L: 1, M: 101.38, S: 0.03739 },
+  { month: 46, L: 1, M: 101.95, S: 0.03752 },
+  { month: 47, L: 1, M: 102.52, S: 0.03764 },
+  { month: 48, L: 1, M: 103.10, S: 0.03777 },
+  { month: 49, L: 1, M: 103.63, S: 0.03789 },
+  { month: 50, L: 1, M: 104.17, S: 0.03801 },
+  { month: 51, L: 1, M: 104.70, S: 0.03814 },
+  { month: 52, L: 1, M: 105.23, S: 0.03826 },
+  { month: 53, L: 1, M: 105.77, S: 0.03839 },
+  { month: 54, L: 1, M: 106.30, S: 0.03851 },
+  { month: 55, L: 1, M: 106.80, S: 0.03863 },
+  { month: 56, L: 1, M: 107.30, S: 0.03876 },
+  { month: 57, L: 1, M: 107.80, S: 0.03888 },
+  { month: 58, L: 1, M: 108.30, S: 0.03901 },
+  { month: 59, L: 1, M: 108.80, S: 0.03913 },
+  { month: 60, L: 1, M: 109.30, S: 0.03925 },
+]
+
+const WHO_HEIGHT_GIRLS_24_60: LMSRecord[] = [
+  { month: 24, L: 1, M: 86.42, S: 0.03734 },
+  { month: 25, L: 1, M: 87.15, S: 0.03743 },
+  { month: 26, L: 1, M: 87.88, S: 0.03752 },
+  { month: 27, L: 1, M: 88.61, S: 0.03761 },
+  { month: 28, L: 1, M: 89.34, S: 0.03770 },
+  { month: 29, L: 1, M: 90.07, S: 0.03779 },
+  { month: 30, L: 1, M: 90.80, S: 0.03788 },
+  { month: 31, L: 1, M: 91.50, S: 0.03797 },
+  { month: 32, L: 1, M: 92.20, S: 0.03806 },
+  { month: 33, L: 1, M: 92.90, S: 0.03816 },
+  { month: 34, L: 1, M: 93.60, S: 0.03825 },
+  { month: 35, L: 1, M: 94.30, S: 0.03834 },
+  { month: 36, L: 1, M: 95.00, S: 0.03843 },
+  { month: 37, L: 1, M: 95.64, S: 0.03852 },
+  { month: 38, L: 1, M: 96.28, S: 0.03861 },
+  { month: 39, L: 1, M: 96.93, S: 0.03870 },
+  { month: 40, L: 1, M: 97.57, S: 0.03879 },
+  { month: 41, L: 1, M: 98.21, S: 0.03888 },
+  { month: 42, L: 1, M: 98.85, S: 0.03897 },
+  { month: 43, L: 1, M: 99.46, S: 0.03906 },
+  { month: 44, L: 1, M: 100.07, S: 0.03915 },
+  { month: 45, L: 1, M: 100.68, S: 0.03924 },
+  { month: 46, L: 1, M: 101.28, S: 0.03933 },
+  { month: 47, L: 1, M: 101.89, S: 0.03942 },
+  { month: 48, L: 1, M: 102.50, S: 0.03951 },
+  { month: 49, L: 1, M: 103.07, S: 0.03960 },
+  { month: 50, L: 1, M: 103.63, S: 0.03970 },
+  { month: 51, L: 1, M: 104.20, S: 0.03979 },
+  { month: 52, L: 1, M: 104.77, S: 0.03988 },
+  { month: 53, L: 1, M: 105.33, S: 0.03997 },
+  { month: 54, L: 1, M: 105.90, S: 0.04006 },
+  { month: 55, L: 1, M: 106.43, S: 0.04015 },
+  { month: 56, L: 1, M: 106.97, S: 0.04024 },
+  { month: 57, L: 1, M: 107.50, S: 0.04033 },
+  { month: 58, L: 1, M: 108.03, S: 0.04042 },
+  { month: 59, L: 1, M: 108.57, S: 0.04051 },
+  { month: 60, L: 1, M: 109.10, S: 0.04060 },
+]
+
+// ============================================================
 // 数据访问
 // ============================================================
 
 const DATA_MAP: Record<string, Record<string, LMSRecord[]>> = {
   weight: { male: WHO_WEIGHT_BOYS, female: WHO_WEIGHT_GIRLS },
   length: { male: WHO_LENGTH_BOYS, female: WHO_LENGTH_GIRLS },
+  height: { male: WHO_HEIGHT_BOYS_24_60, female: WHO_HEIGHT_GIRLS_24_60 },
 }
 
+/**
+ * 获取指定指标和性别的 WHO 原始 LMS 数据。
+ * 对于 'length' 指标，返回合并后的 0-60 月数据（0-24月身长 + 25-60月身高），
+ * 以便生成完整的 0-60 月百分位曲线。
+ * 对于 'height' 指标，仅返回 24-60 月站立身高数据。
+ */
 export function getWHOData(gender: Gender, indicator: Indicator): LMSRecord[] {
-  return DATA_MAP[indicator]?.[gender] ?? []
+  const base = DATA_MAP[indicator]?.[gender] ?? []
+
+  // 对于 length，合并身高数据以覆盖 25-60 月龄区间
+  if (indicator === 'length') {
+    const heightData = DATA_MAP.height?.[gender] ?? []
+    const suffix = heightData.filter((d) => d.month > 24)
+    return [...base, ...suffix]
+  }
+
+  return base
 }
 
+/**
+ * 获取指定月龄的 L/M/S 参数。
+ *
+ * 自动数据源选择：
+ * - 'length' 指标：ageMonths < 24 使用卧式身长数据，>= 24 使用站立身高数据
+ * - 'height' 指标：ageMonths >= 24 使用站立身高数据，< 24 使用卧式身长数据
+ * - 'weight' 指标：直接使用体重数据
+ *
+ * 对于非精确月龄，进行线性插值；超出范围则返回边界值。
+ */
 export function getLMS(gender: Gender, indicator: Indicator, ageMonths: number): LMSRecord | null {
-  const data = getWHOData(gender, indicator)
-  if (!data.length) return null
+  // 自动选择数据源
+  let effectiveIndicator = indicator
+  if ((indicator === 'length' || indicator === 'height') && ageMonths >= 24) {
+    effectiveIndicator = 'height'
+  } else if (indicator === 'height' && ageMonths < 24) {
+    effectiveIndicator = 'length'
+  }
+
+  const data = DATA_MAP[effectiveIndicator]?.[gender]
+  if (!data || !data.length) return null
 
   // 精确匹配
   const exact = data.find((d) => d.month === ageMonths)
@@ -304,7 +429,9 @@ function normalCDF(x: number): number {
 // ============================================================
 
 /**
- * 生成指定百分位的生长曲线
+ * 生成指定百分位的生长曲线。
+ * 对于 'length' 指标，自动合并身长（0-24月）和身高（25-60月）数据，
+ * 生成完整的 0-60 月龄曲线。
  */
 export function getPercentileCurve(
   gender: Gender,
@@ -369,6 +496,38 @@ function inverseNormalCDF(p: number): number {
 function lmsToValue(z: number, L: number, M: number, S: number): number {
   if (L === 0) return M * Math.exp(S * z)
   return M * Math.pow(1 + L * S * z, 1 / L)
+}
+
+// ============================================================
+// 月龄计算（精确到天）
+// ============================================================
+
+/**
+ * 计算实际月龄（精确到 1 位小数）。
+ * 使用基于天的精确计算取代粗略的 (year*12 + month) 算法，
+ * 避免新生儿期因月份边界导致的 ±1 个月偏差。
+ *
+ * @param birthDate - 出生日期字符串 (YYYY-MM-DD)
+ * @param gestationalWeeks - 胎龄（周），用于早产儿 (<37周) 计算矫正月龄
+ * @returns 月龄，保留 1 位小数
+ */
+export function calcAgeMonths(birthDate: string, gestationalWeeks?: number): number {
+  const MS_PER_DAY = 86400000
+  const AVG_DAYS_PER_MONTH = 30.4375 // 365.25 / 12
+
+  const b = new Date(birthDate)
+  const n = new Date()
+  const daysDiff = (n.getTime() - b.getTime()) / MS_PER_DAY
+  let ageMonths = daysDiff / AVG_DAYS_PER_MONTH
+
+  // 早产儿矫正：矫正月龄 = 实际月龄 - (40 - 胎龄) / 4
+  if (gestationalWeeks && gestationalWeeks < 37) {
+    const prematurityMonths = (40 - gestationalWeeks) / 4
+    ageMonths = Math.max(0, ageMonths - prematurityMonths)
+  }
+
+  // 保留 1 位小数
+  return Math.round(ageMonths * 10) / 10
 }
 
 // ============================================================
