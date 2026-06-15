@@ -6,7 +6,7 @@
  */
 
 import { TWIN_COLORS, SURFACE_COLORS } from '@/constants/design'
-import { saveToAlbum } from './media'
+import { saveToAlbum } from '@/utils/media'
 
 const C = {
   a: TWIN_COLORS.A,

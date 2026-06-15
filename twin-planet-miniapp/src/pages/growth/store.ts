@@ -5,7 +5,7 @@
  */
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import { useBabiesStore } from './babies'
+import { useBabiesStore } from '@/stores/babies'
 import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 
 export interface GrowthMeasurement {

@@ -87,7 +87,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useMilestonesStore, calcCouplingScores } from '@/stores/milestones'
+import { useMilestonesStore, calcCouplingScores } from '../milestones/store'
 import { useInteractionsStore } from '@/stores/interactions'
 import { useBabiesStore } from '@/stores/babies'
 

@@ -5,8 +5,8 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
-import { useBabiesStore } from './babies'
-import { useInteractionsStore, type InteractionType } from './interactions'
+import { useBabiesStore } from '@/stores/babies'
+import { useInteractionsStore, type InteractionType } from '@/stores/interactions'
 
 // ============================================================
 // 能力观察 (发展里程碑)

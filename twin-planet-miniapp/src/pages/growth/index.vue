@@ -114,12 +114,12 @@ import {ref,computed,onMounted} from 'vue'
 import { onShareAppMessage } from '@dcloudio/uni-app'
 import EcCanvas from '@/components/ec-canvas/ec-canvas.vue'
 import {useBabiesStore} from '@/stores/babies'
-import {useGrowthStore} from '@/stores/growth'
+import {useGrowthStore} from './store'
 import {
   getPercentileCurve,getLMS,calcZScore,zScoreToPercentile,calcDifferenceRate,
 type Gender,type Indicator,type DiffResult,
-} from '@/utils/whoGrowth'
-import { drawClinicCard } from '@/utils/clinicCard'
+} from './utils/whoGrowth'
+import { drawClinicCard } from './utils/clinicCard'
 
 const babiesStore=useBabiesStore()
 const growthStore=useGrowthStore()

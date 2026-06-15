@@ -68,7 +68,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useBabiesStore } from '@/stores/babies'
-import { useMilestonesStore, MILESTONE_DOMAINS, MILESTONE_NORMS, type MilestoneDomain } from '@/stores/milestones'
+import { useMilestonesStore, MILESTONE_DOMAINS, MILESTONE_NORMS, type MilestoneDomain } from './store'
 import { dateStr } from '@/utils/format'
 
 const babiesStore = useBabiesStore()
