@@ -173,7 +173,6 @@ import { useRecordsStore } from '@/stores/records'
 import { useAlertsStore } from '@/stores/alerts'
 import { useStickersStore } from '@/stores/stickers'
 import { useQuickRef } from '@/composables/useQuickRef'
-import { getDiscoverFeatures } from '@/config/roles'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
 
 const emit = defineEmits<{
@@ -327,18 +326,7 @@ function dualRecord(t: 'feeding' | 'sleep' | 'diaper') {
 const goRecord = () => emit('navigate', '/pages/record/index')
 const goGrowth = () => emit('navigate', '/pages/growth/index')
 const goSnapshot = () => emit('navigate', '/pages/snapshot/index')
-const goMore = () => {
-  const features = getDiscoverFeatures(userStore.profile?.role)
-  const labels = features.map(f => f.label)
-  labels.push('📤 导出数据备份', '取消')
-  uni.showActionSheet({
-    itemList: labels,
-    success: (res) => {
-      const idx = res.tapIndex
-      if (idx < features.length) emit('navigate', features[idx].path)
-    }
-  })
-}
+const goMore = () => emit('navigate', '/pages/discover/index')
 </script>
 
 <style scoped>

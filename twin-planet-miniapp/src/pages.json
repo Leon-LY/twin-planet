@@ -15,6 +15,14 @@
 			}
 		},
 		{
+			"path": "pages/index/components/HelpGranny",
+			"style": {
+				"navigationBarTitleText": "需要帮忙",
+				"navigationBarBackgroundColor": "#FEF9F0",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/login/index",
 			"style": {
 				"navigationBarTitleText": "欢迎",
@@ -89,6 +97,13 @@
 			"path": "pages/stickers/index",
 			"style": {
 				"navigationBarTitleText": "贴纸收集册",
+				"navigationBarBackgroundColor": "#FEF9F0"
+			}
+		},
+		{
+			"path": "pages/discover/index",
+			"style": {
+				"navigationBarTitleText": "发现",
 				"navigationBarBackgroundColor": "#FEF9F0"
 			}
 		},

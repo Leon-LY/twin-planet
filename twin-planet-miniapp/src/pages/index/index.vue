@@ -171,21 +171,7 @@ const navigate = (url: string) => uni.navigateTo({ url })
 const goRecord = () => navigate('/pages/record/granny')
 const goGrowth = () => navigate('/pages/growth/index')
 const goSnapshot = () => navigate('/pages/snapshot/index')
-const goHelp = () => {
-  uni.showActionSheet({
-    itemList: ['📞 打电话给妈妈', '💬 发消息到家庭群', '📋 查看使用说明'],
-    success: (res) => {
-      if (res.tapIndex === 0) {
-        const phone = userStore.profile?.phone
-        phone ? uni.makePhoneCall({ phoneNumber: phone }) : uni.showToast({ title: '请先在设置中添加电话号码', icon: 'none' })
-      } else if (res.tapIndex === 1) {
-        uni.showModal({ title: '需要帮忙', content: '宝宝需要帮忙照顾，你能过来一下吗？', confirmText: '分享给微信好友', success: () => uni.showToast({ title: '请点击右上角分享', icon: 'none' }) })
-      } else {
-        uni.showModal({ title: '使用说明', content: '1. 点"记一笔"记录喂奶/睡觉\n2. 点"看看长多大了"查看生长曲线\n3. 点"问家里人"联系家人\n\n记不住？没关系，点最大的那个按钮就行！', confirmText: '我知道了', showCancel: false })
-      }
-    }
-  })
-}
+const goHelp = () => navigate('/pages/index/components/HelpGranny')
 
 // ---- 角色切换 ----
 const showRoleDrawer = ref(false)
