@@ -214,6 +214,12 @@
         <text class="tl-when">{{ timeAgo(l.createdAt) }}</text>
       </view>
     </view>
+
+    <!-- 撤销浮层 -->
+    <view class="undo-snackbar" v-if="undoVisible">
+      <text class="undo-msg">{{ undoMessage }}</text>
+      <text class="undo-link" @click="doUndo">撤销</text>
+    </view>
   </view>
 </template>
 
@@ -222,7 +228,7 @@ import {computed,ref,onMounted,onUnmounted,watch} from 'vue'
 import {onShow,onHide} from '@dcloudio/uni-app'
 import { onShareAppMessage } from '@dcloudio/uni-app'
 import {useBabiesStore} from '@/stores/babies'
-import {useRecordsStore,type RecordType} from '@/stores/records'
+import {useRecordsStore,type RecordType,type RecordLog} from '@/stores/records'
 import {timeAgo, formatElapsed} from '@/utils/format'
 import {useHaptic} from '@/composables/useHaptic'
 import {usePoeticTime} from '@/composables/usePoeticTime'
@@ -257,10 +263,19 @@ const stickerShow=ref(false);const stickerEmoji=ref('⭐')
 let stickerTimer:ReturnType<typeof setTimeout>|null=null
 function popSticker(emoji:string){if(stickerTimer)clearTimeout(stickerTimer);stickerEmoji.value=emoji;stickerShow.value=true;stickerTimer=setTimeout(()=>{stickerShow.value=false},750)}
 
+// ---- 撤销浮层 ----
+const undoVisible=ref(false)
+const undoMessage=ref('')
+const undoLogId=ref<string|null>(null)
+let undoTimer:ReturnType<typeof setTimeout>|null=null
+const typeLabel:Record<string,string>={feeding:'喂奶',sleep:'睡眠',diaper:'尿布',temperature:'体温',medicine:'用药',bath:'洗澡'}
+function showUndo(log:RecordLog){if(undoTimer)clearTimeout(undoTimer);undoLogId.value=log.id;undoMessage.value=`已记录 ${log.babyName} ${typeLabel[log.type]||log.type}`;undoVisible.value=true;undoTimer=setTimeout(()=>{undoVisible.value=false},3000)}
+function doUndo(){if(undoLogId.value){recordsStore.removeLog(undoLogId.value);uni.showToast({title:'已撤销',icon:'none',duration:1500})}undoVisible.value=false;if(undoTimer)clearTimeout(undoTimer)}
+
 // ---- 计时器 ----
 const tick=ref(0);let h:ReturnType<typeof setInterval>|null=null
 watch(()=>recordsStore.isRunning,r=>{if(r){haptic.heartbeatStart();h=setInterval(()=>tick.value++,1000)}else{haptic.heartbeatStop();if(h){clearInterval(h);h=null}}},{immediate:true})
-onUnmounted(()=>{if(h)clearInterval(h);haptic.heartbeatStop();if(stickerTimer)clearTimeout(stickerTimer)})
+onUnmounted(()=>{if(h)clearInterval(h);haptic.heartbeatStop();if(stickerTimer)clearTimeout(stickerTimer);if(undoTimer)clearTimeout(undoTimer)})
 onHide(()=>{if(h){clearInterval(h);h=null};haptic.heartbeatStop()})
 const runningElapsed=computed(()=>{tick.value;return recordsStore.runningTimer?.elapsed??0})
 const runningName=computed(()=>{const t=recordsStore.runningTimer;return t?getName(t.babyId):''})
@@ -278,11 +293,12 @@ function getName(id:string){return twins.value.find(b=>b.id===id)?.nickname||''}
 /** 喂奶：从上下文面板直接记录 */
 function doFeedNow(){
   const id=sel.value||twins.value[0]?.id;if(!id)return
-  recordsStore.quickLog(id,'feeding',{
+  const log=recordsStore.quickLog(id,'feeding',{
     feedingSide:feedSide.value||undefined,
     amountMl:feedAmount.value||undefined,
     feedingMode:feedSide.value==='bottle'?'bottle':'breast',
   })
+  if(log)showUndo(log)
   finishAction('feeding','quick','🍼')
 }
 
@@ -313,7 +329,8 @@ function doStartSleep(){
 /** 尿布：从面板直接记录 */
 function doDiaperQuick(t:'wet'|'dirty'|'both'){
   const id=sel.value||twins.value[0]?.id;if(!id)return
-  recordsStore.quickLog(id,'diaper',{diaperType:t})
+  const log=recordsStore.quickLog(id,'diaper',{diaperType:t})
+  if(log)showUndo(log)
   finishAction('diaper','quick','🧷')
 }
 
@@ -323,7 +340,8 @@ function doTempQuick(){
   if(!tempValue.value){uni.showToast({title:'请选择温度值',icon:'none'});return}
   // P1-6 修复: ≥38.5°C 弹出发热警示
   if(tempValue.value>=38.5){uni.showToast({title:'宝宝发烧了，建议联系家长或就医',icon:'none',duration:3000})}
-  recordsStore.quickLog(id,'temperature',{temperatureValue:tempValue.value})
+  const log=recordsStore.quickLog(id,'temperature',{temperatureValue:tempValue.value})
+  if(log)showUndo(log)
   finishAction('temperature','quick','🌡️')
 }
 
@@ -331,14 +349,16 @@ function doTempQuick(){
 function doMedQuick(){
   const id=sel.value||twins.value[0]?.id;if(!id)return
   if(!medName.value){uni.showToast({title:'请输入药名',icon:'none'});return}
-  recordsStore.quickLog(id,'medicine',{medicineName:medName.value,medicineDosage:medDosage.value||undefined})
+  const log=recordsStore.quickLog(id,'medicine',{medicineName:medName.value,medicineDosage:medDosage.value||undefined})
+  if(log)showUndo(log)
   finishAction('medicine','quick','💊')
 }
 
 /** 洗澡：直接记录 */
 function doQuickBath(){
   const id=sel.value||twins.value[0]?.id;if(!id)return
-  recordsStore.quickLog(id,'bath')
+  const log=recordsStore.quickLog(id,'bath')
+  if(log)showUndo(log)
   finishAction('bath','quick','🛁')
 }
 
@@ -348,7 +368,8 @@ function finishAction(t:RecordType,mode:string,emoji:string){
 
 function quickNight(t:RecordType='feeding'){
   const id=sel.value||twins.value[0]?.id;if(!id)return
-  recordsStore.quickLog(id,t)
+  const log=recordsStore.quickLog(id,t)
+  if(log)showUndo(log)
   haptic.sparkle();syncStickers()
   const m:Record<string,string>={feeding:'🍼',diaper:'🧷',sleep:'😴'};popSticker(m[t]||'🌙')
 }
@@ -357,14 +378,17 @@ function quickNight(t:RecordType='feeding'){
 // 详细上下文（左/右/瓶喂 + 奶量）通过单独计时完成
 function dualLog(t:RecordType){
   const a=twins.value[0],b=twins.value[1]
-  if(a)recordsStore.quickLog(a.id,t)
-  if(b)recordsStore.quickLog(b.id,t)
+  let lastLog:RecordLog|undefined
+  if(a)lastLog=recordsStore.quickLog(a.id,t)
+  if(b)lastLog=recordsStore.quickLog(b.id,t)
+  if(lastLog)showUndo(lastLog)
   haptic.doubleBeat();syncStickers();trackRecordCreated(t,'dual');popSticker('🔗')
 }
 
 function retro(m:number,t:RecordType='feeding'){
   const id=sel.value||twins.value[0]?.id;if(!id)return
-  recordsStore.quickLog(id,t,{offsetMs:m*60000})
+  const log=recordsStore.quickLog(id,t,{offsetMs:m*60000})
+  if(log)showUndo(log)
   haptic.sparkle();syncStickers()
   const em:Record<string,string>={feeding:'🍼',diaper:'🧷',sleep:'😴'};popSticker(em[t]||'⏰')
 }
@@ -377,10 +401,11 @@ onShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id;trackPageV
 
 const stopOne=(id?:string)=>{
   // 上下文字段已在计时过程中通过 setTimerField 实时同步到 store，直接停止即可
-  recordsStore.stopTimer(id)
+  const log=recordsStore.stopTimer(id)
+  if(log)showUndo(log)
   resetContext()
 }
-const stopAll=()=>{recordsStore.stopTimer();resetContext()}
+const stopAll=()=>{const log=recordsStore.stopTimer();if(log)showUndo(log);resetContext()}
 </script>
 
 <style scoped>
@@ -518,4 +543,11 @@ const stopAll=()=>{recordsStore.stopTimer();resetContext()}
 .tl-dot{width:7rpx;height:7rpx;border-radius:50%;flex-shrink:0}
 .tl-text{flex:1;font-size:26rpx;color:var(--ink)}
 .tl-when{flex-shrink:0;font-size:20rpx;color:var(--ink-lt)}
+
+/* 撤销浮层 */
+.undo-snackbar{position:fixed;bottom:0;left:0;right:0;padding:26rpx 32rpx;padding-bottom:calc(26rpx + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(255,255,255,0.5) 0%,var(--cream) 30%);border-top:2rpx solid var(--dot);display:flex;align-items:center;justify-content:space-between;z-index:999;box-shadow:0 -2rpx 12rpx rgba(0,0,0,0.06),0 -6rpx 24rpx rgba(0,0,0,0.04);animation:snackbarIn .35s var(--ease-soft)}
+@keyframes snackbarIn{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
+.undo-msg{font-family:var(--font-journal);font-size:30rpx;font-weight:700;color:var(--ink);flex:1}
+.undo-link{font-size:28rpx;font-weight:700;color:var(--amber);padding:10rpx 24rpx;border-radius:16rpx;background:linear-gradient(180deg,rgba(255,255,255,0.4) 0%,transparent 40%,rgba(0,0,0,0.02) 100%),var(--amber-lt);border:1.5px solid rgba(224,123,62,0.2);box-shadow:0 1.5rpx 0 rgba(224,123,62,0.2);transition:all .15s var(--ease-stamp)}
+.undo-link:active{transform:scale(.92);box-shadow:inset 0 1rpx 3rpx rgba(224,123,62,0.15)}
 </style>

@@ -371,7 +371,7 @@ export const useRecordsStore = defineStore('records', () => {
     return lastLog
   }
 
-  /** 快速记录（无计时），支持回溯时间偏移 + 完整上下文字段 */
+  /** 快速记录（无计时），支持回溯时间偏移 + 完整上下文字段。返回创建的日志，用于撤销等操作 */
   function quickLog(
     babyId: string,
     type: RecordType,
@@ -386,7 +386,7 @@ export const useRecordsStore = defineStore('records', () => {
       medicineDosage?: string
       medicineUnit?: string
     }
-  ) {
+  ): RecordLog | undefined {
     const baby = babiesStore.getBaby(babyId)
     if (!baby) return
 
@@ -433,6 +433,19 @@ export const useRecordsStore = defineStore('records', () => {
     logs.value = [...logs.value, log]
     _saveLogs()
     _syncStickersAuto()  // 自动检查贴纸解锁
+    return log
+  }
+
+  /** 更新已有日志的指定字段（不可变替换），用于编辑/补录上下文 */
+  function updateLog(id: string, patch: Partial<RecordLog>) {
+    logs.value = logs.value.map(l => l.id === id ? { ...l, ...patch } : l)
+    _saveLogs()
+  }
+
+  /** 删除指定日志，用于撤销等操作 */
+  function removeLog(id: string) {
+    logs.value = logs.value.filter(l => l.id !== id)
+    _saveLogs()
   }
 
   /** 从服务器合并日志（保留本地唯一记录，避免外部直接赋值绕过持久化） */
@@ -514,7 +527,7 @@ export const useRecordsStore = defineStore('records', () => {
     _timers, logs, selectedBabyId,
     isRunning, runningTimer, runningTimers, recentLogsByBaby,
     isBabyRunning, getTimer,
-    startTimer, stopTimer, quickLog, mergeServerLogs, setTimerField,
+    startTimer, stopTimer, quickLog, updateLog, removeLog, mergeServerLogs, setTimerField,
     journalInsight, twinSyncRate, streakDays,
   }
 })

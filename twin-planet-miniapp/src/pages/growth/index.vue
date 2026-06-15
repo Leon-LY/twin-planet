@@ -31,10 +31,7 @@
             <text class="legend-label">{{ babyB.nickname || babyB.name }}</text>
           </view>
         </view>
-        <view class="diff-text" v-if="showDiff && diffText" @click="showDiff=false">{{ diffText }}</view>
-        <view class="diff-toggle" v-if="!showDiff && diffText" @click="showDiff=true">
-          <text>查看对比</text>
-        </view>
+        <text class="summary-text" v-if="independentSummary">{{ independentSummary }}</text>
       </view>
 
       <ec-canvas canvas-id="growth-chart" :width="chartWidth" :height="chartHeight" :option="chartOption" />
@@ -116,8 +113,8 @@ import EcCanvas from '@/components/ec-canvas/ec-canvas.vue'
 import {useBabiesStore} from '@/stores/babies'
 import {useGrowthStore} from './store'
 import {
-  getPercentileCurve,getLMS,calcZScore,zScoreToPercentile,calcDifferenceRate,
-type Gender,type Indicator,type DiffResult,
+  getPercentileCurve,getLMS,calcZScore,zScoreToPercentile,
+type Gender,type Indicator,
 } from './utils/whoGrowth'
 import { drawClinicCard } from './utils/clinicCard'
 import { calcAgeMonths } from '@/utils/format'
@@ -128,7 +125,6 @@ const babyA=computed(()=>babiesStore.babyA)
 const babyB=computed(()=>babiesStore.babyB)
 
 const indicator=ref<Indicator>('weight')
-const showDiff=ref(false)
 const CHART_W=345;const CHART_H=320
 const chartWidth=computed(()=>Math.min(uni.getSystemInfoSync().windowWidth-30,375))
 const chartHeight=ref(CHART_H)
@@ -157,18 +153,22 @@ function calcPercentile(baby:any,latest:any):number{
 const percentileA=computed(()=>calcPercentile(babyA.value,latestA.value))
 const percentileB=computed(()=>calcPercentile(babyB.value,latestB.value))
 
-// 自然语言差异（去焦虑化）
-const diffText=computed(()=>{
-  if(!latestA.value||!latestB.value)return''
-  const sameGender=babyA.value?.gender===babyB.value?.gender
-  const valA=indicator.value==='weight'?latestA.value.weight:latestA.value.height
-  const valB=indicator.value==='weight'?latestB.value.weight:latestB.value.height
-  const diff=calcDifferenceRate(valA,valB,sameGender)
-  const aName=babyA.value?.nickname||babyA.value?.name||'大宝'
-  const bName=babyB.value?.nickname||babyB.value?.name||'二宝'
-  if(diff.rate<3)return`${aName}和${bName}差不多`
-  if(diff.rate<8)return`${aName}稍微${valA>valB?'重':'轻'}一点`
-  return`${aName}比${bName}${valA>valB?'重':'轻'} ${diff.rate.toFixed(0)}%`
+// 独立 WHO 百分位描述（每个宝宝各自描述，不计算两宝之间的百分比差异）
+const independentSummary=computed(()=>{
+  if(!babyA.value&&!babyB.value)return''
+  const indicatorLabel=indicator.value==='weight'?'体重':'身高'
+  const parts:string[]=[]
+  if(babyA.value&&percentileA.value){
+    const name=babyA.value.nickname||babyA.value.name||'大宝'
+    const hint=percentileHint(percentileA.value)
+    parts.push(`${name}${indicatorLabel}${hint}`)
+  }
+  if(babyB.value&&percentileB.value){
+    const name=babyB.value.nickname||babyB.value.name||'二宝'
+    const hint=percentileHint(percentileB.value)
+    parts.push(`${name}${indicatorLabel}${hint}`)
+  }
+  return parts.join('，')
 })
 
 // ECharts 配置
@@ -290,13 +290,12 @@ async function exportClinicCard(){
 .empty-desc{font-size:var(--font-body);color:var(--ink-md);margin-top:8rpx}
 
 .chart-card{background:linear-gradient(180deg,rgba(255,255,255,0.45) 0%,var(--cream) 100%);border-radius:var(--radius-lg);padding:28rpx 20rpx 12rpx;margin-bottom:20rpx;border:2rpx solid var(--dot);box-shadow:0 1rpx 0 rgba(0,0,0,.03),0 2rpx 8rpx rgba(0,0,0,.04)}
-.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12rpx;padding:0 8rpx}
-.legend-row{display:flex;gap:24rpx}
+.chart-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12rpx;padding:0 8rpx;gap:12rpx}
+.legend-row{display:flex;gap:24rpx;flex-shrink:0}
 .legend-item{display:flex;align-items:center;gap:8rpx}
 .legend-dot{width:12rpx;height:12rpx;border-radius:50%}
 .legend-label{font-size:var(--font-body);font-weight:600;color:var(--ink)}
-.diff-text{font-size:var(--font-caption);color:var(--mint);font-weight:600;font-family:var(--font-journal)}
-.diff-toggle{font-size:var(--font-caption);color:var(--ink-lt);text-decoration:underline;padding:2rpx 0}
+.summary-text{font-size:var(--font-caption);color:var(--mint);font-weight:600;font-family:var(--font-journal);text-align:right;line-height:1.5;max-width:55%}
 .disclaimer{display:flex;align-items:flex-start;gap:8rpx;padding:12rpx 8rpx 4rpx;margin-top:8rpx;border-top:1px solid var(--dot)}
 .disclaimer-icon{font-size:24rpx;flex-shrink:0}
 .disclaimer-text{font-size:var(--font-caption);color:var(--ink-md);line-height:1.5}

@@ -13,7 +13,7 @@ import { useInteractionsStore, type InteractionType } from '@/stores/interaction
 // 能力观察 (发展里程碑)
 // ============================================================
 
-export type MilestoneDomain = 'cognitive' | 'physical' | 'social' | 'language' | 'creative'
+export type MilestoneDomain = 'cognitive' | 'physical' | 'social' | 'language' | 'creative' | 'self_care'
 
 export interface Milestone {
   id: string
@@ -32,6 +32,7 @@ export const MILESTONE_DOMAINS: Record<MilestoneDomain, { emoji: string; label: 
   social:    { emoji: '🤝', label: '社交', examples: '✅已达标 · 🌱发展中 · ⬜未开始 — 点击三态切换' },
   language:  { emoji: '💬', label: '语言', examples: '✅已达标 · 🌱发展中 · ⬜未开始 — 点击三态切换' },
   creative:  { emoji: '🎨', label: '创造', examples: '✅已达标 · 🌱发展中 · ⬜未开始 — 点击三态切换' },
+  self_care: { emoji: '🧹', label: '自理', examples: '✅已达标 · 🌱发展中 · ⬜未开始 — 点击三态切换' },
 }
 
 // CDC "Learn the Signs. Act Early." 标准：0-60 月龄各领域里程碑
@@ -115,6 +116,14 @@ export const MILESTONE_NORMS: Record<MilestoneDomain, Array<{ ageMonths: number;
     { ageMonths: 48, title: '画人', desc: '画出有头/身体/四肢的简笔画' },
     { ageMonths: 54, title: '编故事', desc: '自己编简单的故事或剧情' },
     { ageMonths: 60, title: '独立创作', desc: '不照说明书，自己创造作品' },
+  ],
+  self_care: [
+    { ageMonths: 30, title: '自己用勺子吃饭', desc: '能独立用勺子进食，不洒落太多' },
+    { ageMonths: 36, title: '自己穿鞋', desc: '能独立穿鞋（不分左右没关系）' },
+    { ageMonths: 42, title: '自己倒水不洒', desc: '能从小壶或杯子倒水而不洒出' },
+    { ageMonths: 48, title: '自己整理玩具', desc: '能将玩具归位到指定位置' },
+    { ageMonths: 54, title: '帮忙准备简单食物', desc: '能帮忙洗水果、撕生菜等简单备餐' },
+    { ageMonths: 60, title: '自己选择并穿好一套衣服', desc: '能独立挑选并完整穿好一套衣服' },
   ],
 }
 

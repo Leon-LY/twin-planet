@@ -91,6 +91,7 @@ import { useRecordsStore } from '@/stores/records'
 import { useInteractionsStore } from '@/stores/interactions'
 import { onShareAppMessage } from '@dcloudio/uni-app'
 import { drawShareCard, saveToAlbum, type WeekStats } from '@/utils/shareCard'
+import { timeAgo } from '@/utils/format'
 
 const babiesStore = useBabiesStore()
 const recordsStore = useRecordsStore()
@@ -137,12 +138,17 @@ function getBabyStatus(baby: Baby | null): string {
 }
 function getLastFeeding(baby: Baby | null): string {
   if (!baby) return '—'
-  return recordsStore.recentLogsByBaby[baby.id]?.find(l => l.type === 'feeding')?.detail || '—'
+  const last = recordsStore.recentLogsByBaby[baby.id]?.find(l => l.type === 'feeding')
+  if (!last) return '—'
+  return `${timeAgo(last.createdAt)} · ${last.detail}`
 }
 function getLastSleep(baby: Baby | null): string {
   if (!baby) return '—'
   const last = recordsStore.recentLogsByBaby[baby.id]?.find(l => l.type === 'sleep')
-  return last?.durationMin ? `${last.durationMin}分钟` : '暂无'
+  if (!last) return '暂无'
+  const relative = timeAgo(last.createdAt)
+  const durStr = last.durationMin ? `${last.durationMin}分钟` : ''
+  return `${relative} · ${durStr || '睡眠'}`
 }
 
 const goRecord = () => uni.navigateTo({ url: '/pages/record/index' })

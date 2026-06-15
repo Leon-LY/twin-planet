@@ -39,6 +39,8 @@ export interface StickerContext {
   totalSproutCount?: number
   milestoneCount?: number
   schoolAssessmentCount?: number
+  inviteSent?: boolean
+  inviteAccepted?: boolean
 }
 
 export const STICKER_RULES: StickerRule[] = [
@@ -111,6 +113,15 @@ export const STICKER_RULES: StickerRule[] = [
     trigger: 'first_school', emoji: '🏫', label: '入园纪念', category: 'special',
     check: (c) => (c.schoolAssessmentCount ?? 0) >= 1,
   },
+  // === 邀请贴纸（P2-4） ===
+  {
+    trigger: 'invite_sent', emoji: '📨', label: '召集者', category: 'special',
+    check: (c) => !!c.inviteSent,
+  },
+  {
+    trigger: 'invite_accepted', emoji: '🎁', label: '欢迎加入', category: 'special',
+    check: (c) => !!c.inviteAccepted,
+  },
   // === 隐藏惊喜贴纸（5% 概率触发） ===
   {
     trigger: 'lucky_rainbow', emoji: '🌈', label: '幸运彩虹', category: 'special',
@@ -125,6 +136,20 @@ export const useStickersStore = defineStore('stickers', () => {
   const lastSyncAt = ref(0)
   /** 最近一次解锁的贴纸（供 UI 播放动画用） */
   const lastUnlocked = ref<Sticker[]>([])
+
+  /** 邀请状态跟踪（P2-4：双边贴纸奖励） */
+  const _inviteSent = ref(false)
+  const _inviteAccepted = ref(false)
+
+  /** 构建默认上下文（用于邀请等独立触发场景） */
+  function _defaultCtx(): StickerContext {
+    return {
+      todayLogCount: 0, streakDays: 0, totalLogCount: 0,
+      twinSyncCount: 0, sproutCount: 0, dutyDoneCount: 0,
+      babyAHasRecord: false, babyBHasRecord: false,
+      babyARecentRecord: false, babyBRecentRecord: false,
+    }
+  }
 
   function _save() {
     _p.save(stickers.value.slice(-200))
@@ -174,11 +199,26 @@ export const useStickersStore = defineStore('stickers', () => {
     Math.round((stickers.value.length / STICKER_RULES.length) * 100)
   )
 
+  /** 标记已发出邀请（P2-4：召唤者贴纸） */
+  function markInviteSent() {
+    if (_inviteSent.value) return
+    _inviteSent.value = true
+    sync({ ..._defaultCtx(), inviteSent: true })
+  }
+
+  /** 标记邀请已被接受（P2-4：欢迎加入贴纸） */
+  function markInviteAccepted() {
+    if (_inviteAccepted.value) return
+    _inviteAccepted.value = true
+    sync({ ..._defaultCtx(), inviteAccepted: true })
+  }
+
   return {
     stickers, lastUnlocked,
     todayStickers,
     collectionCount, todayCount, totalStickers, completionRate,
     lastSyncAt,
     sync,
+    markInviteSent, markInviteAccepted,
   }
 })
