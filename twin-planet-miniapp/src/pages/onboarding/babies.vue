@@ -23,6 +23,7 @@
       <view
         class="baby-tab tab-aning"
         :class="{ active: currentBaby === 1 }"
+        hover-class="tab-press"
         @click="currentBaby = 1"
       >
         <view class="tab-dot" style="background: var(--twin-baby-a)" />
@@ -31,6 +32,7 @@
       <view
         class="baby-tab tab-anran"
         :class="{ active: currentBaby === 2 }"
+        hover-class="tab-press"
         @click="currentBaby = 2"
       >
         <view class="tab-dot" style="background: var(--twin-baby-b)" />
@@ -68,11 +70,13 @@
           <view
             class="gender-btn"
             :class="{ active: form.gender === 'male' }"
+            hover-class="gender-press"
             @click="form.gender = 'male'"
           ><text>👦 男孩</text></view>
           <view
             class="gender-btn"
             :class="{ active: form.gender === 'female' }"
+            hover-class="gender-press"
             @click="form.gender = 'female'"
           ><text>👧 女孩</text></view>
         </view>
@@ -118,7 +122,7 @@
 
     <!-- 底部操作 -->
     <view class="bottom-action">
-      <button class="btn-primary" @click="saveBaby">
+      <button class="btn-primary" hover-class="btn-press" @click="saveBaby">
         {{ currentBaby === 1 ? '保存 · 添加二宝' : '保存 · 完成注册' }}
       </button>
       <text class="back-link" @click="goBack" v-if="currentBaby===1">← 返回修改家庭信息</text>
@@ -208,6 +212,9 @@ onMounted(() => {
   padding: 48rpx 32rpx 40px;
 }
 
+/* 清除原生 button ::after 边框 */
+button::after { border: none; }
+
 /* 进度条 */
 .progress-bar {
   display: flex; align-items: center; justify-content: center;
@@ -230,17 +237,47 @@ onMounted(() => {
 .section-title { display: block; font-size: 40rpx; font-weight: 700; color: var(--twin-text); margin-top: 12rpx; }
 .section-desc { display: block; font-size: 24rpx; color: var(--twin-text-secondary); margin-top: 8rpx; }
 
-/* 宝宝切换 -- 独立颜色 */
+/* 宝宝切换 -- 物理卡片 */
 .baby-tabs { display: flex; gap: 20rpx; margin-bottom: 32rpx; }
 .baby-tab {
   flex: 1; display: flex; align-items: center; justify-content: center;
-  gap: 16rpx; padding: 20rpx 0; background: var(--twin-card-bg);
+  gap: 16rpx; padding: 20rpx 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 55%, rgba(0,0,0,0.02) 100%), #FFF5E8;
   border: 4rpx solid var(--twin-border); border-radius: 20rpx;
   font-size: 28rpx; color: var(--twin-text-secondary);
+  box-shadow: 0 2rpx 0 rgba(200,180,160,0.2), 0 3rpx 6rpx rgba(0,0,0,0.04);
+  transition: all 0.15s cubic-bezier(0.25,0.1,0.1,1);
+  position: relative;
+  overflow: hidden;
 }
-.tab-aning.active { border-color: var(--twin-baby-a); background: var(--twin-baby-a-light); color: var(--twin-text); font-weight: 600; }
-.tab-anran.active { border-color: var(--twin-baby-b); background: var(--twin-baby-b-light); color: var(--twin-text); font-weight: 600; }
+/* 标签表面高光 */
+.baby-tab::after {
+  content: '';
+  position: absolute;
+  top: 4rpx; left: 15%; right: 15%; height: 35%;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.tab-aning.active {
+  border-color: var(--twin-baby-a);
+  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 55%, rgba(0,0,0,0.02) 100%), rgba(224,123,62,0.08);
+  color: var(--twin-text); font-weight: 600;
+  box-shadow: 0 2rpx 0 rgba(191,90,40,0.25), 0 3rpx 6rpx rgba(0,0,0,0.04), 0 6rpx 14rpx rgba(224,123,62,0.1);
+}
+.tab-anran.active {
+  border-color: var(--twin-baby-b);
+  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 55%, rgba(0,0,0,0.02) 100%), rgba(212,128,104,0.08);
+  color: var(--twin-text); font-weight: 600;
+  box-shadow: 0 2rpx 0 rgba(180,100,80,0.25), 0 3rpx 6rpx rgba(0,0,0,0.04), 0 6rpx 14rpx rgba(212,128,104,0.1);
+}
 .tab-dot { width: 20rpx; height: 20rpx; border-radius: 50%; }
+
+/* 标签按压态 */
+.tab-press {
+  box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.08), 0 1rpx 0 rgba(200,180,160,0.2) !important;
+  transform: translateY(2rpx);
+}
 
 /* 表单 */
 .form-group { margin-bottom: 28rpx; }
@@ -251,24 +288,49 @@ onMounted(() => {
 .optional { font-weight: 400; color: var(--twin-text-secondary); font-size: 22rpx; }
 .form-input {
   width: 100%; padding: 24rpx 28rpx;
-  background: var(--twin-card-bg); border: 4rpx solid var(--twin-border);
+  background: linear-gradient(180deg, rgba(0,0,0,0.015) 0%, transparent 8%), #FFF5E8;
+  border: 4rpx solid var(--twin-border);
   border-radius: 20rpx; font-size: 30rpx; color: var(--twin-text);
   box-sizing: border-box;
+  box-shadow: inset 0 2rpx 6rpx rgba(0,0,0,0.04), inset 0 0 0 1rpx rgba(0,0,0,0.02), 0 1rpx 0 rgba(255,255,255,0.6);
 }
-.optional{font-size:20rpx;color:var(--ink-lt);font-weight:400}
-.optional{font-size:20rpx;color:var(--ink-lt);font-weight:400}
 .form-sublabel { display: block; font-size: 20rpx; color: var(--twin-text-muted); margin-top: 8rpx; }
 .form-row { display: flex; }
 .date-picker { color: var(--twin-text); line-height: 1.6; }
 
-/* 性别切换 */
+/* 性别切换 — 物理按钮 */
 .gender-toggle { display: flex; gap: 12rpx; }
 .gender-btn {
   flex: 1; text-align: center; padding: 20rpx 0;
-  background: var(--twin-card-bg); border: 4rpx solid var(--twin-border);
+  background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 55%, rgba(0,0,0,0.02) 100%), #FFF5E8;
+  border: 4rpx solid var(--twin-border);
   border-radius: 20rpx; font-size: 26rpx; color: var(--twin-text-tertiary);
+  box-shadow: 0 2rpx 0 rgba(200,180,160,0.2), 0 3rpx 6rpx rgba(0,0,0,0.04);
+  transition: all 0.15s cubic-bezier(0.25,0.1,0.1,1);
+  position: relative;
+  overflow: hidden;
 }
-.gender-btn.active { border-color: var(--twin-baby-a); background: var(--twin-baby-a-light); color: var(--twin-text); }
+/* 性别按钮表面高光 */
+.gender-btn::after {
+  content: '';
+  position: absolute;
+  top: 4rpx; left: 15%; right: 15%; height: 35%;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.gender-btn.active {
+  border-color: var(--twin-baby-a);
+  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 55%, rgba(0,0,0,0.02) 100%), rgba(224,123,62,0.08);
+  color: var(--twin-text);
+  box-shadow: 0 2rpx 0 rgba(191,90,40,0.25), 0 3rpx 6rpx rgba(0,0,0,0.04), 0 6rpx 14rpx rgba(224,123,62,0.1);
+}
+
+/* 性别按钮按压态 */
+.gender-press {
+  box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.08), 0 1rpx 0 rgba(200,180,160,0.2) !important;
+  transform: translateY(2rpx);
+}
 
 /* 底部 */
 .bottom-action {
@@ -277,9 +339,19 @@ onMounted(() => {
   background: linear-gradient(transparent, var(--twin-bg) 30%);
 }
 .btn-primary {
-  width: 100%; padding: 28rpx 0; background: var(--twin-baby-a);
-  color: var(--twin-card-bg); border: none; border-radius: 24rpx;
+  width: 100%; padding: 28rpx 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.16) 0%, transparent 55%, rgba(0,0,0,0.05) 100%), #E07B3E;
+  color: #FFF5E8; border: none; border-radius: 24rpx;
   font-size: 36rpx; font-weight: 600;
+  box-shadow: 0 3rpx 0 rgba(191,90,40,0.5), 0 4rpx 8rpx rgba(0,0,0,0.06), 0 8rpx 20rpx rgba(224,123,62,0.2);
+  transition: all 0.15s cubic-bezier(0.25,0.1,0.1,1);
 }
+
+/* 按钮按压态 — 下沉 + 内阴影 */
+.btn-press {
+  box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.1), 0 1rpx 0 rgba(0,0,0,0.15) !important;
+  transform: translateY(2rpx);
+}
+
 .back-link { display:block; text-align:center; margin-top:20rpx; font-size:26rpx; color:var(--ink-md); }
 </style>

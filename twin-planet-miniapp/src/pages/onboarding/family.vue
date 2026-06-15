@@ -38,6 +38,7 @@
           :key="role.value"
           class="role-card"
           :class="{ selected: selectedRole === role.value }"
+          hover-class="role-press"
           @click="selectRole(role.value)"
         >
           <text class="role-icon">{{ role.icon }}</text>
@@ -50,6 +51,7 @@
     <view class="bottom-action">
       <button
         class="btn-primary"
+        hover-class="btn-press"
         :disabled="!canProceed"
         @click="goNext"
       >
@@ -104,6 +106,9 @@ onMounted(() => {
   padding: 48rpx 32rpx 40px;
 }
 
+/* 清除原生 button ::after 边框 */
+button::after { border: none; }
+
 /* 进度条 */
 .progress-bar {
   display: flex; align-items: center; justify-content: center;
@@ -130,9 +135,11 @@ onMounted(() => {
 .form-label { display: block; font-size: 26rpx; font-weight: 600; color: var(--ink); margin-bottom: 16rpx; }
 .form-input {
   width: 100%; padding: 28rpx 32rpx;
-  background: var(--twin-card-bg); border: 4rpx solid var(--twin-border);
+  background: linear-gradient(180deg, rgba(0,0,0,0.015) 0%, transparent 8%), #FFF5E8;
+  border: 4rpx solid var(--twin-border);
   border-radius: 24rpx; font-size: 32rpx; color: var(--twin-text);
   box-sizing: border-box;
+  box-shadow: inset 0 2rpx 6rpx rgba(0,0,0,0.04), inset 0 0 0 1rpx rgba(0,0,0,0.02), 0 1rpx 0 rgba(255,255,255,0.6);
 }
 .form-hint { display: block; text-align: right; font-size: 22rpx; color: var(--twin-text-muted); margin-top: 8rpx; }
 
@@ -140,12 +147,37 @@ onMounted(() => {
 .role-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20rpx; }
 .role-card {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 32rpx 16rpx; background: var(--twin-card-bg); border: 4rpx solid var(--twin-border);
+  padding: 32rpx 16rpx;
+  background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 55%, rgba(0,0,0,0.02) 100%), #FFF5E8;
+  border: 4rpx solid var(--twin-border);
   border-radius: 24rpx; text-align: center; gap: 12rpx;
+  box-shadow: 0 2rpx 0 rgba(200,180,160,0.25), 0 4rpx 8rpx rgba(0,0,0,0.04), 0 6rpx 16rpx rgba(0,0,0,0.03);
+  transition: all 0.15s cubic-bezier(0.25,0.1,0.1,1);
+  position: relative;
+  overflow: hidden;
 }
-.role-card.selected { border-color: var(--twin-baby-a); background: var(--twin-baby-a-light); }
+/* 角色卡片表面高光 */
+.role-card::after {
+  content: '';
+  position: absolute;
+  top: 6rpx; left: 15%; right: 15%; height: 35%;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.35) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.role-card.selected {
+  border-color: var(--twin-baby-a);
+  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 55%, rgba(0,0,0,0.02) 100%), rgba(224,123,62,0.08);
+  box-shadow: 0 2rpx 0 rgba(191,90,40,0.3), 0 4rpx 8rpx rgba(0,0,0,0.04), 0 6rpx 16rpx rgba(224,123,62,0.12);
+}
 .role-icon { font-size: 28rpx; }
 .role-name { font-size: 26rpx; font-weight: 500; color: var(--ink); }
+
+/* 角色卡片按压态 */
+.role-press {
+  box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.08), 0 1rpx 0 rgba(200,180,160,0.2) !important;
+  transform: translateY(2rpx);
+}
 
 /* 底部 */
 .bottom-action {
@@ -154,9 +186,21 @@ onMounted(() => {
   background: linear-gradient(transparent, var(--twin-bg) 30%);
 }
 .btn-primary {
-  width: 100%; padding: 28rpx 0; background: var(--twin-baby-a);
-  color: var(--twin-card-bg); border: none; border-radius: 24rpx;
+  width: 100%; padding: 28rpx 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.16) 0%, transparent 55%, rgba(0,0,0,0.05) 100%), #E07B3E;
+  color: #FFF5E8; border: none; border-radius: 24rpx;
   font-size: 36rpx; font-weight: 600;
+  box-shadow: 0 3rpx 0 rgba(191,90,40,0.5), 0 4rpx 8rpx rgba(0,0,0,0.06), 0 8rpx 20rpx rgba(224,123,62,0.2);
+  transition: all 0.15s cubic-bezier(0.25,0.1,0.1,1);
 }
-.btn-primary[disabled] { background: var(--twin-text-muted); }
+.btn-primary[disabled] {
+  background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 55%, rgba(0,0,0,0.02) 100%), #D4C8B8;
+  box-shadow: 0 2rpx 0 rgba(180,170,155,0.3), 0 4rpx 8rpx rgba(0,0,0,0.03);
+}
+
+/* 按钮按压态 — 下沉 + 内阴影 */
+.btn-press {
+  box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.1), 0 1rpx 0 rgba(0,0,0,0.15) !important;
+  transform: translateY(2rpx);
+}
 </style>

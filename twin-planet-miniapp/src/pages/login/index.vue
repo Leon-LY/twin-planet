@@ -106,14 +106,20 @@ onMounted(() => {
 .brand-slogan { display: block; font-size: 28rpx; color: var(--twin-text-tertiary); margin-top: 16rpx; letter-spacing: 6px; }
 .brand-desc { display: block; font-size: 24rpx; color: var(--twin-text-secondary); margin-top: 24rpx; }
 
+/* 清除原生 button ::after 边框 */
+button::after { border: none; }
+
 .login-actions { width: 100%; text-align: center; }
+
 .btn-wechat {
   display: flex; align-items: center; justify-content: center;
   width: 100%; max-width: 640rpx; margin: 0 auto;
   padding: 28rpx 0;
-  background: var(--twin-baby-a);
-  color: var(--twin-card-bg); border: none; border-radius: 24rpx;
+  background: linear-gradient(180deg, rgba(255,255,255,0.16) 0%, transparent 55%, rgba(0,0,0,0.05) 100%), #E07B3E;
+  color: #FFF5E8; border: none; border-radius: 24rpx;
   font-size: 36rpx; font-weight: 600;
+  box-shadow: 0 3rpx 0 rgba(191,90,40,0.5), 0 4rpx 8rpx rgba(0,0,0,0.06), 0 8rpx 20rpx rgba(224,123,62,0.2);
+  transition: all 0.15s cubic-bezier(0.25,0.1,0.1,1);
 }
 
 .privacy-row { margin-top: 28rpx; }
@@ -127,18 +133,26 @@ onMounted(() => {
   display: flex; align-items: center; justify-content: center;
   width: 100%; max-width: 640rpx; margin: 0 auto;
   padding: 24rpx 0;
-  background: var(--twin-card-bg);
+  background: linear-gradient(180deg, rgba(255,255,255,0.14) 0%, transparent 55%, rgba(0,0,0,0.03) 100%), #FFF5E8;
   color: var(--twin-text);
   border: 2rpx solid var(--twin-border);
   border-radius: 24rpx;
   font-size: 30rpx;
   font-weight: 500;
+  box-shadow: 0 2rpx 0 rgba(200,180,160,0.3), 0 4rpx 8rpx rgba(0,0,0,0.04), 0 6rpx 16rpx rgba(0,0,0,0.04);
+  transition: all 0.15s cubic-bezier(0.25,0.1,0.1,1);
 }
 .offline-hint {
   display: block;
   font-size: 22rpx;
   color: var(--twin-text-secondary);
   margin-top: 12rpx;
+}
+
+/* 按钮按压态 — 下沉 + 内阴影 */
+.btn-press {
+  box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.1), 0 1rpx 0 rgba(0,0,0,0.15) !important;
+  transform: translateY(2rpx);
 }
 
 .dev-skip { margin-top: 60rpx; }
