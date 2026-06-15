@@ -51,6 +51,7 @@
         "optimization" : {
             "subPackages" : true
         },
+        "lazyCodeLoading" : "requiredComponents",
         "permission": {
             "scope.record": {
                 "desc": "用于录制交接班语音便签"
