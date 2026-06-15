@@ -1,6 +1,6 @@
 <!-- 妈妈模式 — 完整手帳对开页 -->
 <template>
-  <view class="page-shell journal journal-paper">
+  <view class="page-shell journal journal-paper page-enter">
     <view class="bg-spot spot-a" />
     <view class="bg-spot spot-b" />
 

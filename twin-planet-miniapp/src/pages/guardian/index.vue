@@ -1,5 +1,5 @@
 <template>
-  <view class="guard-page">
+  <view class="guard-page journal-paper page-enter">
     <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
     <view class="page-header">
       <text class="page-title">守护中心</text>

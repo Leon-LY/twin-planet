@@ -1,5 +1,5 @@
 <template>
-  <view class="growth-page journal-paper">
+  <view class="growth-page journal-paper page-enter">
     <view class="page-header">
       <text class="page-title">生长曲线</text>
       <text class="page-subtitle">每个宝宝都有自己的生长节奏 🌱</text>

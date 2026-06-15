@@ -446,6 +446,35 @@ page {
   100% { opacity: 1; }
 }
 
+/* 首页交错入场 */
+.reveal-1,.reveal-2,.reveal-3,.reveal-4,.reveal-5,.reveal-6 {
+  animation: cardFloatIn .5s var(--ease-page) both;
+}
+.reveal-1 { animation-delay: .05s; }
+.reveal-2 { animation-delay: .12s; }
+.reveal-3 { animation-delay: .20s; }
+.reveal-4 { animation-delay: .28s; }
+.reveal-5 { animation-delay: .36s; }
+.reveal-6 { animation-delay: .44s; }
+
+/* 时间线条目交错入场 */
+.timeline-enter {
+  animation: cardFloatIn .45s var(--ease-page) both;
+}
+.timeline-enter:nth-child(1) { animation-delay: 0s; }
+.timeline-enter:nth-child(2) { animation-delay: .06s; }
+.timeline-enter:nth-child(3) { animation-delay: .12s; }
+.timeline-enter:nth-child(4) { animation-delay: .18s; }
+.timeline-enter:nth-child(5) { animation-delay: .24s; }
+.timeline-enter:nth-child(6) { animation-delay: .30s; }
+.timeline-enter:nth-child(7) { animation-delay: .36s; }
+.timeline-enter:nth-child(8) { animation-delay: .42s; }
+
+/* 全局手帳触感：轻触纸页颤动 */
+.journal-touch:active {
+  animation: paperJiggle .25s var(--ease-stamp) both;
+}
+
 /* 奶奶模式 — 全局大字 */
 .font-large {
   --font-caption:28rpx;

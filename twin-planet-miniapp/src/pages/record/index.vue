@@ -1,6 +1,6 @@
 <!-- 双宝手帐 · 记录页 v9 · 上下文优先，计时可选 -->
 <template>
-  <view class="record-page journal-paper">
+  <view class="record-page journal-paper page-enter">
     <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
     <view v-if="stickerShow" class="sticker-pop"><text class="sticker-pop-emoji">{{ stickerEmoji }}</text></view>
 

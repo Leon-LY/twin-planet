@@ -1,6 +1,6 @@
 <!-- 爸爸模式 — 战术面板 -->
 <template>
-  <view class="page-shell dad-shell journal-paper">
+  <view class="page-shell dad-shell journal-paper page-enter">
     <view class="dad-header">
       <view class="masthead-left">
         <text class="date-line">{{ dateStr }}</text>

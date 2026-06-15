@@ -1,5 +1,5 @@
 <template>
-  <view class="snap-page journal-paper">
+  <view class="snap-page journal-paper page-enter">
     <canvas canvas-id="shareCanvas" style="position:fixed;left:-9999px;top:-9999px;width:345px;height:480px"></canvas>
     <view class="greeting">
       <text class="greeting-text">{{ greetingText }}</text>

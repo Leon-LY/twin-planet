@@ -1,6 +1,6 @@
 <!-- 贴纸收集册 -->
 <template>
-  <view class="stickers-page journal-paper">
+  <view class="stickers-page journal-paper page-enter">
     <view class="page-header">
       <text class="page-title">贴纸收集册</text>
       <text class="page-subtitle">{{ store.collectionCount }} / {{ store.totalStickers }} 已收集</text>
