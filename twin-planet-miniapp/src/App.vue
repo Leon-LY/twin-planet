@@ -115,10 +115,12 @@ page {
 /* 点阵纸纹 — 子弹笔记风格 */
 .journal-paper {
   background-image:
-    radial-gradient(circle, var(--dot) 1.2rpx, transparent 1.2rpx);
+    radial-gradient(circle, var(--dot) 0.8rpx, transparent 0.8rpx);
   background-size: 44rpx 44rpx;
   background-position: 6rpx 6rpx;
 }
+/* 点阵页面上隐藏全局光斑，避免纹理叠加 */
+.journal-paper > .bg-spot { display: none; }
 
 /* 纸页层叠阴影 — 立体"翻开中"的厚度感 */
 .journal-card {
@@ -170,35 +172,73 @@ page {
     radial-gradient(circle 8rpx at center, transparent 5rpx, var(--dot) 5.5rpx, var(--dot) 6.5rpx, transparent 7rpx) repeat-y 0 0 / 8rpx calc(100% / 3);
 }
 
-/* 和纸胶带 — 可配置颜色 */
+/* 和纸胶带 — 撕边质感 + 纸面投影 */
 .journal-tape {
   position: absolute;
-  top: -18rpx;
+  top: -14rpx;
   left: 50%;
-  transform: translateX(-50%) rotate(-2.4deg);
-  width: 70%;
-  height: 36rpx;
-  border-radius: 4rpx 3rpx 5rpx 2rpx;
+  transform: translateX(-50%) rotate(-2.8deg);
+  width: 65%;
+  height: 32rpx;
+  /* 四角不同圆角模拟手撕不规则 */
+  border-radius: 5rpx 2rpx 4rpx 1rpx;
   z-index: 2;
   pointer-events: none;
-  box-shadow: 0 1rpx 3rpx rgba(0,0,0,0.06);
+  /* 纸面投影：胶带贴在纸上的微弱阴影 */
+  box-shadow:
+    0 1rpx 2rpx rgba(0,0,0,0.04),
+    0 2rpx 4rpx rgba(0,0,0,0.03);
   animation: tapeUnroll .6s var(--ease-peel) both;
 }
+/* 胶带肌理层 — 模拟和纸纤维 + 边缘色深 */
+.journal-tape::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  /* 从边缘到中心的微弱渐变，模拟纸胶带边缘略深 */
+  background: radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.04) 100%);
+  pointer-events: none;
+}
+/* 胶带边缘微光 — 光线打在胶带厚度上 */
+.journal-tape::after {
+  content: '';
+  position: absolute;
+  top: 1rpx;
+  left: 3rpx;
+  right: 3rpx;
+  height: 2rpx;
+  background: rgba(255,255,255,0.25);
+  border-radius: 1rpx;
+  pointer-events: none;
+}
+
 .journal-tape.tape-amber {
-  background: var(--amber-lt);
-  border: 1px solid rgba(224,123,62,0.15);
+  background: linear-gradient(175deg,
+    rgba(224,123,62,0.22) 0%,
+    rgba(224,123,62,0.14) 40%,
+    rgba(224,123,62,0.18) 100%);
 }
 .journal-tape.tape-rose {
-  background: var(--rose-lt);
-  border: 1px solid rgba(212,128,104,0.15);
+  background: linear-gradient(175deg,
+    rgba(212,128,104,0.22) 0%,
+    rgba(212,128,104,0.14) 40%,
+    rgba(212,128,104,0.18) 100%);
+  transform: translateX(-50%) rotate(2.6deg);
 }
 .journal-tape.tape-mint {
-  background: var(--mint-lt);
-  border: 1px solid rgba(92,154,110,0.12);
+  background: linear-gradient(175deg,
+    rgba(92,154,110,0.18) 0%,
+    rgba(92,154,110,0.10) 40%,
+    rgba(92,154,110,0.14) 100%);
+  transform: translateX(-50%) rotate(-1.8deg);
 }
 .journal-tape.tape-gold {
-  background: var(--gold-lt);
-  border: 1px solid rgba(200,153,62,0.15);
+  background: linear-gradient(175deg,
+    rgba(200,153,62,0.24) 0%,
+    rgba(200,153,62,0.14) 40%,
+    rgba(200,153,62,0.20) 100%);
+  transform: translateX(-50%) rotate(1.5deg);
 }
 
 /* 印章效果 — 不规则圆角 + 微旋转 + 颜色溢出感 */

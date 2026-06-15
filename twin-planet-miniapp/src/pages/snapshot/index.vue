@@ -1,5 +1,5 @@
 <template>
-  <view class="snap-page journal-paper page-enter">
+  <view class="snap-page page-enter">
     <canvas canvas-id="shareCanvas" style="position:fixed;left:-9999px;top:-9999px;width:345px;height:480px"></canvas>
     <view class="greeting">
       <text class="greeting-text">{{ greetingText }}</text>
@@ -10,7 +10,6 @@
     <view class="sandwich-cards">
       <!-- 大宝 -->
       <view class="sandwich-card journal-card" style="border-color: var(--twin-baby-a)">
-        <view class="journal-tape tape-amber" />
         <view class="card-top">
           <view class="baby-avatar" style="background: var(--twin-baby-a-light)"><text>{{ twinA?.gender==='male'?'👦':'👧' }}</text></view>
           <view class="baby-info">
@@ -48,7 +47,6 @@
 
       <!-- 二宝 -->
       <view class="sandwich-card journal-card" style="border-color: var(--twin-baby-b)">
-        <view class="journal-tape tape-rose" />
         <view class="card-top">
           <view class="baby-avatar" style="background: var(--twin-baby-b-light)"><text>{{ twinB?.gender==='male'?'👦':'👧' }}</text></view>
           <view class="baby-info">

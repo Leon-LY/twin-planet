@@ -1,5 +1,5 @@
 <template>
-  <view class="handover-page journal-paper page-enter">
+  <view class="handover-page page-enter">
     <view class="section-header">
       <text class="section-icon">🎙️</text>
       <text class="section-title">交接班语音便签</text>

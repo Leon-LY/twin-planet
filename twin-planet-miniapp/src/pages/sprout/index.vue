@@ -1,5 +1,5 @@
 <template>
-  <view class="sprout-page journal-paper page-enter">
+  <view class="sprout-page page-enter">
     <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
     <!-- 头部 -->
     <view class="page-header">

@@ -1,5 +1,5 @@
 <template>
-  <view class="duty-page journal-paper page-enter">
+  <view class="duty-page page-enter">
     <!-- 值班模式 -->
     <view class="duty-header">
       <text class="duty-icon">🦸</text>

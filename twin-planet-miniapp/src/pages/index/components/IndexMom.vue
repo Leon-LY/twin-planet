@@ -18,9 +18,8 @@
       </view>
     </view>
 
-    <view class="today-card journal-card journal-curl reveal-2">
+    <view class="today-card journal-card reveal-2">
       <view class="journal-tape tape-amber" />
-      <view class="journal-ribbon" />
       <text class="greet-line1">{{ greetFull }}</text>
       <text class="greet-sub">{{ insightText }}</text>
       <view class="today-meta journal-margin" v-if="todaySummary || allGood || tomorrowForecast">
@@ -53,8 +52,7 @@
 
     <view class="twins reveal-3">
       <view class="twin-card card-a journal-holes" :class="{ 'has-timer': isRunningA }" @click="goRecord">
-        <view class="card-surface journal-curl">
-          <view class="journal-tape tape-rose" />
+        <view class="card-surface">
           <view class="avatar-ring" :class="{ pulsing: isRunningA }"><text class="avatar-emoji">{{ isRunningA ? '😋' : '😛' }}</text></view>
           <text class="twin-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
           <view class="twin-status-row">
@@ -65,8 +63,7 @@
         </view>
       </view>
       <view class="twin-card card-b journal-holes" :class="{ 'has-timer': isRunningB }" @click="goRecord">
-        <view class="card-surface journal-curl">
-          <view class="journal-tape tape-mint" />
+        <view class="card-surface">
           <view class="avatar-ring" :class="{ pulsing: isRunningB }"><text class="avatar-emoji">{{ isRunningB ? '😴' : '😪' }}</text></view>
           <text class="twin-name">{{ babyB?.nickname || babyB?.name || '二宝' }}</text>
           <view class="twin-status-row">

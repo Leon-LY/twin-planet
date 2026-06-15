@@ -1,5 +1,5 @@
 <template>
-  <view class="ms-page journal-paper page-enter">
+  <view class="ms-page page-enter">
     <view class="page-header">
       <text class="page-icon">🌟</text>
       <text class="page-title">双宝能力观察</text>

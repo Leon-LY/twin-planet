@@ -1,6 +1,6 @@
 <!-- 双宝手帐 · 记录页 v9 · 上下文优先，计时可选 -->
 <template>
-  <view class="record-page journal-paper page-enter">
+  <view class="record-page page-enter">
     <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
     <view v-if="stickerShow" class="sticker-pop"><text class="sticker-pop-emoji">{{ stickerEmoji }}</text></view>
 
@@ -57,7 +57,6 @@
 
       <!-- 上下文面板：喂奶 -->
       <view class="ctx-panel journal-card" v-if="panelType==='feeding'">
-        <view class="journal-tape tape-amber" />
         <text class="ctx-title">喂奶详情</text>
         <view class="ctx-row">
           <text class="ctx-chip" :class="{on:feedSide==='left'}" @click="feedSide='left'">左</text>
