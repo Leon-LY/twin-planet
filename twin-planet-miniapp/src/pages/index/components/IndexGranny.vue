@@ -4,7 +4,7 @@
     <text class="heading-xl" style="text-align:center;display:block;margin-bottom:8rpx">双宝记</text>
     <text class="body-text" style="text-align:center;display:block;margin-bottom:64rpx">{{ greeting }}</text>
     <view class="granny-actions">
-      <view class="granny-btn" @click="goRecord"><text class="granny-emoji">✋</text><text class="granny-label">记一笔</text></view>
+      <view class="granny-btn" @click="goRecord"><text class="granny-emoji">✏️</text><text class="granny-label">记一笔</text></view>
       <view class="granny-btn" @click="goGrowth"><text class="granny-emoji">🌱</text><text class="granny-label">看看长多大了</text></view>
       <view class="granny-btn granny-help" @click="goHelp"><text class="granny-emoji">📞</text><text class="granny-label">问家里人</text></view>
     </view>

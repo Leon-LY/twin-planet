@@ -13,7 +13,7 @@
     <view class="twins dad-twins">
       <view class="twin-card card-a journal-holes" @click="goRecord">
         <view class="card-surface">
-          <view class="avatar-ring" :class="{ pulsing: isRunningA }"><text class="avatar-emoji">{{ isRunningA ? '😋' : '😛' }}</text></view>
+          <view class="avatar-ring" :class="{ pulsing: isRunningA }"><text class="avatar-emoji">{{ babyEmoji(babyA?.id, 0) }}</text></view>
           <text class="twin-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
           <view class="twin-status-row">
             <text v-if="isRunningA" class="status-live">计时中</text>
@@ -24,7 +24,7 @@
       </view>
       <view class="twin-card card-b journal-holes" @click="goRecord">
         <view class="card-surface">
-          <view class="avatar-ring" :class="{ pulsing: isRunningB }"><text class="avatar-emoji">{{ isRunningB ? '😴' : '😪' }}</text></view>
+          <view class="avatar-ring" :class="{ pulsing: isRunningB }"><text class="avatar-emoji">{{ babyEmoji(babyB?.id, 1) }}</text></view>
           <text class="twin-name">{{ babyB?.nickname || babyB?.name || '二宝' }}</text>
           <view class="twin-status-row">
             <text v-if="isRunningB" class="status-live">计时中</text>
@@ -113,6 +113,23 @@ function babyUrgency(b: any): string {
   if (last.type !== 'feeding') return ''
   const h = (nowTick.value - last.createdAt) / 3600000
   if (h > 4) return 'urgent'; if (h > 3) return 'warn'; return ''
+}
+
+function babyEmoji(babyId: string | undefined, idx: number): string {
+  if (!babyId) return idx === 0 ? '🐣' : '🐥'
+  const timer = recordsStore.runningTimers.find(t => t.babyId === babyId)
+  if (timer) return timer.type === 'feeding' ? '🍼' : '💤'
+  const logs = recordsStore.recentLogsByBaby[babyId]
+  if (logs?.length) {
+    const last = logs[logs.length - 1]
+    const minAgo = (Date.now() - last.createdAt) / 60000
+    if (minAgo < 30) {
+      if (last.type === 'feeding') return '😋'
+      if (last.type === 'sleep') return '😴'
+      if (last.type === 'diaper') return '🧷'
+    }
+  }
+  return idx === 0 ? '🐣' : '🐥'
 }
 
 const todaySummary = computed(() => {

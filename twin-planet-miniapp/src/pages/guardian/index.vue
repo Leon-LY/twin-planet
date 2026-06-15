@@ -1,6 +1,5 @@
 <template>
   <view class="guard-page page-enter">
-    <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
     <view class="page-header">
       <text class="page-title">守护中心</text>
       <text class="page-subtitle">照顾好自己，才能照顾好两个小怪兽</text>
@@ -120,9 +119,6 @@ onMounted(() => {
 
 <style scoped>
 .guard-page { min-height: 100vh; background: var(--paper); position: relative; padding: 40rpx 28rpx calc(64rpx + env(safe-area-inset-bottom)); }
-.bg-spot { position: absolute; pointer-events: none; z-index: 0; border-radius: 50%; }
-.spot-a { width: 300rpx; height: 300rpx; top: 120rpx; right: -100rpx; background: radial-gradient(circle, rgba(212,128,104,0.03) 0%, transparent 60%); }
-.spot-b { width: 260rpx; height: 260rpx; bottom: 300rpx; left: -100rpx; background: radial-gradient(circle, rgba(224,123,62,0.03) 0%, transparent 60%); }
 
 .page-header { margin-bottom: 32rpx; position: relative; z-index: 1; }
 .page-title { display: block; font-family: var(--font-journal); font-size: var(--font-title); color: var(--ink); }

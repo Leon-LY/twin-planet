@@ -1,7 +1,6 @@
 <!-- 双宝手帐 · 记录页 v9 · 上下文优先，计时可选 -->
 <template>
   <view class="record-page page-enter">
-    <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
     <view v-if="stickerShow" class="sticker-pop"><text class="sticker-pop-emoji">{{ stickerEmoji }}</text></view>
 
     <!-- 无宝宝 -->
@@ -19,7 +18,7 @@
       <view class="baby-tabs">
         <view class="baby-tab" v-for="(t,i) in twins" :key="t.id"
           :class="{ active: sel===t.id, 'tab-a':i===0, 'tab-b':i===1 }" @click="sel=t.id">
-          <text class="tab-emoji">{{ i===0 ? '😋' : '😴' }}</text>
+          <text class="tab-emoji">{{ i===0 ? '🐣' : '🐥' }}</text>
           <text class="tab-name">{{ t.nickname || t.name }}</text>
           <text class="tab-check" v-if="sel===t.id">✓</text>
         </view>
@@ -151,7 +150,7 @@
     <template v-if="recordsStore.runningTimers.length===1">
       <view class="timer-hero">
         <view class="hero-face" :class="runningTwin==='a'?'bg-a':'bg-b'">
-          <text class="hero-emoji">{{ runningTwin==='a'?'😋':'😴' }}</text>
+          <text class="hero-emoji">{{ timerType==='feeding' ? '🍼' : '💤' }}</text>
         </view>
         <text class="hero-baby-name">{{ runningName }}</text>
         <!-- 上下文信息（比时钟更突出） -->
@@ -192,7 +191,7 @@
         <view class="dual-card" v-for="t in recordsStore.runningTimers" :key="t.babyId"
           :class="t.babyId===twins[0]?.id?'dc-a':'dc-b'">
           <view class="dc-face" :class="t.babyId===twins[0]?.id?'bg-a':'bg-b'">
-            <text class="dc-emoji">{{ t.babyId===twins[0]?.id?'😋':'😴' }}</text>
+            <text class="dc-emoji">{{ t.type==='feeding' ? '🍼' : '💤' }}</text>
           </view>
           <text class="dc-name">{{ getName(t.babyId) }}</text>
           <text class="dc-ctx" v-if="t.type==='feeding'">{{ feedSide ? (feedSide==='left'?'左':feedSide==='right'?'右':'瓶') : '' }}{{ feedAmount ? ' '+feedAmount+'ml' : '' }}</text>
@@ -381,9 +380,6 @@ const stopAll=()=>{recordsStore.stopTimer();resetContext()}
 
 <style scoped>
 .record-page{min-height:100vh;background:var(--paper);padding:36rpx 28rpx calc(80rpx + env(safe-area-inset-bottom));position:relative}
-.bg-spot{position:absolute;pointer-events:none;z-index:0;border-radius:50%}
-.spot-a{width:420rpx;height:420rpx;top:80rpx;right:-160rpx;background:radial-gradient(circle,rgba(212,128,104,0.03) 0%,transparent 60%)}
-.spot-b{width:360rpx;height:360rpx;bottom:180rpx;left:-140rpx;background:radial-gradient(circle,rgba(224,123,62,0.03) 0%,transparent 60%)}
 .sticker-pop{position:fixed;top:16%;left:50%;transform:translate(-50%,-50%);z-index:99;pointer-events:none}
 .sticker-pop-emoji{font-size:96rpx;animation:stickerPeel .75s var(--ease-peel) forwards}
 

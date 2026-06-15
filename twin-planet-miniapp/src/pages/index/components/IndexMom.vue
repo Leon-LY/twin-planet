@@ -53,7 +53,7 @@
     <view class="twins reveal-3">
       <view class="twin-card card-a journal-holes" :class="{ 'has-timer': isRunningA }" @click="goRecord">
         <view class="card-surface">
-          <view class="avatar-ring" :class="{ pulsing: isRunningA }"><text class="avatar-emoji">{{ isRunningA ? '😋' : '😛' }}</text></view>
+          <view class="avatar-ring" :class="{ pulsing: isRunningA }"><text class="avatar-emoji">{{ babyEmoji(babyA?.id, 0) }}</text></view>
           <text class="twin-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
           <view class="twin-status-row">
             <text v-if="isRunningA" class="status-live">计时中</text>
@@ -64,7 +64,7 @@
       </view>
       <view class="twin-card card-b journal-holes" :class="{ 'has-timer': isRunningB }" @click="goRecord">
         <view class="card-surface">
-          <view class="avatar-ring" :class="{ pulsing: isRunningB }"><text class="avatar-emoji">{{ isRunningB ? '😴' : '😪' }}</text></view>
+          <view class="avatar-ring" :class="{ pulsing: isRunningB }"><text class="avatar-emoji">{{ babyEmoji(babyB?.id, 1) }}</text></view>
           <text class="twin-name">{{ babyB?.nickname || babyB?.name || '二宝' }}</text>
           <view class="twin-status-row">
             <text v-if="isRunningB" class="status-live">计时中</text>
@@ -87,7 +87,7 @@
 
     <view class="action-center reveal-5">
       <button class="main-btn" @click="goRecord">
-        <text class="btn-icon">✋</text><text class="btn-text">记一笔</text>
+        <text class="btn-icon">✏️</text><text class="btn-text">记一笔</text>
       </button>
     </view>
 
@@ -244,10 +244,10 @@ const greetFull = computed(() => {
 const syncRate = computed(() => recordsStore.twinSyncRate)
 const insightText = computed(() => {
   const s = syncRate.value
-  if (s>70) return `同步率 ${s}% · 神同步！不愧是双胞胎`
-  if (s>30) return `同步率 ${s}% · 今天打架战绩：平局 🤼`
-  if (s>0) return '各有各的节奏，挺好的'
-  return '两个小怪兽，今天会同步吗？'
+  if (s>70) return '今天两个小家伙步调特别一致，果然是双胞胎~'
+  if (s>30) return '两个小怪兽今天各有各的节奏，挺好的'
+  if (s>0) return '各自精彩的一天~'
+  return '今天两只小怪兽的故事又要开始啦'
 })
 const todaySummary = computed(() => {
   const today = recordsStore.logs.filter(l => l.createdAt >= new Date().setHours(0,0,0,0))
@@ -301,6 +301,23 @@ function babyUrgency(b: any): string {
   if (h > 4) return 'urgent'; if (h > 3) return 'warn'; return ''
 }
 
+function babyEmoji(babyId: string | undefined, idx: number): string {
+  if (!babyId) return idx === 0 ? '🐣' : '🐥'
+  const timer = recordsStore.runningTimers.find(t => t.babyId === babyId)
+  if (timer) return timer.type === 'feeding' ? '🍼' : '💤'
+  const logs = recordsStore.recentLogsByBaby[babyId]
+  if (logs?.length) {
+    const last = logs[logs.length - 1]
+    const minAgo = (Date.now() - last.createdAt) / 60000
+    if (minAgo < 30) {
+      if (last.type === 'feeding') return '😋'
+      if (last.type === 'sleep') return '😴'
+      if (last.type === 'diaper') return '🧷'
+    }
+  }
+  return idx === 0 ? '🐣' : '🐥'
+}
+
 function dualRecord(t: 'feeding' | 'sleep' | 'diaper') {
   if (babyA.value) recordsStore.quickLog(babyA.value.id, t)
   if (babyB.value) recordsStore.quickLog(babyB.value.id, t)
@@ -325,10 +342,10 @@ const goMore = () => {
 </script>
 
 <style scoped>
-.journal{position:relative}
-.bg-spot{position:absolute;pointer-events:none;z-index:0;border-radius:50%}
-.spot-a{width:560rpx;height:560rpx;top:60rpx;left:-260rpx;background:radial-gradient(circle,rgba(224,123,62,0.04) 0%,transparent 55%)}
-.spot-b{width:380rpx;height:380rpx;bottom:280rpx;right:-140rpx;background:radial-gradient(circle,rgba(92,154,110,0.03) 0%,transparent 55%)}
+.journal{position:relative;padding-bottom:calc(100rpx + env(safe-area-inset-bottom))}
+.bg-spot{position:absolute;pointer-events:none;z-index:0}
+.spot-a{width:400rpx;height:360rpx;top:20rpx;left:-100rpx;background:radial-gradient(ellipse 60% 55% at 35% 40%,rgba(224,123,62,0.025) 0%,transparent 70%),radial-gradient(ellipse 40% 50% at 55% 35%,rgba(224,123,62,0.015) 0%,transparent 60%)}
+.spot-b{width:300rpx;height:260rpx;bottom:320rpx;right:-60rpx;background:radial-gradient(ellipse 50% 60% at 40% 45%,rgba(92,154,110,0.02) 0%,transparent 70%),radial-gradient(ellipse 35% 45% at 55% 35%,rgba(92,154,110,0.012) 0%,transparent 60%)}
 
 .masthead{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32rpx}
 .masthead-left{display:flex;flex-direction:column;gap:8rpx}
@@ -396,7 +413,7 @@ const goMore = () => {
 .qr-text{font-size:24rpx;color:var(--ink-md);font-weight:500}
 
 .action-center{display:flex;align-items:center;justify-content:center;position:relative;z-index:1;margin-bottom:28rpx}
-.main-btn{width:300rpx;height:300rpx;border-radius:50%;position:relative;z-index:2;background:var(--amber);border:none;color:#FFF;font-family:var(--font-journal);box-shadow:0 20rpx 56rpx rgba(224,123,62,0.2),0 6rpx 12rpx rgba(224,123,62,0.1),inset 0 3rpx 0 rgba(255,255,255,.2),inset 0 -6rpx 12rpx rgba(0,0,0,.06);transform:rotate(-2deg);transition:transform .18s var(--ease-bounce),box-shadow .18s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6rpx;animation:btnBreathe 3.5s var(--ease-soft) infinite}
+.main-btn{width:300rpx;height:300rpx;border-radius:50%;position:relative;z-index:2;background:var(--amber);border:none;color:#FFF;font-family:var(--font-journal);box-shadow:0 20rpx 56rpx rgba(224,123,62,0.2),0 6rpx 12rpx rgba(224,123,62,0.1),inset 0 3rpx 0 rgba(255,255,255,.2),inset 0 -6rpx 12rpx rgba(0,0,0,.06);transform:rotate(-2deg);transition:transform .18s var(--ease-bounce),box-shadow .18s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6rpx;}
 .main-btn::after{content:'';position:absolute;top:14rpx;left:22%;right:22%;height:32%;background:radial-gradient(ellipse at center,rgba(255,255,255,.25) 0%,transparent 70%);border-radius:50%;pointer-events:none}
 .main-btn:active{transform:rotate(-2deg)scale(.86);box-shadow:0 6rpx 20rpx rgba(224,123,62,.16),0 2rpx 4rpx rgba(224,123,62,.08)}
 .btn-icon{font-size:56rpx;position:relative;z-index:1}
@@ -440,7 +457,7 @@ const goMore = () => {
 .invite-decline:active{color:var(--ink);background:rgba(0,0,0,0.03);border-radius:var(--radius-sm)}
 
 .journal-footer-text{display:block;text-align:right;font-size:18rpx;color:var(--ink-lt);margin-bottom:20rpx;padding-right:8rpx;position:relative;z-index:1}
-.journal-nav{display:flex;justify-content:space-between;padding:20rpx 48rpx 0;border-top:1.5px solid var(--dot);position:relative;z-index:1}
+.journal-nav{display:flex;justify-content:space-between;padding:20rpx 48rpx calc(20rpx + env(safe-area-inset-bottom));border-top:1.5px solid var(--dot);position:fixed;bottom:0;left:0;right:0;background:var(--paper);z-index:10}
 .jnav-item{font-family:var(--font-journal);font-size:26rpx;color:var(--ink-lt);letter-spacing:1rpx}
 .jnav-item.active{color:var(--amber);font-weight:700}
 

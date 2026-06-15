@@ -894,11 +894,10 @@ page {
   margin:20rpx 0;
 }
 
-/* 全局暖光斑 */
-.bg-spot{position:absolute;pointer-events:none;z-index:0;border-radius:50%;animation:spot-drift 30s ease-in-out infinite alternate}
-.spot-a{width:360rpx;height:360rpx;top:100rpx;right:-120rpx;background:radial-gradient(circle,var(--rose-lt) 0%,transparent 60%)}
-.spot-b{width:300rpx;height:300rpx;bottom:240rpx;left:-100rpx;background:radial-gradient(circle,var(--amber-lt) 0%,transparent 60%)}
-@keyframes spot-drift{from{transform:translate(0,0)}to{transform:translate(20rpx,-15rpx)}}
+/* 全局暖光斑 — 水彩墨晕，非正圆 */
+.bg-spot{position:absolute;pointer-events:none;z-index:0}
+.spot-a{width:360rpx;height:340rpx;top:100rpx;right:-120rpx;background:radial-gradient(ellipse 55% 60% at 40% 45%,var(--rose-lt) 0%,transparent 65%),radial-gradient(ellipse 40% 45% at 55% 35%,var(--rose-lt) 0%,transparent 55%)}
+.spot-b{width:280rpx;height:260rpx;bottom:240rpx;left:-100rpx;background:radial-gradient(ellipse 50% 55% at 45% 40%,var(--amber-lt) 0%,transparent 65%),radial-gradient(ellipse 38% 42% at 50% 35%,var(--amber-lt) 0%,transparent 55%)}
 
 /* 全局手写体页头 */
 .page-header{position:relative;z-index:1;margin-bottom:36rpx;padding-bottom:20rpx;border-bottom:2rpx dashed var(--dot)}

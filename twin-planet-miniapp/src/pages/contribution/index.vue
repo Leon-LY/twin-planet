@@ -1,6 +1,5 @@
 <template>
   <view class="contrib-page page-enter">
-    <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
     <!-- 头部 -->
     <view class="page-header">
       <text class="page-icon">💪</text>

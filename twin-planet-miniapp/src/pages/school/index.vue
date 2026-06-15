@@ -1,6 +1,5 @@
 <template>
   <view class="school-page page-enter">
-    <view class="bg-spot spot-a" /><view class="bg-spot spot-b" />
     <view class="page-header">
       <text class="page-icon">🏫</text>
       <text class="page-title">入园助手</text>
