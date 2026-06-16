@@ -54,7 +54,7 @@
     <view class="twins reveal-3">
       <view class="twin-card card-a journal-holes" :class="{ 'has-timer': isRunningA }" @click="goRecord">
         <view class="card-surface">
-          <view class="avatar-ring" :class="{ pulsing: isRunningA }"><image v-if="!isRunningA" src="/static/mascot-amber-fox-nobg-64.png" class="avatar-emoji-img" mode="aspectFit" /><text v-if="isRunningA" class="avatar-emoji iconfont" :class="babyEmoji(babyA?.id, 0)"></text></view>
+          <view class="avatar-ring" :class="{ pulsing: isRunningA }"><text class="avatar-emoji iconfont" :class="babyEmoji(babyA?.id, 0)"></text></view>
           <text class="twin-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
           <view class="twin-status-row">
             <text v-if="isRunningA" class="status-live">计时中</text>
@@ -65,7 +65,7 @@
       </view>
       <view class="twin-card card-b journal-holes" :class="{ 'has-timer': isRunningB }" @click="goRecord">
         <view class="card-surface">
-          <view class="avatar-ring" :class="{ pulsing: isRunningB }"><image v-if="!isRunningB" src="/static/mascot-rose-fox-nobg-64.png" class="avatar-emoji-img" mode="aspectFit" /><text v-if="isRunningB" class="avatar-emoji iconfont" :class="babyEmoji(babyB?.id, 1)"></text></view>
+          <view class="avatar-ring" :class="{ pulsing: isRunningB }"><text class="avatar-emoji iconfont" :class="babyEmoji(babyB?.id, 1)"></text></view>
           <text class="twin-name">{{ babyB?.nickname || babyB?.name || '小宝' }}</text>
           <view class="twin-status-row">
             <text v-if="isRunningB" class="status-live">计时中</text>
@@ -391,7 +391,6 @@ const goMore = () => emit('navigate', '/pages/discover/index')
 .avatar-ring.pulsing::before{content:'';position:absolute;top:-6rpx;right:-6rpx;bottom:-6rpx;left:-6rpx;border-radius:50%;border:2rpx solid var(--mint);opacity:.45;animation:ringPulse 2.5s ease-in-out infinite}
 @keyframes ringPulse{0%,100%{transform:scale(1);opacity:.35}50%{transform:scale(1.1);opacity:.8}}
 .avatar-emoji{font-size:44rpx}
-.avatar-emoji-img{width:60rpx;height:60rpx;border-radius:50%}
 .twin-name{font-family:var(--font-journal);font-size:30rpx;font-weight:700;color:var(--ink);text-align:center;display:block;margin-bottom:4rpx}
 .twin-status-row{text-align:center}
 .status-live{font-size:22rpx;color:var(--mint);font-weight:600}

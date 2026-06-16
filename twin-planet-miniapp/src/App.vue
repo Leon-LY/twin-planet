@@ -1367,18 +1367,6 @@ page {
 }
 
 /* ═══════════════════════════════════════════
-   宝宝头像 · Baby Avatar Image
-   使用狐狸吉祥物 PNG 替代 iconfont
-   ═══════════════════════════════════════════ */
-.baby-avatar-img {
-  width: 72rpx; height: 72rpx;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.baby-avatar-img.sm { width: 48rpx; height: 48rpx; }
-.baby-avatar-img.lg { width: 96rpx; height: 96rpx; }
-
-/* ═══════════════════════════════════════════
    统一空状态 · Standard Empty State
    所有空数据页面使用此模式
    ═══════════════════════════════════════════ */
