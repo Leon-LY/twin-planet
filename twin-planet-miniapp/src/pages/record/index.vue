@@ -1,12 +1,15 @@
 <!-- 双宝手帐 · 记录页 v9 · 上下文优先，计时可选 -->
 <template>
   <view class="record-page page-enter">
-    <view v-if="stickerShow" class="sticker-pop"><text class="sticker-pop-emoji">{{ stickerEmoji }}</text></view>
+    <view v-if="stickerShow" class="sticker-pop"><text class="sticker-pop-emoji iconfont" :class="stickerEmoji"></text></view>
 
     <!-- 无宝宝 -->
     <template v-if="!twins.length">
       <view class="empty-state">
-        <text class="empty-emoji">👶👶</text>
+        <view class="empty-icon-row">
+          <text class="empty-emoji iconfont icon-baby-a"></text>
+          <text class="empty-emoji iconfont icon-baby-b"></text>
+        </view>
         <text class="empty-title">还没有添加宝宝</text>
         <text class="empty-desc">先添加宝宝，才能开始记录哦~</text>
       </view>
@@ -18,39 +21,39 @@
       <view class="baby-tabs">
         <view class="baby-tab" v-for="(t,i) in twins" :key="t.id"
           :class="{ active: sel===t.id, 'tab-a':i===0, 'tab-b':i===1 }" @click="sel=t.id">
-          <text class="tab-emoji">{{ i===0 ? '🐣' : '🐥' }}</text>
+          <text class="tab-emoji iconfont" :class="i===0 ? 'icon-baby-a' : 'icon-baby-b'"></text>
           <text class="tab-name">{{ t.nickname || t.name }}</text>
-          <text class="tab-check" v-if="sel===t.id">✓</text>
+          <text class="tab-check icon-check" v-if="sel===t.id"></text>
         </view>
       </view>
 
       <!-- 计时型操作：喂奶 + 睡觉（大按钮） -->
-      <view class="section-label">⏱ 计时记录</view>
+      <view class="section-label"><text class="iconfont icon-clock icon-sm"></text> 计时记录</view>
       <view class="timer-actions">
         <view class="ta-btn ta-feed" @click="openPanel('feeding')">
-          <text class="ta-emoji">🍼</text>
+          <text class="ta-emoji iconfont icon-bottle"></text>
           <text class="ta-label">喂奶</text>
         </view>
         <view class="ta-btn ta-sleep" @click="doStartSleep">
-          <text class="ta-emoji">😴</text>
+          <text class="ta-emoji iconfont icon-sleep"></text>
           <text class="ta-label">睡觉</text>
         </view>
       </view>
 
       <!-- 即时型操作：尿布/体温/用药/洗澡（小按钮） -->
-      <view class="section-label">⚡ 快速记录</view>
+      <view class="section-label"><text class="iconfont icon-edit icon-xs"></text> 快速记录</view>
       <view class="quick-actions">
         <view class="qa-btn" @click="openPanel('diaper')">
-          <text class="qa-emoji">🧷</text><text class="qa-label">尿布</text>
+          <text class="qa-emoji iconfont icon-diaper"></text><text class="qa-label">尿布</text>
         </view>
         <view class="qa-btn" @click="openPanel('temperature')">
-          <text class="qa-emoji">🌡️</text><text class="qa-label">体温</text>
+          <text class="qa-emoji iconfont icon-thermometer"></text><text class="qa-label">体温</text>
         </view>
         <view class="qa-btn" @click="openPanel('medicine')">
-          <text class="qa-emoji">💊</text><text class="qa-label">用药</text>
+          <text class="qa-emoji iconfont icon-medicine"></text><text class="qa-label">用药</text>
         </view>
         <view class="qa-btn" @click="doQuickBath">
-          <text class="qa-emoji">🛁</text><text class="qa-label">洗澡</text>
+          <text class="qa-emoji iconfont icon-bath"></text><text class="qa-label">洗澡</text>
         </view>
       </view>
 
@@ -60,7 +63,7 @@
         <view class="ctx-row">
           <text class="ctx-chip" :class="{on:feedSide==='left'}" @click="feedSide='left'">左</text>
           <text class="ctx-chip" :class="{on:feedSide==='right'}" @click="feedSide='right'">右</text>
-          <text class="ctx-chip" :class="{on:feedSide==='bottle'}" @click="feedSide='bottle'">🍼 瓶喂</text>
+          <text class="ctx-chip" :class="{on:feedSide==='bottle'}" @click="feedSide='bottle'"><text class="iconfont icon-bottle emoji-inline"></text> 瓶喂</text>
         </view>
         <view class="ctx-row" v-if="feedSide==='bottle'">
           <text class="ctx-chip sm" :class="{on:feedAmount===60}" @click="feedAmount=60">60ml</text>
@@ -73,18 +76,18 @@
           <view class="ctx-btn secondary" @click="doStartTimer('feeding')">开始计时</view>
           <view class="ctx-btn primary" @click="doFeedNow">直接记录</view>
         </view>
-        <view class="ctx-close" @click="closePanel">✕</view>
+        <view class="ctx-close" @click="closePanel"><text class="icon-close"></text></view>
       </view>
 
       <!-- 上下文面板：尿布 -->
       <view class="ctx-panel" v-if="panelType==='diaper'">
         <text class="ctx-title">换尿布</text>
         <view class="ctx-row">
-          <text class="ctx-chip lg" :class="{on:diaperType==='wet'}" @click="doDiaperQuick('wet')">💧 小便</text>
-          <text class="ctx-chip lg" :class="{on:diaperType==='dirty'}" @click="doDiaperQuick('dirty')">💩 大便</text>
-          <text class="ctx-chip lg" :class="{on:diaperType==='both'}" @click="doDiaperQuick('both')">💧💩 都有</text>
+          <text class="ctx-chip lg" :class="{on:diaperType==='wet'}" @click="doDiaperQuick('wet')"><text class="iconfont icon-wet icon-sm"></text> 小便</text>
+          <text class="ctx-chip lg" :class="{on:diaperType==='dirty'}" @click="doDiaperQuick('dirty')"><text class="iconfont icon-dirty icon-sm"></text> 大便</text>
+          <text class="ctx-chip lg" :class="{on:diaperType==='both'}" @click="doDiaperQuick('both')"><text class="iconfont icon-wet icon-sm"></text><text class="iconfont icon-dirty icon-sm"></text> 都有</text>
         </view>
-        <view class="ctx-close" @click="closePanel">✕</view>
+        <view class="ctx-close" @click="closePanel"><text class="icon-close"></text></view>
       </view>
 
       <!-- 上下文面板：体温 -->
@@ -97,7 +100,7 @@
         <view class="ctx-actions">
           <view class="ctx-btn primary" @click="doTempQuick">记录</view>
         </view>
-        <view class="ctx-close" @click="closePanel">✕</view>
+        <view class="ctx-close" @click="closePanel"><text class="icon-close"></text></view>
       </view>
 
       <!-- 上下文面板：用药 -->
@@ -114,7 +117,7 @@
         <view class="ctx-actions">
           <view class="ctx-btn primary" @click="doMedQuick">记录</view>
         </view>
-        <view class="ctx-close" @click="closePanel">✕</view>
+        <view class="ctx-close" @click="closePanel"><text class="icon-close"></text></view>
       </view>
 
       <!-- 双胞胎快捷记录 -->
@@ -125,11 +128,11 @@
 
       <!-- 夜间快速记录 -->
       <view class="night-quick" v-if="isNight">
-        <text class="night-label">🌙 夜间快速记录</text>
+        <text class="night-label"><text class="iconfont icon-night icon-sm"></text> 夜间快速记录</text>
         <view class="night-row">
-          <view class="night-chip" @click="quickNight('feeding')">🍼 喂奶</view>
-          <view class="night-chip" @click="quickNight('diaper')">🧷 尿布</view>
-          <view class="night-chip" @click="quickNight('sleep')">😴 哄睡</view>
+          <view class="night-chip" @click="quickNight('feeding')"><text class="iconfont icon-bottle icon-sm"></text> 喂奶</view>
+          <view class="night-chip" @click="quickNight('diaper')"><text class="iconfont icon-diaper icon-sm"></text> 尿布</view>
+          <view class="night-chip" @click="quickNight('sleep')"><text class="iconfont icon-sleep icon-sm"></text> 哄睡</view>
         </view>
       </view>
 
@@ -138,18 +141,18 @@
         <text class="retro-dash">--</text>
         <text class="retro-label">刚才忘了？</text>
         <view class="retro-presets">
-          <text class="retro-chip" @click="retro(5,'feeding')">🍼 5分前</text>
-          <text class="retro-chip" @click="retro(10,'feeding')">🍼 10分前</text>
-          <text class="retro-chip" @click="retro(20,'diaper')">🧷 20分前</text>
-          <text class="retro-chip" @click="retro(15,'sleep')">😴 15分前</text>
+          <text class="retro-chip" @click="retro(5,'feeding')"><text class="iconfont icon-bottle icon-xs"></text> 5分前</text>
+          <text class="retro-chip" @click="retro(10,'feeding')"><text class="iconfont icon-bottle icon-xs"></text> 10分前</text>
+          <text class="retro-chip" @click="retro(20,'diaper')"><text class="iconfont icon-diaper icon-xs"></text> 20分前</text>
+          <text class="retro-chip" @click="retro(15,'sleep')"><text class="iconfont icon-sleep icon-xs"></text> 15分前</text>
         </view>
       </view>
 
       <!-- 知识卡片 -->
       <view class="knowledge-card" v-if="knowledgeVisible">
-        <text class="knowledge-icon">💡</text>
+        <text class="knowledge-icon">✦</text>
         <text class="knowledge-text">{{ knowledgeText }}</text>
-        <text class="knowledge-close" @click="closeKnowledge">✕</text>
+        <text class="knowledge-close" @click="closeKnowledge"><text class="icon-close"></text></text>
       </view>
     </template>
 
@@ -157,7 +160,7 @@
     <template v-if="recordsStore.runningTimers.length===1">
       <view class="timer-hero">
         <view class="hero-face" :class="runningTwin==='a'?'bg-a':'bg-b'">
-          <text class="hero-emoji">{{ timerType==='feeding' ? '🍼' : '💤' }}</text>
+          <text class="hero-emoji iconfont" :class="timerType==='feeding' ? 'icon-bottle' : 'icon-sleep-zzz'"></text>
         </view>
         <text class="hero-baby-name">{{ runningName }}</text>
         <!-- 上下文信息（比时钟更突出） -->
@@ -166,7 +169,7 @@
             {{ feedSide==='left'?'左':feedSide==='right'?'右':'瓶喂' }}
           </text>
           <text v-if="timerType==='feeding' && feedAmount" class="hero-amount">{{ feedAmount }}ml</text>
-          <text v-if="timerType==='sleep'" class="hero-side">💤</text>
+          <text v-if="timerType==='sleep'" class="hero-side iconfont icon-sleep-zzz"></text>
         </view>
         <!-- 时钟：小而安静 -->
         <view class="hero-clock">
@@ -178,7 +181,7 @@
           <view class="feed-sides">
             <text class="feed-side" :class="{on:feedSide==='left'}" @click="setFeedSide('left')">左</text>
             <text class="feed-side" :class="{on:feedSide==='right'}" @click="setFeedSide('right')">右</text>
-            <text class="feed-side" :class="{on:feedSide==='bottle'}" @click="setFeedSide('bottle')">🍼</text>
+            <text class="feed-side" :class="{on:feedSide==='bottle'}" @click="setFeedSide('bottle')"><text class="iconfont icon-bottle"></text></text>
           </view>
           <view class="feed-amounts" v-if="feedSide">
             <text v-for="ml in [60,90,120,150,180]" :key="ml" class="feed-ml" :class="{on:feedAmount===ml}" @click="setFeedAmount(ml)">{{ ml }}ml</text>
@@ -198,11 +201,11 @@
         <view class="dual-card" v-for="t in recordsStore.runningTimers" :key="t.babyId"
           :class="t.babyId===twins[0]?.id?'dc-a':'dc-b'">
           <view class="dc-face" :class="t.babyId===twins[0]?.id?'bg-a':'bg-b'">
-            <text class="dc-emoji">{{ t.type==='feeding' ? '🍼' : '💤' }}</text>
+            <text class="dc-emoji iconfont" :class="t.type==='feeding' ? 'icon-bottle' : 'icon-sleep-zzz'"></text>
           </view>
           <text class="dc-name">{{ getName(t.babyId) }}</text>
           <text class="dc-ctx" v-if="t.type==='feeding'">{{ feedSide ? (feedSide==='left'?'左':feedSide==='right'?'右':'瓶') : '' }}{{ feedAmount ? ' '+feedAmount+'ml' : '' }}</text>
-          <text class="dc-ctx" v-else-if="t.type==='sleep'">💤</text>
+          <text class="dc-ctx iconfont icon-sleep-zzz" v-else-if="t.type==='sleep'"></text>
           <text class="dc-time">{{ formatElapsed(t.elapsed) }}</text>
           <view class="dc-stop" @click="stopOne(t.babyId)">
             <text>{{ t.type==='sleep'?'醒':'停' }}</text>
@@ -267,9 +270,9 @@ function closePanel(){panelType.value=''}
 function resetContext(){feedSide.value='';feedAmount.value=0;diaperType.value='';tempValue.value=0;medName.value='';medDosage.value='';panelType.value=''}
 
 // ---- 贴纸 ----
-const stickerShow=ref(false);const stickerEmoji=ref('⭐')
+const stickerShow=ref(false);const stickerEmoji=ref('icon-star')
 let stickerTimer:ReturnType<typeof setTimeout>|null=null
-function popSticker(emoji:string){if(stickerTimer)clearTimeout(stickerTimer);stickerEmoji.value=emoji;stickerShow.value=true;stickerTimer=setTimeout(()=>{stickerShow.value=false},750)}
+function popSticker(cls:string){if(stickerTimer)clearTimeout(stickerTimer);stickerEmoji.value=cls;stickerShow.value=true;stickerTimer=setTimeout(()=>{stickerShow.value=false},750)}
 
 // ---- 撤销浮层 ----
 const undoVisible=ref(false)
@@ -324,7 +327,7 @@ function doFeedNow(){
     feedingMode:feedSide.value==='bottle'?'bottle':'breast',
   })
   if(log)showUndo(log)
-  finishAction('feeding','quick','🍼')
+  finishAction('feeding','quick','icon-bottle')
 }
 
 /** 喂奶：从上下文面板启动计时器 */
@@ -340,7 +343,7 @@ function doStartTimer(type:'feeding'|'sleep'){
     recordsStore.startTimer(id,type)
   }
   haptic.thump()
-  popSticker(type==='feeding'?'🍼':'😴')
+  popSticker(type==='feeding'?'icon-bottle':'icon-sleep')
   closePanel()
 }
 
@@ -348,7 +351,7 @@ function doStartTimer(type:'feeding'|'sleep'){
 function doStartSleep(){
   const id=sel.value||twins.value[0]?.id;if(!id){uni.showToast({title:'请先选择宝宝',icon:'none'});return}
   recordsStore.startTimer(id,'sleep')
-  haptic.thump();popSticker('😴')
+  haptic.thump();popSticker('icon-sleep')
 }
 
 /** 尿布：从面板直接记录 */
@@ -356,7 +359,7 @@ function doDiaperQuick(t:'wet'|'dirty'|'both'){
   const id=sel.value||twins.value[0]?.id;if(!id)return
   const log=recordsStore.quickLog(id,'diaper',{diaperType:t})
   if(log)showUndo(log)
-  finishAction('diaper','quick','🧷')
+  finishAction('diaper','quick','icon-diaper')
 }
 
 /** 体温：从面板直接记录 */
@@ -367,7 +370,7 @@ function doTempQuick(){
   if(tempValue.value>=38.5){uni.showToast({title:'宝宝发烧了，建议联系家长或就医',icon:'none',duration:3000})}
   const log=recordsStore.quickLog(id,'temperature',{temperatureValue:tempValue.value})
   if(log)showUndo(log)
-  finishAction('temperature','quick','🌡️')
+  finishAction('temperature','quick','icon-thermometer')
 }
 
 /** 用药：从面板直接记录 */
@@ -376,7 +379,7 @@ function doMedQuick(){
   if(!medName.value){uni.showToast({title:'请输入药名',icon:'none'});return}
   const log=recordsStore.quickLog(id,'medicine',{medicineName:medName.value,medicineDosage:medDosage.value||undefined})
   if(log)showUndo(log)
-  finishAction('medicine','quick','💊')
+  finishAction('medicine','quick','icon-medicine')
 }
 
 /** 洗澡：直接记录 */
@@ -384,11 +387,11 @@ function doQuickBath(){
   const id=sel.value||twins.value[0]?.id;if(!id)return
   const log=recordsStore.quickLog(id,'bath')
   if(log)showUndo(log)
-  finishAction('bath','quick','🛁')
+  finishAction('bath','quick','icon-bath')
 }
 
-function finishAction(t:RecordType,mode:string,emoji:string){
-  haptic.sparkle();syncStickers();trackRecordCreated(t,mode);popSticker(emoji);resetContext();showKnowledge(t)
+function finishAction(t:RecordType,mode:string,iconCls:string){
+  haptic.sparkle();syncStickers();trackRecordCreated(t,mode);popSticker(iconCls);resetContext();showKnowledge(t)
 }
 
 function quickNight(t:RecordType='feeding'){
@@ -396,7 +399,7 @@ function quickNight(t:RecordType='feeding'){
   const log=recordsStore.quickLog(id,t)
   if(log)showUndo(log)
   haptic.sparkle();syncStickers();showKnowledge(t)
-  const m:Record<string,string>={feeding:'🍼',diaper:'🧷',sleep:'😴'};popSticker(m[t]||'🌙')
+  const m:Record<string,string>={feeding:'icon-bottle',diaper:'icon-diaper',sleep:'icon-sleep'};popSticker(m[t]||'icon-night')
 }
 
 // P0-3 修复: 快速双记仅标记类型，不再将当前面板的 feedSide/feedAmount 复制给两个宝宝
@@ -407,7 +410,7 @@ function dualLog(t:RecordType){
   if(a)lastLog=recordsStore.quickLog(a.id,t)
   if(b)lastLog=recordsStore.quickLog(b.id,t)
   if(lastLog)showUndo(lastLog)
-  haptic.doubleBeat();syncStickers();trackRecordCreated(t,'dual');popSticker('🔗');showKnowledge(t)
+  haptic.doubleBeat();syncStickers();trackRecordCreated(t,'dual');popSticker('icon-link');showKnowledge(t)
 }
 
 function retro(m:number,t:RecordType='feeding'){
@@ -415,7 +418,7 @@ function retro(m:number,t:RecordType='feeding'){
   const log=recordsStore.quickLog(id,t,{offsetMs:m*60000})
   if(log)showUndo(log)
   haptic.sparkle();syncStickers()
-  const em:Record<string,string>={feeding:'🍼',diaper:'🧷',sleep:'😴'};popSticker(em[t]||'⏰')
+  const em:Record<string,string>={feeding:'icon-bottle',diaper:'icon-diaper',sleep:'icon-sleep'};popSticker(em[t]||'icon-clock')
 }
 
 const todayStart=computed(()=>new Date().setHours(0,0,0,0))
@@ -440,7 +443,9 @@ const stopAll=()=>{const log=recordsStore.stopTimer();if(log)showUndo(log);reset
 
 /* 空状态 */
 .empty-state{padding:160rpx 0;text-align:center;position:relative;z-index:1}
+.empty-icon-row{display:flex;justify-content:center;gap:4rpx;margin-bottom:20rpx}
 .empty-emoji{font-size:80rpx;display:block;margin-bottom:20rpx}
+.empty-icon-row .empty-emoji{margin-bottom:0}
 .empty-title{display:block;font-family:var(--font-journal);font-size:36rpx;color:var(--ink);margin-bottom:8rpx}
 .empty-desc{font-size:26rpx;color:var(--ink-md)}
 

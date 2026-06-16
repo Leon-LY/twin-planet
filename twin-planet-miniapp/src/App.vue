@@ -38,6 +38,9 @@ export default {
 </script>
 
 <style>
+/* Iconfont 图标系统 — 替代 emoji */
+@import "./styles/iconfont.wxss";
+
 /* ================================================================
    双宝记 v5 · Twin Planet
    设计方向：温暖手帳 × 贴纸收集 × 双宝成长
@@ -1207,6 +1210,120 @@ page {
   box-shadow: 0 0 6rpx var(--mint);
   animation: dotPulse 1.5s ease-in-out infinite;
   flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   扩展 CSS 图标 · Extended Icon Set
+   替代更多 emoji：⚠️ ⬜ 🔍 🕐 🏠 👤
+   ═══════════════════════════════════════════ */
+
+/* 警告三角 — 替代 ⚠️ */
+.icon-warn {
+  display: inline-block;
+  width: 0; height: 0;
+  border-left: 12rpx solid transparent;
+  border-right: 12rpx solid transparent;
+  border-bottom: 20rpx solid currentColor;
+  flex-shrink: 0; vertical-align: middle;
+}
+
+/* 空心方块 — 替代 ⬜ (未勾选) */
+.icon-square {
+  display: inline-block;
+  width: 22rpx; height: 22rpx;
+  border: 2.5rpx solid currentColor;
+  border-radius: 5rpx;
+  flex-shrink: 0; vertical-align: middle;
+}
+
+/* 搜索放大镜 — 替代 🔍 */
+.icon-search {
+  display: inline-block;
+  width: 18rpx; height: 18rpx;
+  border: 2.5rpx solid currentColor;
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0; vertical-align: middle;
+}
+.icon-search::after {
+  content: '';
+  position: absolute;
+  bottom: -4rpx; right: -3rpx;
+  width: 8rpx; height: 2.5rpx;
+  background: currentColor;
+  border-radius: 1rpx;
+  transform: rotate(45deg);
+}
+
+/* 时钟 — 替代 🕐 */
+.icon-clock {
+  display: inline-block;
+  width: 20rpx; height: 20rpx;
+  border: 2.5rpx solid currentColor;
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0; vertical-align: middle;
+}
+.icon-clock::before, .icon-clock::after {
+  content: ''; position: absolute;
+  background: currentColor; border-radius: 1rpx;
+  left: 50%; bottom: 50%;
+  transform-origin: center bottom;
+}
+.icon-clock::before {
+  width: 2rpx; height: 6rpx;
+  transform: translateX(-50%);
+}
+.icon-clock::after {
+  width: 2rpx; height: 4rpx;
+  transform: translateX(-50%) rotate(140deg);
+}
+
+/* 房子 — 替代 🏠 */
+.icon-home {
+  display: inline-block;
+  width: 22rpx; height: 18rpx;
+  position: relative;
+  flex-shrink: 0; vertical-align: middle;
+}
+.icon-home::before {
+  content: ''; position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 12rpx solid transparent;
+  border-right: 12rpx solid transparent;
+  border-bottom: 10rpx solid currentColor;
+}
+.icon-home::after {
+  content: ''; position: absolute;
+  bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 16rpx; height: 7rpx;
+  border: 2.5rpx solid currentColor;
+  border-top: none;
+  border-radius: 0 0 2rpx 2rpx;
+}
+
+/* 人物 — 替代 👤 */
+.icon-user {
+  display: inline-block;
+  width: 20rpx; height: 22rpx;
+  position: relative;
+  flex-shrink: 0; vertical-align: middle;
+}
+.icon-user::before {
+  content: ''; position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 12rpx; height: 12rpx;
+  border: 2.5rpx solid currentColor;
+  border-radius: 50%;
+}
+.icon-user::after {
+  content: ''; position: absolute;
+  bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 18rpx; height: 6rpx;
+  border: 2.5rpx solid currentColor;
+  border-top: none;
+  border-radius: 0 0 7rpx 7rpx;
 }
 
 /* ═══════════════════════════════════════════

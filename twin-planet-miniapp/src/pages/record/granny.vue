@@ -8,7 +8,7 @@
         :class="{ active: activeBabyId === babyA?.id, amber: true }"
         @click="activeBabyId = babyA?.id"
       >
-        <text class="granny-baby-emoji">🐣</text>
+        <text class="granny-baby-emoji iconfont icon-baby-a"></text>
         <text class="granny-baby-name">{{ babyA?.nickname || '大宝' }}</text>
       </view>
       <view
@@ -16,7 +16,7 @@
         :class="{ active: activeBabyId === babyB?.id, rose: true }"
         @click="activeBabyId = babyB?.id"
       >
-        <text class="granny-baby-emoji">🐥</text>
+        <text class="granny-baby-emoji iconfont icon-baby-b"></text>
         <text class="granny-baby-name">{{ babyB?.nickname || '二宝' }}</text>
       </view>
     </view>
@@ -29,26 +29,26 @@
     <!-- 4 个大按钮 2x2 网格 -->
     <view class="granny-actions">
       <view class="granny-action-btn" @click="doRecord('feeding')">
-        <text class="granny-action-emoji">🍼</text>
+        <text class="granny-action-emoji iconfont icon-bottle"></text>
         <text class="granny-action-label">吃奶了</text>
       </view>
       <view class="granny-action-btn" @click="doRecord('sleep')">
-        <text class="granny-action-emoji">💤</text>
+        <text class="granny-action-emoji iconfont icon-sleep-zzz"></text>
         <text class="granny-action-label">睡觉了</text>
       </view>
       <view class="granny-action-btn" @click="doRecord('diaper')">
-        <text class="granny-action-emoji">🧷</text>
+        <text class="granny-action-emoji iconfont icon-diaper"></text>
         <text class="granny-action-label">换尿布</text>
       </view>
       <view class="granny-action-btn" @click="doRecord('temperature')">
-        <text class="granny-action-emoji">🌡️</text>
+        <text class="granny-action-emoji iconfont icon-thermometer"></text>
         <text class="granny-action-label">量体温</text>
       </view>
     </view>
 
     <!-- 反馈文字 -->
     <view class="granny-feedback" v-if="lastAction">
-      ✅ 已记录！{{ lastBabyName }}{{ lastActionLabel }}
+      <text class="icon-check"></text> 已记录！{{ lastBabyName }}{{ lastActionLabel }}
     </view>
   </view>
 </template>
