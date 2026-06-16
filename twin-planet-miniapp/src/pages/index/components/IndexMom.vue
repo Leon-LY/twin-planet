@@ -54,7 +54,7 @@
     <view class="twins reveal-3">
       <view class="twin-card card-a journal-holes" :class="{ 'has-timer': isRunningA }" @click="goRecord">
         <view class="card-surface">
-          <view class="avatar-ring" :class="{ pulsing: isRunningA }"><image v-if="!isRunningA" src="/static/mascot-amber-fox-nobg-64.png" class="avatar-emoji-img" mode="aspectFit" /><text v-else class="avatar-emoji iconfont" :class="babyEmoji(babyA?.id, 0)"></text></view>
+          <view class="avatar-ring" :class="{ pulsing: isRunningA }"><image v-if="!isRunningA" src="/static/mascot-amber-fox-nobg-64.png" class="avatar-emoji-img" mode="aspectFit" /><text v-if="isRunningA" class="avatar-emoji iconfont" :class="babyEmoji(babyA?.id, 0)"></text></view>
           <text class="twin-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
           <view class="twin-status-row">
             <text v-if="isRunningA" class="status-live">计时中</text>
@@ -65,7 +65,7 @@
       </view>
       <view class="twin-card card-b journal-holes" :class="{ 'has-timer': isRunningB }" @click="goRecord">
         <view class="card-surface">
-          <view class="avatar-ring" :class="{ pulsing: isRunningB }"><image v-if="!isRunningB" src="/static/mascot-rose-fox-nobg-64.png" class="avatar-emoji-img" mode="aspectFit" /><text v-else class="avatar-emoji iconfont" :class="babyEmoji(babyB?.id, 1)"></text></view>
+          <view class="avatar-ring" :class="{ pulsing: isRunningB }"><image v-if="!isRunningB" src="/static/mascot-rose-fox-nobg-64.png" class="avatar-emoji-img" mode="aspectFit" /><text v-if="isRunningB" class="avatar-emoji iconfont" :class="babyEmoji(babyB?.id, 1)"></text></view>
           <text class="twin-name">{{ babyB?.nickname || babyB?.name || '小宝' }}</text>
           <view class="twin-status-row">
             <text v-if="isRunningB" class="status-live">计时中</text>
