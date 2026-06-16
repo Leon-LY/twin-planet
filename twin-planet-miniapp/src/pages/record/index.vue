@@ -21,7 +21,7 @@
       <view class="baby-tabs">
         <view class="baby-tab" v-for="(t,i) in twins" :key="t.id"
           :class="{ active: sel===t.id, 'tab-a':i===0, 'tab-b':i===1 }" @click="sel=t.id">
-          <text class="tab-emoji iconfont" :class="i===0 ? 'icon-baby-a' : 'icon-baby-b'"></text>
+          <image :src="i===0 ? '/static/mascot-amber-fox-nobg-64.png' : '/static/mascot-rose-fox-nobg-64.png'" class="tab-avatar-img" mode="aspectFit" />
           <text class="tab-name">{{ t.nickname || t.name }}</text>
           <text class="tab-check icon-check" v-if="sel===t.id"></text>
         </view>
@@ -452,7 +452,8 @@ const stopAll=()=>{const log=recordsStore.stopTimer();if(log)showUndo(log);reset
 /* 宝宝标签 */
 .baby-tabs{display:flex;gap:0;margin-bottom:24rpx;position:relative;z-index:1}
 .baby-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:8rpx;padding:20rpx;border-radius:20rpx 20rpx 0 0;opacity:.45;transition:opacity .2s,border-color .2s;border-bottom:3rpx solid transparent}
-.baby-tab.active{opacity:1}.baby-tab.tab-a.active{border-bottom-color:var(--amber);background:linear-gradient(to top,var(--amber-lt),transparent 60%)}.baby-tab.tab-b.active{border-bottom-color:var(--rose);background:linear-gradient(to top,var(--rose-lt),transparent 60%)}.tab-emoji{font-size:40rpx;transition:transform .3s var(--ease-bounce)}.baby-tab:active .tab-emoji{transform:scale(1.2)}.tab-name{font-family:var(--font-journal);font-size:26rpx;font-weight:700;color:var(--ink)}.tab-check{font-size:20rpx;color:var(--mint)}
+.baby-tab.active{opacity:1}.baby-tab.tab-a.active{border-bottom-color:var(--amber);background:linear-gradient(to top,var(--amber-lt),transparent 60%)}.baby-tab.tab-b.active{border-bottom-color:var(--rose);background:linear-gradient(to top,var(--rose-lt),transparent 60%)}.tab-emoji{font-size:40rpx;transition:transform .3s var(--ease-bounce)}.baby-tab:active .tab-emoji{transform:scale(1.2)}
+.tab-avatar-img{width:56rpx;height:56rpx;border-radius:50%;transition:transform .3s var(--ease-bounce)}.baby-tab:active .tab-avatar-img{transform:scale(1.2)}.tab-name{font-family:var(--font-journal);font-size:26rpx;font-weight:700;color:var(--ink)}.tab-check{font-size:20rpx;color:var(--mint)}
 
 /* 区域标签 */
 .section-label{font-size:24rpx;color:var(--ink-md);margin-bottom:14rpx;padding-left:8rpx;font-weight:700;position:relative;z-index:1;font-family:var(--font-journal);letter-spacing:1rpx}

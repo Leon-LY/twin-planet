@@ -8,7 +8,7 @@
         :class="{ active: activeBabyId === babyA?.id, amber: true }"
         @click="activeBabyId = babyA?.id"
       >
-        <text class="granny-baby-emoji iconfont icon-baby-a"></text>
+        <image src="/static/mascot-amber-fox-nobg-64.png" class="granny-baby-emoji" mode="aspectFit" />
         <text class="granny-baby-name">{{ babyA?.nickname || '大宝' }}</text>
       </view>
       <view
@@ -16,7 +16,7 @@
         :class="{ active: activeBabyId === babyB?.id, rose: true }"
         @click="activeBabyId = babyB?.id"
       >
-        <text class="granny-baby-emoji iconfont icon-baby-b"></text>
+        <image src="/static/mascot-rose-fox-nobg-64.png" class="granny-baby-emoji" mode="aspectFit" />
         <text class="granny-baby-name">{{ babyB?.nickname || '小宝' }}</text>
       </view>
     </view>
@@ -151,7 +151,7 @@ function doRecord(type: string) {
 }
 
 .granny-baby-emoji {
-  font-size: 48rpx;
+  width: 64rpx; height: 64rpx; border-radius: 50%;
   transition: transform 0.3s var(--ease-bounce);
 }
 
