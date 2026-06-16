@@ -17,7 +17,7 @@
         @click="activeBabyId = babyB?.id"
       >
         <text class="granny-baby-emoji iconfont icon-baby-b"></text>
-        <text class="granny-baby-name">{{ babyB?.nickname || '二宝' }}</text>
+        <text class="granny-baby-name">{{ babyB?.nickname || '小宝' }}</text>
       </view>
     </view>
 

@@ -6,8 +6,8 @@
     bright     - 明亮脉动：双宝今天互动频繁
     steady     - 稳定温和：正常连接
     faint       - 微弱：今天还没记录互动
-    one-sided-a - 单向流光（大宝 → 二宝）
-    one-sided-b - 单向流光（二宝 → 大宝）
+    one-sided-a - 单向流光（大宝 → 小宝）
+    one-sided-b - 单向流光（小宝 → 大宝）
 
   Props:
     state    - 光桥状态

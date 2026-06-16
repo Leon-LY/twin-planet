@@ -45,12 +45,12 @@
         <text class="middle-recorder" v-if="recorderBreakdown">{{ recorderBreakdown }}</text>
       </view>
 
-      <!-- 二宝 -->
+      <!-- 小宝 -->
       <view class="sandwich-card journal-card" style="border-color: var(--twin-baby-b)">
         <view class="card-top">
           <view class="baby-avatar" style="background: var(--twin-baby-b-light)"><text>{{ twinB?.gender==='male'?'👦':'👧' }}</text></view>
           <view class="baby-info">
-            <text class="baby-name">{{ twinB?.nickname || '二宝' }}</text>
+            <text class="baby-name">{{ twinB?.nickname || '小宝' }}</text>
             <text class="baby-status">{{ getBabyStatus(twinB) }}</text>
           </view>
         </view>
@@ -162,7 +162,7 @@ const goShare = async () => {
   const aId = twinA.value?.id; const bId = twinB.value?.id
   const stats: WeekStats = {
     babyAName: twinA.value?.nickname || twinA.value?.name || '大宝',
-    babyBName: twinB.value?.nickname || twinB.value?.name || '二宝',
+    babyBName: twinB.value?.nickname || twinB.value?.name || '小宝',
     babyAFeedings: weekLogs.filter(l => l.babyId === aId && l.type === 'feeding').length,
     babyBFeedings: weekLogs.filter(l => l.babyId === bId && l.type === 'feeding').length,
     babyASleepMin: weekLogs.filter(l => l.babyId === aId && l.type === 'sleep').reduce((s,l) => s + (l.durationMin || 0), 0),

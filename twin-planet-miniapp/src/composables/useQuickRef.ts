@@ -30,7 +30,7 @@ export function useQuickRef() {
       if (!filtered.length) return null
       const log = filtered[0]
       return {
-        babyName: log.babyName || (log.babyId === babiesStore.babyA?.id ? (babiesStore.babyA?.nickname || '大宝') : (babiesStore.babyB?.nickname || '二宝')),
+        babyName: log.babyName || (log.babyId === babiesStore.babyA?.id ? (babiesStore.babyA?.nickname || '大宝') : (babiesStore.babyB?.nickname || '小宝')),
         time: timeAgo(log.endedAt || log.createdAt),
       }
     }

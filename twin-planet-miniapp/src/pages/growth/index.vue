@@ -164,7 +164,7 @@ const independentSummary=computed(()=>{
     parts.push(`${name}${indicatorLabel}${hint}`)
   }
   if(babyB.value&&percentileB.value){
-    const name=babyB.value.nickname||babyB.value.name||'二宝'
+    const name=babyB.value.nickname||babyB.value.name||'小宝'
     const hint=percentileHint(percentileB.value)
     parts.push(`${name}${indicatorLabel}${hint}`)
   }
@@ -199,7 +199,7 @@ const chartOption=computed(()=>{
   }
   if(dataB.value.length){
     series.push({
-      type:'scatter',name:babyB.value?.nickname||'二宝',
+      type:'scatter',name:babyB.value?.nickname||'小宝',
       data:dataB.value.map(d=>[d.ageMonths,indicator.value==='weight'?d.weight:d.height]),
       itemStyle:{color:'var(--rose)'},symbol:'circle',symbolSize:8,
       emphasis:{symbolSize:12},

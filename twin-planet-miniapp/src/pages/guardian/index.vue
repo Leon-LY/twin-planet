@@ -52,7 +52,7 @@
           <view class="timer-btn amber" @click="startTime(babiesStore.babyA?.id??'', babiesStore.babyA?.nickname??'大宝', 'var(--amber)')">
             <text>{{ babiesStore.babyA?.nickname }}</text>
           </view>
-          <view class="timer-btn rose" @click="startTime(babiesStore.babyB?.id??'', babiesStore.babyB?.nickname??'二宝', 'var(--rose)')">
+          <view class="timer-btn rose" @click="startTime(babiesStore.babyB?.id??'', babiesStore.babyB?.nickname??'小宝', 'var(--rose)')">
             <text>{{ babiesStore.babyB?.nickname }}</text>
           </view>
         </view>

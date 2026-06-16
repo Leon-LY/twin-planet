@@ -82,7 +82,7 @@ const { syncStickers } = useStickerSync()
 
 function getBabyName(order: 'A' | 'B'): string {
   const baby = order === 'A' ? babiesStore.babyA : babiesStore.babyB
-  return baby?.nickname || baby?.name || (order === 'A' ? '大宝' : '二宝')
+  return baby?.nickname || baby?.name || (order === 'A' ? '大宝' : '小宝')
 }
 
 function startDuty() {

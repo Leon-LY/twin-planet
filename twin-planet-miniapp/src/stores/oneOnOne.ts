@@ -41,7 +41,7 @@ export const useOneOnOneStore = defineStore('oneOnOne', () => {
     const gap = Math.abs(a - b)
     if (gap > 60) return { babyA: a, babyB: b, gap, msg: '两个宝宝的陪伴时间差距超过1小时' }
     if (a === 0 && b > 30) return { babyA: a, babyB: b, gap, msg: '今天还没陪过大宝' }
-    if (b === 0 && a > 30) return { babyA: a, babyB: b, gap, msg: '今天还没陪过二宝' }
+    if (b === 0 && a > 30) return { babyA: a, babyB: b, gap, msg: '今天还没陪过小宝' }
     return null
   })
 

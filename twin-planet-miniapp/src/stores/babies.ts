@@ -5,7 +5,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
 
-// V4 暖纸手帐：大宝=姜黄，二宝=豆沙。按出生顺序，不按性别。
+// V4 暖纸手帐：大宝=姜黄，小宝=豆沙。按出生顺序，不按性别。
 import { TWIN_COLORS } from '@/constants/design'
 const BABY_COLORS = { 1: TWIN_COLORS.A, 2: TWIN_COLORS.B } as const
 const ACTIVE_BABY_KEY = 'tp_active_baby'

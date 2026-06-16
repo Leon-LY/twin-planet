@@ -232,43 +232,59 @@ def icon_dirty():
     return " ".join(paths)
 
 def icon_baby_a():
-    """Baby A (first twin): simple bird/chick with amber vibe"""
+    """大宝 (Firstborn): Twin star — larger warm star, protective"""
     paths = []
-    # Body (slightly larger rounded shape)
-    paths.append(circle(12, 13, 9))
-    # Eye
-    paths.append(circle(15, 10.5, 1.5))
-    # Beak
-    p1 = P(19, 12)
-    p2 = P(22, 11.5)
-    p3 = P(19, 14)
-    paths.append(f"{M(*p1)} {L(*p2)} {L(*p3)} {Z()}")
-    # Small wing
-    paths.append(stroke_line(7, 12, 11, 15, 0.7))
-    paths.append(stroke_line(7, 15, 11, 18, 0.7))
-    # Feet
-    paths.append(stroke_line(9, 21, 9, 23, 0.8))
-    paths.append(stroke_line(13, 21, 13, 23, 0.8))
+    # 5-pointed star — larger, solid amber presence
+    r_outer, r_inner = 10, 4.5
+    cx, cy = 12, 12
+    pts = []
+    for i in range(5):
+        a_outer = -math.pi/2 + i*2*math.pi/5
+        a_inner = a_outer + math.pi/5
+        pts.append((cx+r_outer*math.cos(a_outer), cy-r_outer*math.sin(a_outer)))
+        pts.append((cx+r_inner*math.cos(a_inner), cy-r_inner*math.sin(a_inner)))
+    p_pts = [P(x,y) for x,y in pts]
+    d = f"M {p_pts[0][0]:.0f} {p_pts[0][1]:.0f}"
+    for pt in p_pts[1:]:
+        d += f" L {pt[0]:.0f} {pt[1]:.0f}"
+    d += " Z"
+    paths.append(d)
+    # Inner smaller star highlight (cutout feel)
+    r2_o, r2_i = 5.5, 2.5
+    pts2 = []
+    for i in range(5):
+        a_o = -math.pi/2 + i*2*math.pi/5
+        a_i = a_o + math.pi/5
+        pts2.append((cx+r2_o*math.cos(a_o), cy-r2_o*math.sin(a_o)))
+        pts2.append((cx+r2_i*math.cos(a_i), cy-r2_i*math.sin(a_i)))
+    p_pts2 = [P(x,y) for x,y in pts2]
+    d2 = f"M {p_pts2[0][0]:.0f} {p_pts2[0][1]:.0f}"
+    for pt in p_pts2[1:]:
+        d2 += f" L {pt[0]:.0f} {pt[1]:.0f}"
+    d2 += " Z"
+    paths.append(d2)
     return " ".join(paths)
 
 def icon_baby_b():
-    """Baby B (second twin): simple bird/chick with gold vibe"""
+    """小宝 (Second-born): Twin star — slightly smaller + orbiting companion dot, playful"""
     paths = []
-    # Body (slightly smaller, rounder)
-    paths.append(circle(12, 14, 8.5))
-    # Eye (winking)
-    paths.append(stroke_line(14, 12, 16, 12, 1.0))
-    # Beak (slightly open - playful)
-    p1 = P(18.5, 13)
-    p2 = P(21.5, 12.5)
-    p3 = P(18.5, 14.5)
-    paths.append(f"{M(*p1)} {L(*p2)} {L(*p3)} {Z()}")
-    # Wing (flapping up - playful)
-    paths.append(stroke_line(7, 11, 5, 8, 0.7))
-    paths.append(stroke_line(7, 13, 4, 11, 0.7))
-    # Feet
-    paths.append(stroke_line(9, 21.5, 9, 23.5, 0.8))
-    paths.append(stroke_line(13, 21.5, 13, 23.5, 0.8))
+    # 5-pointed star — slightly smaller, playful
+    r_outer, r_inner = 8.5, 3.8
+    cx, cy = 11, 12
+    pts = []
+    for i in range(5):
+        a_outer = -math.pi/2 + i*2*math.pi/5
+        a_inner = a_outer + math.pi/5
+        pts.append((cx+r_outer*math.cos(a_outer), cy-r_outer*math.sin(a_outer)))
+        pts.append((cx+r_inner*math.cos(a_inner), cy-r_inner*math.sin(a_inner)))
+    p_pts = [P(x,y) for x,y in pts]
+    d = f"M {p_pts[0][0]:.0f} {p_pts[0][1]:.0f}"
+    for pt in p_pts[1:]:
+        d += f" L {pt[0]:.0f} {pt[1]:.0f}"
+    d += " Z"
+    paths.append(d)
+    # Orbiting companion dot — playful detail
+    paths.append(circle(19, 5, 1.5))
     return " ".join(paths)
 
 def icon_sleep_zzz():

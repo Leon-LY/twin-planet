@@ -71,7 +71,7 @@ const summaryB = computed(() => {
   if (counts.feeding) parts.push(`喂了${counts.feeding}次`)
   if (counts.sleep) parts.push(`睡了${counts.sleep}觉`)
   if (counts.diaper) parts.push(`换了${counts.diaper}次尿布`)
-  return { name: baby.nickname || '二宝', text: parts.join(' · ') || '今天有记录' }
+  return { name: baby.nickname || '小宝', text: parts.join(' · ') || '今天有记录' }
 })
 
 const lastUpdateText = computed(() => {

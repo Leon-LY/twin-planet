@@ -586,7 +586,7 @@ import { TWIN_COLORS, DIFF_COLORS as DESIGN_DIFF_COLORS } from '@/constants/desi
 
 export const BABY_COLORS = {
   babyA: TWIN_COLORS.A, // 大宝 — 姜黄
-  babyB: TWIN_COLORS.B, // 二宝 — 豆沙
+  babyB: TWIN_COLORS.B, // 小宝 — 豆沙
 } as const
 
 export const DIFF_COLORS: Record<DiffLevel, string> = {

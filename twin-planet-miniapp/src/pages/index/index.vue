@@ -156,7 +156,7 @@ async function genShareCard() {
 }
 
 onShareAppMessage(() => {
-  const aName = babyA.value?.nickname || '大宝'; const bName = babyB.value?.nickname || '二宝'
+  const aName = babyA.value?.nickname || '大宝'; const bName = babyB.value?.nickname || '小宝'
   const parts = [`${aName}和${bName}的成长手帳`]
   if (streakDays.value > 0) parts.push(`连续${streakDays.value}天`)
   if (stickersStore.todayCount > 0) parts.push(`🌟×${stickersStore.todayCount}`)

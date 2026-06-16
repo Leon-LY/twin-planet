@@ -78,7 +78,7 @@ twin-planet-miniapp/src/
 ├── stores/                    # 13 个 Pinia Store
 │   ├── user.ts                # 登录/角色/奶奶模式/大字模式
 │   ├── family.ts              # 家庭（双胞胎组）
-│   ├── babies.ts              # 宝宝 CRUD + 大宝/二宝 + 早产儿胎龄
+│   ├── babies.ts              # 宝宝 CRUD + 大宝/小宝 + 早产儿胎龄
 │   ├── records.ts             # 双轨计时器 + 日志 + recordedBy
 │   ├── stickers.ts            # 贴纸收集系统（18 条规则）
 │   ├── growth.ts              # 生长测量数据
@@ -222,7 +222,7 @@ twin-planet-server/
 | 页面背景 | `#FEF9F0` | `--paper` |
 | 卡片背景 | `#FFF5E8` | `--cream` |
 | 大宝 | `#E07B3E` | `--amber` |
-| 二宝 | `#D48068` | `--rose` |
+| 小宝 | `#D48068` | `--rose` |
 | 主文字 | `#2D2318` | `--ink` |
 | 次文字 | `#9C8E7C` | `--ink-md` |
 | 强调/完成 | `#5C9A6E` | `--mint` |
@@ -230,7 +230,7 @@ twin-planet-server/
 | 边框/虚线 | `#E8DCC8` | `--dot` |
 | 危险 | `#D4706B` | `--twin-danger` |
 
-**铁律**：大宝=姜黄，二宝=豆沙。按出生顺序，不按性别。
+**铁律**：大宝=姜黄，小宝=豆沙。按出生顺序，不按性别。
 **唯一颜色权威源**：`src/constants/design.ts` (TS) + `src/App.vue` (CSS 变量)。
 
 ### 动效规范

@@ -12,7 +12,7 @@
         <text>{{ babyA?.nickname || '大宝' }}</text>
       </view>
       <view class="baby-tab" :class="{ active: activeBabyId === babyB?.id, rose: true }" @click="activeBabyId = babyB?.id ?? ''">
-        <text>{{ babyB?.nickname || '二宝' }}</text>
+        <text>{{ babyB?.nickname || '小宝' }}</text>
       </view>
     </view>
 

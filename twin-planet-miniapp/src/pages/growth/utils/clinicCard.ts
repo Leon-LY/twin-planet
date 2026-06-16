@@ -208,7 +208,7 @@ function drawDataRow(
     ctx.fillText(subA, col2 + 50, y)
   }
 
-  // 二宝值
+  // 小宝值
   ctx.setFillStyle(C.b)
   ctx.setFontSize(18)
   ctx.setFontWeight('bold')

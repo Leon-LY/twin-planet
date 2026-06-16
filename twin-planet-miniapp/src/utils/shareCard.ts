@@ -9,7 +9,7 @@ import { saveToAlbum } from './media'
 
 const C = {
   a: TWIN_COLORS.A,    // 大宝·姜黄
-  b: TWIN_COLORS.B,    // 二宝·豆沙
+  b: TWIN_COLORS.B,    // 小宝·豆沙
   bg: SURFACE_COLORS.paper,
   ink: SURFACE_COLORS.ink,
   inkMd: SURFACE_COLORS.inkMd,
@@ -91,7 +91,7 @@ export function drawShareCard(
     ctx.setTextAlign('left')
     ctx.fillText(stats.babyAName, leftX + 12, dataY + 14)
 
-    // 二宝色条
+    // 小宝色条
     ctx.setFillStyle(C.b)
     ctx.fillRect(rightX, dataY - 5, 4, 24)
     ctx.setFillStyle(C.ink)
@@ -122,7 +122,7 @@ export function drawShareCard(
       ctx.setTextAlign('left')
       ctx.fillText(row.a, leftX + 24, y + 16)
 
-      // 二宝数据
+      // 小宝数据
       ctx.setFillStyle(C.b)
       ctx.fillText(row.b, rightX + 24, y + 16)
     })

@@ -12,9 +12,9 @@
     <!-- 标题 -->
     <view class="section-header">
       <text class="section-icon">👶👶</text>
-      <text class="section-title">{{ currentBaby === 1 ? '添加大宝' : '添加二宝' }}</text>
+      <text class="section-title">{{ currentBaby === 1 ? '添加大宝' : '添加小宝' }}</text>
       <text class="section-desc">
-        {{ currentBaby === 1 ? '先填大宝的信息吧' : '二宝来啦，出生日期已帮你填好了~' }}
+        {{ currentBaby === 1 ? '先填大宝的信息吧' : '小宝来啦，出生日期已帮你填好了~' }}
       </text>
     </view>
 
@@ -36,7 +36,7 @@
         @click="currentBaby = 2"
       >
         <view class="tab-dot" style="background: var(--twin-baby-b)" />
-        <text>二宝</text>
+        <text>小宝</text>
       </view>
     </view>
 
@@ -123,7 +123,7 @@
     <!-- 底部操作 -->
     <view class="bottom-action">
       <button class="btn-primary" hover-class="btn-press" @click="saveBaby">
-        {{ currentBaby === 1 ? '保存 · 添加二宝' : '保存 · 完成注册' }}
+        {{ currentBaby === 1 ? '保存 · 添加小宝' : '保存 · 完成注册' }}
       </button>
       <text class="back-link" @click="goBack" v-if="currentBaby===1">← 返回修改家庭信息</text>
     </view>
@@ -188,10 +188,10 @@ function saveBaby() {
   })
 
   if (currentBaby.value === 1) {
-    // 自动将大宝的出生日期填充到二宝
+    // 自动将大宝的出生日期填充到小宝
     baby2Form.birthDate = baby1Form.birthDate
     currentBaby.value = 2
-    uni.showToast({ title: '大宝已保存，请添加二宝', icon: 'none' })
+    uni.showToast({ title: '大宝已保存，请添加小宝', icon: 'none' })
   } else {
     uni.showToast({ title: '🎉 🚀 欢迎加入！开始记录吧 ✦', icon: 'none', duration: 1500 })
     setTimeout(() => {

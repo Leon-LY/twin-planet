@@ -66,7 +66,7 @@
       <view class="twin-card card-b journal-holes" :class="{ 'has-timer': isRunningB }" @click="goRecord">
         <view class="card-surface">
           <view class="avatar-ring" :class="{ pulsing: isRunningB }"><text class="avatar-emoji iconfont" :class="babyEmoji(babyB?.id, 1)"></text></view>
-          <text class="twin-name">{{ babyB?.nickname || babyB?.name || '二宝' }}</text>
+          <text class="twin-name">{{ babyB?.nickname || babyB?.name || '小宝' }}</text>
           <view class="twin-status-row">
             <text v-if="isRunningB" class="status-live">计时中</text>
             <text v-else-if="babyStatus(babyB)" :class="['status-recent', babyUrgency(babyB)==='urgent'?'status-urgent':babyUrgency(babyB)==='warn'?'status-warn':'']">{{ babyStatus(babyB) }}</text>
