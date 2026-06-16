@@ -12,6 +12,8 @@ import { isSolarTermStartDay } from '@/config/seasonal'
 export interface Sticker {
   id: string
   emoji: string
+  /** 可选：对应的 iconfont CSS 类名 */
+  iconClass?: string
   label: string
   category: 'record' | 'milestone' | 'streak' | 'sync' | 'special'
   earnedAt: number
@@ -21,6 +23,8 @@ export interface Sticker {
 export interface StickerRule {
   trigger: string
   emoji: string
+  /** 可选：对应的 iconfont CSS 类名，用于渲染时替代 emoji */
+  iconClass?: string
   label: string
   category: Sticker['category']
   check: (ctx: StickerContext) => boolean
@@ -54,7 +58,7 @@ export const STICKER_RULES: StickerRule[] = [
     check: (c) => c.todayLogCount === 5,
   },
   {
-    trigger: 'record_10', emoji: '🦸', label: '超级守护者', category: 'record',
+    trigger: 'record_10', emoji: '🦸', iconClass: 'icon-hero', label: '超级守护者', category: 'record',
     check: (c) => c.todayLogCount === 10,
   },
   {
@@ -62,15 +66,15 @@ export const STICKER_RULES: StickerRule[] = [
     check: (c) => c.streakDays === 3,
   },
   {
-    trigger: 'streak_7', emoji: '📅', label: '一周全勤', category: 'streak',
+    trigger: 'streak_7', emoji: '📅', iconClass: 'icon-calendar', label: '一周全勤', category: 'streak',
     check: (c) => c.streakDays === 7,
   },
   {
-    trigger: 'streak_30', emoji: '⭐', label: '月度之星', category: 'streak',
+    trigger: 'streak_30', emoji: '⭐', iconClass: 'icon-star', label: '月度之星', category: 'streak',
     check: (c) => c.streakDays === 30,
   },
   {
-    trigger: 'twin_sync', emoji: '🔗', label: '双星同步', category: 'sync',
+    trigger: 'twin_sync', emoji: '🔗', iconClass: 'icon-link', label: '双星同步', category: 'sync',
     check: (c) => c.twinSyncCount > 0,
   },
   {
@@ -78,7 +82,7 @@ export const STICKER_RULES: StickerRule[] = [
     check: (c) => c.babyARecentRecord && c.babyBRecentRecord,
   },
   {
-    trigger: 'first_sprout', emoji: '🌱', label: '萌芽记录者', category: 'milestone',
+    trigger: 'first_sprout', emoji: '🌱', iconClass: 'icon-sprout', label: '萌芽记录者', category: 'milestone',
     check: (c) => c.sproutCount === 1,
   },
   {
@@ -94,7 +98,7 @@ export const STICKER_RULES: StickerRule[] = [
     check: (c) => c.totalLogCount === 100,
   },
   {
-    trigger: 'duty_done', emoji: '💪', label: '独自守护', category: 'special',
+    trigger: 'duty_done', emoji: '💪', iconClass: 'icon-strength', label: '独自守护', category: 'special',
     check: (c) => c.dutyDoneCount > 0,
   },
   // === 3-6 岁专属贴纸 ===
@@ -103,7 +107,7 @@ export const STICKER_RULES: StickerRule[] = [
     check: (c) => (c.totalSproutCount ?? c.sproutCount) >= 10,
   },
   {
-    trigger: 'sprout_30', emoji: '📖', label: '成长记录家', category: 'milestone',
+    trigger: 'sprout_30', emoji: '📖', iconClass: 'icon-book', label: '成长记录家', category: 'milestone',
     check: (c) => (c.totalSproutCount ?? c.sproutCount) >= 30,
   },
   {
@@ -125,7 +129,7 @@ export const STICKER_RULES: StickerRule[] = [
   },
   // === 节气贴纸（P2-6） ===
   {
-    trigger: 'solar_term', emoji: '🗓️', label: '节气守护', category: 'special',
+    trigger: 'solar_term', emoji: '🗓️', iconClass: 'icon-calendar', label: '节气守护', category: 'special',
     check: (c) => c.todayLogCount >= 1 && isSolarTermStartDay(),
   },
   // === 隐藏惊喜贴纸（5% 概率触发） ===
@@ -183,6 +187,7 @@ export const useStickersStore = defineStore('stickers', () => {
         newStickers.push({
           id: `sticker-${now}-${rule.trigger}-${Math.random().toString(36).slice(2, 5)}`,
           emoji: rule.emoji,
+          iconClass: rule.iconClass,
           label: rule.label,
           category: rule.category,
           earnedAt: now,

@@ -21,11 +21,12 @@
 
     <!-- 分类展示 — 空分类隐藏 -->
     <view v-for="cat in visibleCategories" :key="cat.key" class="category">
-      <text class="cat-label">{{ cat.label }} · {{ cat.earnedCount }}/{{ cat.total }}</text>
+      <text class="cat-label"><text v-if="cat.iconClass" class="iconfont" :class="cat.iconClass"></text> {{ cat.label }} · {{ cat.earnedCount }}/{{ cat.total }}</text>
       <view class="cat-grid">
         <view v-for="s in cat.stickers" :key="s.label" class="sticker-cell" :class="{ earned: s.earned }">
-          <!-- 未收集的贴纸显示灰色实际 emoji 而不是 ❓ -->
-          <text class="cell-emoji" :class="{ earned: s.earned }">{{ s.emoji }}</text>
+          <!-- 优先使用 iconfont 类名，回退到 emoji -->
+          <text v-if="s.iconClass" class="cell-emoji iconfont" :class="[s.iconClass, { earned: s.earned }]"></text>
+          <text v-else class="cell-emoji" :class="{ earned: s.earned }">{{ s.emoji }}</text>
           <text class="cell-label" :class="{ earned: s.earned }">{{ s.label }}</text>
         </view>
       </view>
@@ -54,17 +55,17 @@ const progressPercent = computed(() =>
 
 // 从 store 规则推导贴纸目录
 const ALL_STICKERS = STICKER_RULES.map(r => ({
-  emoji: r.emoji, label: r.label, category: r.category,
+  emoji: r.emoji, iconClass: r.iconClass, label: r.label, category: r.category,
 }))
 
 const earnedSet = computed(() => new Set(store.stickers.map(s => s.label)))
 
 const categories = computed(() => [
-  { key: 'record', label: '📋 日常守护', stickers: enrich('record') },
-  { key: 'streak', label: '🔥 连续记录', stickers: enrich('streak') },
-  { key: 'sync', label: '💫 双宝同步', stickers: enrich('sync') },
-  { key: 'milestone', label: '🌱 里程碑', stickers: enrich('milestone') },
-  { key: 'special', label: '👑 特殊成就', stickers: enrich('special') },
+  { key: 'record', iconClass: 'icon-clipboard', label: '日常守护', stickers: enrich('record') },
+  { key: 'streak', label: '连续记录', stickers: enrich('streak') },
+  { key: 'sync', label: '双宝同步', stickers: enrich('sync') },
+  { key: 'milestone', iconClass: 'icon-sprout', label: '里程碑', stickers: enrich('milestone') },
+  { key: 'special', iconClass: 'icon-crown', label: '特殊成就', stickers: enrich('special') },
 ])
 
 // 🔧 只显示有贴纸的分类
