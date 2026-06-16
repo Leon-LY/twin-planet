@@ -1123,6 +1123,140 @@ page {
   font-family: var(--font-journal);
 }
 
+/* ═══════════════════════════════════════════
+   CSS 纯图标系统 · CSS-only Icon System
+   替代常用 emoji 的 CSS 绘制图标。
+   微信小程序约束：无 conic-gradient, clip-path, mask
+   ═══════════════════════════════════════════ */
+
+/* 箭头 — 替代 "→" emoji */
+.icon-arrow {
+  display: inline-block;
+  width: 14rpx; height: 14rpx;
+  border-top: 2.5rpx solid currentColor;
+  border-right: 2.5rpx solid currentColor;
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+.icon-arrow.left  { transform: rotate(-135deg); }
+.icon-arrow.up    { transform: rotate(-45deg); }
+.icon-arrow.down  { transform: rotate(135deg); }
+
+/* 加号 — 替代 "+" */
+.icon-plus {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28rpx; height: 28rpx; position: relative; flex-shrink: 0;
+}
+.icon-plus::before,.icon-plus::after {
+  content: ''; position: absolute;
+  background: currentColor; border-radius: 2rpx;
+}
+.icon-plus::before { width: 60%; height: 3rpx; }
+.icon-plus::after  { width: 3rpx; height: 60%; }
+
+/* 勾选 — 替代 "✓" */
+.icon-check {
+  display: inline-block;
+  width: 18rpx; height: 10rpx;
+  border-left: 2.5rpx solid currentColor;
+  border-bottom: 2.5rpx solid currentColor;
+  transform: rotate(-45deg) translate(1rpx, -2rpx);
+  flex-shrink: 0;
+}
+
+/* 关闭 — 替代 "✕" */
+.icon-close {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28rpx; height: 28rpx; position: relative; flex-shrink: 0;
+}
+.icon-close::before,.icon-close::after {
+  content: ''; position: absolute;
+  width: 60%; height: 2.5rpx;
+  background: currentColor; border-radius: 1rpx;
+}
+.icon-close::before { transform: rotate(45deg); }
+.icon-close::after  { transform: rotate(-45deg); }
+
+/* 三点菜单 — 替代 "⋯" */
+.icon-more {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3rpx; width: 6rpx; flex-shrink: 0;
+}
+.icon-more::before,.icon-more::after { content: ''; }
+.icon-more::before,.icon-more::after,.icon-more {
+  width: 6rpx; height: 6rpx; background: currentColor; border-radius: 50%;
+}
+
+/* 数字角标 — 替代内联计数 */
+.status-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 28rpx; height: 28rpx; padding: 0 6rpx;
+  background: var(--twin-danger); color: #FFF;
+  border-radius: 14rpx; font-size: 18rpx; font-weight: 700;
+  line-height: 1; flex-shrink: 0;
+}
+.status-badge.amber { background: var(--amber); }
+.status-badge.mint  { background: var(--mint); }
+.status-badge.gold  { background: var(--gold); }
+
+/* 活跃脉冲环 — 替代计时器指示 */
+.status-pulse {
+  display: inline-block;
+  width: 12rpx; height: 12rpx; border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 6rpx var(--mint);
+  animation: dotPulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   统一空状态 · Standard Empty State
+   所有空数据页面使用此模式
+   ═══════════════════════════════════════════ */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center;
+  padding: var(--space-lg) var(--space-md);
+  text-align: center;
+  min-height: 360rpx;
+}
+.empty-state .empty-emoji {
+  font-size: var(--emoji-xl, 80rpx);
+  margin-bottom: var(--space-md);
+  opacity: 0.6;
+}
+.empty-state .empty-title {
+  display: block;
+  font-family: var(--font-journal);
+  font-size: var(--font-title);
+  color: var(--ink);
+  margin-bottom: var(--space-sm);
+  font-weight: 400;
+}
+.empty-state .empty-desc {
+  display: block;
+  font-size: var(--font-body);
+  color: var(--ink-md);
+  line-height: var(--leading-body);
+  max-width: 480rpx;
+  margin-bottom: var(--space-md);
+}
+.empty-state .empty-action {
+  margin-top: var(--space-sm);
+}
+
+/* 带卡片包装的空状态 */
+.empty-state-card {
+  composes: empty-state;
+  background: var(--cream);
+  border: 1.5px solid var(--dot);
+  border-radius: var(--radius-md);
+  margin: var(--space-md);
+  box-shadow:
+    0 1rpx 0 rgba(0,0,0,0.03),
+    0 2rpx 8rpx rgba(0,0,0,0.04);
+}
+
 /* 奶奶模式 — 全局大字 */
 .font-large {
   --font-caption:28rpx;

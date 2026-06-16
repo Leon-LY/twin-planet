@@ -1,9 +1,9 @@
 <template>
   <view class="snap-page page-enter">
     <canvas canvas-id="shareCanvas" style="position:fixed;left:-9999px;top:-9999px;width:345px;height:480px"></canvas>
-    <view class="greeting">
-      <text class="greeting-text">{{ greetingText }}</text>
-      <text class="greeting-sub">一眼看完两个娃</text>
+    <view class="page-header">
+      <text class="page-title">{{ greetingText }}</text>
+      <text class="page-subtitle">一眼看完两个娃</text>
     </view>
 
     <!-- 三明治卡片 -->
@@ -186,9 +186,7 @@ onShareAppMessage(()=>({title:'双宝快照 · 一眼看完两个娃',path:'/pag
 
 <style scoped>
 .snap-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
-.greeting { margin-bottom: 28rpx; }
-.greeting-text { font-size: 44rpx; font-weight: 700; color: var(--twin-text); }
-.greeting-sub { display: block; font-size: 26rpx; color: var(--twin-text-secondary); margin-top: 8rpx; }
+/* 使用全局 .page-header 页头模式 */
 
 /* 三明治卡片 */
 .sandwich-cards { margin-bottom: 32rpx; }

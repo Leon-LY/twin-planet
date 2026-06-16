@@ -1,10 +1,10 @@
 <template>
   <view class="duty-page page-enter">
     <!-- 值班模式 -->
-    <view class="duty-header">
-      <text class="duty-icon">🦸</text>
-      <text class="duty-title">值班清单</text>
-      <text class="duty-sub">照着清单做，一个人也能搞定两个</text>
+    <view class="page-header">
+      <text class="page-icon">🦸</text>
+      <text class="page-title">值班清单</text>
+      <text class="page-subtitle">照着清单做，一个人也能搞定两个</text>
     </view>
 
     <!-- 今日鸡汤 -->
@@ -127,10 +127,7 @@ onShow(() => {
 <style scoped>
 .duty-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx calc(120rpx + env(safe-area-inset-bottom)); }
 
-.duty-header { text-align: center; margin-bottom: 28rpx; }
-.duty-icon { font-size: 48rpx; }
-.duty-title { display: block; font-size: 44rpx; font-weight: 700; color: var(--twin-text); margin: 12rpx 0; }
-.duty-sub { font-size: 26rpx; color: var(--twin-text-secondary); }
+/* 使用全局 .page-header 页头模式 */
 
 .phrase-card {
   background:

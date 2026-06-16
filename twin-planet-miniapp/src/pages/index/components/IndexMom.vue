@@ -351,7 +351,7 @@ const goMore = () => emit('navigate', '/pages/discover/index')
 .streak-start{font-size:20rpx;color:var(--ink-lt);font-family:var(--font-journal);background:var(--cream);padding:6rpx 14rpx;border-radius:12rpx;border:1.5px dashed var(--dot)}
 
 .today-card{position:relative;z-index:1;margin-bottom:32rpx;padding:24rpx;background:linear-gradient(135deg,var(--cream),var(--paper));border-radius:var(--radius-md);border:1.5px solid var(--dot)}
-.greet-line1{display:block;font-family:var(--font-journal);font-size:48rpx;font-weight:400;color:var(--ink);letter-spacing:-1rpx;line-height:1.3}
+.greet-line1{display:block;font-family:var(--font-journal);font-size:var(--font-title);font-weight:400;color:var(--ink);letter-spacing:-1rpx;line-height:1.3}
 .greet-sub{display:block;font-size:26rpx;color:var(--ink-lt);margin-top:12rpx;line-height:1.5;max-width:480rpx}
 .seasonal-hint{display:block;font-size:22rpx;color:var(--ink-md);margin-top:12rpx;line-height:1.5;font-family:var(--font-journal)}
 .today-meta{display:flex;flex-direction:column;gap:8rpx;margin-top:16rpx;padding-top:14rpx;border-top:1px dashed var(--dot)}

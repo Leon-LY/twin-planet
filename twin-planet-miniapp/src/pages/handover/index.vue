@@ -1,9 +1,9 @@
 <template>
   <view class="handover-page page-enter">
-    <view class="section-header">
-      <text class="section-icon">🎙️</text>
-      <text class="section-title">交接班语音便签</text>
-      <text class="section-desc">录一段话，换班的家人打开就能听</text>
+    <view class="page-header">
+      <text class="page-icon">🎙️</text>
+      <text class="page-title">交接班语音便签</text>
+      <text class="page-subtitle">录一段话，换班的家人打开就能听</text>
     </view>
 
     <view class="recorder-section">
@@ -302,10 +302,7 @@ onShareAppMessage(() => ({
 
 <style scoped>
 .handover-page { min-height: 100vh; background: var(--paper); padding: 40rpx 28rpx calc(80rpx + env(safe-area-inset-bottom)); }
-.section-header { text-align: center; margin-bottom: 36rpx; }
-.section-icon { font-size: 40rpx; }
-.section-title { display: block; font-family: var(--font-journal); font-size: var(--font-title); color: var(--ink); margin: 12rpx 0; }
-.section-desc { font-size: var(--font-body); color: var(--ink-md); }
+/* 使用全局 .page-header 页头模式 */
 
 .recorder-section { margin-bottom: 40rpx; }
 .recorder-card {
