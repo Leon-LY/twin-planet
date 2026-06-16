@@ -232,59 +232,61 @@ def icon_dirty():
     return " ".join(paths)
 
 def icon_baby_a():
-    """大宝 (Firstborn): Twin star — larger warm star, protective"""
+    """大宝 — wobbly round creature + protective leaf (xiaohei-inspired: hand-drawn feel, not cute)"""
     paths = []
-    # 5-pointed star — larger, solid amber presence
-    r_outer, r_inner = 10, 4.5
-    cx, cy = 12, 12
+    # Body: slightly irregular circle (wobbly) — like a quick ink sketch
     pts = []
-    for i in range(5):
-        a_outer = -math.pi/2 + i*2*math.pi/5
-        a_inner = a_outer + math.pi/5
-        pts.append((cx+r_outer*math.cos(a_outer), cy-r_outer*math.sin(a_outer)))
-        pts.append((cx+r_inner*math.cos(a_inner), cy-r_inner*math.sin(a_inner)))
+    cx, cy, r = 12, 13, 9
+    for i in range(16):
+        angle = i * 2*math.pi/16
+        wobble = 0.8*math.sin(angle*3) + 0.5*math.cos(angle*5)
+        rx = r + wobble
+        pts.append((cx+rx*math.cos(angle), cy-rx*math.sin(angle)))
     p_pts = [P(x,y) for x,y in pts]
     d = f"M {p_pts[0][0]:.0f} {p_pts[0][1]:.0f}"
     for pt in p_pts[1:]:
         d += f" L {pt[0]:.0f} {pt[1]:.0f}"
     d += " Z"
     paths.append(d)
-    # Inner smaller star highlight (cutout feel)
-    r2_o, r2_i = 5.5, 2.5
-    pts2 = []
-    for i in range(5):
-        a_o = -math.pi/2 + i*2*math.pi/5
-        a_i = a_o + math.pi/5
-        pts2.append((cx+r2_o*math.cos(a_o), cy-r2_o*math.sin(a_o)))
-        pts2.append((cx+r2_i*math.cos(a_i), cy-r2_i*math.sin(a_i)))
-    p_pts2 = [P(x,y) for x,y in pts2]
-    d2 = f"M {p_pts2[0][0]:.0f} {p_pts2[0][1]:.0f}"
-    for pt in p_pts2[1:]:
-        d2 += f" L {pt[0]:.0f} {pt[1]:.0f}"
-    d2 += " Z"
-    paths.append(d2)
+    # Eyes — two dots (asymmetrical, left slightly smaller)
+    paths.append(circle(8.5, 10, 1.3))
+    paths.append(circle(15, 10.5, 1.6))
+    # Small protective leaf/curl on top
+    p1 = P(11, 4.5)
+    p2 = P(12.5, 1.5)
+    p3 = P(14, 4)
+    paths.append(f"{M(*p1)} {Q(*P(13,2),*p2)} {Q(*P(13.5,3),*p3)} {Z()}")
+    # Feet — two small bumps
+    paths.append(circle(8, 21.5, 1.8))
+    paths.append(circle(15.5, 21.5, 1.8))
     return " ".join(paths)
 
 def icon_baby_b():
-    """小宝 (Second-born): Twin star — slightly smaller + orbiting companion dot, playful"""
+    """小宝 — wobbly round creature + playful antenna (xiaohei-inspired: curious, slightly smaller)"""
     paths = []
-    # 5-pointed star — slightly smaller, playful
-    r_outer, r_inner = 8.5, 3.8
-    cx, cy = 11, 12
+    # Body: wobbly circle, slightly smaller and more irregular
     pts = []
-    for i in range(5):
-        a_outer = -math.pi/2 + i*2*math.pi/5
-        a_inner = a_outer + math.pi/5
-        pts.append((cx+r_outer*math.cos(a_outer), cy-r_outer*math.sin(a_outer)))
-        pts.append((cx+r_inner*math.cos(a_inner), cy-r_inner*math.sin(a_inner)))
+    cx, cy, r = 11.5, 13.5, 8
+    for i in range(16):
+        angle = i * 2*math.pi/16
+        wobble = 1.0*math.sin(angle*4) + 0.4*math.cos(angle*2)
+        rx = r + wobble
+        pts.append((cx+rx*math.cos(angle), cy-rx*math.sin(angle)))
     p_pts = [P(x,y) for x,y in pts]
     d = f"M {p_pts[0][0]:.0f} {p_pts[0][1]:.0f}"
     for pt in p_pts[1:]:
         d += f" L {pt[0]:.0f} {pt[1]:.0f}"
     d += " Z"
     paths.append(d)
-    # Orbiting companion dot — playful detail
-    paths.append(circle(19, 5, 1.5))
+    # Eyes — one squinty, one big (mischievous, curious)
+    paths.append(stroke_line(7.5, 11.5, 9.5, 11.5, 1.0))  # squinty left
+    paths.append(circle(14, 11, 1.5))  # big right eye
+    # Playful antenna on top
+    paths.append(stroke_line(11, 6, 13, 3, 1.0))
+    paths.append(circle(13, 2.8, 1.3))
+    # Feet
+    paths.append(circle(8, 21, 1.5))
+    paths.append(circle(14.5, 21, 1.5))
     return " ".join(paths)
 
 def icon_sleep_zzz():
