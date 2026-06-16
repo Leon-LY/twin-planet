@@ -9,7 +9,7 @@
       <text class="section-label">🔋 电量表</text>
       <view class="energy-cards">
         <view class="energy-card">
-          <text class="energy-who">👩 妈妈</text>
+          <text class="energy-who"><text class="iconfont icon-role-mom"></text> 妈妈</text>
           <view class="energy-bar-wrap">
             <view class="energy-bar" :style="{ width: store.momEnergy.level * 10 + '%', '--bar-bg': energyColor(store.momEnergy.level) }" />
           </view>
@@ -17,7 +17,7 @@
           <text class="energy-reason">{{ store.momEnergy.reason }}</text>
         </view>
         <view class="energy-card">
-          <text class="energy-who">👨 爸爸</text>
+          <text class="energy-who"><text class="iconfont icon-role-dad"></text> 爸爸</text>
           <view class="energy-bar-wrap">
             <view class="energy-bar" :style="{ width: store.dadEnergy.level * 10 + '%', background: energyColor(store.dadEnergy.level) }" />
           </view>
@@ -44,7 +44,7 @@
           <text class="time-val">{{ store.timeWithBaby(babiesStore.babyB?.id ?? '') }}min</text>
         </view>
       </view>
-      <view class="time-warning" v-if="store.timeGapWarning"><text>⚠️ {{ store.timeGapWarning.msg }}</text></view>
+      <view class="time-warning" v-if="store.timeGapWarning"><text><text class="iconfont icon-warn"></text> {{ store.timeGapWarning.msg }}</text></view>
 
       <view class="quick-timer" v-if="!store.activeSession && babiesStore.isTwinsComplete">
         <text class="timer-label">现在照亮谁？</text>

@@ -23,7 +23,7 @@
     <!-- 🔧 实际操作按钮 -->
     <view class="action-section">
       <button class="action-btn export-btn" @click="handleExport">
-        <text>📤 导出全部数据</text>
+        <text><text class="iconfont icon-share"></text> 导出全部数据</text>
       </button>
       <button class="action-btn delete-btn" @click="handleDelete">
         <text>🗑️ 清除本地数据</text>

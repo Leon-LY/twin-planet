@@ -2,7 +2,7 @@
   <view class="growth-page page-enter">
     <view class="page-header">
       <text class="page-title">生长曲线</text>
-      <text class="page-subtitle">每个宝宝都有自己的生长节奏 🌱</text>
+      <text class="page-subtitle">每个宝宝都有自己的生长节奏 <text class="iconfont icon-sprout"></text></text>
     </view>
 
     <!-- 指标切换 -->
@@ -13,7 +13,7 @@
 
     <!-- 空状态：无数据 -->
     <view v-if="!growthStore.hasRealData" class="empty-state">
-      <text class="empty-emoji">📋</text>
+      <text class="empty-emoji iconfont icon-clipboard"></text>
       <text class="empty-title">等待第一次测量</text>
       <text class="empty-desc">每次测量都是一颗成长的小星星 ✦</text>
     </view>
@@ -37,7 +37,7 @@
       <ec-canvas canvas-id="growth-chart" :width="chartWidth" :height="chartHeight" :option="chartOption" />
 
       <view class="disclaimer">
-        <text class="disclaimer-icon">⚠️</text>
+        <text class="disclaimer-icon iconfont icon-warn"></text>
         <text class="disclaimer-text">曲线基于 WHO 儿童生长标准（2006），仅供参考，不构成医疗建议。</text>
       </view>
     </view>
@@ -89,7 +89,7 @@
         </view>
         <view class="add-date-row">
           <picker mode="date" :value="addDate" :end="todayDate" @change="(e: any) => { addDate = e.detail.value }">
-            <view class="add-date-picker"><text>{{ addDate || '选择日期' }}</text><text class="date-arrow">📅</text></view>
+            <view class="add-date-picker"><text>{{ addDate || '选择日期' }}</text><text class="date-arrow iconfont icon-calendar"></text></view>
           </picker>
         </view>
         <button class="add-btn" @click="submitMeasurement" :disabled="!canSubmit">保存测量</button>

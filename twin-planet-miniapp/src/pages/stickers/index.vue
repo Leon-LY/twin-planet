@@ -14,7 +14,7 @@
     <!-- 分享成就 -->
     <view class="share-row" v-if="store.collectionCount > 0">
       <button class="share-btn" open-type="share">
-        <text>📤 分享我的贴纸成就</text>
+        <text><text class="iconfont icon-share"></text> 分享我的贴纸成就</text>
         <text class="share-sub">{{ progressPercent }}% · {{ store.collectionCount }}/{{ store.totalStickers }}</text>
       </button>
     </view>

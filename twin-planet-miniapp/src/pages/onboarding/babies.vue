@@ -2,7 +2,7 @@
   <view class="onboard-page">
     <!-- 进度条 -->
     <view class="progress-bar">
-      <view class="progress-step done"><text>✓</text></view>
+      <view class="progress-step done"><text class="iconfont icon-check"></text></view>
       <view class="progress-line done" />
       <view class="progress-step active"><text>2</text></view>
       <view class="progress-line" />

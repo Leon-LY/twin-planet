@@ -1,7 +1,7 @@
 <template>
   <view class="handover-page page-enter">
     <view class="page-header">
-      <text class="page-icon">🎙️</text>
+      <text class="page-icon iconfont icon-microphone"></text>
       <text class="page-title">交接班语音便签</text>
       <text class="page-subtitle">录一段话，换班的家人打开就能听</text>
     </view>
@@ -65,7 +65,7 @@
     <!-- 分享按钮 -->
     <view class="share-section" v-if="messages.length">
       <button class="share-btn" open-type="share">
-        <text>📤 转发给换班的家人</text>
+        <text><text class="iconfont icon-share"></text> 转发给换班的家人</text>
       </button>
       <text class="share-hint">语音暂需同台设备播放 · 文字便签已支持跨设备同步</text>
     </view>

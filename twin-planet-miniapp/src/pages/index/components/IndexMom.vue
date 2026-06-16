@@ -39,7 +39,7 @@
             <text class="welcome-title">欢迎来到双宝手帐</text>
             <text class="welcome-desc">一本可以玩的成长记录本，从今天开始吧</text>
           </view>
-          <view class="welcome-close" @click="$emit('dismissWelcome')"><text>✕</text></view>
+          <view class="welcome-close" @click="$emit('dismissWelcome')"><text class="icon-close"></text></view>
         </view>
         <view class="welcome-steps">
           <view class="w-step"><text class="ws-num">1</text><text class="ws-text">点击下方大按钮<br><text class="ws-hl">记录喂奶/睡觉</text></text></view>
@@ -54,7 +54,7 @@
     <view class="twins reveal-3">
       <view class="twin-card card-a journal-holes" :class="{ 'has-timer': isRunningA }" @click="goRecord">
         <view class="card-surface">
-          <view class="avatar-ring" :class="{ pulsing: isRunningA }"><text class="avatar-emoji">{{ babyEmoji(babyA?.id, 0) }}</text></view>
+          <view class="avatar-ring" :class="{ pulsing: isRunningA }"><text class="avatar-emoji iconfont" :class="babyEmoji(babyA?.id, 0)"></text></view>
           <text class="twin-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
           <view class="twin-status-row">
             <text v-if="isRunningA" class="status-live">计时中</text>
@@ -65,7 +65,7 @@
       </view>
       <view class="twin-card card-b journal-holes" :class="{ 'has-timer': isRunningB }" @click="goRecord">
         <view class="card-surface">
-          <view class="avatar-ring" :class="{ pulsing: isRunningB }"><text class="avatar-emoji">{{ babyEmoji(babyB?.id, 1) }}</text></view>
+          <view class="avatar-ring" :class="{ pulsing: isRunningB }"><text class="avatar-emoji iconfont" :class="babyEmoji(babyB?.id, 1)"></text></view>
           <text class="twin-name">{{ babyB?.nickname || babyB?.name || '二宝' }}</text>
           <view class="twin-status-row">
             <text v-if="isRunningB" class="status-live">计时中</text>
@@ -82,32 +82,32 @@
 
     <view class="quick-ref reveal-4" v-if="quickRef.lastFeeding!=='—' || quickRef.activeTimer">
       <view class="qr-item journal-sticky" v-if="quickRef.activeTimer"><text class="qr-emoji">⏱️</text><text class="qr-text">{{ quickRef.activeTimer }}</text></view>
-      <view class="qr-item journal-sticky" v-if="quickRef.lastFeeding!=='—'"><text class="qr-emoji">🍼</text><text class="qr-text">上次喂奶 {{ quickRef.lastFeeding }}</text></view>
-      <view class="qr-item journal-sticky" v-if="quickRef.lastSleep!=='—'"><text class="qr-emoji">😴</text><text class="qr-text">上次睡觉 {{ quickRef.lastSleep }}</text></view>
+      <view class="qr-item journal-sticky" v-if="quickRef.lastFeeding!=='—'"><text class="qr-emoji iconfont icon-bottle"></text><text class="qr-text">上次喂奶 {{ quickRef.lastFeeding }}</text></view>
+      <view class="qr-item journal-sticky" v-if="quickRef.lastSleep!=='—'"><text class="qr-emoji iconfont icon-sleep"></text><text class="qr-text">上次睡觉 {{ quickRef.lastSleep }}</text></view>
     </view>
 
     <view class="action-center reveal-5">
       <button class="main-btn" @click="goRecord">
-        <text class="btn-icon">✏️</text><text class="btn-text">记一笔</text>
+        <text class="btn-icon iconfont icon-edit"></text><text class="btn-text">记一笔</text>
       </button>
     </view>
 
     <view class="quick-bar reveal-6" v-if="babyA && babyB && userStore.roleConfig.homeLayout!=='compact'">
-      <view class="q-chip q-primary" @click="dualRecord('feeding')">🍼 都喂了</view>
-      <view class="q-chip" @click="dualRecord('sleep')">😴 都睡了</view>
-      <view class="q-chip" @click="dualRecord('diaper')">🧷</view>
+      <view class="q-chip q-primary" @click="dualRecord('feeding')"><text class="iconfont icon-bottle icon-sm"></text> 都喂了</view>
+      <view class="q-chip" @click="dualRecord('sleep')"><text class="iconfont icon-sleep icon-sm"></text> 都睡了</view>
+      <view class="q-chip" @click="dualRecord('diaper')"><text class="iconfont icon-diaper"></text></view>
     </view>
 
     <view class="duty-card reveal-6" v-if="userStore.roleConfig.homeLayout==='compact' && babyA && babyB">
-      <view class="q-chip q-primary" @click="dualRecord('feeding')">🍼 都喂了</view>
-      <view class="q-chip" @click="dualRecord('sleep')">😴 都睡了</view>
-      <view class="q-chip" @click="dualRecord('diaper')">🧷 都换了</view>
+      <view class="q-chip q-primary" @click="dualRecord('feeding')"><text class="iconfont icon-bottle icon-sm"></text> 都喂了</view>
+      <view class="q-chip" @click="dualRecord('sleep')"><text class="iconfont icon-sleep icon-sm"></text> 都睡了</view>
+      <view class="q-chip" @click="dualRecord('diaper')"><text class="iconfont icon-diaper icon-sm"></text> 都换了</view>
     </view>
 
     <view class="footer-tools reveal-6" v-if="userStore.roleConfig.homeLayout==='full'">
       <button class="ft-invite" open-type="share"><text>👨‍👩‍👧‍👦 邀请另一半一起记录</text></button>
       <view class="ft-row">
-        <text class="ft-link" @click="$emit('navigate','/pages/snapshot/index')">📤 导出备份</text>
+        <text class="ft-link" @click="$emit('navigate','/pages/snapshot/index')"><text class="iconfont icon-share icon-sm"></text> 导出备份</text>
         <text class="ft-dot">·</text>
         <text class="ft-link" @click="$emit('navigate','/pages/privacy/index')">隐私政策</text>
       </view>
@@ -132,7 +132,7 @@
         <text class="celebrate-emoji">{{ celebrateEmoji }}</text>
         <text class="celebrate-title">{{ celebrateTitle }}</text>
         <text class="celebrate-desc">{{ celebrateDesc }}</text>
-        <view class="celebrate-stars"><text class="cs">⭐</text><text class="cs">🌟</text><text class="cs">⭐</text></view>
+        <view class="celebrate-stars"><text class="cs iconfont icon-star"></text><text class="cs iconfont icon-star"></text><text class="cs iconfont icon-star"></text></view>
         <button v-if="milestoneAction" class="milestone-action-btn" @click="$emit('milestoneAction')">{{ milestoneAction }}</button>
       </view>
     </view>
@@ -154,7 +154,7 @@
           <view v-for="r in roleOptions" :key="r.key" class="drawer-role" @click="$emit('switchToRole', r.key)">
             <text class="dr-emoji">{{ r.emoji }}</text>
             <view class="dr-body"><text class="dr-label">{{ r.label }}</text><text class="dr-desc">{{ r.desc }}</text></view>
-            <text class="dr-check" v-if="userStore.profile?.role===r.key">✓</text>
+            <text class="dr-check icon-check" v-if="userStore.profile?.role===r.key"></text>
           </view>
         </view>
         <view class="drawer-divider" />
@@ -306,20 +306,20 @@ function babyUrgency(b: any): string {
 }
 
 function babyEmoji(babyId: string | undefined, idx: number): string {
-  if (!babyId) return idx === 0 ? '🐣' : '🐥'
+  if (!babyId) return idx === 0 ? 'icon-baby-a' : 'icon-baby-b'
   const timer = recordsStore.runningTimers.find(t => t.babyId === babyId)
-  if (timer) return timer.type === 'feeding' ? '🍼' : '💤'
+  if (timer) return timer.type === 'feeding' ? 'icon-bottle' : 'icon-sleep-zzz'
   const logs = recordsStore.recentLogsByBaby[babyId]
   if (logs?.length) {
     const last = logs[logs.length - 1]
     const minAgo = (Date.now() - last.createdAt) / 60000
     if (minAgo < 30) {
-      if (last.type === 'feeding') return '😋'
-      if (last.type === 'sleep') return '😴'
-      if (last.type === 'diaper') return '🧷'
+      if (last.type === 'feeding') return 'icon-bottle'
+      if (last.type === 'sleep') return 'icon-sleep'
+      if (last.type === 'diaper') return 'icon-diaper'
     }
   }
-  return idx === 0 ? '🐣' : '🐥'
+  return idx === 0 ? 'icon-baby-a' : 'icon-baby-b'
 }
 
 function dualRecord(t: 'feeding' | 'sleep' | 'diaper') {

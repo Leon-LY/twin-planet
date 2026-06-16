@@ -4,11 +4,11 @@
     <view class="page-header">
       <view class="header-top">
         <view class="header-title-group">
-          <text class="page-icon">💪</text>
+          <text class="page-icon iconfont icon-strength"></text>
           <text class="page-title">今天我做了什么</text>
         </view>
         <button class="btn-share" open-type="share">
-          <text>📤 分享</text>
+          <text><text class="iconfont icon-share"></text> 分享</text>
         </button>
       </view>
       <text class="page-subtitle">看见每一位家人的付出</text>

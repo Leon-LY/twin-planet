@@ -72,13 +72,13 @@
     <view class="quick-actions">
       <text class="section-label">快速操作</text>
       <view class="action-row">
-        <view class="quick-btn" @click="goRecord"><text class="quick-emoji">🍼</text><text class="quick-label">记录</text></view>
-        <view class="quick-btn" @click="goDuty"><text class="quick-emoji">🦸</text><text class="quick-label">值班</text></view>
-        <view class="quick-btn" @click="goHandover"><text class="quick-emoji">🎙️</text><text class="quick-label">交接</text></view>
-        <view class="quick-btn" @click="goSprout"><text class="quick-emoji">🌱</text><text class="quick-label">萌芽</text></view>
+        <view class="quick-btn" @click="goRecord"><text class="quick-emoji iconfont icon-bottle"></text><text class="quick-label">记录</text></view>
+        <view class="quick-btn" @click="goDuty"><text class="quick-emoji iconfont icon-hero"></text><text class="quick-label">值班</text></view>
+        <view class="quick-btn" @click="goHandover"><text class="quick-emoji iconfont icon-microphone"></text><text class="quick-label">交接</text></view>
+        <view class="quick-btn" @click="goSprout"><text class="quick-emoji iconfont icon-sprout"></text><text class="quick-label">萌芽</text></view>
       </view>
       <view class="share-row" @click="goShare">
-        <text>📤 生成今日双宝卡，分享给家人</text>
+        <text><text class="iconfont icon-share"></text> 生成今日双宝卡，分享给家人</text>
       </view>
     </view>
   </view>

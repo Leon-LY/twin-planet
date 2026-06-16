@@ -23,7 +23,7 @@
     <!-- 底部工具 -->
     <view class="discover-tools">
       <view class="tool-card" @click="goPage('/pages/stickers/index')">
-        <text class="tool-emoji">📤</text>
+        <text class="tool-emoji iconfont icon-share"></text>
         <text class="tool-label">导出数据备份</text>
       </view>
     </view>

@@ -1,7 +1,7 @@
 <template>
   <view class="ms-page page-enter">
     <view class="page-header">
-      <text class="page-icon">🌟</text>
+      <text class="page-icon iconfont icon-star"></text>
       <text class="page-title">双宝能力观察</text>
       <text class="page-subtitle">不是比较，是欣赏每个孩子的独特轨迹</text>
     </view>
@@ -46,7 +46,7 @@
 
     <!-- 时间线 -->
     <view class="timeline-section" v-if="activeBaby && recentMilestones.length">
-      <text class="section-label">📅 {{ activeBaby?.nickname }} 的成长时间线</text>
+      <text class="section-label"><text class="iconfont icon-calendar"></text> {{ activeBaby?.nickname }} 的成长时间线</text>
       <view class="timeline">
         <view v-for="(m, idx) in recentMilestones" :key="m.id" class="tl-item">
           <view class="tl-dot" :class="{ first: idx === 0 }" />

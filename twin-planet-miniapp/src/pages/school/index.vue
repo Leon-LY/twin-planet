@@ -39,14 +39,14 @@
           <text class="col-item">✅ 家长会、作业同步</text>
           <text class="col-item">✅ 双宝互相提供安全感</text>
           <text class="col-item risk">⚠️ 老师不自觉会比较</text>
-          <text class="col-item risk">⚠️ 可能与对方"绑定"影响社交</text>
+          <text class="col-item risk"><text class="iconfont icon-warn"></text> 可能与对方"绑定"影响社交</text>
         </view>
         <view class="compare-col rose">
           <text class="col-title">分班</text>
           <text class="col-item">✅ 各自独立空间，不被标签化</text>
           <text class="col-item">✅ 发展独立朋友圈</text>
           <text class="col-item">✅ 减少"谁更好"的比较</text>
-          <text class="col-item risk">⚠️ 接送/作业不同步，家长负担翻倍</text>
+          <text class="col-item risk"><text class="iconfont icon-warn"></text> 接送/作业不同步，家长负担翻倍</text>
           <text class="col-item risk">⚠️ 刚分班时可能分离焦虑</text>
         </view>
       </view>
@@ -54,7 +54,7 @@
 
     <!-- 学期评估 -->
     <view class="assess-section">
-      <text class="card-title">📅 学期评估记录</text>
+      <text class="card-title"><text class="iconfont icon-calendar"></text> 学期评估记录</text>
       <view class="assess-list" v-if="store.schoolDecisions.length">
         <view v-for="d in store.schoolDecisions.slice().reverse()" :key="d.id" class="assess-card">
           <view class="assess-header">

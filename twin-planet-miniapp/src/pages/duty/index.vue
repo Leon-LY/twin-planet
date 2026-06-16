@@ -2,7 +2,7 @@
   <view class="duty-page page-enter">
     <!-- 值班模式 -->
     <view class="page-header">
-      <text class="page-icon">🦸</text>
+      <text class="page-icon iconfont icon-hero"></text>
       <text class="page-title">值班清单</text>
       <text class="page-subtitle">照着清单做，一个人也能搞定两个</text>
     </view>

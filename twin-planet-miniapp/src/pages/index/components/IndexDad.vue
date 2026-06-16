@@ -13,7 +13,7 @@
     <view class="twins dad-twins">
       <view class="twin-card card-a journal-holes" @click="goRecord">
         <view class="card-surface">
-          <view class="avatar-ring" :class="{ pulsing: isRunningA }"><text class="avatar-emoji">{{ babyEmoji(babyA?.id, 0) }}</text></view>
+          <view class="avatar-ring" :class="{ pulsing: isRunningA }"><text class="avatar-emoji iconfont" :class="babyEmoji(babyA?.id, 0)"></text></view>
           <text class="twin-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
           <view class="twin-status-row">
             <text v-if="isRunningA" class="status-live">计时中</text>
@@ -24,7 +24,7 @@
       </view>
       <view class="twin-card card-b journal-holes" @click="goRecord">
         <view class="card-surface">
-          <view class="avatar-ring" :class="{ pulsing: isRunningB }"><text class="avatar-emoji">{{ babyEmoji(babyB?.id, 1) }}</text></view>
+          <view class="avatar-ring" :class="{ pulsing: isRunningB }"><text class="avatar-emoji iconfont" :class="babyEmoji(babyB?.id, 1)"></text></view>
           <text class="twin-name">{{ babyB?.nickname || babyB?.name || '二宝' }}</text>
           <view class="twin-status-row">
             <text v-if="isRunningB" class="status-live">计时中</text>
@@ -36,17 +36,17 @@
     </view>
     <view class="dad-snapshot" v-if="todaySummary"><text class="ds-text">{{ todaySummary }}</text></view>
     <view class="dad-actions">
-      <button class="dad-duty-btn" @click="goDuty"><text class="dd-icon">📋</text><text class="dd-label">值班清单</text></button>
+      <button class="dad-duty-btn" @click="goDuty"><text class="dd-icon iconfont icon-clipboard"></text><text class="dd-label">值班清单</text></button>
     </view>
     <view class="quick-bar" v-if="babyA && babyB">
-      <view class="q-chip q-primary" @click="dualRecord('feeding')">🍼 都喂了</view>
-      <view class="q-chip" @click="dualRecord('sleep')">😴 都睡了</view>
-      <view class="q-chip" @click="dualRecord('diaper')">🧷 都换了</view>
+      <view class="q-chip q-primary" @click="dualRecord('feeding')"><text class="iconfont icon-bottle icon-sm"></text> 都喂了</view>
+      <view class="q-chip" @click="dualRecord('sleep')"><text class="iconfont icon-sleep icon-sm"></text> 都睡了</view>
+      <view class="q-chip" @click="dualRecord('diaper')"><text class="iconfont icon-diaper icon-sm"></text> 都换了</view>
     </view>
     <view class="dad-footer">
       <text class="ft-link" @click="goSnapshot">📸 查看快照</text>
       <text class="ft-dot">·</text>
-      <text class="ft-link" @click="goGrowth">📊 生长曲线</text>
+      <text class="ft-link" @click="goGrowth"><text class="iconfont icon-chart icon-sm"></text> 生长曲线</text>
     </view>
   </view>
 </template>
@@ -116,20 +116,20 @@ function babyUrgency(b: any): string {
 }
 
 function babyEmoji(babyId: string | undefined, idx: number): string {
-  if (!babyId) return idx === 0 ? '🐣' : '🐥'
+  if (!babyId) return idx === 0 ? 'icon-baby-a' : 'icon-baby-b'
   const timer = recordsStore.runningTimers.find(t => t.babyId === babyId)
-  if (timer) return timer.type === 'feeding' ? '🍼' : '💤'
+  if (timer) return timer.type === 'feeding' ? 'icon-bottle' : 'icon-sleep-zzz'
   const logs = recordsStore.recentLogsByBaby[babyId]
   if (logs?.length) {
     const last = logs[logs.length - 1]
     const minAgo = (Date.now() - last.createdAt) / 60000
     if (minAgo < 30) {
-      if (last.type === 'feeding') return '😋'
-      if (last.type === 'sleep') return '😴'
-      if (last.type === 'diaper') return '🧷'
+      if (last.type === 'feeding') return 'icon-bottle'
+      if (last.type === 'sleep') return 'icon-sleep'
+      if (last.type === 'diaper') return 'icon-diaper'
     }
   }
-  return idx === 0 ? '🐣' : '🐥'
+  return idx === 0 ? 'icon-baby-a' : 'icon-baby-b'
 }
 
 const todaySummary = computed(() => {

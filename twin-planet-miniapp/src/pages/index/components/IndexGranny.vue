@@ -7,11 +7,11 @@
     <!-- P1-7: 今日摘要卡片 -->
     <view class="granny-summary" v-if="summaryA || summaryB">
       <view class="granny-summary-item" v-if="summaryA">
-        <text class="granny-summary-name amber">🐣 {{ summaryA.name }}</text>
+        <text class="granny-summary-name amber"><text class="iconfont icon-baby-a"></text> {{ summaryA.name }}</text>
         <text class="granny-summary-text">{{ summaryA.text }}</text>
       </view>
       <view class="granny-summary-item" v-if="summaryB">
-        <text class="granny-summary-name rose">🐥 {{ summaryB.name }}</text>
+        <text class="granny-summary-name rose"><text class="iconfont icon-baby-b"></text> {{ summaryB.name }}</text>
         <text class="granny-summary-text">{{ summaryB.text }}</text>
       </view>
     </view>
@@ -20,8 +20,8 @@
     </view>
 
     <view class="granny-actions">
-      <view class="granny-btn" @click="goRecord"><text class="granny-emoji">✏️</text><text class="granny-label">记一笔</text></view>
-      <view class="granny-btn" @click="goGrowth"><text class="granny-emoji">🌱</text><text class="granny-label">看看长多大了</text></view>
+      <view class="granny-btn" @click="goRecord"><text class="granny-emoji iconfont icon-edit"></text><text class="granny-label">记一笔</text></view>
+      <view class="granny-btn" @click="goGrowth"><text class="granny-emoji iconfont icon-sprout"></text><text class="granny-label">看看长多大了</text></view>
       <view class="granny-btn granny-help" @click="goHelp"><text class="granny-emoji">📞</text><text class="granny-label">问家里人</text></view>
     </view>
     <text class="last-update" v-if="lastUpdateText">最后更新 {{ lastUpdateText }}</text>

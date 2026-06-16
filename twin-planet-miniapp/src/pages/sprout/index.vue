@@ -4,11 +4,11 @@
     <view class="page-header">
       <view class="header-top">
         <view class="header-title-group">
-          <text class="page-icon">🌱</text>
+          <text class="page-icon iconfont icon-sprout"></text>
           <text class="page-title">萌芽日记</text>
         </view>
         <button class="btn-share" open-type="share">
-          <text>📤 分享</text>
+          <text><text class="iconfont icon-share"></text> 分享</text>
         </button>
       </view>
       <text class="page-subtitle">记录两个宝宝之间的互动瞬间</text>
@@ -94,7 +94,7 @@
 
     <!-- 空状态 -->
     <view class="empty-state" v-else>
-      <text class="empty-emoji">📖</text>
+      <text class="empty-emoji iconfont icon-book"></text>
       <text class="empty-title">等待第一颗小萌芽</text>
       <text class="empty-desc">记录双胞胎之间的互动瞬间：第一次分享、争抢玩具、互相模仿...</text>
     </view>

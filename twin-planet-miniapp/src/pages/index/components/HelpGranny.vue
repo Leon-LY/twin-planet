@@ -32,7 +32,7 @@
 
       <!-- 3. 使用说明 -->
       <view class="help-btn help-btn-guide" @click="toggleGuide">
-        <text class="help-btn-emoji">📖</text>
+        <text class="help-btn-emoji iconfont icon-book"></text>
         <text class="help-btn-label">使用说明</text>
         <text class="help-btn-hint">3 步学会记录</text>
       </view>
@@ -41,14 +41,14 @@
     <!-- 展开式使用说明 -->
     <view class="help-guide" v-if="showGuide">
       <view class="help-step">
-        <text class="help-step-emoji">✏️</text>
+        <text class="help-step-emoji iconfont icon-edit"></text>
         <view class="help-step-body">
           <text class="help-step-num">第 1 步</text>
           <text class="help-step-text">点 <text class="help-hl">"记一笔"</text>，选要记录的宝宝</text>
         </view>
       </view>
       <view class="help-step">
-        <text class="help-step-emoji">🍼</text>
+        <text class="help-step-emoji iconfont icon-bottle"></text>
         <view class="help-step-body">
           <text class="help-step-num">第 2 步</text>
           <text class="help-step-text">点对应的按钮：<text class="help-hl">吃奶</text>、<text class="help-hl">睡觉</text>、<text class="help-hl">尿布</text> 或 <text class="help-hl">体温</text></text>
