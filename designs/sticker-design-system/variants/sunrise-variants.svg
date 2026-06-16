@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 120">
+  <defs><style>
+    .label { font-family: -apple-system, sans-serif; font-size: 8px; fill: #9C8E7C; text-anchor: middle; }
+    .title { font-size: 10px; font-weight: bold; fill: #2D2318; }
+    .amber { fill: #E07B3E; }
+    .gold { fill: #C8993E; }
+    .mint { fill: #5C9A6E; }
+    .paper { fill: #FEF9F0; }
+    .ink { fill: #2D2318; }
+  </style></defs>
+
+  <!-- Variant A: Radial Sunburst -->
+  <g transform="translate(20,20)">
+    <rect width="80" height="80" rx="8" fill="none" stroke="#E8DCC8" stroke-width="1"/>
+    <text x="40" y="10" class="label title">A: Radial Sunburst</text>
+    <g transform="translate(40,52)">
+      <circle cx="0" cy="0" r="7" class="amber"/>
+      <rect x="-1" y="-27" width="2" height="12" rx="1" class="amber" opacity="0.8"/>
+      <rect x="-1" y="15" width="2" height="12" rx="1" class="amber" opacity="0.4"/>
+      <rect x="-27" y="-1" width="12" height="2" rx="1" class="amber" opacity="0.8"/>
+      <rect x="15" y="-1" width="12" height="2" rx="1" class="amber" opacity="0.4"/>
+      <rect x="8" y="-22" width="2" height="9" rx="1" class="amber" transform="rotate(45)" opacity="0.6"/>
+      <rect x="-22" y="8" width="2" height="9" rx="1" class="amber" transform="rotate(45)" opacity="0.3"/>
+    </g>
+    <text x="40" y="92" class="label">8放射线 · 长短交替 · 晨光</text>
+  </g>
+
+  <!-- Variant B: Rising Half-Sun -->
+  <g transform="translate(120,20)">
+    <rect width="80" height="80" rx="8" fill="none" stroke="#E8DCC8" stroke-width="1"/>
+    <text x="40" y="10" class="label title">B: Rising Sun</text>
+    <g transform="translate(40,55)">
+      <path d="M-10 0 A10 10 0 0 1 10 0Z" class="amber"/>
+      <rect x="-1" y="-15" width="2" height="8" rx="1" class="amber" opacity="0.7"/>
+      <rect x="-8" y="-12" width="2" height="6" rx="1" class="amber" transform="rotate(-20)" opacity="0.5"/>
+      <rect x="6" y="-12" width="2" height="6" rx="1" class="amber" transform="rotate(20)" opacity="0.5"/>
+    </g>
+    <text x="40" y="92" class="label">半日出地平线 · 3束晨光</text>
+  </g>
+
+  <!-- Variant C: Minimalist Circle -->
+  <g transform="translate(220,20)">
+    <rect width="80" height="80" rx="8" fill="none" stroke="#E8DCC8" stroke-width="1"/>
+    <text x="40" y="10" class="label title">C: Minimal Ring</text>
+    <g transform="translate(40,52)">
+      <circle cx="0" cy="0" r="10" fill="none" stroke="#E07B3E" stroke-width="2.5"/>
+      <circle cx="0" cy="0" r="4" class="amber"/>
+      <circle cx="-4" cy="-6" r="1" class="paper"/>
+    </g>
+    <text x="40" y="92" class="label">极简圆环 · 亮点 · 日食意象</text>
+  </g>
+
+  <!-- Variant D: Organic Blossom -->
+  <g transform="translate(320,20)">
+    <rect width="80" height="80" rx="8" fill="none" stroke="#E8DCC8" stroke-width="1"/>
+    <text x="40" y="10" class="label title">D: Organic Rays</text>
+    <g transform="translate(40,52)">
+      <circle cx="0" cy="0" r="5" class="amber"/>
+      <path d="M0 -6 Q2 -18 0 -22 Q-2 -18 0 -6Z" class="amber" opacity="0.7"/>
+      <path d="M5 -3 Q18 -10 22 -8 Q18 -4 5 -3Z" class="amber" opacity="0.5"/>
+      <path d="M-5 -3 Q-18 -10 -22 -8 Q-18 -4 -5 -3Z" class="amber" opacity="0.5"/>
+      <path d="M6 4 Q20 14 23 12 Q18 6 6 4Z" class="amber" opacity="0.4"/>
+      <path d="M-6 4 Q-20 14 -23 12 Q-18 6 -6 4Z" class="amber" opacity="0.4"/>
+    </g>
+    <text x="40" y="92" class="label">有机花瓣 · 手绘笔触 · 温柔</text>
+  </g>
+</svg>

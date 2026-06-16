@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-labelledby="sunrise-title">
+  <title id="sunrise-title">早安守护 — 今日第一笔记录</title>
+  <desc>Stylized sunrise icon with radiating sunbeams. Amber #E07B3E. Journal ink-pen stroke style.</desc>
+  <!-- Sun center circle — filled disk -->
+  <circle cx="12" cy="12" r="2.5" fill="currentColor"/>
+  <!-- 8 radiating sunbeams — filled rounded rectangles simulating ink strokes -->
+  <rect x="11" y="1" width="2" height="4" rx="1" fill="currentColor"/>
+  <rect x="11" y="19" width="2" height="4" rx="1" fill="currentColor"/>
+  <rect x="1" y="11" width="4" height="2" rx="1" fill="currentColor"/>
+  <rect x="19" y="11" width="4" height="2" rx="1" fill="currentColor"/>
+  <!-- Diagonal beams — rotated rects via paths -->
+  <path d="M4.5 4.5 L6 3.5 L7.5 5 L6 6Z" fill="currentColor"/>
+  <path d="M16.5 19 L18 17.5 L19.5 19 L18 20.5Z" fill="currentColor"/>
+  <path d="M4.5 19.5 L6 20.5 L7.5 19 L6 17.5Z" fill="currentColor"/>
+  <path d="M16.5 5 L18 3.5 L19.5 5 L18 6.5Z" fill="currentColor"/>
+</svg>

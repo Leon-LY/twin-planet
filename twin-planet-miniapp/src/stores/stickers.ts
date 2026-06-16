@@ -50,11 +50,11 @@ export interface StickerContext {
 
 export const STICKER_RULES: StickerRule[] = [
   {
-    trigger: 'first_record', emoji: '☀️', label: '早安守护', category: 'record',
+    trigger: 'first_record', emoji: '☀️', iconClass: 'icon-sticker-sunrise', label: '早安守护', category: 'record',
     check: (c) => c.todayLogCount === 1,
   },
   {
-    trigger: 'record_5', emoji: '👀', label: '细心守护', category: 'record',
+    trigger: 'record_5', emoji: '👀', iconClass: 'icon-sticker-watchful', label: '细心守护', category: 'record',
     check: (c) => c.todayLogCount === 5,
   },
   {
@@ -62,7 +62,7 @@ export const STICKER_RULES: StickerRule[] = [
     check: (c) => c.todayLogCount === 10,
   },
   {
-    trigger: 'streak_3', emoji: '3️⃣', label: '三日连续', category: 'streak',
+    trigger: 'streak_3', emoji: '3️⃣', iconClass: 'icon-sticker-three-day', label: '三日连续', category: 'streak',
     check: (c) => c.streakDays === 3,
   },
   {
@@ -78,7 +78,7 @@ export const STICKER_RULES: StickerRule[] = [
     check: (c) => c.twinSyncCount > 0,
   },
   {
-    trigger: 'both_active', emoji: '💫', label: '双宝活跃', category: 'sync',
+    trigger: 'both_active', emoji: '💫', iconClass: 'icon-sticker-twin-spark', label: '双宝活跃', category: 'sync',
     check: (c) => c.babyARecentRecord && c.babyBRecentRecord,
   },
   {
@@ -86,15 +86,15 @@ export const STICKER_RULES: StickerRule[] = [
     check: (c) => c.sproutCount === 1,
   },
   {
-    trigger: 'total_10', emoji: '🔟', label: '十次守护', category: 'special',
+    trigger: 'total_10', emoji: '🔟', iconClass: 'icon-sticker-ten', label: '十次守护', category: 'special',
     check: (c) => c.totalLogCount === 10,
   },
   {
-    trigger: 'total_50', emoji: '🎯', label: '五十次守护', category: 'special',
+    trigger: 'total_50', emoji: '🎯', iconClass: 'icon-sticker-fifty', label: '五十次守护', category: 'special',
     check: (c) => c.totalLogCount === 50,
   },
   {
-    trigger: 'total_100', emoji: '💯', label: '百次守护', category: 'special',
+    trigger: 'total_100', emoji: '💯', iconClass: 'icon-sticker-hundred', label: '百次守护', category: 'special',
     check: (c) => c.totalLogCount === 100,
   },
   {
@@ -103,7 +103,7 @@ export const STICKER_RULES: StickerRule[] = [
   },
   // === 3-6 岁专属贴纸 ===
   {
-    trigger: 'sprout_10', emoji: '🔍', label: '细心观察者', category: 'milestone',
+    trigger: 'sprout_10', emoji: '🔍', iconClass: 'icon-sticker-observe', label: '细心观察者', category: 'milestone',
     check: (c) => (c.totalSproutCount ?? c.sproutCount) >= 10,
   },
   {
@@ -111,20 +111,20 @@ export const STICKER_RULES: StickerRule[] = [
     check: (c) => (c.totalSproutCount ?? c.sproutCount) >= 30,
   },
   {
-    trigger: 'milestone_5', emoji: '🎪', label: '五个里程碑', category: 'milestone',
+    trigger: 'milestone_5', emoji: '🎪', iconClass: 'icon-sticker-milestone5', label: '五个里程碑', category: 'milestone',
     check: (c) => (c.milestoneCount ?? 0) >= 5,
   },
   {
-    trigger: 'first_school', emoji: '🏫', label: '入园纪念', category: 'special',
+    trigger: 'first_school', emoji: '🏫', iconClass: 'icon-sticker-school', label: '入园纪念', category: 'special',
     check: (c) => (c.schoolAssessmentCount ?? 0) >= 1,
   },
   // === 邀请贴纸（P2-4） ===
   {
-    trigger: 'invite_sent', emoji: '📨', label: '召集者', category: 'special',
+    trigger: 'invite_sent', emoji: '📨', iconClass: 'icon-sticker-inviter', label: '召集者', category: 'special',
     check: (c) => !!c.inviteSent,
   },
   {
-    trigger: 'invite_accepted', emoji: '🎁', label: '欢迎加入', category: 'special',
+    trigger: 'invite_accepted', emoji: '🎁', iconClass: 'icon-sticker-welcome', label: '欢迎加入', category: 'special',
     check: (c) => !!c.inviteAccepted,
   },
   // === 节气贴纸（P2-6） ===
@@ -134,7 +134,7 @@ export const STICKER_RULES: StickerRule[] = [
   },
   // === 隐藏惊喜贴纸（5% 概率触发） ===
   {
-    trigger: 'lucky_rainbow', emoji: '🌈', label: '幸运彩虹', category: 'special',
+    trigger: 'lucky_rainbow', emoji: '🌈', iconClass: 'icon-sticker-rainbow', label: '幸运彩虹', category: 'special',
     check: () => Math.random() < 0.05,
   },
 ]

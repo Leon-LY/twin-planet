@@ -1,0 +1,49 @@
+{
+  "type": "design",
+  "designSystems": [],
+  "primaryDesignSystem": null,
+  "assets": {
+    "贴纸设计系统画布": {
+      "versions": [
+        {
+          "path": "sticker-design-system.html",
+          "createdAt": "2026-06-16T04:23:08.626Z",
+          "status": "needs-review",
+          "section": "Sticker Design System"
+        }
+      ]
+    },
+    "贴纸徽章展示": {
+      "versions": [
+        {
+          "path": "badges-showcase.html",
+          "createdAt": "2026-06-16T04:25:44.891Z",
+          "status": "needs-review",
+          "section": "Sticker Design System"
+        }
+      ]
+    },
+    "贴纸方案探索": {
+      "versions": [
+        {
+          "path": "variants/showcase.html",
+          "createdAt": "2026-06-16T04:30:12.026Z",
+          "status": "needs-review",
+          "section": "Sticker Design System"
+        }
+      ]
+    },
+    "狐狸贴纸艺术画布": {
+      "versions": [
+        {
+          "path": "fox-art/collected-warmth-canvas.png",
+          "createdAt": "2026-06-16T05:43:42.390Z",
+          "status": "needs-review",
+          "section": "Sticker Design System"
+        }
+      ]
+    }
+  },
+  "createdAt": "2026-06-16T04:23:08.627Z",
+  "updatedAt": "2026-06-16T05:43:42.392Z"
+}

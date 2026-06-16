@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 120">
+  <defs><style>
+    .label { font-family: -apple-system, sans-serif; font-size: 8px; fill: #9C8E7C; text-anchor: middle; }
+    .title { font-size: 10px; font-weight: bold; fill: #2D2318; }
+    .amber { fill: #E07B3E; } .gold { fill: #C8993E; } .mint { fill: #5C9A6E; } .paper { fill: #FEF9F0; } .ink { fill: #2D2318; }
+  </style></defs>
+
+  <!-- Variant A: Diamond Shield (original) -->
+  <g transform="translate(20,20)">
+    <rect width="80" height="80" rx="8" fill="none" stroke="#E8DCC8" stroke-width="1"/>
+    <text x="40" y="10" class="label title">A: Diamond Shield</text>
+    <g transform="translate(40,52)">
+      <path d="M0 -18 L16 0 L0 18 L-16 0Z M0 -10 L10 0 L0 10 L-10 0Z" fill="#E07B3E" fill-rule="evenodd"/>
+      <path d="M0 -6 L3 -2 L6 -2 L3 1 L4 5 L0 3 L-4 5 L-3 1 L-6 -2 L-3 -2Z" class="paper"/>
+    </g>
+    <text x="40" y="92" class="label">菱形盾 · 内嵌皇冠星</text>
+  </g>
+
+  <!-- Variant B: Triple Crown -->
+  <g transform="translate(120,20)">
+    <rect width="80" height="80" rx="8" fill="none" stroke="#E8DCC8" stroke-width="1"/>
+    <text x="40" y="10" class="label title">B: Triple Crown</text>
+    <g transform="translate(40,52)">
+      <path d="M-15 15 L-15 -5 L-8 -12 L0 -18 L8 -12 L15 -5 L15 15Z" class="gold" opacity="0.9"/>
+      <circle cx="-8" cy="-12" r="2" class="amber"/>
+      <circle cx="0" cy="-18" r="2.5" class="amber"/>
+      <circle cx="8" cy="-12" r="2" class="amber"/>
+      <path d="M0 -14 L0 10" stroke="#FEF9F0" stroke-width="1.5" opacity="0.5"/>
+    </g>
+    <text x="40" y="92" class="label">三冠王冠 · 金色荣耀</text>
+  </g>
+
+  <!-- Variant C: Concentric Rings -->
+  <g transform="translate(220,20)">
+    <rect width="80" height="80" rx="8" fill="none" stroke="#E8DCC8" stroke-width="1"/>
+    <text x="40" y="10" class="label title">C: Concentric Honor</text>
+    <g transform="translate(40,52)">
+      <circle cx="0" cy="0" r="16" fill="none" stroke="#E07B3E" stroke-width="1.5"/>
+      <circle cx="0" cy="0" r="12" fill="none" stroke="#C8993E" stroke-width="1.5" stroke-dasharray="4 2"/>
+      <circle cx="0" cy="0" r="7" fill="none" stroke="#E07B3E" stroke-width="2"/>
+      <path d="M0 -4 L2 0 L6 0 L3 2 L4 6 L0 3.5 L-4 6 L-3 2 L-6 0 L-2 0Z" class="amber"/>
+    </g>
+    <text x="40" y="92" class="label">三层同心环 · 中心星</text>
+  </g>
+
+  <!-- Variant D: Wreath of Honor -->
+  <g transform="translate(320,20)">
+    <rect width="80" height="80" rx="8" fill="none" stroke="#E8DCC8" stroke-width="1"/>
+    <text x="40" y="10" class="label title">D: Laurel Wreath</text>
+    <g transform="translate(40,52)">
+      <path d="M-14 5 Q-8 -8 0 -10 Q8 -8 14 5" fill="none" stroke="#5C9A6E" stroke-width="1.5"/>
+      <path d="M-14 5 Q-6 10 0 6 Q6 10 14 5" fill="none" stroke="#5C9A6E" stroke-width="1.5"/>
+      <circle cx="0" cy="-3" r="5" class="gold"/>
+      <text x="0" y="-1" text-anchor="middle" font-size="6" font-weight="bold" fill="#FEF9F0">100</text>
+    </g>
+    <text x="40" y="92" class="label">月桂花环 · 100数字</text>
+  </g>
+</svg>

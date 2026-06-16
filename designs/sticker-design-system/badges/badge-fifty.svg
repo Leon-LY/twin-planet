@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img">
+  <title>五十次守护 — 累计50次记录</title>
+  <!-- Shield outline -->
+  <path d="M12 1 L21 6 L21 13 Q21 19 12 23 Q3 19 3 13 L3 6Z M5 8 L12 20 L19 8Z" fill="currentColor" fill-rule="evenodd"/>
+  <!-- Inner star -->
+  <path d="M12 9 L13.5 12 L17 12 L14.5 14.5 L15.5 18 L12 15.5 L8.5 18 L9.5 14.5 L7 12 L10.5 12Z" fill="#FEF9F0"/>
+</svg>

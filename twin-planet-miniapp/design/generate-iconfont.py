@@ -700,7 +700,235 @@ def _crescent_moon():
 ICONS[19] = ("e020", "icon-night", _crescent_moon)
 
 
-# ── Generate SVG font ───────────────────────────────────
+# ── Sticker badge icons (e032-e044) ──────────────────────
+# Monochrome iconfont-compatible versions of sticker badge designs
+
+def _sticker_sunrise():
+    """Sunrise badge — circle + radiating beams"""
+    paths = []
+    paths.append(circle(12, 12, 3))
+    paths.append(stroke_line(11.5, 1, 12.5, 1, 1.5))
+    paths.append(stroke_line(11.5, 23, 12.5, 23, 1.0))
+    paths.append(stroke_line(1, 11.5, 1, 12.5, 1.5))
+    paths.append(stroke_line(23, 11.5, 23, 12.5, 1.0))
+    paths.append(stroke_line(5, 5, 5, 6.5, 1.5))
+    paths.append(stroke_line(19, 19, 19, 20.5, 1.0))
+    paths.append(stroke_line(19, 5, 19, 6.5, 1.0))
+    paths.append(stroke_line(5, 19, 5, 20.5, 1.0))
+    return " ".join(paths)
+
+def _sticker_watchful():
+    """Care badge — heart/hands shape (replaces eye)"""
+    paths = []
+    # Heart shape
+    p1 = P(12, 20)
+    p2 = P(4, 13)
+    p3 = P(2, 8)
+    p4 = P(5, 4)
+    p5 = P(9, 5)
+    p6 = P(12, 9)
+    p7 = P(15, 5)
+    p8 = P(19, 4)
+    p9 = P(22, 8)
+    p10 = P(20, 13)
+    pts = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+    d = f"M {pts[0][0]:.0f} {pts[0][1]:.0f}"
+    d += f" Q {P(7,16)[0]:.0f} {P(7,16)[1]:.0f} {pts[1][0]:.0f} {pts[1][1]:.0f}"
+    d += f" Q {P(3,10)[0]:.0f} {P(3,10)[1]:.0f} {pts[2][0]:.0f} {pts[2][1]:.0f}"
+    d += f" Q {P(2.5,5.5)[0]:.0f} {P(2.5,5.5)[1]:.0f} {pts[3][0]:.0f} {pts[3][1]:.0f}"
+    d += f" Q {P(7,3)[0]:.0f} {P(7,3)[1]:.0f} {pts[4][0]:.0f} {pts[4][1]:.0f}"
+    d += f" Q {P(11,7.5)[0]:.0f} {P(11,7.5)[1]:.0f} {pts[5][0]:.0f} {pts[5][1]:.0f}"
+    d += f" Q {P(13,7.5)[0]:.0f} {P(13,7.5)[1]:.0f} {pts[6][0]:.0f} {pts[6][1]:.0f}"
+    d += f" Q {P(17,3)[0]:.0f} {P(17,3)[1]:.0f} {pts[7][0]:.0f} {pts[7][1]:.0f}"
+    d += f" Q {P(21.5,5.5)[0]:.0f} {P(21.5,5.5)[1]:.0f} {pts[8][0]:.0f} {pts[8][1]:.0f}"
+    d += f" Q {P(21,10)[0]:.0f} {P(21,10)[1]:.0f} {pts[9][0]:.0f} {pts[9][1]:.0f}"
+    d += f" Q {P(17,16)[0]:.0f} {P(17,16)[1]:.0f} {pts[0][0]:.0f} {pts[0][1]:.0f} Z"
+    paths.append(d)
+    # Small star inside
+    paths.append(stroke_line(10.5, 10, 11.5, 10, 0.8))
+    paths.append(stroke_line(12, 11.5, 12, 12.5, 0.8))
+    return " ".join(paths)
+
+def _sticker_three_day():
+    """Three-day streak — ascending bars"""
+    paths = []
+    paths.append(rounded_rect(3, 12, 5, 9, 1.5))
+    paths.append(rounded_rect(9.5, 7, 5, 14, 1.5))
+    paths.append(rounded_rect(16, 3, 5, 18, 1.5))
+    return " ".join(paths)
+
+def _sticker_twin_spark():
+    """Twin active — interlocking circles (monochrome)"""
+    paths = []
+    paths.append(circle(8.5, 12, 6.5))
+    paths.append(circle(15.5, 12, 6.5))
+    # Small dots for orbit
+    paths.append(circle(5, 8, 0.8))
+    paths.append(circle(19, 16, 0.8))
+    return " ".join(paths)
+
+def _sticker_ten():
+    """10 records — concentric target"""
+    paths = []
+    # Use filled rings via evenodd (approximate with nested circles)
+    outer = circle(12, 12, 10)
+    # Make a ring by drawing outer circle + inner circle (will be merged in iconfont)
+    paths.append(circle(12, 12, 10))
+    paths.append(circle(12, 12, 4))
+    return " ".join(paths)
+
+def _sticker_fifty():
+    """50 records — shield badge"""
+    paths = []
+    # Shield shape
+    p1 = P(12, 1)
+    p2 = P(21, 6)
+    p3 = P(21, 13)
+    p4 = P(12, 23)
+    p5 = P(3, 13)
+    p6 = P(3, 6)
+    d = f"M {p1[0]:.0f} {p1[1]:.0f} L {p2[0]:.0f} {p2[1]:.0f} Q {P(21,10)[0]:.0f} {P(21,10)[1]:.0f} {p3[0]:.0f} {p3[1]:.0f} Q {P(15,20)[0]:.0f} {P(15,20)[1]:.0f} {p4[0]:.0f} {p4[1]:.0f} Q {P(9,20)[0]:.0f} {P(9,20)[1]:.0f} {p5[0]:.0f} {p5[1]:.0f} Q {P(3,10)[0]:.0f} {P(3,10)[1]:.0f} {p6[0]:.0f} {p6[1]:.0f} Z"
+    paths.append(d)
+    return " ".join(paths)
+
+def _sticker_hundred():
+    """100 records — diamond honor badge"""
+    # Diamond shape
+    p1 = P(12, 1)
+    p2 = P(22, 12)
+    p3 = P(12, 23)
+    p4 = P(2, 12)
+    d = f"M {p1[0]:.0f} {p1[1]:.0f} L {p2[0]:.0f} {p2[1]:.0f} L {p3[0]:.0f} {p3[1]:.0f} L {p4[0]:.0f} {p4[1]:.0f} Z"
+    # Inner star
+    star_pts = []
+    for i in range(5):
+        a_outer = -math.pi/2 + i*2*math.pi/5
+        a_inner = a_outer + math.pi/5
+        star_pts.append((12+6*math.cos(a_outer), 12-6*math.sin(a_outer)))
+        star_pts.append((12+2.5*math.cos(a_inner), 12-2.5*math.sin(a_inner)))
+    p_pts = [P(x,y) for x,y in star_pts]
+    sd = f"M {p_pts[0][0]:.0f} {p_pts[0][1]:.0f}"
+    for pt in p_pts[1:]:
+        sd += f" L {pt[0]:.0f} {pt[1]:.0f}"
+    sd += " Z"
+    return f"{d} {sd}"
+
+def _sticker_observe():
+    """Observe badge — magnifying glass"""
+    paths = []
+    paths.append(circle(9, 9, 5.5))
+    paths.append(stroke_line(13, 13, 20, 20, 2))
+    return " ".join(paths)
+
+def _sticker_milestone5():
+    """5 milestones — ascending pillars"""
+    paths = []
+    paths.append(rounded_rect(2, 18, 3.5, 4, 1))
+    paths.append(rounded_rect(6, 14, 3.5, 8, 1))
+    paths.append(rounded_rect(10, 10, 3.5, 12, 1))
+    paths.append(rounded_rect(14, 6, 3.5, 16, 1))
+    paths.append(rounded_rect(18, 2, 3.5, 20, 1))
+    return " ".join(paths)
+
+def _sticker_school():
+    """School badge — backpack (monochrome)"""
+    paths = []
+    # Backpack body
+    paths.append(rounded_rect(6, 9, 12, 13, 2))
+    # Flap
+    paths.append(rounded_rect(6, 9, 12, 4, 2))
+    # Handle
+    paths.append(stroke_line(10, 5, 14, 5, 1.5))
+    paths.append(stroke_line(12, 5, 12, 9, 1.2))
+    return " ".join(paths)
+
+def _sticker_inviter():
+    """Inviter badge — envelope (monochrome)"""
+    paths = []
+    # Envelope body
+    paths.append(rounded_rect(3, 7, 18, 12, 1.5))
+    # Flap triangle
+    p1 = P(3, 7)
+    p2 = P(12, 14)
+    p3 = P(21, 7)
+    d = f"M {p1[0]:.0f} {p1[1]:.0f} L {p2[0]:.0f} {p2[1]:.0f} L {p3[0]:.0f} {p3[1]:.0f} Z"
+    paths.append(d)
+    return " ".join(paths)
+
+def _sticker_welcome():
+    """Welcome badge — gift box (monochrome)"""
+    paths = []
+    # Box body
+    paths.append(rounded_rect(4, 10, 16, 12, 1.5))
+    # Lid
+    paths.append(stroke_line(3, 10, 21, 10, 2))
+    # Ribbon vertical
+    paths.append(stroke_line(12, 6, 12, 22, 1.2))
+    # Ribbon horizontal
+    paths.append(stroke_line(4, 15, 20, 15, 1.0))
+    # Bow
+    paths.append(circle(12, 5, 2))
+    return " ".join(paths)
+
+def _sticker_rainbow():
+    """Rainbow badge — three arcs (monochrome, simplified)"""
+    paths = []
+    # Three bold concentric arcs
+    # Outer arc
+    outer_pts = []
+    for angle in [math.pi*a/180 for a in range(180, 361, 8)]:
+        x = 12 + 10*math.cos(angle)
+        y = 18 - 10*math.sin(angle)
+        outer_pts.append(P(x, y))
+    # Inner arcs (offset upward)
+    mid_pts = []
+    for angle in [math.pi*a/180 for a in range(180, 361, 8)]:
+        x = 12 + 7*math.cos(angle)
+        y = 18 - 7*math.sin(angle)
+        mid_pts.append(P(x, y))
+    inner_pts = []
+    for angle in [math.pi*a/180 for a in range(180, 361, 8)]:
+        x = 12 + 4*math.cos(angle)
+        y = 18 - 4*math.sin(angle)
+        inner_pts.append(P(x, y))
+
+    # Draw as thick arcs using filled paths
+    for pts, w in [(outer_pts, 0.8), (mid_pts, 0.8), (inner_pts, 0.8)]:
+        d = f"M {pts[0][0]:.0f} {pts[0][1]:.0f}"
+        for pt in pts[1:]:
+            d += f" L {pt[0]:.0f} {pt[1]:.0f}"
+        paths.append(d)
+
+    # Star at end
+    star_pts = []
+    for i in range(5):
+        a = -math.pi/2 + i*2*math.pi/5
+        star_pts.append((3+2*math.cos(a), 18-2*math.sin(a)))
+    p_pts = [P(x,y) for x,y in star_pts]
+    sd = f"M {p_pts[0][0]:.0f} {p_pts[0][1]:.0f}"
+    for pt in p_pts[1:]:
+        sd += f" L {pt[0]:.0f} {pt[1]:.0f}"
+    sd += " Z"
+    paths.append(sd)
+    return " ".join(paths)
+
+# Add sticker icons to registry
+_sticker_entries = [
+    ("e032", "icon-sticker-sunrise", _sticker_sunrise),
+    ("e033", "icon-sticker-watchful", _sticker_watchful),
+    ("e034", "icon-sticker-three-day", _sticker_three_day),
+    ("e035", "icon-sticker-twin-spark", _sticker_twin_spark),
+    ("e036", "icon-sticker-ten", _sticker_ten),
+    ("e037", "icon-sticker-fifty", _sticker_fifty),
+    ("e038", "icon-sticker-hundred", _sticker_hundred),
+    ("e039", "icon-sticker-observe", _sticker_observe),
+    ("e040", "icon-sticker-milestone5", _sticker_milestone5),
+    ("e041", "icon-sticker-school", _sticker_school),
+    ("e042", "icon-sticker-inviter", _sticker_inviter),
+    ("e043", "icon-sticker-welcome", _sticker_welcome),
+    ("e044", "icon-sticker-rainbow", _sticker_rainbow),
+]
+ICONS.extend(_sticker_entries)
 def generate_svg_font():
     """Generate an SVG font file."""
     glyphs_xml = []

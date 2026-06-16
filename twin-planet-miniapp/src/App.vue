@@ -1069,6 +1069,46 @@ page {
   100% { transform: rotate(0) translate(0,0); opacity: 1; }
 }
 
+/* 贴纸弹出弹跳 — 适配 iconfont 图标，强调 + 微弹 */
+@keyframes stickerPopBounce {
+  0%   { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+  40%  { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+  60%  { transform: translate(-50%, -50%) scale(0.92); }
+  80%  { transform: translate(-50%, -50%) scale(1.04); }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+/* 贴纸解锁 — 金色光晕 + 放大揭晓（用于 StickerStrip 的新贴纸） */
+@keyframes stickerUnlock {
+  0%   { transform: scale(0.4) rotate(-10deg); opacity: 0; box-shadow: 0 0 0 0 var(--gold); }
+  30%  { transform: scale(1.18) rotate(2deg); opacity: 1; box-shadow: 0 0 24rpx 4rpx var(--gold); }
+  55%  { transform: scale(0.94) rotate(-0.5deg); box-shadow: 0 0 8rpx 2rpx var(--gold); }
+  80%  { transform: scale(1.03) rotate(0.3deg); box-shadow: 0 0 4rpx 0 var(--gold); }
+  100% { transform: scale(1) rotate(var(--sticker-rot, -0.8deg)); opacity: 1; box-shadow: 0 0 0 0 transparent; }
+}
+
+/* 贴纸获得态 — 从虚线框过渡到金色实框（收集册单元格过渡） */
+@keyframes stickerEarned {
+  0%   { border-color: var(--dot); background: transparent; opacity: 0.35; }
+  40%  { border-color: var(--gold); background: var(--gold-lt); opacity: 1; }
+  60%  { border-color: var(--mint); background: var(--mint-lt); box-shadow: 0 0 16rpx 2rpx var(--mint); }
+  100% { border-color: var(--gold); background: linear-gradient(160deg, var(--gold-lt), rgba(200,153,62,0.04)); opacity: 1; box-shadow: 0 0 0 1rpx rgba(0,0,0,.03), 0 2rpx 4rpx rgba(0,0,0,.06); }
+}
+
+/* 贴纸微呼吸 — 收集册中已获得贴纸的安静呼吸感（无限循环，finite iteration override via class） */
+@keyframes stickerBreathe {
+  0%, 100% { box-shadow: 0 0 0 1rpx rgba(0,0,0,.03), 0 2rpx 4rpx rgba(0,0,0,.06); }
+  50%      { box-shadow: 0 0 0 1rpx rgba(0,0,0,.03), 0 2rpx 8rpx rgba(0,0,0,.08), 0 0 12rpx 1rpx rgba(200,153,62,0.08); }
+}
+
+/* 贴纸收集完成庆祝 — 全册微震 + 金色边框闪烁 */
+@keyframes collectionPulse {
+  0%, 100% { border-color: var(--dot); }
+  25%  { border-color: var(--gold); }
+  50%  { border-color: var(--amber); box-shadow: 0 0 20rpx 4rpx rgba(200,153,62,0.12); }
+  75%  { border-color: var(--gold); }
+}
+
 /* 纸角折入 — 贺卡翻开效果（用于庆祝弹窗） */
 @keyframes cornerFold {
   0%   { transform: scale(0.85) rotate(-3deg); opacity: 0; }
@@ -1421,6 +1461,8 @@ page {
 .font-large .journal-card,
 .font-large .sticker-item.new,
 .font-large .sticker-pop-emoji,
+.font-large .sticker-cell.just-earned,
+.font-large .sticker-breathe,
 .font-large .btn-breathe,
 .font-large .skeleton-shimmer,
 .font-large .confetti-piece,

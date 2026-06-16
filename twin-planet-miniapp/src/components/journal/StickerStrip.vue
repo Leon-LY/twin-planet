@@ -111,7 +111,7 @@ function shapeClass(i: number): string {
 .sticker-item.shape-f { transform: rotate(0.5deg); }
 
 .sticker-item.new {
-  animation: stickerPeel .6s var(--ease-peel) both;
+  animation: stickerUnlock .7s var(--ease-stamp) both;
 }
 
 /* 贴纸光泽 — 顶部高光模拟塑料膜 */

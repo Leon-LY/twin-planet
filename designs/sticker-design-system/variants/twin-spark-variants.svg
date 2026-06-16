@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 120">
+  <defs><style>
+    .label { font-family: -apple-system, sans-serif; font-size: 8px; fill: #9C8E7C; text-anchor: middle; }
+    .title { font-size: 10px; font-weight: bold; fill: #2D2318; }
+    .amber { fill: #E07B3E; } .gold { fill: #C8993E; } .paper { fill: #FEF9F0; }
+  </style></defs>
+
+  <!-- Variant A: Overlapping Stars (original direction) -->
+  <g transform="translate(20,20)">
+    <rect width="80" height="80" rx="8" fill="none" stroke="#E8DCC8" stroke-width="1"/>
+    <text x="40" y="10" class="label title">A: Overlapping Stars</text>
+    <g transform="translate(40,52)">
+      <path d="M0 -18 L4 -7 L16 -7 L7 0 L10 12 L0 5 L-10 12 L-7 0 L-16 -7 L-4 -7Z" class="amber" opacity="0.7"/>
+      <path d="M0 18 L4 7 L16 7 L7 0 L10 -12 L0 -5 L-10 -12 L-7 0 L-16 7 L-4 7Z" class="gold" opacity="0.85"/>
+      <circle cx="0" cy="0" r="3" class="paper"/>
+    </g>
+    <text x="40" y="92" class="label">双星交叠 · 琥珀+金色</text>
+  </g>
+
+  <!-- Variant B: Side-by-Side -->
+  <g transform="translate(120,20)">
+    <rect width="80" height="80" rx="8" fill="none" stroke="#E8DCC8" stroke-width="1"/>
+    <text x="40" y="10" class="label title">B: Side by Side</text>
+    <g transform="translate(40,52)">
+      <circle cx="-7" cy="0" r="7" fill="none" stroke="#E07B3E" stroke-width="2"/>
+      <circle cx="-7" cy="0" r="2.5" class="amber"/>
+      <circle cx="7" cy="0" r="7" fill="none" stroke="#C8993E" stroke-width="2"/>
+      <circle cx="7" cy="0" r="2.5" class="gold"/>
+      <path d="M-3 0 L3 0" stroke="#5C9A6E" stroke-width="1.5" stroke-linecap="round"/>
+    </g>
+    <text x="40" y="92" class="label">并排双球 · 绿线连接</text>
+  </g>
+
+  <!-- Variant C: Yin-Yang Orbit -->
+  <g transform="translate(220,20)">
+    <rect width="80" height="80" rx="8" fill="none" stroke="#E8DCC8" stroke-width="1"/>
+    <text x="40" y="10" class="label title">C: Twin Orbit</text>
+    <g transform="translate(40,52)">
+      <circle cx="0" cy="0" r="12" fill="none" stroke="#E8DCC8" stroke-width="1" stroke-dasharray="3 2"/>
+      <circle cx="-7" cy="-4" r="4.5" class="amber"/>
+      <circle cx="7" cy="4" r="4.5" class="gold"/>
+      <path d="M-7 -4 A10 10 0 0 1 7 4" fill="none" stroke="#9C8E7C" stroke-width="0.8" stroke-dasharray="2 2"/>
+    </g>
+    <text x="40" y="92" class="label">轨道环绕 · 虚线轨迹</text>
+  </g>
+
+  <!-- Variant D: Mirrored Hearts -->
+  <g transform="translate(320,20)">
+    <rect width="80" height="80" rx="8" fill="none" stroke="#E8DCC8" stroke-width="1"/>
+    <text x="40" y="10" class="label title">D: Twin Seeds</text>
+    <g transform="translate(40,52)">
+      <ellipse cx="-5" cy="0" rx="6" ry="7" fill="none" stroke="#E07B3E" stroke-width="2" transform="rotate(-15)"/>
+      <ellipse cx="5" cy="0" rx="6" ry="7" fill="none" stroke="#C8993E" stroke-width="2" transform="rotate(15)"/>
+      <circle cx="-5" cy="-2" r="1.5" class="amber"/>
+      <circle cx="5" cy="-2" r="1.5" class="gold"/>
+    </g>
+    <text x="40" y="92" class="label">种子/豆荚 · 并蒂而生</text>
+  </g>
+</svg>

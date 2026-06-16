@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>双宝记 · 贴纸方案探索</title>
+<style>
+:root {
+  --paper: #FEF9F0; --cream: #FFF5E8;
+  --amber: #E07B3E; --gold: #C8993E; --rose: #D48068;
+  --mint: #5C9A6E; --ink: #2D2318; --ink-md: #9C8E7C; --dot: #E8DCC8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, "PingFang SC", sans-serif;
+  background: var(--paper); color: var(--ink); line-height: 1.5;
+  padding: 32px 20px;
+}
+.page { max-width: 800px; margin:0 auto; }
+h1 { font-size: 26px; font-weight: 600; margin-bottom: 4px; }
+h2 { font-size: 20px; margin: 36px 0 16px; padding-bottom: 8px; border-bottom: 2px dashed var(--dot); }
+h3 { font-size: 16px; margin: 0 0 12px; color: var(--ink); }
+.subtitle { color: var(--ink-md); font-size: 14px; margin-bottom: 24px; }
+
+.variant-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.variant-card {
+  background: var(--cream); border: 2px solid var(--dot);
+  border-radius: 16px; padding: 16px; text-align: center;
+  cursor: pointer; transition: all 0.2s;
+}
+.variant-card:hover { border-color: var(--amber); box-shadow: 0 3px 16px rgba(0,0,0,0.08); }
+.variant-card.selected { border-color: var(--mint); background: linear-gradient(160deg, rgba(92,154,110,0.06), var(--cream)); }
+.variant-card svg { width: 72px; height: 72px; display: block; margin: 0 auto 8px; }
+.variant-name { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+.variant-desc { font-size: 10px; color: var(--ink-md); }
+.variant-rationale { font-size: 10px; color: var(--ink-md); font-style: italic; margin-top: 4px; }
+
+.design-rationale {
+  background: var(--cream); border-radius: 12px;
+  padding: 16px; margin: 12px 0; font-size: 13px; color: var(--ink-md);
+  border-left: 3px solid var(--amber);
+}
+.footer { margin-top: 48px; padding-top: 16px; border-top: 1.5px dashed var(--dot); font-size: 12px; color: var(--ink-md); }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+.badge-amber { background: rgba(224,123,62,0.12); color: var(--amber); }
+.badge-gold { background: rgba(200,153,62,0.12); color: var(--gold); }
+.badge-mint { background: rgba(92,154,110,0.12); color: var(--mint); }
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>双宝记 · 贴纸方案探索</h1>
+<p class="subtitle">5 个关键贴纸 × 4 个设计方向 = 20 个方案 · 点击选择你的偏好</p>
+
+<!-- ═══ SUNRISE ═══ -->
+<h2>1. 早安守护 <span class="badge badge-amber">Amber</span></h2>
+<p style="font-size:13px;color:var(--ink-md);margin-bottom:12px;">每天第一笔记录 · 最常被看到的贴纸 · 需要温暖、简约、辨识度高</p>
+
+<div class="variant-grid" id="sunrise-grid">
+  <div class="variant-card" onclick="select(this,'sunrise','A')" data-variant="A">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="#E07B3E"/><rect x="11" y="1" width="2" height="5" rx="1" fill="#E07B3E"/><rect x="11" y="18" width="2" height="5" rx="1" fill="#E07B3E" opacity="0.5"/><rect x="1" y="11" width="5" height="2" rx="1" fill="#E07B3E"/><rect x="18" y="11" width="5" height="2" rx="1" fill="#E07B3E" opacity="0.5"/></svg>
+    <div class="variant-name">A: Radial Sunburst</div>
+    <div class="variant-desc">放射阳光 · 长短交替</div>
+    <div class="variant-rationale">经典太阳意象，8条射线营造温暖晨光感。在小尺寸下，长射线保证辨识度。</div>
+  </div>
+  <div class="variant-card" onclick="select(this,'sunrise','B')" data-variant="B">
+    <svg viewBox="0 0 24 24"><path d="M4 14 A8 8 0 0 1 20 14Z" fill="#E07B3E"/><rect x="11" y="6" width="2" height="5" rx="1" fill="#E07B3E"/><rect x="6" y="9" width="2" height="4" rx="1" fill="#E07B3E" opacity="0.6" transform="rotate(-15,7,11)"/><rect x="16" y="9" width="2" height="4" rx="1" fill="#E07B3E" opacity="0.6" transform="rotate(15,17,11)"/></svg>
+    <div class="variant-name">B: Rising Sun</div>
+    <div class="variant-desc">半日初升 · 地平线</div>
+    <div class="variant-rationale">更简约的半圆设计，强调"晨"的时间感。3束光芒象征"早中晚"的守护。</div>
+  </div>
+  <div class="variant-card" onclick="select(this,'sunrise','C')" data-variant="C">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="#E07B3E" stroke-width="2.5"/><circle cx="12" cy="12" r="3.5" fill="#E07B3E"/><circle cx="9" cy="8" r="1" fill="#FEF9F0"/></svg>
+    <div class="variant-name">C: Minimal Ring</div>
+    <div class="variant-desc">极简圆环 · 日食</div>
+    <div class="variant-rationale">最纯净的几何形式。外环+内圆+高光点，像一枚日食戒指，低调优雅。</div>
+  </div>
+  <div class="variant-card" onclick="select(this,'sunrise','D')" data-variant="D">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5" fill="#E07B3E"/><ellipse cx="12" cy="4" rx="2.5" ry="4" fill="#E07B3E" opacity="0.7"/><ellipse cx="19" cy="9" rx="2.5" ry="4" fill="#E07B3E" opacity="0.4" transform="rotate(72,12,12)"/><ellipse cx="5" cy="9" rx="2.5" ry="4" fill="#E07B3E" opacity="0.4" transform="rotate(-72,12,12)"/><ellipse cx="19" cy="16" rx="2.5" ry="4" fill="#E07B3E" opacity="0.3" transform="rotate(144,12,12)"/><ellipse cx="5" cy="16" rx="2.5" ry="4" fill="#E07B3E" opacity="0.3" transform="rotate(-144,12,12)"/></svg>
+    <div class="variant-name">D: Organic Blossom</div>
+    <div class="variant-desc">花瓣绽放 · 手绘</div>
+    <div class="variant-rationale">5片有机花瓣围绕花心，像一朵晨花绽放。更温暖、更有人情味，适合妈妈用户。</div>
+  </div>
+</div>
+<div class="design-rationale" id="sunrise-rationale"><strong>设计思考：</strong> "早安守护"是用户每天看到的第一张贴纸。它需要传递"新的一天开始了"的仪式感。A方案（放射阳光）最经典直接；B方案（半日初升）更含蓄优雅；C方案（极简圆环）最现代；D方案（花瓣绽放）最温暖。建议在妈妈模式下使用D，爸爸模式下使用A或C。</div>
+
+<!-- ═══ TWIN-SPARK ═══ -->
+<h2>2. 双宝活跃 <span class="badge badge-amber">Amber</span><span class="badge badge-gold" style="margin-left:4px">Gold</span></h2>
+<p style="font-size:13px;color:var(--ink-md);margin-bottom:12px;">双胞胎核心贴纸 · 两个宝宝同时活跃 · 必须表达"双"的概念</p>
+
+<div class="variant-grid" id="twin-grid">
+  <div class="variant-card" onclick="select(this,'twin','A')" data-variant="A">
+    <svg viewBox="0 0 24 24"><path d="M12 3 L15 10 L22 10 L16.5 14.5 L18.5 22 L12 17 L5.5 22 L7.5 14.5 L2 10 L9 10Z" fill="#E07B3E" opacity="0.7"/><path d="M12 21 L15 14 L22 14 L16.5 9.5 L18.5 2 L12 7 L5.5 2 L7.5 9.5 L2 14 L9 14Z" fill="#C8993E" opacity="0.85"/><circle cx="12" cy="12" r="2" fill="#FEF9F0"/></svg>
+    <div class="variant-name">A: Overlapping Stars</div>
+    <div class="variant-desc">双星交叠 · 双色</div>
+    <div class="variant-rationale">两颗星一正一反交叠，中心融合点。琥珀+金色分别代表大宝和二宝，强烈表达"双胞胎"。</div>
+  </div>
+  <div class="variant-card" onclick="select(this,'twin','B')" data-variant="B">
+    <svg viewBox="0 0 24 24"><circle cx="7" cy="12" r="6" fill="none" stroke="#E07B3E" stroke-width="2"/><circle cx="7" cy="12" r="2" fill="#E07B3E"/><circle cx="17" cy="12" r="6" fill="none" stroke="#C8993E" stroke-width="2"/><circle cx="17" cy="12" r="2" fill="#C8993E"/><line x1="12" y1="12" x2="12" y2="12" stroke="#5C9A6E" stroke-width="2" stroke-linecap="round"/></svg>
+    <div class="variant-name">B: Side by Side</div>
+    <div class="variant-desc">并排双环 · 平等</div>
+    <div class="variant-rationale">两颗同等大小的圆并排，强调"同等重要"的品牌理念。中间绿线=连接=同步成长。</div>
+  </div>
+  <div class="variant-card" onclick="select(this,'twin','C')" data-variant="C">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="#E8DCC8" stroke-width="0.8" stroke-dasharray="2 2"/><circle cx="5" cy="8" r="4" fill="#E07B3E" opacity="0.8"/><circle cx="19" cy="16" r="4" fill="#C8993E" opacity="0.8"/><path d="M5 8 Q12 10 19 16" fill="none" stroke="#9C8E7C" stroke-width="0.8" stroke-dasharray="1.5 2"/></svg>
+    <div class="variant-name">C: Twin Orbit</div>
+    <div class="variant-desc">轨道环绕 · 流动</div>
+    <div class="variant-rationale">两颗圆在椭圆轨道上运行，虚线轨迹暗示"同步"。更抽象、更有宇宙感。</div>
+  </div>
+  <div class="variant-card" onclick="select(this,'twin','D')" data-variant="D">
+    <svg viewBox="0 0 24 24"><ellipse cx="6" cy="12" rx="5" ry="6" fill="none" stroke="#E07B3E" stroke-width="2" transform="rotate(-12,6,12)"/><circle cx="6" cy="9" r="1.2" fill="#E07B3E"/><ellipse cx="18" cy="12" rx="5" ry="6" fill="none" stroke="#C8993E" stroke-width="2" transform="rotate(12,18,12)"/><circle cx="18" cy="9" r="1.2" fill="#C8993E"/></svg>
+    <div class="variant-name">D: Twin Seeds</div>
+    <div class="variant-desc">并蒂种子 · 豆荚</div>
+    <div class="variant-rationale">灵感来自"并蒂而生"的slogan。两颗种子/豆荚微微分开又彼此靠近。最有机、最有人文感。</div>
+  </div>
+</div>
+
+<!-- ═══ HUNDRED ═══ -->
+<h2>3. 百次守护 <span class="badge badge-amber">Amber</span> <span class="badge badge-gold" style="margin-left:4px">Gold</span></h2>
+<p style="font-size:13px;color:var(--ink-md);margin-bottom:12px;">最高荣誉 · 累计100次记录 · 需要"成就"和"仪式"感</p>
+
+<div class="variant-grid" id="hundred-grid">
+  <div class="variant-card" onclick="select(this,'hundred','A')">
+    <svg viewBox="0 0 24 24"><path d="M12 2 L20 12 L12 22 L4 12Z M12 7 L16 12 L12 17 L8 12Z" fill="#E07B3E" fill-rule="evenodd"/><path d="M12 9 L13.2 11.5 L16 11.5 L14 13 L15 15.5 L12 14 L9 15.5 L10 13 L8 11.5 L10.8 11.5Z" fill="#FEF9F0"/></svg>
+    <div class="variant-name">A: Diamond Shield</div>
+    <div class="variant-desc">菱形盾 · 皇冠星</div>
+    <div class="variant-rationale">盾形传达"守护"概念，内嵌星形象征荣誉。几何菱形在小尺寸下轮廓清晰。</div>
+  </div>
+  <div class="variant-card" onclick="select(this,'hundred','B')">
+    <svg viewBox="0 0 24 24"><path d="M6 18 L6 4 L9 1 L12 3 L15 1 L18 4 L18 18Z" fill="#C8993E" opacity="0.9"/><circle cx="9" cy="1" r="1.5" fill="#E07B3E"/><circle cx="12" cy="3" r="1.5" fill="#E07B3E"/><circle cx="15" cy="1" r="1.5" fill="#E07B3E"/><line x1="12" y1="6" x2="12" y2="14" stroke="#FEF9F0" stroke-width="1.2"/></svg>
+    <div class="variant-name">B: Triple Crown</div>
+    <div class="variant-desc">三冠王冠 · 金色</div>
+    <div class="variant-rationale">皇冠是三峰设计，三个顶点各有一颗宝石。金色代表最高荣誉。"王冠"意象直接有力。</div>
+  </div>
+  <div class="variant-card" onclick="select(this,'hundred','C')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="none" stroke="#E07B3E" stroke-width="1.5"/><circle cx="12" cy="12" r="8" fill="none" stroke="#C8993E" stroke-width="1.5" stroke-dasharray="3 2"/><circle cx="12" cy="12" r="5" fill="none" stroke="#E07B3E" stroke-width="1.8"/><circle cx="12" cy="12" r="2" fill="#E07B3E"/></svg>
+    <div class="variant-name">C: Concentric Honor</div>
+    <div class="variant-desc">三层同心环</div>
+    <div class="variant-rationale">三层圆环代表10→50→100的进阶。极简的几何语言，和现有icon-ten/icon-fifty形成系列。</div>
+  </div>
+  <div class="variant-card" onclick="select(this,'hundred','D')">
+    <svg viewBox="0 0 24 24"><path d="M4 14 Q2 6 12 2 Q22 6 20 14 Q14 18 12 14 Q10 18 4 14Z" fill="none" stroke="#5C9A6E" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="#C8993E"/><text x="12" y="14" text-anchor="middle" font-size="5" font-weight="bold" fill="#FEF9F0">100</text></svg>
+    <div class="variant-name">D: Laurel Wreath</div>
+    <div class="variant-desc">月桂花环 · 数字</div>
+    <div class="variant-rationale">月桂花环是"胜利/成就"的经典象征。中心直接显示"100"，直观传达成就量级。古典雅致。</div>
+  </div>
+</div>
+
+<!-- ═══ RAINBOW ═══ -->
+<h2>4. 幸运彩虹 <span class="badge badge-mint">Mint</span> <span class="badge badge-gold" style="margin-left:4px">Gold</span></h2>
+<p style="font-size:13px;color:var(--ink-md);margin-bottom:12px;">隐藏惊喜 · 5%概率触发 · 需要"幸运"和"稀有"的感觉</p>
+
+<div class="variant-grid" id="rainbow-grid">
+  <div class="variant-card" onclick="select(this,'rainbow','A')">
+    <svg viewBox="0 0 24 24"><path d="M3 18 Q3 6 12 3 Q21 6 21 18" fill="none" stroke="#E07B3E" stroke-width="2" stroke-linecap="round"/><path d="M5 18 Q5 8 12 5.5 Q19 8 19 18" fill="none" stroke="#C8993E" stroke-width="2" stroke-linecap="round"/><path d="M7 18 Q7 10 12 8 Q17 10 17 18" fill="none" stroke="#5C9A6E" stroke-width="2" stroke-linecap="round"/><circle cx="3" cy="18" r="1.5" fill="#E07B3E"/></svg>
+    <div class="variant-name">A: Rainbow Arc</div>
+    <div class="variant-desc">三色弧线 · 星光</div>
+    <div class="variant-rationale">三色弧线简洁表达彩虹，左端点星暗示"彩虹尽头有惊喜"。经典清晰。</div>
+  </div>
+  <div class="variant-card" onclick="select(this,'rainbow','B')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" fill="#C8993E" opacity="0.1"/><path d="M12 5 Q15.5 8 12 12 Q8.5 8 12 5Z" fill="#5C9A6E"/><path d="M19 7 Q15.5 10 12 12 Q15.5 14 19 17Z" fill="#5C9A6E"/><path d="M5 7 Q8.5 10 12 12 Q8.5 14 5 17Z" fill="#5C9A6E"/><path d="M12 12 Q15.5 15 12 19 Q8.5 15 12 12Z" fill="#5C9A6E"/><circle cx="12" cy="12" r="1.5" fill="#FEF9F0"/></svg>
+    <div class="variant-name">B: Lucky Clover</div>
+    <div class="variant-desc">四叶幸运草</div>
+    <div class="variant-rationale">四叶草是"幸运"的通用符号。绿色+金色光环，稀有珍贵。年轻妈妈的最爱。</div>
+  </div>
+  <div class="variant-card" onclick="select(this,'rainbow','C')">
+    <svg viewBox="0 0 24 24"><path d="M12 3 L13 12 L15 13 L7 14 L5 15 L12 17 L14 17 L11 20 L10 18 Z" fill="none" stroke="#C8993E" stroke-width="1.5" stroke-linejoin="round"/><circle cx="8" cy="8" r="2" fill="#E07B3E" opacity="0.7"/><circle cx="16" cy="10" r="1.8" fill="#C8993E" opacity="0.7"/><circle cx="14" cy="17" r="1.5" fill="#5C9A6E" opacity="0.7"/></svg>
+    <div class="variant-name">C: Sparkle Burst</div>
+    <div class="variant-desc">星光迸发 · 闪烁</div>
+    <div class="variant-rationale">不规则星光形状+彩色散点，传达"惊喜迸发"的感觉。不规则的形状更灵动。</div>
+  </div>
+  <div class="variant-card" onclick="select(this,'rainbow','D')">
+    <svg viewBox="0 0 24 24"><circle cx="6" cy="8" r="3.5" fill="#E07B3E" opacity="0.75"/><circle cx="18" cy="7" r="3" fill="#C8993E" opacity="0.75"/><circle cx="16" cy="16" r="3" fill="#D48068" opacity="0.75"/><circle cx="8" cy="16" r="2.5" fill="#5C9A6E" opacity="0.75"/><circle cx="12" cy="11" r="1.8" fill="#FEF9F0"/></svg>
+    <div class="variant-name">D: Rainbow Drops</div>
+    <div class="variant-desc">彩色水滴 · 散落</div>
+    <div class="variant-rationale">四色圆点散落布置，像彩虹水滴。最活泼的设计，适合"隐藏惊喜"的定位。</div>
+  </div>
+</div>
+
+<!-- ═══ SCHOOL ═══ -->
+<h2>5. 入园纪念 <span class="badge badge-gold">Gold</span> <span class="badge badge-mint" style="margin-left:4px">Mint</span></h2>
+<p style="font-size:13px;color:var(--ink-md);margin-bottom:12px;">情感价值最高 · 第一次入园 · 需要"成长"和"纪念"的情感共鸣</p>
+
+<div class="variant-grid" id="school-grid">
+  <div class="variant-card" onclick="select(this,'school','A')">
+    <svg viewBox="0 0 24 24"><path d="M7 7 L17 7 Q18.5 7 18.5 8.5 L18.5 19 Q18.5 20 17 20 L7 20 Q5.5 20 5.5 19 L5.5 8.5 Q5.5 7 7 7Z" fill="#C8993E"/><path d="M7 7 Q7 9 12 9 Q17 9 17 7Z" fill="#E07B3E" opacity="0.4"/><path d="M10 7 L10 5 Q10 3.5 11 3.5 L11 3.5 Q12 3.5 12 5 L12 7" fill="none" stroke="#C8993E" stroke-width="1.3" stroke-linecap="round"/><rect x="9" y="12" width="6" height="4" rx="1" fill="#FEF9F0" opacity="0.5"/><circle cx="12" cy="9" r="0.8" fill="#5C9A6E"/></svg>
+    <div class="variant-name">A: Backpack</div>
+    <div class="variant-desc">小书包 · 星星</div>
+    <div class="variant-rationale">书包是"上学"最直接的符号。双肩带、前口袋、小星星装饰。温暖可爱但不幼稚。</div>
+  </div>
+  <div class="variant-card" onclick="select(this,'school','B')">
+    <svg viewBox="0 0 24 24"><path d="M5 16 L5 6 L12 2 L19 6 L19 16Z" fill="#C8993E" opacity="0.85"/><rect x="9" y="10" width="3" height="4" rx="0.5" fill="#FEF9F0"/><rect x="13" y="10" width="2" height="3" rx="0.5" fill="#FEF9F0" opacity="0.6"/><rect x="6" y="10" width="2" height="3" rx="0.5" fill="#FEF9F0" opacity="0.6"/><circle cx="12" cy="4" r="1.2" fill="#5C9A6E"/></svg>
+    <div class="variant-name">B: School House</div>
+    <div class="variant-desc">小校舍 · 屋顶</div>
+    <div class="variant-rationale">三角屋顶+矩形校舍，是最经典的"学校"符号。三扇窗户像三个孩子。屋顶小星=成长。</div>
+  </div>
+  <div class="variant-card" onclick="select(this,'school','C')">
+    <svg viewBox="0 0 24 24"><path d="M12 3 L4 7 Q3 9 4 14 L4 20 L8 20 L8 16 Q8 14 12 14 Q16 14 16 16 L16 20 L20 20 L20 14 Q21 9 20 7Z" fill="#C8993E" opacity="0.85"/><path d="M12 3 L12 11" stroke="#2D2318" stroke-width="0.7"/><circle cx="12" cy="7" r="1.2" fill="#5C9A6E"/></svg>
+    <div class="variant-name">C: Open Book</div>
+    <div class="variant-desc">打开的书本</div>
+    <div class="variant-rationale">打开的书象征"学习/成长的新篇章"。左右两页像双胞胎翻开人生新一页。最人文。</div>
+  </div>
+  <div class="variant-card" onclick="select(this,'school','D')">
+    <svg viewBox="0 0 24 24"><path d="M5 12 L12 6 L19 12Z" fill="#C8993E"/><rect x="9" y="12" width="6" height="1.2" rx="0.5" fill="#E07B3E"/><path d="M12 6 L12 2 L14 2 L13 6Z" fill="#E07B3E"/><circle cx="14" cy="2" r="1" fill="#5C9A6E"/><path d="M17 12 L18.5 14.5 L20 13" fill="none" stroke="#C8993E" stroke-width="1" stroke-linecap="round"/></svg>
+    <div class="variant-name">D: Graduation Cap</div>
+    <div class="variant-desc">学位帽 · 穗</div>
+    <div class="variant-rationale">学位帽+流苏是"毕业/新阶段"的象征。入园=人生第一次"毕业"。仪式感最强。</div>
+  </div>
+</div>
+
+<div class="footer">
+  <strong>方法论：</strong> 每个贴纸的4个方案覆盖不同设计方向——几何简约 vs 有机温暖 vs 符号直接 vs 抽象诗性。<br>
+  这确保了不同角色（妈妈/爸爸/奶奶/育儿嫂）在不同场景下都能找到共鸣。<br>
+  <strong>下一步：</strong> 选定各贴纸最佳方案 → 可叠加使用（A用于默认/C用于暗色/D用于妈妈模式）→ SVG路径提取 → iconfont集成
+</div>
+
+</div>
+
+<script>
+function select(el, sticker, variant) {
+  const grid = document.getElementById(sticker + '-grid');
+  grid.querySelectorAll('.variant-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  // Update with click count feedback
+  el.style.transform = 'scale(0.95)';
+  setTimeout(() => el.style.transform = '', 150);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>双宝记 · 贴纸徽章展示</title>
+<style>
+:root {
+  --paper: #FEF9F0; --cream: #FFF5E8;
+  --amber: #E07B3E; --gold: #C8993E; --mint: #5C9A6E; --ink: #2D2318; --ink-md: #9C8E7C; --dot: #E8DCC8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, "PingFang SC", sans-serif;
+  background: var(--paper); color: var(--ink); line-height: 1.5;
+  padding: 40px 24px;
+}
+.page { max-width: 720px; margin: 0 auto; }
+h1 { font-size: 26px; font-weight: 600; margin-bottom: 4px; }
+h2 { font-size: 18px; font-weight: 600; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 2px dashed var(--dot); }
+.subtitle { color: var(--ink-md); font-size: 14px; margin-bottom: 28px; }
+
+.badge-row {
+  display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;
+}
+.badge-card {
+  background: var(--cream); border: 1.5px solid var(--dot);
+  border-radius: 14px; padding: 16px; width: 150px;
+  text-align: center; transition: all 0.2s;
+}
+.badge-card:hover { border-color: var(--amber); box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+.badge-large { margin-bottom: 8px; }
+.badge-large svg { width: 64px; height: 64px; display: block; margin: 0 auto; }
+.badge-small { margin: 8px 0; }
+.badge-small svg { width: 20px; height: 20px; display: inline-block; vertical-align: middle; }
+.badge-name { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+.badge-desc { font-size: 10px; color: var(--ink-md); }
+.badge-trigger { font-size: 10px; color: var(--ink-md); margin-top: 4px; background: var(--paper); border-radius: 4px; padding: 2px 6px; display: inline-block; }
+
+.color-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin: 0 2px; vertical-align: middle; }
+.swatch-amber { background: #E07B3E; }
+.swatch-gold { background: #C8993E; }
+.swatch-mint { background: #5C9A6E; }
+
+.footer-note { margin-top: 40px; padding-top: 16px; border-top: 1.5px dashed var(--dot); font-size: 12px; color: var(--ink-md); }
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>双宝记 · 贴纸徽章展示</h1>
+<p class="subtitle">13 个原创几何徽章 — 手帳墨水笔触 · 24×24 网格 · 40-96rpx 清晰可辨</p>
+
+<h2>日常守护 (record) — 琥珀色系 <span class="color-swatch swatch-amber"></span></h2>
+<div class="badge-row">
+  <div class="badge-card">
+    <div class="badge-large" style="color:#E07B3E"><object data="badges/badge-sunrise.svg" type="image/svg+xml" width="64" height="64"></object></div>
+    <div class="badge-name">早安守护</div>
+    <div class="badge-desc">太阳 + 放射光芒</div>
+    <div class="badge-trigger">今天第一笔记录</div>
+  </div>
+  <div class="badge-card">
+    <div class="badge-large" style="color:#E07B3E"><object data="badges/badge-watchful.svg" type="image/svg+xml" width="64" height="64"></object></div>
+    <div class="badge-name">细心守护</div>
+    <div class="badge-desc">眼睛 + 瞳孔聚焦</div>
+    <div class="badge-trigger">今天记录5次</div>
+  </div>
+</div>
+
+<h2>连续记录 (streak) — 薄荷色系 <span class="color-swatch swatch-mint"></span></h2>
+<div class="badge-row">
+  <div class="badge-card">
+    <div class="badge-large" style="color:#5C9A6E"><object data="badges/badge-three-day.svg" type="image/svg+xml" width="64" height="64"></object></div>
+    <div class="badge-name">三日连续</div>
+    <div class="badge-desc">三条递增方块</div>
+    <div class="badge-trigger">连续记录3天</div>
+  </div>
+</div>
+
+<h2>双宝同步 (sync)</h2>
+<div class="badge-row">
+  <div class="badge-card">
+    <div class="badge-large"><object data="badges/badge-twin-spark.svg" type="image/svg+xml" width="64" height="64"></object></div>
+    <div class="badge-name">双宝活跃</div>
+    <div class="badge-desc">两颗交叠的星</div>
+    <div class="badge-trigger">两个宝宝都在活跃</div>
+  </div>
+</div>
+
+<h2>里程碑 (milestone)</h2>
+<div class="badge-row">
+  <div class="badge-card">
+    <div class="badge-large" style="color:#5C9A6E"><object data="badges/badge-observe.svg" type="image/svg+xml" width="64" height="64"></object></div>
+    <div class="badge-name">细心观察者</div>
+    <div class="badge-desc">放大镜</div>
+    <div class="badge-trigger">记录10次萌芽</div>
+  </div>
+  <div class="badge-card">
+    <div class="badge-large" style="color:#E07B3E"><object data="badges/badge-milestone-5.svg" type="image/svg+xml" width="64" height="64"></object></div>
+    <div class="badge-name">五个里程碑</div>
+    <div class="badge-desc">彩旗 + 5个节点</div>
+    <div class="badge-trigger">达成5个里程碑</div>
+  </div>
+</div>
+
+<h2>特殊成就 (special) — 金色系 <span class="color-swatch swatch-gold"></span></h2>
+<div class="badge-row">
+  <div class="badge-card">
+    <div class="badge-large" style="color:#C8993E"><object data="badges/badge-ten.svg" type="image/svg+xml" width="64" height="64"></object></div>
+    <div class="badge-name">十次守护</div>
+    <div class="badge-desc">同心圆靶心</div>
+    <div class="badge-trigger">累计10次记录</div>
+  </div>
+  <div class="badge-card">
+    <div class="badge-large" style="color:#C8993E"><object data="badges/badge-fifty.svg" type="image/svg+xml" width="64" height="64"></object></div>
+    <div class="badge-name">五十次守护</div>
+    <div class="badge-desc">盾形 + 内嵌星</div>
+    <div class="badge-trigger">累计50次记录</div>
+  </div>
+  <div class="badge-card">
+    <div class="badge-large" style="color:#E07B3E"><object data="badges/badge-hundred.svg" type="image/svg+xml" width="64" height="64"></object></div>
+    <div class="badge-name">百次守护</div>
+    <div class="badge-desc">菱形盾 + 皇冠星</div>
+    <div class="badge-trigger">累计100次记录</div>
+  </div>
+  <div class="badge-card">
+    <div class="badge-large" style="color:#C8993E"><object data="badges/badge-school.svg" type="image/svg+xml" width="64" height="64"></object></div>
+    <div class="badge-name">入园纪念</div>
+    <div class="badge-desc">小书包</div>
+    <div class="badge-trigger">完成入园评估</div>
+  </div>
+  <div class="badge-card">
+    <div class="badge-large" style="color:#E07B3E"><object data="badges/badge-inviter.svg" type="image/svg+xml" width="64" height="64"></object></div>
+    <div class="badge-name">召集者</div>
+    <div class="badge-desc">信封 + 发送箭头</div>
+    <div class="badge-trigger">邀请家人加入</div>
+  </div>
+  <div class="badge-card">
+    <div class="badge-large" style="color:#C8993E"><object data="badges/badge-welcome.svg" type="image/svg+xml" width="64" height="64"></object></div>
+    <div class="badge-name">欢迎加入</div>
+    <div class="badge-desc">礼物盒 + 蝴蝶结</div>
+    <div class="badge-trigger">邀请被接受</div>
+  </div>
+  <div class="badge-card">
+    <div class="badge-large"><object data="badges/badge-rainbow.svg" type="image/svg+xml" width="64" height="64"></object></div>
+    <div class="badge-name">幸运彩虹</div>
+    <div class="badge-desc">彩虹弧线 + 幸运草</div>
+    <div class="badge-trigger">隐藏惊喜 (5%)</div>
+  </div>
+</div>
+
+<h2>小尺寸测试 (20px ≈ 40rpx)</h2>
+<p style="color:var(--ink-md);font-size:13px;margin-bottom:12px;">验证在最小渲染尺寸下的辨识度</p>
+<div class="badge-row">
+  <div class="badge-card" style="width:auto;padding:12px;">
+    <div class="badge-small" style="color:#E07B3E"><object data="badges/badge-sunrise.svg" type="image/svg+xml" width="20" height="20"></object></div>
+    <div class="badge-name" style="font-size:10px;">sunrise</div>
+  </div>
+  <div class="badge-card" style="width:auto;padding:12px;">
+    <div class="badge-small" style="color:#E07B3E"><object data="badges/badge-watchful.svg" type="image/svg+xml" width="20" height="20"></object></div>
+    <div class="badge-name" style="font-size:10px;">watchful</div>
+  </div>
+  <div class="badge-card" style="width:auto;padding:12px;">
+    <div class="badge-small" style="color:#5C9A6E"><object data="badges/badge-three-day.svg" type="image/svg+xml" width="20" height="20"></object></div>
+    <div class="badge-name" style="font-size:10px;">three-day</div>
+  </div>
+  <div class="badge-card" style="width:auto;padding:12px;">
+    <div class="badge-small"><object data="badges/badge-twin-spark.svg" type="image/svg+xml" width="20" height="20"></object></div>
+    <div class="badge-name" style="font-size:10px;">twin-spark</div>
+  </div>
+  <div class="badge-card" style="width:auto;padding:12px;">
+    <div class="badge-small" style="color:#C8993E"><object data="badges/badge-ten.svg" type="image/svg+xml" width="20" height="20"></object></div>
+    <div class="badge-name" style="font-size:10px;">ten</div>
+  </div>
+  <div class="badge-card" style="width:auto;padding:12px;">
+    <div class="badge-small" style="color:#C8993E"><object data="badges/badge-fifty.svg" type="image/svg+xml" width="20" height="20"></object></div>
+    <div class="badge-name" style="font-size:10px;">fifty</div>
+  </div>
+  <div class="badge-card" style="width:auto;padding:12px;">
+    <div class="badge-small" style="color:#E07B3E"><object data="badges/badge-hundred.svg" type="image/svg+xml" width="20" height="20"></object></div>
+    <div class="badge-name" style="font-size:10px;">hundred</div>
+  </div>
+  <div class="badge-card" style="width:auto;padding:12px;">
+    <div class="badge-small" style="color:#5C9A6E"><object data="badges/badge-observe.svg" type="image/svg+xml" width="20" height="20"></object></div>
+    <div class="badge-name" style="font-size:10px;">observe</div>
+  </div>
+  <div class="badge-card" style="width:auto;padding:12px;">
+    <div class="badge-small"><object data="badges/badge-rainbow.svg" type="image/svg+xml" width="20" height="20"></object></div>
+    <div class="badge-name" style="font-size:10px;">rainbow</div>
+  </div>
+</div>
+
+<div class="footer-note">
+  <strong>下一步:</strong> logo-generator 多方案探索 → canvas-design 狐狸贴纸艺术 → Python 路径提取 → iconfont 集成<br>
+  所有 SVG 使用 <code>currentColor</code> 或内联品牌色，可直接嵌入 HTML。
+</div>
+
+</div>
+</body>
+</html>

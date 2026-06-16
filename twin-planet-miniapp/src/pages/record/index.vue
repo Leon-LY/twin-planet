@@ -439,7 +439,7 @@ const stopAll=()=>{const log=recordsStore.stopTimer();if(log)showUndo(log);reset
 <style scoped>
 .record-page{min-height:100vh;background:var(--paper);padding:36rpx 28rpx calc(80rpx + env(safe-area-inset-bottom));position:relative}
 .sticker-pop{position:fixed;top:16%;left:50%;transform:translate(-50%,-50%);z-index:99;pointer-events:none}
-.sticker-pop-emoji{font-size:96rpx;animation:stickerPeel .75s var(--ease-peel) forwards}
+.sticker-pop-emoji{font-size:96rpx;animation:stickerPopBounce .7s var(--ease-bounce) forwards}
 
 /* 空状态 */
 .empty-state{padding:160rpx 0;text-align:center;position:relative;z-index:1}

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-labelledby="rainbow-title">
+  <title id="rainbow-title">幸运彩虹 — 隐藏惊喜贴纸（5%概率）</title>
+  <desc>Three bold rainbow arcs with a lucky star. Multi-color inline SVG (not iconfont-compatible by design — this is a special surprise badge).</desc>
+  <!-- Simplified three bold arcs — no clover, no tiny details. Clear at 40rpx. -->
+  <path d="M3 19 Q3 7 12 4 Q21 7 21 19" fill="none" stroke="#E07B3E" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M5 19 Q5 9 12 6.5 Q19 9 19 19" fill="none" stroke="#C8993E" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M7 19 Q7 11 12 9 Q17 11 17 19" fill="none" stroke="#5C9A6E" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Lucky star at rainbow end — bold, visible at any size -->
+  <path d="M3 19 L3.5 17.5 L5 17.5 L3.5 16 L4 14.5 L3 16 L2 14.5 L2.5 16 L1 17.5 L2.5 17.5Z" fill="#C8993E"/>
+</svg>

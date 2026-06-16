@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 120">
+  <defs><style>
+    .label { font-family: -apple-system, sans-serif; font-size: 8px; fill: #9C8E7C; text-anchor: middle; }
+    .title { font-size: 10px; font-weight: bold; fill: #2D2318; }
+    .amber { fill:#E07B3E } .gold { fill:#C8993E } .mint { fill:#5C9A6E } .ink { fill:#2D2318 } .paper { fill:#FEF9F0 }
+  </style></defs>
+
+  <!-- Variant A: Backpack with star -->
+  <g transform="translate(20,20)">
+    <rect width="80" height="80" rx="8" fill="none" stroke="#E8DCC8" stroke-width="1"/>
+    <text x="40" y="10" class="label title">A: Backpack</text>
+    <g transform="translate(40,52)">
+      <path d="M-10 -4 L10 -4 Q12 -4 12 -2 L12 14 Q12 16 10 16 L-10 16 Q-12 16 -12 14 L-12 -2 Q-12 -4 -10 -4Z" class="gold"/>
+      <path d="M-10 -4 L-10 0 Q-10 2 0 2 Q10 2 10 0 L10 -4Z" class="amber" opacity="0.4"/>
+      <path d="M-6 -4 L-6 -7 Q-6 -9 -4 -9 L-4 -9 Q-2 -9 -2 -7 L-2 -4" fill="none" stroke="#C8993E" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M4 -4 L4 -6 Q4 -7 5 -7 L5 -7 Q6 -7 6 -6 L6 -4" fill="none" stroke="#C8993E" stroke-width="1.2" stroke-linecap="round"/>
+      <rect x="-4" y="6" width="8" height="4" rx="1" fill="#FEF9F0" opacity="0.5"/>
+      <circle cx="0" cy="-1" r="1" class="mint"/>
+    </g>
+    <text x="40" y="92" class="label">小书包 · 双带 · 星星</text>
+  </g>
+
+  <!-- Variant B: School Building -->
+  <g transform="translate(120,20)">
+    <rect width="80" height="80" rx="8" fill="none" stroke="#E8DCC8" stroke-width="1"/>
+    <text x="40" y="10" class="label title">B: School House</text>
+    <g transform="translate(40,52)">
+      <path d="M-12 12 L-12 -2 L0 -14 L12 -2 L12 12Z" class="gold" opacity="0.85"/>
+      <rect x="-4" y="2" width="4" height="5" rx="0.5" fill="#FEF9F0"/>
+      <rect x="2" y="2" width="3" height="3" rx="0.5" fill="#FEF9F0" opacity="0.6"/>
+      <rect x="-8" y="2" width="3" height="3" rx="0.5" fill="#FEF9F0" opacity="0.6"/>
+      <circle cx="0" cy="-12" r="1.5" class="mint"/>
+    </g>
+    <text x="40" y="92" class="label">小房子 · 校舍意象</text>
+  </g>
+
+  <!-- Variant C: Growing Book -->
+  <g transform="translate(220,20)">
+    <rect width="80" height="80" rx="8" fill="none" stroke="#E8DCC8" stroke-width="1"/>
+    <text x="40" y="10" class="label title">C: Open Book</text>
+    <g transform="translate(40,52)">
+      <path d="M0 -14 L-10 -10 Q-11 -6 -11 4 L-11 12 L0 8Z" class="amber" opacity="0.7"/>
+      <path d="M0 -14 L10 -10 Q11 -6 11 4 L11 12 L0 8Z" class="gold" opacity="0.85"/>
+      <path d="M0 -14 L0 9" stroke="#2D2318" stroke-width="0.8"/>
+      <circle cx="0" cy="-3" r="1.5" class="mint"/>
+    </g>
+    <text x="40" y="92" class="label">打开的书 · 知识萌芽</text>
+  </g>
+
+  <!-- Variant D: Cap & Diploma -->
+  <g transform="translate(320,20)">
+    <rect width="80" height="80" rx="8" fill="none" stroke="#E8DCC8" stroke-width="1"/>
+    <text x="40" y="10" class="label title">D: Graduation Cap</text>
+    <g transform="translate(40,52)">
+      <path d="M-14 2 L0 -6 L14 2Z" class="gold"/>
+      <rect x="-3" y="2" width="6" height="1.5" rx="0.5" class="amber"/>
+      <path d="M0 -6 L0 -12 L2 -12 L1 -6Z" class="amber"/>
+      <circle cx="2" cy="-12" r="1.2" class="mint"/>
+      <path d="M10 2 L12 6 L14 4" fill="none" stroke="#C8993E" stroke-width="1" stroke-linecap="round"/>
+    </g>
+    <text x="40" y="92" class="label">学位帽 · 毕业意象</text>
+  </g>
+</svg>
