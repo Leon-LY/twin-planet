@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>双宝记 · 手绘插画角色规范</title>
+<style>
+  :root {
+    --baby-a: #E07B3E; --baby-b: #D48068;
+    --bg: #FDFAF3; --surface: #FFF7EC; --elevated: #FFFFFF;
+    --ink: #2A2017; --ink-md: #948570; --border: #EADFCB;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font-family:'PingFang SC','Microsoft YaHei',sans-serif;padding:48px 32px;max-width:1200px;margin:0 auto;line-height:1.6}
+  h1{font-family:'Source Han Serif SC','Songti SC',serif;font-size:36px;font-weight:400;margin-bottom:4px}
+  .subtitle{color:var(--ink-md);font-size:14px;margin-bottom:48px}
+
+  .section{background:var(--elevated);border-radius:20px;padding:36px;margin-bottom:24px;box-shadow:0 4px 16rpx rgba(42,32,23,0.06)}
+  .section h2{font-size:20px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+  .section h2 .tag{font-size:11px;background:rgba(224,123,62,0.08);color:var(--baby-a);padding:2px 12px;border-radius:999px;font-weight:500}
+  .sec-desc{font-size:13px;color:var(--ink-md);margin-bottom:28px}
+
+  /* Character card with real illustration */
+  .char-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+  .char-card{background:var(--surface);border-radius:18px;overflow:hidden;border:1.5px solid var(--border)}
+  .char-card img{width:100%;height:auto;display:block;object-fit:cover;aspect-ratio:1/1}
+  .char-info{padding:20px}
+  .char-name{font-size:17px;font-weight:600}
+  .char-role{font-size:13px;color:var(--ink-md);margin-top:4px}
+  .char-spec{font-size:11px;color:#948570;margin-top:10px;line-height:1.7;font-family:'Inter','PingFang SC',monospace}
+  .char-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:600;margin-top:8px}
+  .badge-amber{background:rgba(224,123,62,0.1);color:#E07B3E}
+  .badge-rose{background:rgba(212,128,104,0.1);color:#D48068}
+
+  /* Logo showcase */
+  .logo-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px}
+  .logo-card{background:var(--surface);border-radius:18px;overflow:hidden;border:1.5px solid var(--border)}
+  .logo-card img{width:100%;height:auto;display:block;aspect-ratio:1/1;object-fit:contain;background:#FDFAF3}
+  .logo-info{padding:20px;text-align:center}
+  .logo-concept{font-size:15px;font-weight:600;font-family:'Source Han Serif SC',serif}
+  .logo-desc{font-size:12px;color:var(--ink-md);margin-top:4px}
+
+  /* Empty state */
+  .empty-row{display:flex;gap:24px;align-items:center;margin-top:16px}
+  .empty-card{flex:1;background:var(--surface);border-radius:16px;overflow:hidden;border:1.5px solid var(--border);text-align:center}
+  .empty-card img{width:100%;height:auto;max-height:280px;object-fit:contain}
+  .empty-label{padding:12px;font-size:12px;color:var(--ink-md)}
+
+  /* Spec table */
+  .spec-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:16px}
+  .spec-table th{text-align:left;padding:10px 14px;background:var(--surface);font-weight:600;color:var(--ink-md);font-size:12px;border-bottom:2px solid var(--border)}
+  .spec-table td{padding:12px 14px;border-bottom:1px solid var(--border)}
+  .spec-table .label{font-weight:600}
+  .spec-table .val{color:var(--ink-md);font-family:'Inter',monospace;font-size:12px}
+
+  .note-box{background:linear-gradient(135deg,#FFF7EC,#F4C9A8);border-radius:14px;padding:20px 24px;margin-top:24px;border-left:4px solid #E07B3E}
+  .note-box h4{font-size:14px;font-weight:600;margin-bottom:6px}
+  .note-box p{font-size:13px;color:#6B5A45;line-height:1.7}
+
+  .gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:16px}
+  .gallery-item{border-radius:12px;overflow:hidden;border:1.5px solid var(--border);text-align:center}
+  .gallery-item img{width:100%;aspect-ratio:1/1;object-fit:contain;background:#FDFAF3}
+  .gallery-item span{display:block;padding:8px;font-size:10px;color:var(--ink-md)}
+</style>
+</head>
+<body>
+
+<h1>双宝记 · 手绘插画规范</h1>
+<p class="subtitle">方向 C · 星图日记 — 真实水彩手绘风格 · 签字笔线条 + 水彩晕染 + 纸张肌理</p>
+
+<!-- 狐狸家族 -->
+<div class="section">
+  <h2>狐狸家族 <span class="tag">品牌主角 · AI 水彩手绘</span></h2>
+  <p class="sec-desc">由 AI 图像生成的水彩手绘插画。每只狐狸都有独特的手绘笔触：粗细变化的墨线轮廓、水彩晕染填充、不完美的有机形状。</p>
+
+  <div class="char-grid">
+    <!-- Amber Fox -->
+    <div class="char-card">
+      <img src="generated/fox-amber.png" alt="Amber 狐狸"/>
+      <div class="char-info">
+        <div class="char-name">Amber 狐 · 大宝守护</div>
+        <div class="char-role">温暖微笑 · 守护大宝的每一天</div>
+        <span class="char-badge badge-amber">#E07B3E 姜黄</span>
+        <div class="char-spec">
+          用途：大宝相关场景<br>
+          出场：首页卡片 / 空状态 / 引导<br>
+          表情：温暖微笑 + 圆眼<br>
+          风格：水彩晕染 + 墨线勾边
+        </div>
+      </div>
+    </div>
+
+    <!-- Sage Fox (原 Rose 狐，2026-06-18 去性别化替换) -->
+    <div class="char-card">
+      <img src="generated/fox-sage.png" alt="Sage 狐狸"/>
+      <div class="char-info">
+        <div class="char-name">Sage 狐 · 小宝守护</div>
+        <div class="char-role">沉稳陪伴 · 守护小宝的成长</div>
+        <span class="char-badge badge-rose" style="background:rgba(107,142,90,0.1);color:#6B8E5A">#6B8E5A 鼠尾草绿</span>
+        <div class="char-spec">
+          用途：小宝相关场景<br>
+          出场：首页卡片 / 空状态 / 引导<br>
+          表情：沉稳微笑 + 圆眼（去女性化描述）<br>
+          风格：水彩晕染 + 墨线勾边<br>
+          注：2026-06-18 从 Rose#D48068 替换为 Sage#6B8E5A 去性别化
+        </div>
+      </div>
+    </div>
+
+    <!-- Fox Duo (Sage version) -->
+    <div class="char-card" style="border-color:#6B8E5A;border-width:2px">
+      <img src="generated/fox-duo-heart-sage.png" alt="双狐心形"/>
+      <div class="char-info">
+        <div class="char-name">双狐心形 · Logo 角色</div>
+        <div class="char-role">背对而坐 · 中间形成爱心</div>
+        <span class="char-badge" style="background:rgba(107,142,90,0.1);color:#6B8E5A">Logo 核心形象 ★</span>
+        <div class="char-spec">
+          用途：Logo 主视觉 / 启动页 / 分享卡<br>
+          寓意：并蒂而生 · 同步成长<br>
+          特色：负空间心形 · Amber+Sage 双色对称<br>
+          可缩放：支持从 40px 到 1024px
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 星球宝宝 -->
+<div class="section">
+  <h2>星球宝宝头像 <span class="tag">宝宝头像系统</span></h2>
+  <p class="sec-desc">水彩星球 + 简洁面部表情。大宝=温暖微笑+轨道环，小宝=wink+小卫星。</p>
+
+  <div class="char-grid" style="max-width:700px;">
+    <div class="char-card">
+      <img src="generated/planet-baby-a.png" alt="大宝星球"/>
+      <div class="char-info">
+        <div class="char-name">大宝 · 星球宝宝 A</div>
+        <span class="char-badge badge-amber">#E07B3E</span>
+        <div class="char-spec">特征：轨道环 + 温暖微笑<br>用途：大宝默认头像</div>
+      </div>
+    </div>
+
+    <div class="char-card">
+      <img src="generated/planet-baby-b.png" alt="小宝星球"/>
+      <div class="char-info">
+        <div class="char-name">小宝 · 星球宝宝 B</div>
+        <span class="char-badge badge-rose">#D48068</span>
+        <div class="char-spec">特征：小卫星 + wink 微笑<br>用途：小宝默认头像</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Logo 概念 -->
+<div class="section">
+  <h2>手绘 Logo 概念 <span class="tag">签字笔 + 水彩</span></h2>
+  <p class="sec-desc">两个 Logo 方向均为真实手绘风格——签字笔线条有粗细变化，水彩填充有自然晕染。</p>
+
+  <div class="logo-grid">
+    <div class="logo-card">
+      <img src="generated/logo-sprout-handdrawn.png" alt="并蒂嫩芽 Logo"/>
+      <div class="logo-info">
+        <div class="logo-concept">概念 1 · 并蒂嫩芽 Twin Sprout</div>
+        <div class="logo-desc">签字笔茎干 + amber/rose 水彩叶 + 心形负空间</div>
+      </div>
+    </div>
+    <div class="logo-card">
+      <img src="generated/logo-orbit-kiss-handdrawn.png" alt="轨道之吻 Logo"/>
+      <div class="logo-info">
+        <div class="logo-concept">概念 3 · 轨道之吻 Orbit Kiss</div>
+        <div class="logo-desc">水彩弧线 + 两端星球点 · 最极简抽象</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 空状态插画 -->
+<div class="section">
+  <h2>空状态插画 <span class="tag">Empty States</span></h2>
+  <p class="sec-desc">用于无数据、首次使用引导等场景。狐狸坐在空白手帐本上，传递"开始记录吧"的邀请感。</p>
+
+  <div style="max-width:400px;margin-top:16px">
+    <div class="char-card">
+      <img src="generated/empty-state-journal-fox.png" alt="空状态·狐狸在笔记本上"/>
+      <div class="char-info">
+        <div class="char-name">空状态 · 开始记录吧</div>
+        <div class="char-spec">场景：无记录时首页 / 空贴纸册 / 空生长曲线<br>配文："还没有记录，来写第一笔吧 ✏️"<br>尺寸：390×390（小程序全屏）/ 缩小至 200×200（卡片内）<br>动画建议：狐狸轻微摇摆 3s 呼吸</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 绘画规范 -->
+<div class="section">
+  <h2>统一绘画规范 <span class="tag">Spec</span></h2>
+
+  <table class="spec-table">
+    <thead><tr><th>维度</th><th>规范</th></tr></thead>
+    <tbody>
+      <tr><td class="label">绘制方式</td><td class="val">AI 图像生成（混元生图）→ 水彩手绘风格 → PNG 输出</td></tr>
+      <tr><td class="label">画风关键词</td><td class="val">hand-painted watercolor, loose brushstrokes, ink outline, journal sketch, children's book illustration</td></tr>
+      <tr><td class="label">线条风格</td><td class="val">签字笔墨线，粗细变化（varying thickness），圆头端点，有机不完美</td></tr>
+      <tr><td class="label">填充风格</td><td class="val">透明水彩晕染（watercolor wash），可见纸张纹理（paper texture），非平涂</td></tr>
+      <tr><td class="label">色彩限制</td><td class="val">amber #E07B3E / rose #D48068 / mint #5C9A6E / gold #C8993E / ink #2A2017 / paper #FDFAF3</td></tr>
+      <tr><td class="label">输出格式</td><td class="val">PNG（透明背景或暖纸背景），1024×1024 源图，按需缩放</td></tr>
+      <tr><td class="label">WXSS 兼容</td><td class="val">PNG 图片直接使用，无需 filter/mask/clip-path</td></tr>
+      <tr><td class="label">表情规则</td><td class="val">大宝=温暖微笑（圆眼+弧形笑），小宝=wink（单闭眼+弧形笑），Gold=开心大笑+星光</td></tr>
+      <tr><td class="label">不对称原则</td><td class="val">手绘允许 ±5% 不对称，这是灵魂所在，不要追求完美居中</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note-box">
+    <h4>关于"AI 手绘"与"真人手绘"</h4>
+    <p>当前产出由 AI 图像生成模型（混元生图 3.0）以水彩手绘风格 prompt 绘制，效果已接近儿童绘本插画师水准。若需更高品质的真人手绘（如签约插画家定制稿），可在此 AI 产出的基础上进行二次精修，或作为给真人画师的风格参考稿（style reference）。</p>
+  </div>
+</div>
+
+<!-- 全部手绘资产索引 -->
+<div class="section">
+  <h2>全部手绘资产索引 <span class="tag">Assets v6</span></h2>
+  <p class="sec-desc" style="margin-bottom:16px">v6 品牌统一后：双狐为唯一 IP。Sage 狐替代 Rose 狐（去性别化）。星球宝宝头像已归档。</p>
+  <div class="gallery">
+    <div class="gallery-item"><img src="generated/fox-amber.png"/><span>fox-amber · 大宝</span></div>
+    <div class="gallery-item" style="border-color:#6B8E5A"><img src="generated/fox-sage.png"/><span style="color:#6B8E5A;font-weight:600">fox-sage · 小宝 ★新</span></div>
+    <div class="gallery-item" style="border-color:#6B8E5A"><img src="generated/fox-duo-heart-sage.png"/><span style="color:#6B8E5A;font-weight:600">fox-duo-heart-sage ★主Logo</span></div>
+    <div class="gallery-item"><img src="generated/fox-rose.png"/><span style="text-decoration:line-through">fox-rose · 已弃用</span></div>
+    <div class="gallery-item"><img src="generated/fox-duo-heart.png"/><span style="text-decoration:line-through">fox-duo-heart · 旧版</span></div>
+    <div class="gallery-item"><img src="generated/logo-sprout-handdrawn.png"/><span>logo-sprout · 辅助</span></div>
+    <div class="gallery-item"><img src="generated/empty-state-journal-fox.png"/><span>empty-journal</span></div>
+  </div>
+</div>
+
+</body>
+</html>

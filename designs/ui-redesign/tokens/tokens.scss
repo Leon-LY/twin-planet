@@ -1,0 +1,139 @@
+// =============================================================================
+// 双宝记 v6 设计令牌 — SCSS 变量
+// 方向 C · 星图日记 Stellar Journal
+// 生成自 tokens.json，用于 uni.scss 引入
+// =============================================================================
+
+// ---- 品牌色 ----
+$twin-baby-a: #E07B3E;
+$twin-baby-b: #D48068;
+
+// ---- 品牌色阶梯 ----
+$twin-baby-a-lt: #F4C9A8;
+$twin-baby-a-md: #E07B3E;
+$twin-baby-a-dk: #B85F28;
+$twin-baby-a-glow: rgba(224,123,62,0.18);
+
+$twin-baby-b-lt: #EBCCBF;
+$twin-baby-b-md: #D48068;
+$twin-baby-b-dk: #A85543;
+$twin-baby-b-glow: rgba(212,128,104,0.18);
+
+// ---- 表面色 ----
+$twin-bg: #FDFAF3;
+$twin-surface: #FFF7EC;
+$twin-elevated: #FFFFFF;
+$twin-sunken: #F5EFE2;
+
+// ---- 文字色 ----
+$twin-ink: #2A2017;
+$twin-ink-md: #948570;
+$twin-ink-lt: #C8BCA8;
+$twin-on-color: #FFFFFF;
+
+// ---- 语义色 ----
+$twin-success: #5C9A6E;
+$twin-warning: #C8993E;
+$twin-danger: #D4706B;
+$twin-info: #7B9EB5;
+
+// ---- 边框色 ----
+$twin-border: #EADFCB;
+$twin-divider: #F0E8D8;
+$twin-focus: #E07B3E;
+
+// ---- 差异等级色 ----
+$twin-diff-green: #5C9A6E;
+$twin-diff-yellow: #C8993E;
+$twin-diff-red: #D4706B;
+
+// ---- 字体族 ----
+$twin-font-ui: 'PingFang SC', 'HarmonyOS Sans', 'Microsoft YaHei', sans-serif;
+$twin-font-display: 'Source Han Serif SC', 'Noto Serif SC', 'Songti SC', serif;
+$twin-font-latin: 'Inter', 'Segoe UI', sans-serif;
+$twin-font-latin-display: 'Lora', 'Georgia', serif;
+$twin-font-journal: 'Lora', 'Songti SC', serif;
+
+// ---- 字号 ----
+$twin-font-xs: 20rpx;
+$twin-font-sm: 24rpx;
+$twin-font-base: 28rpx;
+$twin-font-md: 32rpx;
+$twin-font-lg: 36rpx;
+$twin-font-xl: 44rpx;
+$twin-font-xxl: 56rpx;
+$twin-font-display: 72rpx;
+
+// ---- 字重 ----
+$twin-weight-regular: 400;
+$twin-weight-medium: 500;
+$twin-weight-semibold: 600;
+$twin-weight-bold: 700;
+
+// ---- 行高 ----
+$twin-leading-tight: 1.3;
+$twin-leading-body: 1.6;
+$twin-leading-loose: 1.8;
+
+// ---- 间距 ----
+$twin-space-xs: 8rpx;
+$twin-space-sm: 16rpx;
+$twin-space-md: 24rpx;
+$twin-space-lg: 32rpx;
+$twin-space-xl: 48rpx;
+$twin-space-xxl: 64rpx;
+
+// ---- 圆角 ----
+$twin-radius-sm: 8rpx;
+$twin-radius-md: 16rpx;
+$twin-radius-lg: 24rpx;
+$twin-radius-xl: 32rpx;
+$twin-radius-full: 9999rpx;
+
+// ---- 阴影 ----
+$twin-shadow-sm: 0 2rpx 8rpx rgba(42,32,23,0.06);
+$twin-shadow-md: 0 4rpx 16rpx rgba(42,32,23,0.08);
+$twin-shadow-lg: 0 8rpx 32rpx rgba(42,32,23,0.12);
+$twin-shadow-emboss: inset 0 2rpx 4rpx rgba(42,32,23,0.06);
+$twin-shadow-recess: inset 0 1rpx 0 rgba(255,255,255,0.5), inset 0 -1rpx 0 rgba(42,32,23,0.04);
+$twin-shadow-baby-a: 0 4rpx 20rpx rgba(224,123,62,0.20);
+$twin-shadow-baby-b: 0 4rpx 20rpx rgba(212,128,104,0.20);
+
+// ---- 动效时长 ----
+$twin-dur-fast: 200ms;
+$twin-dur-normal: 400ms;
+$twin-dur-slow: 600ms;
+$twin-dur-breath: 3000ms;
+
+// ---- 缓动函数 ----
+$twin-ease-soft: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+$twin-ease-stamp: cubic-bezier(0.34, 1.56, 0.64, 1);
+$twin-ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+$twin-ease-page: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+// ---- 触摸目标 ----
+$twin-touch-min: 88rpx;
+$twin-touch-granny: 108rpx;
+$twin-touch-comfort: 96rpx;
+
+// ---- Z-Index 层级 ----
+$twin-z-base: 0;
+$twin-z-content: 10;
+$twin-z-sticky: 100;
+$twin-z-overlay: 1000;
+$twin-z-modal: 2000;
+$twin-z-toast: 3000;
+
+// =============================================================================
+// 向后兼容别名（旧变量名 → 新令牌）
+// =============================================================================
+$amber: $twin-baby-a;
+$rose: $twin-baby-b;
+$paper: $twin-bg;
+$cream: $twin-surface;
+$ink: $twin-ink;
+$ink-md: $twin-ink-md;
+$ink-lt: $twin-ink-lt;
+$mint: $twin-success;
+$gold: $twin-warning;
+$dot: $twin-border;

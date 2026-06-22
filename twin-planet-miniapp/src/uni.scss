@@ -16,7 +16,7 @@
 
 /* 行为相关颜色 — 对齐暖纸手帳色系 */
 $uni-color-primary: #E07B3E;   // 大宝姜黄（替代 iOS 蓝 #007aff）
-$uni-color-success: #5C9A6E;   // 鼠尾草绿
+$uni-color-success: #4FAE6E;   // 春绿（原 #5C9A6E 调亮，对齐暖纸色系 v6）
 $uni-color-warning: #C8993E;   // 暖金
 $uni-color-error: #D4706B;     // 柔红
 
@@ -80,9 +80,9 @@ $uni-font-size-paragraph: 15px;
 // 双宝记 · 暖纸手帐色系
 // ============================================
 
-/* 双宝专属色彩 — V4 暖纸：大宝=姜黄，小宝=豆沙（按出生顺序，不按性别） */
+/* 双宝专属色彩 — V6 暖纸：大宝=姜黄(暖阳)，小宝=陶土色(暖土)。按出生顺序，不按性别。2026-06-18 rose#D48068 → sage#6B8E5A → terracotta#C08552 去性别化+调暖 */
 $twin-baby-a: #E07B3E;
-$twin-baby-b: #D48068;
+$twin-baby-b: #C08552;
 
 /* 背景与表面 */
 $twin-bg: #FEF9F0;               // 主背景·暖白纸
@@ -94,8 +94,8 @@ $twin-text: #2D2318;             // 主文字·墨色
 $twin-text-secondary: #9C8E7C;   // 次文字·中灰
 $twin-text-muted: #D4C8B8;       // 辅助·浅灰
 
-/* 语义色彩 */
-$twin-accent: #5C9A6E;           // 完成/CTA·鼠尾草绿
+/* 语义色彩 — success 调亮为 spring#4FAE6E 以与 sage 小宝色区分 */
+$twin-accent: #4FAE6E;           // 完成/CTA·春绿（原 #5C9A6E 调亮）
 $twin-warning: #C8993E;          // 警告/成就·暖金
 $twin-danger: #D4706B;           // 危险/停止·柔红
 

@@ -167,7 +167,7 @@ onShareAppMessage(() => {
 </script>
 
 <style scoped>
-.sprout-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
+.sprout-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx calc(120rpx + env(safe-area-inset-bottom)); }
 
 /* 头部 */
 .header-top { display: flex; align-items: center; justify-content: space-between; }
@@ -222,7 +222,7 @@ onShareAppMessage(() => {
   opacity: 1;
   border-color: var(--twin-accent);
   background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 50%, rgba(0,0,0,0.04) 100%), var(--twin-accent-light);
-  box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.04), 0 0 0 2rpx rgba(92,154,110,0.08);
+  box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.04), 0 0 0 2rpx rgba(79,174,110,0.08);
 }
 
 .note-input-row { display: flex; gap: 12rpx; }

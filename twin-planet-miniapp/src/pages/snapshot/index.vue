@@ -11,7 +11,7 @@
       <!-- 大宝 -->
       <view class="sandwich-card journal-card" style="border-color: var(--twin-baby-a)">
         <view class="card-top">
-          <view class="baby-avatar" style="background: var(--twin-baby-a-light)"><text>{{ twinA?.gender==='male'?'👦':'👧' }}</text></view>
+          <view class="baby-avatar" style="background: var(--twin-baby-a-light)"><image class="baby-avatar-img" src="/static/avatars/baby-a-amber.png" mode="aspectFill" @error="handleImageError" /></view>
           <view class="baby-info">
             <text class="baby-name">{{ twinA?.nickname || '大宝' }}</text>
             <text class="baby-status">{{ getBabyStatus(twinA) }}</text>
@@ -48,7 +48,7 @@
       <!-- 小宝 -->
       <view class="sandwich-card journal-card" style="border-color: var(--twin-baby-b)">
         <view class="card-top">
-          <view class="baby-avatar" style="background: var(--twin-baby-b-light)"><text>{{ twinB?.gender==='male'?'👦':'👧' }}</text></view>
+          <view class="baby-avatar" style="background: var(--twin-baby-b-light)"><image class="baby-avatar-img" src="/static/avatars/baby-b-terracotta.png" mode="aspectFill" @error="handleImageError" /></view>
           <view class="baby-info">
             <text class="baby-name">{{ twinB?.nickname || '小宝' }}</text>
             <text class="baby-status">{{ getBabyStatus(twinB) }}</text>
@@ -94,6 +94,10 @@ import { drawShareCard, saveToAlbum, type WeekStats } from '@/utils/shareCard'
 import { timeAgo } from '@/utils/format'
 
 const babiesStore = useBabiesStore()
+/** 图片加载失败时的兜底处理 */
+function handleImageError(e: any) {
+  console.warn('[image] load failed:', (e?.target?.dataset?.src || ''))
+}
 const recordsStore = useRecordsStore()
 const interactionsStore = useInteractionsStore()
 
@@ -185,7 +189,7 @@ onShareAppMessage(()=>({title:'双宝快照 · 一眼看完两个娃',path:'/pag
 </script>
 
 <style scoped>
-.snap-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
+.snap-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx calc(120rpx + env(safe-area-inset-bottom)); }
 /* 使用全局 .page-header 页头模式 */
 
 /* 三明治卡片 */
@@ -195,7 +199,8 @@ onShareAppMessage(()=>({title:'双宝快照 · 一眼看完两个娃',path:'/pag
   border-left: 8rpx solid; margin-bottom: 0;
 }
 .card-top { display: flex; align-items: center; gap: 16rpx; margin-bottom: 16rpx; }
-.baby-avatar { width: 72rpx; height: 72rpx; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32rpx; }
+.baby-avatar { width: 72rpx; height: 72rpx; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32rpx; overflow: hidden; }
+.baby-avatar-img { width: 68rpx; height: 68rpx; border-radius: 50%; }
 .baby-name { font-size: 30rpx; font-weight: 600; color: var(--twin-text); }
 .baby-status { font-size: 24rpx; color: var(--twin-text-tertiary); display: block; margin-top: 4rpx; }
 .card-metrics { display: flex; align-items: center; gap: 16rpx; }

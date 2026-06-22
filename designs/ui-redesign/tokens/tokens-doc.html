@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>双宝记 v6 · 设计令牌文档</title>
+<style>
+  :root {
+    --color-baby-a: #E07B3E; --color-baby-b: #D48068;
+    --color-baby-a-lt: #F4C9A8; --color-baby-a-dk: #B85F28;
+    --color-baby-a-glow: rgba(224,123,62,0.18);
+    --color-baby-b-lt: #EBCCBF; --color-baby-b-dk: #A85543;
+    --color-baby-b-glow: rgba(212,128,104,0.18);
+    --color-bg: #FDFAF3; --color-surface: #FFF7EC;
+    --color-elevated: #FFFFFF; --color-sunken: #F5EFE2;
+    --color-ink: #2A2017; --color-ink-md: #948570; --color-ink-lt: #C8BCA8;
+    --color-on-color: #FFFFFF;
+    --color-success: #5C9A6E; --color-warning: #C8993E;
+    --color-danger: #D4706B; --color-info: #7B9EB5;
+    --color-border: #EADFCB; --color-divider: #F0E8D8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--color-bg);color:var(--color-ink);font-family:'PingFang SC','Microsoft YaHei',sans-serif;padding:48px 32px;max-width:1200px;margin:0 auto;line-height:1.6}
+  h1{font-family:'Source Han Serif SC','Songti SC',serif;font-size:36px;font-weight:400;margin-bottom:4px}
+  .subtitle{color:var(--color-ink-md);font-size:14px;margin-bottom:48px}
+  .section{background:var(--color-elevated);border-radius:16px;padding:32px;margin-bottom:24px;box-shadow:0 4rpx 16rpx rgba(42,32,23,0.06)}
+  .section h2{font-size:18px;font-weight:600;margin-bottom:24px;padding-bottom:12px;border-bottom:2px dashed var(--color-border);display:flex;align-items:center;gap:8px}
+  .section h2 .tag{font-size:11px;background:var(--color-baby-a-glow);color:var(--color-baby-a);padding:2px 10px;border-radius:999px;font-weight:500}
+
+  /* Color swatches */
+  .swatch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
+  .swatch{border-radius:12px;overflow:hidden;border:1px solid var(--color-border)}
+  .swatch-color{height:80px;display:flex;align-items:flex-end;justify-content:flex-end;padding:8px}
+  .swatch-color .hex{font-size:11px;font-family:'Inter',monospace;background:rgba(255,255,255,0.85);padding:2px 8px;border-radius:4px;color:#333}
+  .swatch-info{padding:10px 12px;background:var(--color-surface)}
+  .swatch-name{font-size:13px;font-weight:600}
+  .swatch-token{font-size:11px;color:var(--color-ink-md);font-family:'Inter',monospace;margin-top:2px}
+  .swatch-desc{font-size:11px;color:var(--color-ink-md);margin-top:4px}
+
+  /* Scale swatches */
+  .scale-row{display:flex;align-items:center;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;border:1px solid var(--color-border)}
+  .scale-item{flex:1;padding:16px 12px;text-align:center;position:relative}
+  .scale-item .label{font-size:11px;font-weight:600;margin-bottom:4px}
+  .scale-item .hex{font-size:10px;font-family:'Inter',monospace;opacity:0.7}
+
+  /* Typography */
+  .type-row{padding:16px 0;border-bottom:1px solid var(--color-divider)}
+  .type-row:last-child{border-bottom:none}
+  .type-label{font-size:12px;color:var(--color-ink-md);font-family:'Inter',monospace;margin-bottom:4px}
+  .type-sample-display{font-family:'Source Han Serif SC','Songti SC',serif;font-weight:400;color:var(--color-ink)}
+  .type-sample-ui{font-family:'PingFang SC','Microsoft YaHei',sans-serif;color:var(--color-ink)}
+  .type-sample-latin{font-family:'Lora','Georgia',serif;color:var(--color-ink)}
+
+  /* Spacing */
+  .space-demo{display:flex;align-items:center;gap:16px;margin-bottom:12px}
+  .space-bar{height:32px;background:var(--color-baby-a);border-radius:4px}
+  .space-label{font-size:13px;color:var(--color-ink-md);font-family:'Inter',monospace;min-width:120px}
+
+  /* Radius */
+  .radius-demo{display:flex;gap:20px;flex-wrap:wrap}
+  .radius-item{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .radius-box{width:80px;height:80px;background:var(--color-surface);border:2px solid var(--color-baby-a)}
+  .radius-label{font-size:12px;color:var(--color-ink-md);font-family:'Inter',monospace}
+
+  /* Shadow */
+  .shadow-demo{display:flex;gap:24px;flex-wrap:wrap}
+  .shadow-item{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .shadow-box{width:100px;height:100px;background:var(--color-elevated);border-radius:16px}
+  .shadow-label{font-size:12px;color:var(--color-ink-md);font-family:'Inter',monospace}
+
+  /* Easing */
+  .ease-row{display:flex;align-items:center;gap:16px;margin-bottom:12px}
+  .ease-curve{width:64px;height:64px;background:var(--color-sunken);border-radius:8px;position:relative;overflow:hidden;flex-shrink:0}
+  .ease-curve svg{width:100%;height:100%}
+  .ease-info{font-size:13px}
+  .ease-name{font-weight:600}
+  .ease-val{font-size:11px;color:var(--color-ink-md);font-family:'Inter',monospace}
+
+  .alias-table{width:100%;border-collapse:collapse;font-size:13px}
+  .alias-table th{text-align:left;padding:10px 12px;background:var(--color-sunken);font-weight:600;color:var(--color-ink-md);font-size:12px}
+  .alias-table td{padding:10px 12px;border-bottom:1px solid var(--color-divider)}
+  .alias-table .old{font-family:'Inter',monospace;color:var(--color-baby-a)}
+  .alias-table .arrow{color:var(--color-ink-lt)}
+  .alias-table .new{font-family:'Inter',monospace;color:var(--color-baby-b)}
+</style>
+</head>
+<body>
+
+<h1>双宝记 v6 · 设计令牌文档</h1>
+<p class="subtitle">方向 C · 星图日记 Stellar Journal — 精炼暖现代演进 · 2026-06-18</p>
+
+<!-- 品牌色 -->
+<div class="section">
+  <h2>品牌色 <span class="tag">Brand</span></h2>
+  <div class="swatch-grid">
+    <div class="swatch"><div class="swatch-color" style="background:#E07B3E"><span class="hex">#E07B3E</span></div><div class="swatch-info"><div class="swatch-name">大宝 · 姜黄</div><div class="swatch-token">--color-baby-a</div><div class="swatch-desc">按出生顺序，不按性别</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#D48068"><span class="hex">#D48068</span></div><div class="swatch-info"><div class="swatch-name">小宝 · 豆沙</div><div class="swatch-token">--color-baby-b</div><div class="swatch-desc">按出生顺序，不按性别</div></div></div>
+  </div>
+</div>
+
+<!-- 品牌色阶梯 -->
+<div class="section">
+  <h2>品牌色阶梯 <span class="tag">Brand Scale</span></h2>
+  <div class="scale-row">
+    <div class="scale-item" style="background:#F4C9A8"><div class="label">lt</div><div class="hex">#F4C9A8</div></div>
+    <div class="scale-item" style="background:#E07B3E;color:#fff"><div class="label">md</div><div class="hex">#E07B3E</div></div>
+    <div class="scale-item" style="background:#B85F28;color:#fff"><div class="label">dk</div><div class="hex">#B85F28</div></div>
+    <div class="scale-item" style="background:rgba(224,123,62,0.18)"><div class="label">glow</div><div class="hex">0.18α</div></div>
+  </div>
+  <div style="font-size:11px;color:var(--color-ink-md);margin-bottom:12px">大宝色阶梯 — --color-baby-a-lt / -md / -dk / -glow</div>
+  <div class="scale-row">
+    <div class="scale-item" style="background:#EBCCBF"><div class="label">lt</div><div class="hex">#EBCCBF</div></div>
+    <div class="scale-item" style="background:#D48068;color:#fff"><div class="label">md</div><div class="hex">#D48068</div></div>
+    <div class="scale-item" style="background:#A85543;color:#fff"><div class="label">dk</div><div class="hex">#A85543</div></div>
+    <div class="scale-item" style="background:rgba(212,128,104,0.18)"><div class="label">glow</div><div class="hex">0.18α</div></div>
+  </div>
+  <div style="font-size:11px;color:var(--color-ink-md)">小宝色阶梯 — --color-baby-b-lt / -md / -dk / -glow</div>
+</div>
+
+<!-- 表面色 -->
+<div class="section">
+  <h2>表面色 <span class="tag">Surface</span></h2>
+  <div class="swatch-grid">
+    <div class="swatch"><div class="swatch-color" style="background:#FDFAF3;border:1px solid #EADFCB"><span class="hex">#FDFAF3</span></div><div class="swatch-info"><div class="swatch-name">页面背景</div><div class="swatch-token">--color-bg</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#FFF7EC;border:1px solid #EADFCB"><span class="hex">#FFF7EC</span></div><div class="swatch-info"><div class="swatch-name">卡片背景</div><div class="swatch-token">--color-surface</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#FFFFFF;border:1px solid #EADFCB"><span class="hex">#FFFFFF</span></div><div class="swatch-info"><div class="swatch-name">弹层</div><div class="swatch-token">--color-elevated</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#F5EFE2"><span class="hex">#F5EFE2</span></div><div class="swatch-info"><div class="swatch-name">凹陷区</div><div class="swatch-token">--color-sunken</div></div></div>
+  </div>
+</div>
+
+<!-- 文字色 -->
+<div class="section">
+  <h2>文字色 <span class="tag">Text</span></h2>
+  <div class="swatch-grid">
+    <div class="swatch"><div class="swatch-color" style="background:#2A2017"><span class="hex" style="color:#fff;background:rgba(255,255,255,0.2)">#2A2017</span></div><div class="swatch-info"><div class="swatch-name">主文字</div><div class="swatch-token">--color-ink</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#948570"><span class="hex" style="color:#fff;background:rgba(255,255,255,0.2)">#948570</span></div><div class="swatch-info"><div class="swatch-name">次文字</div><div class="swatch-token">--color-ink-md</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#C8BCA8"><span class="hex">#C8BCA8</span></div><div class="swatch-info"><div class="swatch-name">辅助文字</div><div class="swatch-token">--color-ink-lt</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#E07B3E"><span class="hex" style="color:#fff;background:rgba(255,255,255,0.2)">#FFFFFF</span></div><div class="swatch-info"><div class="swatch-name">彩色底文字</div><div class="swatch-token">--color-on-color</div></div></div>
+  </div>
+</div>
+
+<!-- 语义色 -->
+<div class="section">
+  <h2>语义色 <span class="tag">Semantic</span></h2>
+  <div class="swatch-grid">
+    <div class="swatch"><div class="swatch-color" style="background:#5C9A6E"><span class="hex" style="color:#fff;background:rgba(255,255,255,0.2)">#5C9A6E</span></div><div class="swatch-info"><div class="swatch-name">完成/CTA</div><div class="swatch-token">--color-success</div><div class="swatch-desc">鼠尾草绿</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#C8993E"><span class="hex" style="color:#fff;background:rgba(255,255,255,0.2)">#C8993E</span></div><div class="swatch-info"><div class="swatch-name">成就/警告</div><div class="swatch-token">--color-warning</div><div class="swatch-desc">暖金</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#D4706B"><span class="hex" style="color:#fff;background:rgba(255,255,255,0.2)">#D4706B</span></div><div class="swatch-info"><div class="swatch-name">危险/停止</div><div class="swatch-token">--color-danger</div><div class="swatch-desc">柔红</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#7B9EB5"><span class="hex" style="color:#fff;background:rgba(255,255,255,0.2)">#7B9EB5</span></div><div class="swatch-info"><div class="swatch-name">信息/提示</div><div class="swatch-token">--color-info</div><div class="swatch-desc">雾蓝（新增）</div></div></div>
+  </div>
+</div>
+
+<!-- 字体 -->
+<div class="section">
+  <h2>字体系统 <span class="tag">Typography</span></h2>
+  <div class="type-row">
+    <div class="type-label">--font-display · 思源宋体 Source Han Serif · 36px / 72rpx</div>
+    <div class="type-sample-display" style="font-size:36px">并蒂而生，同步成长</div>
+  </div>
+  <div class="type-row">
+    <div class="type-label">--font-ui · PingFang SC · 22px / 44rpx · semibold</div>
+    <div class="type-sample-ui" style="font-size:22px;font-weight:600">大宝的第一次微笑</div>
+  </div>
+  <div class="type-row">
+    <div class="type-label">--font-ui · PingFang SC · 16px / 32rpx · medium</div>
+    <div class="type-sample-ui" style="font-size:16px;font-weight:500">今天喂奶 8 次，睡眠 14 小时</div>
+  </div>
+  <div class="type-row">
+    <div class="type-label">--font-ui · PingFang SC · 14px / 28rpx · regular</div>
+    <div class="type-sample-ui" style="font-size:14px">WHO 生长曲线百分位：第 65 百分位（正常范围）</div>
+  </div>
+  <div class="type-row">
+    <div class="type-label">--font-journal · Lora + Songti SC · 18px / 36rpx</div>
+    <div class="type-sample-latin" style="font-size:18px">Twin Journal · Born from the same root</div>
+  </div>
+  <div class="type-row">
+    <div class="type-label">--font-latin-display · Lora · 28px / 56rpx</div>
+    <div class="type-sample-latin" style="font-size:28px">See Every Person</div>
+  </div>
+</div>
+
+<!-- 间距 -->
+<div class="section">
+  <h2>间距系统 <span class="tag">Spacing</span></h2>
+  <div class="space-demo"><div class="space-bar" style="width:8rpx"></div><div class="space-label">--space-xs · 8rpx (4px)</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:16rpx"></div><div class="space-label">--space-sm · 16rpx (8px)</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:24rpx"></div><div class="space-label">--space-md · 24rpx (12px)</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:32rpx"></div><div class="space-label">--space-lg · 32rpx (16px)</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:48rpx"></div><div class="space-label">--space-xl · 48rpx (24px)</div></div>
+  <div class="space-demo"><div class="space-bar" style="width:64rpx"></div><div class="space-label">--space-xxl · 64rpx (32px)</div></div>
+</div>
+
+<!-- 圆角 -->
+<div class="section">
+  <h2>圆角系统 <span class="tag">Radius</span></h2>
+  <div class="radius-demo">
+    <div class="radius-item"><div class="radius-box" style="border-radius:8rpx"></div><div class="radius-label">sm · 8rpx</div></div>
+    <div class="radius-item"><div class="radius-box" style="border-radius:16rpx"></div><div class="radius-label">md · 16rpx</div></div>
+    <div class="radius-item"><div class="radius-box" style="border-radius:24rpx"></div><div class="radius-label">lg · 24rpx</div></div>
+    <div class="radius-item"><div class="radius-box" style="border-radius:32rpx"></div><div class="radius-label">xl · 32rpx</div></div>
+    <div class="radius-item"><div class="radius-box" style="border-radius:9999rpx"></div><div class="radius-label">full · 胶囊</div></div>
+  </div>
+</div>
+
+<!-- 阴影 -->
+<div class="section">
+  <h2>阴影系统 <span class="tag">Shadow</span></h2>
+  <div class="shadow-demo">
+    <div class="shadow-item"><div class="shadow-box" style="box-shadow:0 2rpx 8rpx rgba(42,32,23,0.06)"></div><div class="shadow-label">sm · 微浮起</div></div>
+    <div class="shadow-item"><div class="shadow-box" style="box-shadow:0 4rpx 16rpx rgba(42,32,23,0.08)"></div><div class="shadow-label">md · 标准卡片</div></div>
+    <div class="shadow-item"><div class="shadow-box" style="box-shadow:0 8rpx 32rpx rgba(42,32,23,0.12)"></div><div class="shadow-label">lg · 弹层</div></div>
+    <div class="shadow-item"><div class="shadow-box" style="box-shadow:inset 0 2rpx 4rpx rgba(42,32,23,0.06)"></div><div class="shadow-label">emboss · 内凹</div></div>
+    <div class="shadow-item"><div class="shadow-box" style="box-shadow:0 4rpx 20rpx rgba(224,123,62,0.20)"></div><div class="shadow-label">babyA · 大宝光晕</div></div>
+    <div class="shadow-item"><div class="shadow-box" style="box-shadow:0 4rpx 20rpx rgba(212,128,104,0.20)"></div><div class="shadow-label">babyB · 小宝光晕</div></div>
+  </div>
+</div>
+
+<!-- 缓动 -->
+<div class="section">
+  <h2>动效缓动 <span class="tag">Easing</span></h2>
+  <div class="ease-row">
+    <div class="ease-curve"><svg viewBox="0 0 64 64"><path d="M2 62 C 16 56, 32 34, 62 2" stroke="#E07B3E" stroke-width="2" fill="none"/></svg></div>
+    <div class="ease-info"><div class="ease-name">soft · 柔和（默认）</div><div class="ease-val">cubic-bezier(0.25, 0.46, 0.45, 0.94)</div></div>
+  </div>
+  <div class="ease-row">
+    <div class="ease-curve"><svg viewBox="0 0 64 64"><path d="M2 62 C 22 90, 40 -10, 62 2" stroke="#E07B3E" stroke-width="2" fill="none"/></svg></div>
+    <div class="ease-info"><div class="ease-name">stamp · 盖章弹性</div><div class="ease-val">cubic-bezier(0.34, 1.56, 0.64, 1)</div></div>
+  </div>
+  <div class="ease-row">
+    <div class="ease-curve"><svg viewBox="0 0 64 64"><path d="M2 62 C 20 100, 40 -30, 62 2" stroke="#E07B3E" stroke-width="2" fill="none"/></svg></div>
+    <div class="ease-info"><div class="ease-name">bounce · 弹跳（庆祝）</div><div class="ease-val">cubic-bezier(0.68, -0.55, 0.265, 1.55)</div></div>
+  </div>
+  <div class="ease-row">
+    <div class="ease-curve"><svg viewBox="0 0 64 64"><path d="M2 62 C 14 39, 23 23, 62 2" stroke="#E07B3E" stroke-width="2" fill="none"/></svg></div>
+    <div class="ease-info"><div class="ease-name">page · 页面入场</div><div class="ease-val">cubic-bezier(0.22, 0.61, 0.36, 1)</div></div>
+  </div>
+</div>
+
+<!-- 向后兼容别名 -->
+<div class="section">
+  <h2>向后兼容别名 <span class="tag">Alias · 零破坏迁移</span></h2>
+  <table class="alias-table">
+    <thead><tr><th>旧变量名</th><th></th><th>新令牌名</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td class="old">--paper</td><td class="arrow">→</td><td class="new">--color-bg</td><td>页面背景</td></tr>
+      <tr><td class="old">--cream</td><td class="arrow">→</td><td class="new">--color-surface</td><td>卡片背景</td></tr>
+      <tr><td class="old">--amber</td><td class="arrow">→</td><td class="new">--color-baby-a</td><td>大宝色</td></tr>
+      <tr><td class="old">--rose</td><td class="arrow">→</td><td class="new">--color-baby-b</td><td>小宝色</td></tr>
+      <tr><td class="old">--ink</td><td class="arrow">→</td><td class="new">--color-ink</td><td>主文字（不变）</td></tr>
+      <tr><td class="old">--ink-md</td><td class="arrow">→</td><td class="new">--color-ink-md</td><td>次文字（不变）</td></tr>
+      <tr><td class="old">--mint</td><td class="arrow">→</td><td class="new">--color-success</td><td>完成/CTA</td></tr>
+      <tr><td class="old">--gold</td><td class="arrow">→</td><td class="new">--color-warning</td><td>成就</td></tr>
+      <tr><td class="old">--dot</td><td class="arrow">→</td><td class="new">--color-border</td><td>边框/虚线</td></tr>
+      <tr><td class="old">--twin-danger</td><td class="arrow">→</td><td class="new">--color-danger</td><td>危险</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:16px;font-size:13px;color:var(--color-ink-md)">所有旧变量名通过 CSS var() 别名保留，现有代码零改动即可运行。新代码建议使用新令牌名。</p>
+</div>
+
+</body>
+</html>

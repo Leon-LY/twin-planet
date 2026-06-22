@@ -7,13 +7,19 @@
         <text class="dad-greeting">{{ greeting }} · {{ greetLine2 }}</text>
       </view>
       <view class="masthead-right">
+        <view class="role-switch-btn" @click="switchRoleAction">
+          <text>{{ roleEmoji }}</text>
+        </view>
         <view class="streak-stamp journal-stamp stamp-gold" v-if="streakDays > 0"><text>连续 {{ streakDays }} 天</text></view>
       </view>
     </view>
     <view class="twins dad-twins">
       <view class="twin-card card-a journal-holes" @click="goRecord">
         <view class="card-surface">
-          <view class="avatar-ring" :class="{ pulsing: isRunningA }"><text class="avatar-emoji iconfont" :class="babyEmoji(babyA?.id, 0)"></text></view>
+          <view class="avatar-ring" :class="{ pulsing: isRunningA }">
+            <image class="avatar-image" src="/static/avatars/baby-a-amber.png" mode="aspectFill" @error="handleImageError" />
+            <text v-if="babyStatusIcon(babyA?.id, 0)" class="avatar-status iconfont" :class="babyStatusIcon(babyA?.id, 0)"></text>
+          </view>
           <text class="twin-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
           <view class="twin-status-row">
             <text v-if="isRunningA" class="status-live">计时中</text>
@@ -24,7 +30,10 @@
       </view>
       <view class="twin-card card-b journal-holes" @click="goRecord">
         <view class="card-surface">
-          <view class="avatar-ring" :class="{ pulsing: isRunningB }"><text class="avatar-emoji iconfont" :class="babyEmoji(babyB?.id, 1)"></text></view>
+          <view class="avatar-ring" :class="{ pulsing: isRunningB }">
+            <image class="avatar-image" src="/static/avatars/baby-b-terracotta.png" mode="aspectFill" @error="handleImageError" />
+            <text v-if="babyStatusIcon(babyB?.id, 1)" class="avatar-status iconfont" :class="babyStatusIcon(babyB?.id, 1)"></text>
+          </view>
           <text class="twin-name">{{ babyB?.nickname || babyB?.name || '小宝' }}</text>
           <view class="twin-status-row">
             <text v-if="isRunningB" class="status-live">计时中</text>
@@ -56,6 +65,7 @@ import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useBabiesStore } from '@/stores/babies'
 import { useRecordsStore } from '@/stores/records'
+import { useBabyStatus } from '@/composables/useBabyStatus'
 
 const emit = defineEmits<{ navigate: [url: string] }>()
 const userStore = useUserStore()
@@ -67,6 +77,18 @@ const babyB = computed(() => babiesStore.babyB)
 const streakDays = computed(() => recordsStore.streakDays)
 const isRunningA = computed(() => babyA.value ? recordsStore.isBabyRunning(babyA.value.id) : false)
 const isRunningB = computed(() => babyB.value ? recordsStore.isBabyRunning(babyB.value.id) : false)
+
+const roleEmoji = computed(() => userStore.roleEmoji)
+function switchRoleAction() {
+  uni.showActionSheet({
+    itemList: ['👩 妈妈', '👨 爸爸', '👵 奶奶', '👴 爷爷', '👩‍🍼 育儿嫂'],
+    success: (res) => {
+      const roles = ['mom', 'dad', 'grandma', 'grandpa', 'nanny']
+      const r = roles[res.tapIndex]
+      if (r) userStore.setRole(r as any)
+    },
+  })
+}
 
 const nowTick = ref(Date.now())
 let tickTimer: ReturnType<typeof setInterval> | null = null
@@ -115,22 +137,7 @@ function babyUrgency(b: any): string {
   if (h > 4) return 'urgent'; if (h > 3) return 'warn'; return ''
 }
 
-function babyEmoji(babyId: string | undefined, idx: number): string {
-  if (!babyId) return idx === 0 ? 'icon-baby-a' : 'icon-baby-b'
-  const timer = recordsStore.runningTimers.find(t => t.babyId === babyId)
-  if (timer) return timer.type === 'feeding' ? 'icon-bottle' : 'icon-sleep-zzz'
-  const logs = recordsStore.recentLogsByBaby[babyId]
-  if (logs?.length) {
-    const last = logs[logs.length - 1]
-    const minAgo = (Date.now() - last.createdAt) / 60000
-    if (minAgo < 30) {
-      if (last.type === 'feeding') return 'icon-bottle'
-      if (last.type === 'sleep') return 'icon-sleep'
-      if (last.type === 'diaper') return 'icon-diaper'
-    }
-  }
-  return idx === 0 ? 'icon-baby-a' : 'icon-baby-b'
-}
+const { babyStatusIcon, handleImageError } = useBabyStatus()
 
 const todaySummary = computed(() => {
   const today = recordsStore.logs.filter(l => l.createdAt >= new Date().setHours(0,0,0,0))
@@ -165,6 +172,8 @@ const goDuty = () => emit('navigate', '/pages/duty/index')
 .dad-greeting{display:block;font-family:var(--font-journal);font-size:36rpx;color:var(--ink);font-weight:700;margin-top:4rpx}
 .masthead-right{display:flex;align-items:flex-end}
 .streak-stamp{background:var(--gold-lt);padding:6rpx 14rpx;border-radius:4rpx 12rpx 4rpx 12rpx;font-family:var(--font-journal);font-size:20rpx;color:var(--gold);font-weight:700;transform:rotate(2deg);box-shadow:0 2rpx 6rpx rgba(200,153,62,0.1);animation:stampDown .5s var(--ease-stamp) both}
+.role-switch-btn{display:flex;align-items:center;justify-content:center;width:52rpx;height:52rpx;border-radius:50%;background:var(--cream);border:1.5px solid var(--dot);font-size:24rpx;margin-right:12rpx}
+.role-switch-btn:active{background:var(--amber-lt)}
 .dad-twins{margin-bottom:16rpx}
 .dad-twins .card-surface{border-radius:20rpx;transform:none!important}
 .dad-twins .twin-card.card-b{margin-left:0;margin-top:0}
@@ -172,10 +181,13 @@ const goDuty = () => emit('navigate', '/pages/duty/index')
 .twin-card{position:relative;flex:1}
 .twin-card:active{transform:scale(.96);transition:transform .2s var(--ease-bounce)}
 .card-surface{padding:28rpx 20rpx 22rpx;border-radius:20rpx;background:linear-gradient(175deg,var(--amber-lt),rgba(224,123,62,0.03));border:1.5px solid rgba(224,123,62,0.1);box-shadow:0 2rpx 12rpx rgba(45,35,24,0.04)}
-.twin-card.card-b .card-surface{background:linear-gradient(185deg,var(--rose-lt),rgba(212,128,104,0.03));border-color:rgba(212,128,104,0.1)}
-.avatar-ring{width:88rpx;height:88rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12rpx;background:var(--amber-md)}
+.twin-card.card-b .card-surface{background:linear-gradient(185deg,var(--rose-lt),rgba(192,133,82,0.03));border-color:rgba(192,133,82,0.1)}
+.avatar-ring{width:88rpx;height:88rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12rpx;background:var(--amber-md);position:relative;overflow:hidden}
 .twin-card.card-b .avatar-ring{background:var(--rose-md)}
 .avatar-ring.pulsing::before{content:'';position:absolute;top:-6rpx;right:-6rpx;bottom:-6rpx;left:-6rpx;border-radius:50%;border:2rpx solid var(--mint);opacity:.45;animation:ringPulse 2.5s ease-in-out infinite}
+
+.avatar-image{width:84rpx;height:84rpx;border-radius:50%;object-fit:cover}
+.avatar-status{position:absolute;bottom:2rpx;right:2rpx;width:32rpx;height:32rpx;border-radius:50%;background:var(--paper);border:2rpx solid var(--cream);font-size:20rpx;display:flex;align-items:center;justify-content:center;z-index:2;box-shadow:0 1rpx 4rpx rgba(0,0,0,0.1)}
 @keyframes ringPulse{0%,100%{transform:scale(1);opacity:.35}50%{transform:scale(1.1);opacity:.8}}
 .avatar-emoji{font-size:44rpx}
 .twin-name{font-family:var(--font-journal);font-size:30rpx;font-weight:700;color:var(--ink);text-align:center;display:block;margin-bottom:4rpx}

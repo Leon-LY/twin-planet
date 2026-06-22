@@ -8,8 +8,9 @@
           class="sticker-item" :class="[shapeClass(i), { new: isNew(s) }]">
           <!-- 贴纸光泽层 -->
           <view class="sticker-shine" />
-          <!-- 贴纸图案 -->
-          <text class="sticker-emoji">{{ s.emoji }}</text>
+          <!-- 贴纸图案 — 插画优先，降级 emoji -->
+          <image v-if="s.illustration" :src="s.illustration" mode="aspectFit" class="sticker-image" @error="handleImageError" />
+          <text v-else class="sticker-emoji">{{ s.emoji }}</text>
           <!-- 贴纸标签 -->
           <text class="sticker-label">{{ s.label }}</text>
         </view>
@@ -32,9 +33,13 @@ const props = defineProps<{
 
 defineEmits<{ viewAll: [] }>()
 
-const now = Date.now()
+/** 图片加载失败时的兜底处理 */
+function handleImageError(e: any) {
+  console.warn('[image] load failed:', (e?.target?.dataset?.src || ''))
+}
+
 function isNew(s: Sticker): boolean {
-  return now - s.earnedAt < 5000
+  return Date.now() - s.earnedAt < 5000
 }
 
 const shapes = ['shape-a','shape-b','shape-c','shape-d','shape-e','shape-f']
@@ -125,6 +130,14 @@ function shapeClass(i: number): string {
   border-radius: 50%;
   pointer-events: none;
   z-index: 1;
+}
+
+/* 贴纸图案 — 插画优先 */
+.sticker-image {
+  width: 64rpx;
+  height: 64rpx;
+  position: relative;
+  z-index: 0;
 }
 
 /* 贴纸图案 — emoji 为主体 */

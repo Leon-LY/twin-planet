@@ -105,7 +105,8 @@ function finishDuty() {
     content: '确认所有任务都完成了吗？值班记录将被保存。',
     success: (res) => {
       if (!res.confirm) return
-      // 完成值班 = 获得贴纸
+      // 完成值班 = 累计次数 + 获得贴纸
+      store.incrementDutyDoneTotal()
       syncStickers({ dutyDoneCount: 1 })
       uni.showToast({ title: '🏆 太棒了！', icon: 'success', duration: 2000 })
       setTimeout(() => { uni.navigateBack({ fail: () => uni.reLaunch({ url: '/pages/index/index' }) }) }, 1500)
@@ -158,9 +159,9 @@ onShow(() => {
 .progress-ring.celebrated {
   border-color: var(--twin-accent);
   box-shadow:
-    inset 0 2rpx 6rpx rgba(92,154,110,0.08),
-    0 1rpx 0 rgba(92,154,110,0.04),
-    0 4rpx 20rpx rgba(92,154,110,0.15);
+    inset 0 2rpx 6rpx rgba(79,174,110,0.08),
+    0 1rpx 0 rgba(79,174,110,0.04),
+    0 4rpx 20rpx rgba(79,174,110,0.15);
 }
 .progress-num { font-size: 36rpx; font-weight: 700; color: var(--twin-text); }
 .progress-num.done { font-size: 40rpx; }
@@ -223,13 +224,13 @@ onShow(() => {
     var(--twin-accent);
   box-shadow:
     0 2rpx 0 #4E8A5E,
-    0 4rpx 14rpx rgba(92,154,110,0.2),
+    0 4rpx 14rpx rgba(79,174,110,0.2),
     0 1rpx 0 rgba(255,255,255,0.12) inset;
 }
 .btn-done:active {
   box-shadow:
     0 1rpx 0 #4E8A5E,
-    0 1rpx 4rpx rgba(92,154,110,0.1);
+    0 1rpx 4rpx rgba(79,174,110,0.1);
 }
 .btn-reset {
   width: 100%; padding: 28rpx 0;

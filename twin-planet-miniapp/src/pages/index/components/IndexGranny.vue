@@ -7,11 +7,11 @@
     <!-- P1-7: 今日摘要卡片 -->
     <view class="granny-summary" v-if="summaryA || summaryB">
       <view class="granny-summary-item" v-if="summaryA">
-        <text class="granny-summary-name amber"><text class="iconfont icon-baby-a"></text> {{ summaryA.name }}</text>
+        <text class="granny-summary-name amber"><image class="granny-baby-avatar" src="/static/avatars/baby-a-amber.png" mode="aspectFill" @error="handleImageError" /> {{ summaryA.name }}</text>
         <text class="granny-summary-text">{{ summaryA.text }}</text>
       </view>
       <view class="granny-summary-item" v-if="summaryB">
-        <text class="granny-summary-name rose"><text class="iconfont icon-baby-b"></text> {{ summaryB.name }}</text>
+        <text class="granny-summary-name rose"><image class="granny-baby-avatar" src="/static/avatars/baby-b-terracotta.png" mode="aspectFill" @error="handleImageError" /> {{ summaryB.name }}</text>
         <text class="granny-summary-text">{{ summaryB.text }}</text>
       </view>
     </view>
@@ -20,9 +20,9 @@
     </view>
 
     <view class="granny-actions">
-      <view class="granny-btn" @click="goRecord"><text class="granny-emoji iconfont icon-edit"></text><text class="granny-label">记一笔</text></view>
+      <view class="granny-btn" @click="goRecord"><image class="granny-pen-image" src="/static/images/pen.png" mode="aspectFit" @error="handleImageError" /><text class="granny-label">记一笔</text></view>
       <view class="granny-btn" @click="goGrowth"><text class="granny-emoji iconfont icon-sprout"></text><text class="granny-label">看看长多大了</text></view>
-      <view class="granny-btn granny-help" @click="goHelp"><text class="granny-emoji">📞</text><text class="granny-label">问家里人</text></view>
+      <view class="granny-btn granny-help" @click="goHelp"><view class="granny-phone-icon"><view class="granny-phone-body"></view><view class="granny-phone-dot"></view></view><text class="granny-label">问家里人</text></view>
     </view>
     <text class="last-update" v-if="lastUpdateText">最后更新 {{ lastUpdateText }}</text>
   </view>
@@ -33,12 +33,15 @@ import { computed } from 'vue'
 import { useRecordsStore } from '@/stores/records'
 import { useUserStore } from '@/stores/user'
 import { useBabiesStore } from '@/stores/babies'
+import { useBabyStatus } from '@/composables/useBabyStatus'
 
 const props = defineProps<{ goRecord: () => void; goGrowth: () => void; goHelp: () => void }>()
 
 const recordsStore = useRecordsStore()
 const userStore = useUserStore()
 const babiesStore = useBabiesStore()
+
+const { handleImageError } = useBabyStatus()
 
 const greeting = computed(() => {
   const h = new Date().getHours()
@@ -47,9 +50,9 @@ const greeting = computed(() => {
   return '夜深了'
 })
 
-// P1-7: 今日摘要计算
-const todayStart = new Date().setHours(0,0,0,0)
+// P1-7: 今日摘要计算（todayStart 在 computed 内部动态计算，避免午夜后失效）
 const summaryA = computed(() => {
+  const todayStart = new Date().setHours(0,0,0,0)
   const baby = babiesStore.babyA; if (!baby) return null
   const logs = recordsStore.logs.filter(l => l.babyId === baby.id && l.createdAt >= todayStart)
   if (!logs.length) return null
@@ -62,6 +65,7 @@ const summaryA = computed(() => {
   return { name: baby.nickname || '大宝', text: parts.join(' · ') || '今天有记录' }
 })
 const summaryB = computed(() => {
+  const todayStart = new Date().setHours(0,0,0,0)
   const baby = babiesStore.babyB; if (!baby) return null
   const logs = recordsStore.logs.filter(l => l.babyId === baby.id && l.createdAt >= todayStart)
   if (!logs.length) return null
@@ -90,6 +94,12 @@ const lastUpdateText = computed(() => {
 .granny-btn:active{border-color:var(--amber);transform:scale(.97);box-shadow:0 2rpx 0 rgba(0,0,0,0.04),0 3rpx 8rpx rgba(0,0,0,0.03)}
 .granny-help{border-color:var(--gold)}
 .granny-emoji{font-size:80rpx}
+.granny-baby-avatar{width:48rpx;height:48rpx;border-radius:50%;vertical-align:middle;margin-right:8rpx}
+.granny-pen-image{width:60rpx;height:60rpx}
+/* 手绘电话图标（奶奶版） */
+.granny-phone-icon{position:relative;width:56rpx;height:56rpx;margin:0 auto}
+.granny-phone-body{position:absolute;top:8rpx;left:50%;transform:translateX(-50%);width:36rpx;height:32rpx;background:var(--terracotta);border-radius:8rpx 8rpx 18rpx 18rpx}
+.granny-phone-dot{position:absolute;bottom:12rpx;left:50%;transform:translateX(-50%);width:8rpx;height:8rpx;background:var(--paper);border-radius:50%}
 .granny-label{font-family:var(--font-journal);font-size:52rpx;font-weight:700;color:var(--ink)}
 /* P1-7: 今日摘要卡片 */
 .granny-summary{background:linear-gradient(180deg,rgba(255,255,255,0.45) 0%,var(--cream) 100%);border-radius:var(--radius-md);padding:28rpx 32rpx;margin-bottom:36rpx;border:2rpx solid var(--dot);box-shadow:0 1rpx 0 rgba(0,0,0,0.03),0 2rpx 8rpx rgba(0,0,0,0.04)}

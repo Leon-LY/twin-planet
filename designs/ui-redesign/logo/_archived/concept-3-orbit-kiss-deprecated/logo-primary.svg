@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <radialGradient id="bgGlow3" cx="50%" cy="50%" r="48%">
+      <stop offset="0%" stop-color="#FFF7EC"/>
+      <stop offset="100%" stop-color="#FDFAF3"/>
+    </radialGradient>
+    <radialGradient id="dotGlowA" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#E07B3E"/>
+      <stop offset="60%" stop-color="#E07B3E"/>
+      <stop offset="100%" stop-color="rgba(224,123,62,0)"/>
+    </radialGradient>
+    <radialGradient id="dotGlowB" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#D48068"/>
+      <stop offset="60%" stop-color="#D48068"/>
+      <stop offset="100%" stop-color="rgba(212,128,104,0)"/>
+    </radialGradient>
+  </defs>
+  <circle cx="100" cy="100" r="96" fill="url(#bgGlow3)" opacity="0.5"/>
+
+  <!-- Left arc (Baby A - Amber) - opening right, like a "C" rotated -->
+  <path d="M 70 45
+           A 60 60 0 0 0 70 155"
+        stroke="#E07B3E" stroke-width="8" fill="none" stroke-linecap="round"/>
+
+  <!-- Right arc (Baby B - Rose) - opening left, mirrored -->
+  <path d="M 130 45
+           A 60 60 0 0 1 130 155"
+        stroke="#D48068" stroke-width="8" fill="none" stroke-linecap="round"/>
+
+  <!-- Left planet dot at closest point -->
+  <circle cx="76" cy="100" r="10" fill="url(#dotGlowA)"/>
+  <circle cx="76" cy="100" r="6" fill="#E07B3E"/>
+
+  <!-- Right planet dot at closest point -->
+  <circle cx="124" cy="100" r="10" fill="url(#dotGlowB)"/>
+  <circle cx="124" cy="100" r="6" fill="#D48068"/>
+
+  <!-- Tiny spark between them -->
+  <circle cx="100" cy="100" r="2" fill="#C8993E" opacity="0.6"/>
+  <circle cx="100" cy="92" r="1.5" fill="#C8993E" opacity="0.4"/>
+  <circle cx="100" cy="108" r="1.5" fill="#C8993E" opacity="0.4"/>
+
+  <!-- Orbital trail dots (decorative, like constellation) -->
+  <circle cx="60" cy="55" r="2" fill="#E07B3E" opacity="0.3"/>
+  <circle cx="55" cy="70" r="1.5" fill="#E07B3E" opacity="0.2"/>
+  <circle cx="140" cy="55" r="2" fill="#D48068" opacity="0.3"/>
+  <circle cx="145" cy="70" r="1.5" fill="#D48068" opacity="0.2"/>
+  <circle cx="60" cy="145" r="2" fill="#E07B3E" opacity="0.3"/>
+  <circle cx="55" cy="130" r="1.5" fill="#E07B3E" opacity="0.2"/>
+  <circle cx="140" cy="145" r="2" fill="#D48068" opacity="0.3"/>
+  <circle cx="145" cy="130" r="1.5" fill="#D48068" opacity="0.2"/>
+</svg>

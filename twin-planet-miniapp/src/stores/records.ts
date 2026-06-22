@@ -9,6 +9,7 @@ import { useBabiesStore, type Baby } from './babies'
 import { useStickersStore, type StickerContext } from './stickers'
 import { useUserStore } from './user'
 import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
+import { FULL_MOON_DATES } from '@/constants/dates'
 
 export type RecordType = 'feeding' | 'sleep' | 'diaper' | 'temperature' | 'medicine' | 'bath'
 
@@ -151,23 +152,95 @@ export const useRecordsStore = defineStore('records', () => {
       const bId = babiesStore.babyB?.id
       const n = Date.now()
 
+      const now = new Date()
+      // 生日检测：遍历所有宝宝，任一宝今天生日即触发
+      const todayMonth = now.getMonth() + 1
+      const todayDate = now.getDate()
+      let isBirthday = false
+      let birthdayAge: number | undefined
+      for (const baby of babiesStore.babies) {
+        if (!baby?.birthDate) continue
+        const bday = new Date(baby.birthDate)
+        if (bday.getMonth() + 1 === todayMonth && bday.getDate() === todayDate) {
+          isBirthday = true
+          const age = now.getFullYear() - bday.getFullYear()
+          if (age >= 1 && age <= 6 && birthdayAge === undefined) birthdayAge = age
+        }
+      }
+
+      const babyAHasRecord = aId ? today.some(l => l.babyId === aId) : false
+      const babyBHasRecord = bId ? today.some(l => l.babyId === bId) : false
+
+      // v2.0 补全上下文字段：萌芽/里程碑/测量/满月
+      let bothSproutToday = false
+      let bothMilestoneToday = false
+      let bothMeasureToday = false
+      try {
+        // 惰性加载子包 store（growth/milestones），避免循环依赖
+        const sproutMod = require('@/stores/sprout')
+        const sproutStore = sproutMod.useSproutStore()
+        bothSproutToday = sproutStore.entries.some((e: any) => e.recordedAt >= t0)
+
+        const msMod = require('@/pages/milestones/store')
+        const msStore = msMod.useMilestonesStore()
+        if (aId && bId) {
+          const todayMs = msStore.milestones.filter((m: any) =>
+            m.status === 'achieved' && m.achievedAt >= t0
+          )
+          bothMilestoneToday = todayMs.some((m: any) => m.babyId === aId) &&
+            todayMs.some((m: any) => m.babyId === bId)
+        }
+
+        const growthMod = require('@/pages/growth/store')
+        const growthStore = growthMod.useGrowthStore()
+        if (aId && bId) {
+          const todayMeasure = (growthStore.measurements || []).filter((m: any) => {
+            const md = new Date(m.date)
+            const mt0 = new Date(md.getFullYear(), md.getMonth(), md.getDate()).getTime()
+            return mt0 >= t0
+          })
+          bothMeasureToday = todayMeasure.some((m: any) => m.babyId === aId) &&
+            todayMeasure.some((m: any) => m.babyId === bId)
+        }
+      } catch { /* 子包未加载则跳过 */ }
+
+      // 满月检测（农历十五速查表，引用共享常量）
+      const fmKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`
+      const isFullMoonNight = FULL_MOON_DATES.has(fmKey) && now.getHours() >= 18
+
+      // 惰性加载 dutyStore 获取累计值班次数
+      let dutyDoneTotalCount = 0
+      try {
+        const dutyMod = require('@/stores/duty')
+        const dutyStore = dutyMod.useDutyStore()
+        dutyDoneTotalCount = dutyStore.dutyDoneTotalCount ?? 0
+      } catch { /* duty store 未加载则跳过 */ }
+
       const ctx: StickerContext = {
         todayLogCount: today.length,
         streakDays: streakDays.value,
         totalLogCount: logs.value.length,
-        twinSyncCount: today.filter(l =>
-          l.type === 'feeding' || l.type === 'sleep'
-        ).length >= 2 ? 1 : 0,
-        sproutCount: 0,  // 非 record 可计算的字段，sprout/duty 页自行补充
+        twinSyncCount: (babyAHasRecord && babyBHasRecord) ? 1 : 0,
+        sproutCount: sproutStore.entries.filter((e: any) => e.recordedAt >= t0).length,
         dutyDoneCount: 0,
-        babyAHasRecord: aId ? today.some(l => l.babyId === aId) : false,
-        babyBHasRecord: bId ? today.some(l => l.babyId === bId) : false,
+        babyAHasRecord,
+        babyBHasRecord,
         babyARecentRecord: aId
           ? today.some(l => l.babyId === aId && n - l.createdAt < 3600000)
           : false,
         babyBRecentRecord: bId
           ? today.some(l => l.babyId === bId && n - l.createdAt < 3600000)
           : false,
+        // v2.0 新增上下文
+        currentHour: now.getHours(),
+        isWeekend: now.getDay() === 0 || now.getDay() === 6,
+        isBirthday,
+        birthdayAge,
+        bothSproutToday,
+        bothMilestoneToday,
+        bothMeasureToday,
+        dutyDoneTotalCount,
+        isFullMoonNight,
       }
 
       return stickersStore.sync(ctx)
@@ -468,6 +541,7 @@ export const useRecordsStore = defineStore('records', () => {
     if (newLogs.length) {
       logs.value = [...logs.value, ...newLogs]
       _saveLogs()
+      _syncStickersAuto()
     }
     return newLogs.length
   }
@@ -505,19 +579,26 @@ export const useRecordsStore = defineStore('records', () => {
     return totalPairs > 0 ? Math.round((syncCount / totalPairs) * 100) : 0
   })
 
-  /** 连胜天数 */
+  /** 连胜天数（使用本地日期，避免 UTC 时区偏移） */
   const streakDays = computed(() => {
     if (!logs.value.length) return 0
-    const dates = [...new Set(logs.value.map(l => new Date(l.createdAt).toISOString().slice(0,10)))].sort().reverse()
-    const today = new Date().toISOString().slice(0,10)
-    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10)
+    const localDateStr = (ts: number) => {
+      const d = new Date(ts)
+      const y = d.getFullYear()
+      const m = String(d.getMonth() + 1).padStart(2, '0')
+      const day = String(d.getDate()).padStart(2, '0')
+      return `${y}-${m}-${day}`
+    }
+    const dates = [...new Set(logs.value.map(l => localDateStr(l.createdAt)))].sort().reverse()
+    const today = localDateStr(Date.now())
+    const yesterday = localDateStr(Date.now() - 86400000)
     // 最近记录日必须是今天或昨天，否则连续已断
     if (dates[0] !== today && dates[0] !== yesterday) return 0
     // 修复 off-by-one：最近记录日是今天或昨天，都应该从 1 开始计数
     let streak = 1
     for (let i = 1; i < dates.length; i++) {
       const prev = new Date(dates[i-1]); prev.setDate(prev.getDate() - 1)
-      if (dates[i] === prev.toISOString().slice(0,10)) streak++
+      if (dates[i] === localDateStr(prev.getTime())) streak++
       else break
     }
     return streak

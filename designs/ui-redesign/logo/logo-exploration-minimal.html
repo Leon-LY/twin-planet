@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>双宝记 · Logo 极简化探索</title>
+<style>
+  :root {
+    --amber: #E07B3E;
+    --warm: #C08552;        /* 示例暖色（待用户最终选定） */
+    --ink: #2A2017;
+    --ink-md: #948570;
+    --bg: #FDFAF3;
+    --surface: #FFF7EC;
+    --border: #EADFCB;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font-family:'PingFang SC','Microsoft YaHei',sans-serif;padding:48px 32px;max-width:1200px;margin:0 auto;line-height:1.7}
+  h1{font-family:'Source Han Serif SC','Songti SC',serif;font-size:32px;font-weight:400;margin-bottom:4px}
+  .subtitle{color:var(--ink-md);font-size:14px;margin-bottom:40px}
+
+  .ref-section{background:#fff;border-radius:16px;padding:28px;margin-bottom:28px;box-shadow:0 4px 16px rgba(42,32,23,0.06)}
+  .ref-section h2{font-size:17px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .ref-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+  .ref-item{text-align:center}
+  .ref-logo{width:64px;height:64px;border-radius:16px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700}
+  .ref-name{font-size:11px;color:var(--ink-md)}
+  .ref-principle{font-size:10px;color:var(--ink-md);margin-top:2px;line-height:1.4}
+
+  .dir-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:8px}
+  .dir-card{background:#fff;border-radius:20px;overflow:hidden;border:1.5px solid var(--border);box-shadow:0 4px 16px rgba(42,32,23,0.06)}
+  .dir-preview{background:var(--surface);padding:40px;display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap}
+  .logo-box{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .logo-box svg{display:block}
+  .logo-size-label{font-size:10px;color:var(--ink-md);font-family:'Inter',monospace}
+  .dir-info{padding:24px}
+  .dir-name{font-family:'Source Han Serif SC',serif;font-size:18px;font-weight:400;margin-bottom:4px}
+  .dir-tag{font-size:11px;padding:2px 10px;border-radius:999px;font-weight:600;display:inline-block;margin-bottom:10px}
+  .dir-desc{font-size:13px;color:var(--ink-md);line-height:1.7;margin-bottom:12px}
+  .dir-elements{font-size:11px;color:var(--ink-md);font-family:'Inter',monospace;background:var(--surface);padding:8px 12px;border-radius:8px;display:inline-block}
+
+  .principle-box{background:linear-gradient(135deg,#FFF7EC,#F4C9A8);border-radius:14px;padding:20px 24px;margin-top:24px;border-left:4px solid var(--amber)}
+  .principle-box h4{font-size:14px;font-weight:600;margin-bottom:8px}
+  .principle-box ul{list-style:none;font-size:13px;color:#6B5A45;line-height:1.9}
+  .principle-box li::before{content:"→ ";color:var(--amber);font-weight:700}
+</style>
+</head>
+<body>
+
+<h1>双宝记 · Logo 极简化探索</h1>
+<p class="subtitle">参考主流 App logo 设计原则 · 4 个极简方向 · 元素数 ≤6</p>
+
+<!-- 主流 App 参考 -->
+<div class="ref-section">
+  <h2>主流 App Logo 设计原则参考</h2>
+  <div class="ref-grid">
+    <div class="ref-item"><div class="ref-logo" style="background:#07C160">微信</div><div class="ref-name">微信</div><div class="ref-principle">单色对话气泡<br>1 元素</div></div>
+    <div class="ref-item"><div class="ref-logo" style="background:#FF2442">小</div><div class="ref-name">小红书</div><div class="ref-principle">纯色+单字<br>1 元素</div></div>
+    <div class="ref-item"><div class="ref-logo" style="background:#000;color:#fff">N</div><div class="ref-name">Notion</div><div class="ref-principle">单字母几何<br>1 元素</div></div>
+    <div class="ref-item"><div class="ref-logo" style="background:#FCC30B;color:#000">:) </div><div class="ref-name">Headspace</div><div class="ref-principle">圆+极简笑脸<br>2 元素</div></div>
+    <div class="ref-item"><div class="ref-logo" style="background:#58CC02">🦉</div><div class="ref-name">Duolingo</div><div class="ref-principle">角色极简剪影<br>3 元素</div></div>
+    <div class="ref-item"><div class="ref-logo" style="background:#1A73E8">📅</div><div class="ref-name">日历类</div><div class="ref-principle">单符号<br>1 元素</div></div>
+  </div>
+
+  <div class="principle-box">
+    <h4>从主流 App 提炼的 Logo 设计铁律</h4>
+    <ul>
+      <li><strong>元素极少</strong>：1-3 个视觉元素，不超过 6 个。16px favicon 仍可辨识</li>
+      <li><strong>纯矢量</strong>：几何形/字母/极简剪影，不用插画、水彩、渐变细节</li>
+      <li><strong>单色优先</strong>：最多 2 色。深色/浅色背景都能用（反白版）</li>
+      <li><strong>无文字依赖</strong>：Logo 本身不含字，字是字标（wordmark）单独处理</li>
+      <li><strong>负空间叙事</strong>：用"没画的部分"讲故事（如 FedEx 的箭头）</li>
+      <li><strong>可缩放</strong>：16px favicon 到 10m 墙面都成立，靠几何而非细节</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 4 个极简方向 -->
+<div class="ref-section">
+  <h2>4 个极简方向（形态探索 · 颜色待定）</h2>
+
+  <div class="dir-grid">
+
+    <!-- 方向 1: 双弧 -->
+    <div class="dir-card">
+      <div class="dir-preview">
+        <div class="logo-box">
+          <svg viewBox="0 0 100 100" width="80" height="80">
+            <path d="M 35 25 A 30 30 0 0 0 35 75" stroke="#E07B3E" stroke-width="7" fill="none" stroke-linecap="round"/>
+            <path d="M 65 25 A 30 30 0 0 1 65 75" stroke="#C08552" stroke-width="7" fill="none" stroke-linecap="round"/>
+            <circle cx="38" cy="50" r="5" fill="#E07B3E"/>
+            <circle cx="62" cy="50" r="5" fill="#C08552"/>
+          </svg>
+          <div class="logo-size-label">80px</div>
+        </div>
+        <div class="logo-box">
+          <svg viewBox="0 0 100 100" width="32" height="32">
+            <path d="M 35 25 A 30 30 0 0 0 35 75" stroke="#E07B3E" stroke-width="9" fill="none" stroke-linecap="round"/>
+            <path d="M 65 25 A 30 30 0 0 1 65 75" stroke="#C08552" stroke-width="9" fill="none" stroke-linecap="round"/>
+            <circle cx="38" cy="50" r="7" fill="#E07B3E"/>
+            <circle cx="62" cy="50" r="7" fill="#C08552"/>
+          </svg>
+          <div class="logo-size-label">32px 导航栏</div>
+        </div>
+        <div class="logo-box">
+          <svg viewBox="0 0 100 100" width="16" height="16">
+            <path d="M 35 25 A 30 30 0 0 0 35 75" stroke="#E07B3E" stroke-width="12" fill="none" stroke-linecap="round"/>
+            <path d="M 65 25 A 30 30 0 0 1 65 75" stroke="#C08552" stroke-width="12" fill="none" stroke-linecap="round"/>
+          </svg>
+          <div class="logo-size-label">16px favicon</div>
+        </div>
+      </div>
+      <div class="dir-info">
+        <span class="dir-tag" style="background:rgba(224,123,62,0.1);color:#E07B3E">最抽象 · 最现代</span>
+        <div class="dir-name">方向 1 · 双弧之吻</div>
+        <div class="dir-desc">两条弧线开口相对，最近处各生一颗星球点。负空间是"双宝相望"。灵感来自括号 ( ) ——包容与成对。最接近 Headspace 的极简几何。</div>
+        <div class="dir-elements">4 元素：2 弧 + 2 圆点</div>
+      </div>
+    </div>
+
+    <!-- 方向 2: 双耳剪影 -->
+    <div class="dir-card">
+      <div class="dir-preview">
+        <div class="logo-box">
+          <svg viewBox="0 0 100 100" width="80" height="80">
+            <g fill="#E07B3E"><circle cx="32" cy="55" r="18"/><path d="M 20 42 L 16 28 L 26 38 Z"/><path d="M 44 42 L 48 28 L 38 38 Z"/></g>
+            <g fill="#C08552"><circle cx="68" cy="55" r="18"/><path d="M 56 42 L 52 28 L 62 38 Z"/><path d="M 80 42 L 84 28 L 74 38 Z"/></g>
+          </svg>
+          <div class="logo-size-label">80px</div>
+        </div>
+        <div class="logo-box">
+          <svg viewBox="0 0 100 100" width="32" height="32">
+            <g fill="#E07B3E"><circle cx="32" cy="55" r="18"/><path d="M 20 42 L 16 28 L 26 38 Z"/><path d="M 44 42 L 48 28 L 38 38 Z"/></g>
+            <g fill="#C08552"><circle cx="68" cy="55" r="18"/><path d="M 56 42 L 52 28 L 62 38 Z"/><path d="M 80 42 L 84 28 L 74 38 Z"/></g>
+          </svg>
+          <div class="logo-size-label">32px</div>
+        </div>
+        <div class="logo-box">
+          <svg viewBox="0 0 100 100" width="16" height="16">
+            <g fill="#E07B3E"><circle cx="32" cy="55" r="18"/><path d="M 20 42 L 16 28 L 26 38 Z"/><path d="M 44 42 L 48 28 L 38 38 Z"/></g>
+            <g fill="#C08552"><circle cx="68" cy="55" r="18"/><path d="M 56 42 L 52 28 L 62 38 Z"/><path d="M 80 42 L 84 28 L 74 38 Z"/></g>
+          </svg>
+          <div class="logo-size-label">16px</div>
+        </div>
+      </div>
+      <div class="dir-info">
+        <span class="dir-tag" style="background:rgba(192,133,82,0.1);color:#C08552">保留狐狸 IP</span>
+        <div class="dir-name">方向 2 · 双耳剪影</div>
+        <div class="dir-desc">把狐狸简化到极致：圆头 + 两个三角耳朵。两只并排，amber + 暖色。灵感来自 Duolingo 猫头鹰的极简剪影。保留"双狐"IP 但去掉所有水彩细节。</div>
+        <div class="dir-elements">6 元素：2 圆 + 4 三角</div>
+      </div>
+    </div>
+
+    <!-- 方向 3: 双点手帐 -->
+    <div class="dir-card">
+      <div class="dir-preview">
+        <div class="logo-box">
+          <svg viewBox="0 0 100 100" width="80" height="80">
+            <path d="M 25 25 L 15 25 L 15 75 L 25 75" stroke="#2A2017" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 75 25 L 85 25 L 85 75 L 75 75" stroke="#2A2017" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="42" cy="50" r="8" fill="#E07B3E"/>
+            <circle cx="58" cy="50" r="8" fill="#C08552"/>
+          </svg>
+          <div class="logo-size-label">80px</div>
+        </div>
+        <div class="logo-box">
+          <svg viewBox="0 0 100 100" width="32" height="32">
+            <path d="M 25 25 L 15 25 L 15 75 L 25 75" stroke="#2A2017" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 75 25 L 85 25 L 85 75 L 75 75" stroke="#2A2017" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="42" cy="50" r="9" fill="#E07B3E"/>
+            <circle cx="58" cy="50" r="9" fill="#C08552"/>
+          </svg>
+          <div class="logo-size-label">32px</div>
+        </div>
+        <div class="logo-box">
+          <svg viewBox="0 0 100 100" width="16" height="16">
+            <circle cx="40" cy="50" r="12" fill="#E07B3E"/>
+            <circle cx="60" cy="50" r="12" fill="#C08552"/>
+          </svg>
+          <div class="logo-size-label">16px 简化</div>
+        </div>
+      </div>
+      <div class="dir-info">
+        <span class="dir-tag" style="background:rgba(42,32,23,0.08);color:#2A2017">意象型 · 直白</span>
+        <div class="dir-name">方向 3 · 双点手帐</div>
+        <div class="dir-desc">方括号 [ ] 代表打开的手帐本，中间两颗点是双宝。最直白地表达"手帐里的两个宝宝"。灵感来自 Bear、Day One 的本子意象。16px 时简化为双点。</div>
+        <div class="dir-elements">4 元素：2 括号 + 2 圆点</div>
+      </div>
+    </div>
+
+    <!-- 方向 4: 双芽 -->
+    <div class="dir-card">
+      <div class="dir-preview">
+        <div class="logo-box">
+          <svg viewBox="0 0 100 100" width="80" height="80">
+            <path d="M 50 80 Q 35 60 35 40 Q 35 25 42 22" stroke="#E07B3E" stroke-width="7" fill="none" stroke-linecap="round"/>
+            <path d="M 50 80 Q 65 60 65 40 Q 65 25 58 22" stroke="#C08552" stroke-width="7" fill="none" stroke-linecap="round"/>
+            <ellipse cx="40" cy="28" rx="7" ry="10" fill="#E07B3E" transform="rotate(-20 40 28)"/>
+            <ellipse cx="60" cy="28" rx="7" ry="10" fill="#C08552" transform="rotate(20 60 28)"/>
+          </svg>
+          <div class="logo-size-label">80px</div>
+        </div>
+        <div class="logo-box">
+          <svg viewBox="0 0 100 100" width="32" height="32">
+            <path d="M 50 80 Q 35 60 35 40 Q 35 25 42 22" stroke="#E07B3E" stroke-width="9" fill="none" stroke-linecap="round"/>
+            <path d="M 50 80 Q 65 60 65 40 Q 65 25 58 22" stroke="#C08552" stroke-width="9" fill="none" stroke-linecap="round"/>
+            <ellipse cx="40" cy="28" rx="9" ry="12" fill="#E07B3E" transform="rotate(-20 40 28)"/>
+            <ellipse cx="60" cy="28" rx="9" ry="12" fill="#C08552" transform="rotate(20 60 28)"/>
+          </svg>
+          <div class="logo-size-label">32px</div>
+        </div>
+        <div class="logo-box">
+          <svg viewBox="0 0 100 100" width="16" height="16">
+            <path d="M 50 80 Q 35 55 42 22" stroke="#E07B3E" stroke-width="12" fill="none" stroke-linecap="round"/>
+            <path d="M 50 80 Q 65 55 58 22" stroke="#C08552" stroke-width="12" fill="none" stroke-linecap="round"/>
+          </svg>
+          <div class="logo-size-label">16px 简化</div>
+        </div>
+      </div>
+      <div class="dir-info">
+        <span class="dir-tag" style="background:rgba(92,154,110,0.1);color:#5C9A6E">有机 · 呼应并蒂</span>
+        <div class="dir-name">方向 4 · 双芽并蒂</div>
+        <div class="dir-desc">两株嫩芽从同一根基萌发，向上展开。直接呼应 slogan"并蒂而生"。灵感来自植物类 app 的有机极简。保留"并蒂"概念但不做莲花，只做两片芽叶。</div>
+        <div class="dir-elements">4 元素：2 茎弧 + 2 芽叶</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 颜色方案 -->
+<div class="ref-section">
+  <h2>小宝暖色方案（替代 sage · 待选）</h2>
+  <p style="font-size:13px;color:var(--ink-md);margin-bottom:20px">sage #6B8E5A 偏冷。以下是 4 个暖色替代，皆为性别中性大地色，与 amber #E07B3E 搭配。预览中以各暖色 + amber 展示方向 1（双弧）效果。</p>
+
+  <div class="dir-grid">
+    <!-- 暖陶土 -->
+    <div class="dir-card">
+      <div class="dir-preview">
+        <svg viewBox="0 0 100 100" width="100" height="100">
+          <path d="M 35 25 A 30 30 0 0 0 35 75" stroke="#E07B3E" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M 65 25 A 30 30 0 0 1 65 75" stroke="#C08552" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <circle cx="38" cy="50" r="5" fill="#E07B3E"/>
+          <circle cx="62" cy="50" r="5" fill="#C08552"/>
+        </svg>
+      </div>
+      <div class="dir-info">
+        <span class="dir-tag" style="background:rgba(192,133,82,0.15);color:#C08552">#C08552</span>
+        <div class="dir-name">暖陶土 Terracotta</div>
+        <div class="dir-desc">最暖的棕。阳光(amber)与泥土(陶土)的对比——"天"与"地"。性别绝对中性。风险：与 amber 色相相近，小尺寸区分靠明度。</div>
+      </div>
+    </div>
+
+    <!-- 暖橄榄 -->
+    <div class="dir-card">
+      <div class="dir-preview">
+        <svg viewBox="0 0 100 100" width="100" height="100">
+          <path d="M 35 25 A 30 30 0 0 0 35 75" stroke="#E07B3E" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M 65 25 A 30 30 0 0 1 65 75" stroke="#8A8B3E" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <circle cx="38" cy="50" r="5" fill="#E07B3E"/>
+          <circle cx="62" cy="50" r="5" fill="#8A8B3E"/>
+        </svg>
+      </div>
+      <div class="dir-info">
+        <span class="dir-tag" style="background:rgba(138,139,62,0.15);color:#8A8B3E">#8A8B3E</span>
+        <div class="dir-name">暖橄榄 Olive</div>
+        <div class="dir-desc">偏黄的暖绿。比 sage 暖（黄调），与 amber 色相区分最大（绿 vs 橙）。性别中性。风险：偏"土"，部分人觉得不够明快。</div>
+      </div>
+    </div>
+
+    <!-- 焦糖棕 -->
+    <div class="dir-card">
+      <div class="dir-preview">
+        <svg viewBox="0 0 100 100" width="100" height="100">
+          <path d="M 35 25 A 30 30 0 0 0 35 75" stroke="#E07B3E" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M 65 25 A 30 30 0 0 1 65 75" stroke="#A67B4A" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <circle cx="38" cy="50" r="5" fill="#E07B3E"/>
+          <circle cx="62" cy="50" r="5" fill="#A67B4A"/>
+        </svg>
+      </div>
+      <div class="dir-info">
+        <span class="dir-tag" style="background:rgba(166,123,74,0.15);color:#A67B4A">#A67B4A</span>
+        <div class="dir-name">焦糖棕 Caramel</div>
+        <div class="dir-desc">深暖棕。比陶土更深沉，与 amber 明度对比更强。性别中性。风险：偏暗，婴儿产品需评估明快感。</div>
+      </div>
+    </div>
+
+    <!-- 赤陶 -->
+    <div class="dir-card">
+      <div class="dir-preview">
+        <svg viewBox="0 0 100 100" width="100" height="100">
+          <path d="M 35 25 A 30 30 0 0 0 35 75" stroke="#E07B3E" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M 65 25 A 30 30 0 0 1 65 75" stroke="#C17A4B" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <circle cx="38" cy="50" r="5" fill="#E07B3E"/>
+          <circle cx="62" cy="50" r="5" fill="#C17A4B"/>
+        </svg>
+      </div>
+      <div class="dir-info">
+        <span class="dir-tag" style="background:rgba(193,122,75,0.15);color:#C17A4B">#C17A4B</span>
+        <div class="dir-name">赤陶 Terracotta Red</div>
+        <div class="dir-desc">偏红的暖陶。比陶土更红一点，与 amber(偏黄橙) 色相有区分（红橙 vs 黄橙）。性别中性。风险：偏红可能让人联想"警示"。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

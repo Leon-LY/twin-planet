@@ -24,7 +24,7 @@ export const ROLE_CONFIGS: Record<Role, RoleConfig> = {
     label: '妈妈',
     emoji: '👩',
     homeLayout: 'full',
-    features: ['record', 'growth', 'sprout', 'contribution', 'handover', 'guardian', 'snapshot', 'stickers'],
+    features: ['record', 'growth', 'sprout', 'contribution', 'handover', 'guardian', 'snapshot', 'stickers', 'tasks'],
     quickActions: ['feeding', 'sleep', 'diaper'],
     greetingStyle: 'warm',
   },
@@ -33,7 +33,7 @@ export const ROLE_CONFIGS: Record<Role, RoleConfig> = {
     label: '爸爸',
     emoji: '👨',
     homeLayout: 'compact',
-    features: ['record', 'growth', 'duty', 'handover', 'snapshot', 'stickers', 'contribution'],
+    features: ['record', 'growth', 'duty', 'handover', 'snapshot', 'stickers', 'contribution', 'tasks'],
     quickActions: ['feeding', 'sleep', 'diaper'],
     greetingStyle: 'efficient',
   },
@@ -83,10 +83,12 @@ export const FEATURE_LABELS: Record<string, string> = {
   snapshot: '快照',
   school: '入园助手',
   milestones: '能力观察',
+  stickers: '贴纸收集册',
+  tasks: '亲子任务',
 }
 
 /** 发现页功能列表（按角色过滤） */
-export function getDiscoverFeatures(role?: string): Array<{ label: string; path: string }> {
+export function getDiscoverFeatures(role?: string): Array<{ key: string; label: string; path: string }> {
   const config = getRoleConfig(role)
   const allFeatures = [
     { key: 'sprout', label: '萌芽日记', path: '/pages/sprout/index' },
@@ -95,6 +97,7 @@ export function getDiscoverFeatures(role?: string): Array<{ label: string; path:
     { key: 'guardian', label: '守护中心', path: '/pages/guardian/index' },
     { key: 'handover', label: '语音便签', path: '/pages/handover/index' },
     { key: 'stickers', label: '贴纸收集册', path: '/pages/stickers/index' },
+    { key: 'tasks', label: '亲子任务', path: '/pages/tasks/index' },
   ]
   return allFeatures.filter(f => config.features.includes(f.key))
 }

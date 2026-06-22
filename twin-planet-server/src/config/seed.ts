@@ -14,8 +14,10 @@ const SEED = {
     { id: 'f-seed-1', name: '我们的家', created_by: 'u-seed-mom' },
   ],
   babies: [
+    // 注：color 按出生顺序决定（大宝=amber 暖阳，小宝=terracotta 陶土色 暖土），与 gender 无关
+    // 种子数据用龙凤胎仅作功能演示；同性别双胞胎同样适用此配色规则
     { id: 'b-seed-a', user_id: 'u-seed-mom', family_id: 'f-seed-1', name: '安宁', nickname: '大宝', gender: 'male', birth_date: '2025-01-15', birth_order: 1, color: '#E07B3E', birth_weight: 3.2, birth_height: 50 },
-    { id: 'b-seed-b', user_id: 'u-seed-mom', family_id: 'f-seed-1', name: '安然', nickname: '二宝', gender: 'female', birth_date: '2025-01-15', birth_order: 2, color: '#D48068', birth_weight: 2.9, birth_height: 48 },
+    { id: 'b-seed-b', user_id: 'u-seed-mom', family_id: 'f-seed-1', name: '安然', nickname: '二宝', gender: 'female', birth_date: '2025-01-15', birth_order: 2, color: '#C08552', birth_weight: 2.9, birth_height: 48 },
   ],
 }
 

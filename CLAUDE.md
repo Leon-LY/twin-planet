@@ -1,7 +1,7 @@
 # 双宝记 · Twin Journal
 
-> 两个小怪兽的成长手帳 🪐 —— 微信小程序 + Express 后端
-> 文档最后更新：2026-06-14（十角色论证 + 全线修复完成）
+> 两只并蒂而生的小狐狸，同步成长的手帐 🦊🦊 —— 微信小程序 + Express 后端
+> 文档最后更新：2026-06-22（TabBar 原生自定义 + 角色切换完善 + 导航修复）
 
 ---
 
@@ -17,7 +17,7 @@
 | **GitHub** | https://github.com/Leon-LY/twin-planet |
 | **开发者** | Leon（全栈独立，龙凤胎爸爸） |
 | **目标用户** | 0-6 岁双胞胎家庭（妈妈/爸爸/奶奶/育儿嫂） |
-| **当前进度** | Sprint 1-4 完成 · CRITICAL 11/12 · HIGH 15/18 · MEDIUM 10/15 · Sprint 4.5 待启动 |
+| **当前进度** | Sprint 1-4 完成 · 贴纸 v2.0 完成 · 亲子任务 完成 · 双宝广场 v2 完成 · TabBar 底部导航 完成 · Sprint 4.5 待启动 |
 
 ---
 
@@ -26,9 +26,13 @@
 ```
 E:/ly/project/twin-planet/
 ├── twin-planet-miniapp/        # 前端：微信小程序 (uni-app Vue3)
+│   ├── native/                 # 原生 WeChat 组件（uni-app 不编译，构建时复制）
+│   │   └── custom-tab-bar/     # 自定义底部 TabBar（.wxml/.js/.wxss/.json）
+│   └── copy-tabbar.js          # 构建脚本：复制 native/custom-tab-bar → dist
 ├── twin-planet-server/         # 后端：Express API (Node.js + PostgreSQL + Redis)
 ├── docs/                       # 论证报告 + 设计文档
 │   └── 论证/                   # 多角色论证报告存档
+├── design-philosophy.md        # 设计哲学（暖手帐双狐主义）
 └── CLAUDE.md                   # 本文件
 ```
 
@@ -62,25 +66,32 @@ ORM：无（直接用 pg Pool + 参数化查询）
 ## 四、前端目录结构
 
 ```
-twin-planet-miniapp/src/
-├── App.vue                    # 根组件（Options API）— CSS 变量 + 暗色模式 + 奶奶模式
-├── main.js                    # createSSRApp + Pinia（⚠️ 必须用 createSSRApp）
-├── manifest.json              # AppID + 微信设置 + 隐私合规
-├── pages.json                 # 路由表（14 pages + 3 subPackages）
-├── uni.scss                   # 全局 SCSS 变量
+twin-planet-miniapp/
+├── native/                       # 原生 WeChat 组件（构建时复制到 dist）
+│   └── custom-tab-bar/           # 自定义底部导航（.wxml/.js/.wxss/.json）
+├── copy-tabbar.js                # 构建脚本：复制 native/custom-tab-bar → dist
+└── src/
+    ├── App.vue                    # 根组件（Options API）— CSS 变量 v6 + 暗色模式 + 奶奶模式
+    ├── main.js                    # createSSRApp + Pinia（⚠️ 必须用 createSSRApp）
+    ├── manifest.json              # AppID + 微信设置 + 隐私合规
+    ├── pages.json                 # 路由表（17 pages + 3 subPackages + tabBar）
+    ├── uni.scss                   # 全局 SCSS 变量（v6 暖纸色系）
 │
-├── components/                # 4 个组件
+├── components/                # 7 个组件
+│   ├── common/BrandLoading.vue      # 品牌加载动画（双狐 CSS 绘制）
+│   ├── common/EmptyState.vue        # 空状态（双狐剪影 + 提示）
+│   ├── common/Skeleton.vue          # 手帐纸骨架屏
 │   ├── cosmic/LightBridge.vue       # 双胞胎连接桥（5 态）
 │   ├── journal/StickerStrip.vue     # 贴纸条（横向滑动）
-│   ├── twin-skeleton/twin-skeleton.vue  # 骨架屏
+│   ├── twin-skeleton/twin-skeleton.vue  # 骨架屏（旧版，逐步替换）
 │   └── ec-canvas/ec-canvas.vue      # ECharts 包装
 │
 ├── stores/                    # 13 个 Pinia Store
 │   ├── user.ts                # 登录/角色/奶奶模式/大字模式
 │   ├── family.ts              # 家庭（双胞胎组）
 │   ├── babies.ts              # 宝宝 CRUD + 大宝/小宝 + 早产儿胎龄
-│   ├── records.ts             # 双轨计时器 + 日志 + recordedBy
-│   ├── stickers.ts            # 贴纸收集系统（18 条规则）
+│   ├── records.ts             # 双轨计时器 + 日志 + recordedBy + 贴纸自动同步
+│   ├── stickers.ts            # 贴纸收集系统 v2.0（74 条规则 · 8 册 · 4 稀有度）
 │   ├── growth.ts              # 生长测量数据
 │   ├── sprout.ts              # 萌芽日记（7 种互动类型）
 │   ├── contribution.ts        # 今天我做了什么（8 种贡献类别）
@@ -95,11 +106,11 @@ twin-planet-miniapp/src/
 │   ├── useHaptic.ts           # 触觉反馈
 │   ├── usePoeticTime.ts       # 诗意计时标签
 │   ├── useQuickRef.ts         # 快速参考（按宝宝区分）
-│   └── useStickerSync.ts      # 统一贴纸同步逻辑
+│   └── useStickerSync.ts      # 统一贴纸同步逻辑（v2 含满月/里程碑/测量检测）
 │
 ├── utils/
 │   ├── format.ts              # 时间格式化
-│   ├── persist.ts             # 本地持久化封装
+│   ├── persist.ts             # 本地持久化封装（15 个 key）
 │   ├── whoGrowth.ts           # WHO LMS 参数 + Z 值/百分位 + 差异率
 │   ├── clinicCard.ts          # 就诊速查卡 Canvas 生成
 │   ├── shareCard.ts           # 分享卡片 Canvas 生成
@@ -110,29 +121,41 @@ twin-planet-miniapp/src/
 │   └── types.ts               # API 类型定义
 │
 ├── config/
-│   └── roles.ts               # 角色自适应配置（5 角色）
+│   ├── roles.ts               # 角色自适应配置（5 角色 · 含 tasks 功能）
+│   ├── festivals.ts           # 节日配置（15 节日 · 公历/农历/国际）
+│   ├── tasks.ts               # 亲子任务配置（6 日常 + 5 每周 + 4 成就）
+│   └── seasonal.ts            # 节气配置（24 节气）
 │
 ├── constants/
-│   └── design.ts              # TS 颜色常量（唯一权威源）
+│   └── design.ts              # TS 颜色常量（唯一权威源 · v6 terracotta）
+│
+├── static/
+│   ├── mascot-*-fox-nobg-*.png  # 狐狸吉祥物 PNG（64/128/256px）
+│   └── stickers/                # 贴纸插画资产（75 张 PNG · 9 个子目录）
+│       ├── birthday/  daynight/  festival/  growth/
+│       ├── hidden/    honor/     milestone/ solar/    twin/
 │
 └── pages/
-    ├── index/index.vue              # 品牌首页（230行 薄外壳）
+    ├── index/index.vue              # 品牌首页（薄外壳）
     │   └── components/              # 三角色子组件
-    │       ├── IndexMom.vue         # 妈妈模式：完整手帳（486行）
-    │       ├── IndexDad.vue         # 爸爸模式：战术面板（186行）
-    │       └── IndexGranny.vue      # 奶奶模式：3大按钮（50行）
+    │       ├── IndexMom.vue         # 妈妈模式：完整手帳 + 双宝对比微卡片
+    │       ├── IndexDad.vue         # 爸爸模式：战术面板
+    │       └── IndexGranny.vue      # 奶奶模式：3 大按钮
     ├── login/index.vue              # 微信一键登录
     ├── onboarding/                  # 家庭创建 + 双胞胎注册
     ├── record/index.vue             # 双轨记录（盖章机）
-    ├── growth/index.vue             # 生长曲线（WHO + ECharts，子包）
+    │   └── granny.vue               # 奶奶版记录
     ├── sprout/index.vue             # 萌芽日记
     ├── contribution/index.vue       # 今天我做了什么
     ├── snapshot/index.vue           # 爸爸的快照
     ├── handover/index.vue           # 交接班语音便签
     ├── duty/index.vue               # 爸爸值班清单
     ├── guardian/index.vue           # 守护中心
-    ├── stickers/index.vue           # 贴纸收集册
+    ├── stickers/index.vue           # 贴纸收集册 v2.0（8 册分组 + 稀有度）
+    ├── tasks/index.vue              # 亲子任务（日常+每周+成就）
+    ├── discover/index.vue           # 双宝广场 v2（周报+功能入口+成就动态）
     ├── privacy/index.vue            # 隐私政策
+    ├── growth/index.vue             # 生长曲线（WHO + ECharts，子包）
     ├── school/index.vue             # 入园助手（子包）
     └── milestones/index.vue         # 能力观察（子包）
 ```
@@ -209,37 +232,38 @@ twin-planet-server/
 
 ---
 
-## 六、设计系统：双宝手帳 v5
+## 六、设计系统：双宝手帐 v6（暖手帐双狐主义）
 
 ### 核心理念
 
-> 一本可以玩的实体手帳本。有贴纸、盖章、手绘涂鸦的触感。
+> 两只并蒂而生的小狐狸，在一本温暖的手帐本里同步成长。有贴纸、盖章、手绘水彩的触感。
+> **品牌 IP：双狐为唯一主角**（Amber 狐 + Sage 狐 + Gold 狐）。废弃星球/莲花/几何-only Logo。
 
-### 颜色（暖纸体系）
+### 颜色（暖阳+冷土双生体系 · 去性别化）
 
 | 用途 | Hex | CSS 变量 |
 |------|------|------|
 | 页面背景 | `#FEF9F0` | `--paper` |
 | 卡片背景 | `#FFF5E8` | `--cream` |
-| 大宝 | `#E07B3E` | `--amber` |
-| 小宝 | `#D48068` | `--rose` |
+| 大宝（暖阳） | `#E07B3E` | `--amber` |
+| 小宝（暖土） | `#C08552` | `--terracotta`（`--sage`/`--rose` 别名兼容） |
 | 主文字 | `#2D2318` | `--ink` |
 | 次文字 | `#9C8E7C` | `--ink-md` |
-| 强调/完成 | `#5C9A6E` | `--mint` |
+| 强调/完成（春绿） | `#4FAE6E` | `--mint`（调亮以与 terracotta 区分） |
 | 成就 | `#C8993E` | `--gold` |
 | 边框/虚线 | `#E8DCC8` | `--dot` |
 | 危险 | `#D4706B` | `--twin-danger` |
 
-**铁律**：大宝=姜黄，小宝=豆沙。按出生顺序，不按性别。
-**唯一颜色权威源**：`src/constants/design.ts` (TS) + `src/App.vue` (CSS 变量)。
+**铁律**：大宝=amber 暖阳，小宝=terracotta 陶土色。**按出生顺序，不按性别**。两色皆为大地色系，绝对性别中性。2026-06-18 小宝色从 rose#D48068（豆沙粉，有女性化倾向）→ sage#6B8E5A（鼠尾草绿，过冷）→ terracotta#C08552（陶土色，暖土沉静）。
+**唯一颜色权威源**：`src/constants/design.ts` (TS) + `src/App.vue` (CSS 变量) + `src/uni.scss` (SCSS)。
 
 ### 动效规范
 
 | 类别 | 时长 | 适用场景 |
 |------|:--:|------|
-| 呼吸系 | 3s | 背景光斑、头像环脉冲、LightBridge |
-| 反馈系 | 0.5-1s | 贴纸弹出、按钮按压、盖章 |
-| 入场系 | 0.5s + stagger 0.06s | 页面 .reveal-1 ~ .reveal-6 |
+| 呼吸系 | 3s | 背景光斑、头像环脉冲、LightBridge、BrandLoading 尾巴摆动 |
+| 反馈系 | 0.5-1s | 贴纸弹出、按钮按压（stampDown）、盖章 |
+| 入场系 | 0.5s + stagger 0.06s | 页面 .reveal-1 ~ .reveal-6（手帐翻页感 pageRevealIn + 卡片交错浮入 cardFloatIn） |
 
 ### 微信 WXSS 约束
 
@@ -252,13 +276,14 @@ twin-planet-server/
 
 | 角色 | 首页布局 | 功能列表 |
 |------|:--:|------|
-| 妈妈 | full — 完整手帳 | record/growth/sprout/contribution/handover/guardian/snapshot/stickers |
-| 爸爸 | compact — 战术面板 | record/growth/duty/handover/snapshot/stickers |
+| 妈妈 | full — 完整手帳 | record/growth/sprout/contribution/handover/guardian/snapshot/stickers/tasks |
+| 爸爸 | compact — 战术面板 | record/growth/duty/handover/snapshot/stickers/contribution/tasks |
 | 奶奶 | granny — 3 大按钮 | record/growth |
 | 爷爷 | granny — 同奶奶 | record/growth |
 | 育儿嫂 | compact — 同爸爸 | record/growth/handover/snapshot |
 
 **配置源**：`src/config/roles.ts`
+**角色切换**：妈妈模式点头像旁角色标签弹出抽屉；爸爸模式点右上角圆形按钮弹出 ActionSheet；所有模式均可切换
 
 ---
 
@@ -277,19 +302,27 @@ twin-planet-server/
 
 ## 九、⚠️ 已知缺陷
 
-### CRITICAL（11/12 已修复）
+### 历史缺陷（全部已修复或论证豁免）
 
-| # | 状态 | 缺陷 |
-|:--:|:--:|------|
-| C1-C12 | ✅ | 除 C3 外全部修复（C3 已添加运行时喂养 UI，剩余上下文恢复为功能缺口非阻断） |
+| 级别 | 状态 |
+|:--:|------|
+| CRITICAL (C1-C12) | ✅ 全部修复（C3 运行时喂养 UI 已添加） |
+| HIGH (H1-H18) | ✅ 全部修复或论证豁免（H16 事件总线为架构遗留） |
 
-### HIGH（15/18 已修复）
+### 2026-06-18 审计新增
 
-| # | 状态 | 问题 |
-|:--:|:--:|------|
-| H1-H18 | ✅ | 除 H16(事件总线·架构遗留) 外全部修复或论证豁免 |
+| # | 级别 | 缺陷 | 状态 |
+|:--:|:--:|------|:--:|
+| N1 | HIGH | 贴纸上下文字段缺失：`useStickerSync`/`records.ts` 未填充 `bothSproutToday`/`bothMilestoneToday`/`bothMeasureToday`/`isFullMoonNight`，导致 5 张贴纸无法触发 | ✅ 已修复（惰性加载子包 store + 农历十五速查表） |
+| N2 | HIGH | `uni.scss` `$uni-color-success` 仍为旧色 `#5C9A6E`，与设计系统 v6 的 `#4FAE6E` 不一致 | ✅ 已修复 |
+| N3 | MEDIUM | 贴纸双重同步：`records.ts:_syncStickersAuto()` 与页面 `syncStickers()` 各调一次，虽不重复解锁但有计算浪费 | 🔵 保留（首页快捷记录依赖此路径，去重逻辑安全） |
+| N4 | MEDIUM | 贴纸页重引入 `<image>` 标签：commit `648e2a7` 曾因 uni-app 编译错误回退 `<image>`，需在微信开发者工具验证是否重现 | 🟡 待验证 |
+| N5 | LOW | `dutyDoneTotalCount` 缺少持久化计数器：`solo_guard`(独当一面) 依赖累计值班次数，当前仅在 duty 页调用时通过 override 传入最近一次计数 | 🟡 待完善（加持久化计数器） |
+| N6 | LOW | 满月检测用公历近似农历十五速查表（2025-2026），每年需更新 | 🟡 长期方案：接入农历库 |
+| N7 | NOTE | TabBar 为原生自定义组件（`native/custom-tab-bar/`），uni-app 无法编译此目录，通过 `copy-tabbar.js` 构建时复制到 dist | ✅ 已解决 |
+| N8 | NOTE | 自定义 TabBar 选中态同步：`switchTab` 时组件重新 attach 自动同步；页面内 `onShow` 暂不主动更新 tabBar（规避 `getCurrentInstance` 兼容问题） | 🔵 可接受 |
 
-> 详细修复记录见 git log（共 18 次推送）
+> 历史修复记录见 git log（共 24 次推送）
 
 ---
 
@@ -311,10 +344,12 @@ babies.value = [...babies.value, baby]
 
 - **App.vue**：必须用 Options API (`export default { onLaunch() {} }`)，**不能用 `<script setup>`**
 - **生命周期**：Vue 生命周期（onMounted/onUnmounted）从 `vue` 导入；页面生命周期（onShow/onLoad/onHide）从 `@dcloudio/uni-app` 导入
+- ⚠️ `onShow`/`onHide`/`getCurrentInstance` **不能**从 `vue` 导入（uni-app WeChat 运行时不导出）
 - **App.vue 生命周期**：Vue 3 中 `beforeDestroy` → `beforeUnmount`
 - **入口**：`main.js` 必须用 `createSSRApp`，不能用 `createApp`（否则 `$vm` 错误）
 - **单位**：`rpx`（750rpx 基准），勿用 `px`
 - **底部安全区**：`padding-bottom: calc(XXrpx + env(safe-area-inset-bottom))`
+- **自定义 TabBar**：uni-app 不编译 `custom-tab-bar/` 目录，原生组件放在 `native/custom-tab-bar/`，构建时由 `copy-tabbar.js` 复制到 dist
 
 ### 文件规模红线
 
@@ -346,8 +381,9 @@ babies.value = [...babies.value, baby]
 ```bash
 # 1. 前端编译
 cd twin-planet-miniapp
-npm run build:mp    # uni build + strip-wxss + copy-echarts
+npm run build:mp    # uni build + strip-wxss + copy-echarts + copy-tabbar
 # 或：npm run build:mp-weixin
+# ⚠️ copy-tabbar.js：将 native/custom-tab-bar/* 复制到 dist（uni-app 不编译此目录）
 
 # 2. 后端类型检查
 cd ../twin-planet-server
@@ -440,6 +476,7 @@ AppID: wxee2ef767a77058db
 | 十角色论证报告 | `docs/论证/2026-06-14-十角色论证报告.md` |
 | 四角色论证第四轮 | `docs/论证/2026-06-14-四角色论证-第四轮.md` |
 | Logo 设计哲学 | `docs/logo-design-philosophy.md` |
+| 设计哲学（双狐主义） | `design-philosophy.md` |
 | 项目建设方案 | Obsidian: `并蒂星球-项目建设方案.md` |
 
 **论证机制**：每个 Sprint 完成后启动多角色论证，结果保存为 `docs/论证/YYYY-MM-DD-论证主题.md`。
@@ -449,22 +486,32 @@ AppID: wxee2ef767a77058db
 ## 十三、当前优先级路线图
 
 ```
-Phase 0 (本轮完成): CRITICAL 9/12 + HIGH 8/18 修复
-Phase 1 (当前): 剩余 CRITICAL (C3/C4) + 架构 HIGH (H2/H8/H10/H12 Canvas)
-Phase 2: Sprint 4.5 — 3-6 岁衔接
+✅ Phase 0-3 已完成:
+  ├── CRITICAL/HIGH 全线修复
+  ├── 首页拆分为 IndexMom/IndexDad/IndexGranny
+  ├── interactionsStore → sproutStore + contributionStore
+  ├── guardianStore → energyStore + oneOnOneStore
+  ├── 贴纸系统 v2.0（74 张贴纸 · 8 册 · 4 稀有度 · 75 PNG）
+  ├── 亲子任务页面（日常 6 + 每周 5 + 成就 4）
+  ├── 双宝广场 v2（周报 + 功能入口 + 成就动态）
+  ├── 品牌统一：双狐为唯一 IP + 色彩去性别化（terracotta）
+  ├── 通用组件：BrandLoading / EmptyState / Skeleton
+  ├── 底部导航：原生自定义 TabBar（4 tabs · switchTab）
+  └── 角色切换：所有模式均可切换角色
+
+🟡 Phase 4 (当前): Sprint 4.5 — 3-6 岁衔接
   ├── 入园助手完善
   ├── 能力观察完善
   ├── RecordType 扩展到 3-6 岁
   └── 爸爸值班 4 岁版清单
-Phase 3: 架构优化
-  ├── 首页拆分为 IndexMom/IndexDad/IndexGranny
+
+⏳ Phase 5: 后端依赖功能
   ├── shareCard.ts Canvas 动态生成 + 接入分享流程
-  ├── interactionsStore → sproutStore + contributionStore
-  └── guardianStore → energyStore + oneOnOneStore
-Phase 4: 后端依赖功能
+  ├── 贴纸插图实际生成（当前为临时占位 PNG）
   ├── 智能提醒（微信订阅消息）
   ├── COS 语音文件上传
-  └── 知识库
+  ├── dutyDoneTotalCount 持久化计数器
+  └── 农历库接入（替代满月速查表）
 ```
 
 ---

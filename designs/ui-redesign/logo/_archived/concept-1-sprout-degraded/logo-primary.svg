@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="55%" r="45%">
+      <stop offset="0%" stop-color="#FFF7EC"/>
+      <stop offset="100%" stop-color="#FDFAF3"/>
+    </radialGradient>
+  </defs>
+  <!-- Background circle (optional, for app icon context) -->
+  <circle cx="100" cy="100" r="96" fill="url(#bgGlow)" opacity="0.6"/>
+
+  <!-- Left sprout (Baby A - Amber) -->
+  <path d="M 100 160
+           C 70 150, 45 120, 42 85
+           C 40 65, 48 45, 65 38
+           C 78 33, 88 42, 92 58
+           C 95 72, 96 90, 98 105
+           C 99 115, 100 130, 100 160 Z"
+        fill="#E07B3E"/>
+
+  <!-- Right sprout (Baby B - Rose) -->
+  <path d="M 100 160
+           C 130 150, 155 120, 158 85
+           C 160 65, 152 45, 135 38
+           C 122 33, 112 42, 108 58
+           C 105 72, 104 90, 102 105
+           C 101 115, 100 130, 100 160 Z"
+        fill="#D48068"/>
+
+  <!-- Heart shape formed at intersection -->
+  <path d="M 100 68
+           C 96 60, 88 56, 84 62
+           C 80 68, 82 76, 88 82
+           L 100 95
+           L 112 82
+           C 118 76, 120 68, 116 62
+           C 112 56, 104 60, 100 68 Z"
+        fill="#FDFAF3" opacity="0.95"/>
+
+  <!-- Shared base/stem -->
+  <ellipse cx="100" cy="162" rx="14" ry="5" fill="#2A2017" opacity="0.15"/>
+
+  <!-- Small sparkle dots -->
+  <circle cx="65" cy="38" r="3" fill="#C8993E" opacity="0.6"/>
+  <circle cx="135" cy="38" r="3" fill="#C8993E" opacity="0.6"/>
+</svg>

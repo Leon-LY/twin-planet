@@ -301,7 +301,7 @@ onShareAppMessage(() => ({
 </script>
 
 <style scoped>
-.handover-page { min-height: 100vh; background: var(--paper); padding: 40rpx 28rpx calc(80rpx + env(safe-area-inset-bottom)); }
+.handover-page { min-height: 100vh; background: var(--paper); padding: 40rpx 28rpx calc(120rpx + env(safe-area-inset-bottom)); }
 /* 使用全局 .page-header 页头模式 */
 
 .recorder-section { margin-bottom: 40rpx; }
@@ -320,9 +320,9 @@ onShareAppMessage(() => ({
 .recorder-card.recording {
   border-color: var(--rose);
   box-shadow:
-    0 1rpx 0 rgba(212,128,104,0.04),
-    0 2rpx 8rpx rgba(212,128,104,0.06),
-    0 4rpx 20rpx rgba(212,128,104,0.06);
+    0 1rpx 0 rgba(192,133,82,0.04),
+    0 2rpx 8rpx rgba(192,133,82,0.06),
+    0 4rpx 20rpx rgba(192,133,82,0.06);
 }
 .recorder-visual { height: 160rpx; display: flex; align-items: center; justify-content: center; margin-bottom: 24rpx; }
 .recorder-icon { font-size: 64rpx; }
@@ -376,7 +376,7 @@ onShareAppMessage(() => ({
   border-radius: var(--radius-full); color: #FFF; font-size: var(--font-body); font-weight: 600;
   box-shadow:
     0 2rpx 0 #4E8A5E,
-    0 4rpx 12rpx rgba(92,154,110,0.18),
+    0 4rpx 12rpx rgba(79,174,110,0.18),
     0 1rpx 0 rgba(255,255,255,0.12) inset;
   transition: all .15s var(--ease-stamp);
 }
@@ -384,7 +384,7 @@ onShareAppMessage(() => ({
   transform: scale(.96) translateY(1rpx);
   box-shadow:
     0 1rpx 0 #4E8A5E,
-    0 1rpx 3rpx rgba(92,154,110,0.1);
+    0 1rpx 3rpx rgba(79,174,110,0.1);
 }
 
 .section-label { display: block; font-family: var(--font-journal); font-size: var(--font-card); font-weight: 600; color: var(--ink); margin-bottom: 16rpx; }
@@ -443,7 +443,7 @@ onShareAppMessage(() => ({
   color: #FFF;
   box-shadow:
     0 2rpx 0 #4E8A5E,
-    0 4rpx 12rpx rgba(92,154,110,0.18),
+    0 4rpx 12rpx rgba(79,174,110,0.18),
     0 1rpx 0 rgba(255,255,255,0.12) inset;
 }
 .unread-dot { width: 12rpx; height: 12rpx; border-radius: 50%; background: var(--amber); }

@@ -144,7 +144,7 @@ onShareAppMessage(() => {
 </script>
 
 <style scoped>
-.contrib-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
+.contrib-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx calc(120rpx + env(safe-area-inset-bottom)); }
 
 /* 头部 */
 .header-top { display: flex; align-items: center; justify-content: space-between; }

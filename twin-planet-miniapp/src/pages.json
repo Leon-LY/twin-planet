@@ -101,6 +101,13 @@
 			}
 		},
 		{
+			"path": "pages/tasks/index",
+			"style": {
+				"navigationBarTitleText": "亲子任务",
+				"navigationBarBackgroundColor": "#FEF9F0"
+			}
+		},
+		{
 			"path": "pages/discover/index",
 			"style": {
 				"navigationBarTitleText": "发现",
@@ -158,5 +165,19 @@
 		"navigationBarTitleText": "双宝记",
 		"navigationBarBackgroundColor": "#FEF9F0",
 		"backgroundColor": "#FEF9F0"
+	},
+	"tabBar": {
+			"custom": true,
+		
+		"color": "#9C8E7C",
+		"selectedColor": "#E07B3E",
+		"backgroundColor": "#FEF9F0",
+		"borderStyle": "white",
+		"list": [
+			{ "pagePath": "pages/index/index", "text": "手帳" },
+			{ "pagePath": "pages/record/index", "text": "记录" },
+			{ "pagePath": "pages/stickers/index", "text": "贴纸" },
+			{ "pagePath": "pages/discover/index", "text": "发现" }
+		]
 	}
 }

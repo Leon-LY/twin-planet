@@ -126,7 +126,7 @@ const nodeBottomClass = computed(() => props.state === 'one-sided-b' ? 'active-b
 .bridge-node-top { top: -2rpx; }
 .bridge-node-bottom { bottom: -2rpx; }
 .bridge-node.active-a { background: var(--amber); box-shadow: 0 0 12rpx rgba(224,123,62,0.4); }
-.bridge-node.active-b { background: var(--rose); box-shadow: 0 0 12rpx rgba(212,128,104,0.4); }
+.bridge-node.active-b { background: var(--rose); box-shadow: 0 0 12rpx rgba(192,133,82,0.4); }
 
 .anim-bridge {
   animation: bridgePulse 3s var(--ease-soft) infinite;

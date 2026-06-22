@@ -101,16 +101,18 @@ export const useUserStore = defineStore('user', () => {
 
   /** 离线模式 — 跳过服务器认证，创建本地用户 */
   function _createLocalProfile() {
+    // 优先复用已有持久化角色，避免每次离线登录重置为 mom
+    const existing = _p.load()
     profile.value = {
       id: 'local-user-' + Date.now(),
       openid: 'offline-' + Date.now(),
-      nickname: '',
-      avatar: '',
-      phone: '',
-      role: 'mom',
-      preferredUiMode: 'normal',
-      uiConfig: { ...DEFAULT_UI_CONFIG },
-      createdAt: new Date().toISOString(),
+      nickname: existing?.nickname || '',
+      avatar: existing?.avatar || '',
+      phone: existing?.phone || '',
+      role: existing?.role || 'mom',
+      preferredUiMode: existing?.preferredUiMode || 'normal',
+      uiConfig: existing?.uiConfig || { ...DEFAULT_UI_CONFIG },
+      createdAt: existing?.createdAt || new Date().toISOString(),
     }
     isLoggedIn.value = true
     isNewUser.value = false

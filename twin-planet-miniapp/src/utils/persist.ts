@@ -71,5 +71,6 @@ export const PERSIST_KEYS = {
   growth: 'growth_measurements',
   stickers: 'stickers',
   handover: 'handover_messages',
+  tasks: 'tp_tasks',
   token: 'token',
 } as const

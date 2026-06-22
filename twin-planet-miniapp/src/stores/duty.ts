@@ -41,12 +41,14 @@ export const CATEGORY_META: Record<TaskCategory, { emoji: string; label: string 
 }
 
 export const useDutyStore = defineStore('duty', () => {
-  const _p = createPersistence<{ tasks: SOPTask[]; phrase: string }>(PERSIST_KEYS.duty)
+  const _p = createPersistence<{ tasks: SOPTask[]; phrase: string; dutyDoneTotalCount: number }>(PERSIST_KEYS.duty)
   const _saved = _p.load()
 
   const tasks = ref<SOPTask[]>(_saved?.tasks ?? [])
   const mode = ref<TaskMode>('solo')
   const phrase = ref(_saved?.phrase ?? '')
+  /** 累计完成值班次数（用于独当一面贴纸） */
+  const dutyDoneTotalCount = ref(_saved?.dutyDoneTotalCount ?? 0)
 
   const totalCount = computed(() => tasks.value.length)
   const doneCount = computed(() => tasks.value.filter(t => t.done).length)
@@ -55,7 +57,7 @@ export const useDutyStore = defineStore('duty', () => {
   const undoneCount = computed(() => totalCount.value - doneCount.value)
 
   function _save() {
-    _p.save({ tasks: tasks.value, phrase: phrase.value })
+    _p.save({ tasks: tasks.value, phrase: phrase.value, dutyDoneTotalCount: dutyDoneTotalCount.value })
   }
 
   function initDuty() {
@@ -96,11 +98,16 @@ export const useDutyStore = defineStore('duty', () => {
     _save()
   }
 
+  function incrementDutyDoneTotal() {
+    dutyDoneTotalCount.value++
+    _save()
+  }
+
   function resetDuty() { tasks.value = []; phrase.value = ''; _p.remove() }
 
   return {
-    tasks, mode, phrase,
+    tasks, mode, phrase, dutyDoneTotalCount,
     totalCount, doneCount, progress, isAllDone, undoneCount,
-    initDuty, toggleTask, toggleBabyNeed, updateNote, resetDuty,
+    initDuty, toggleTask, toggleBabyNeed, updateNote, resetDuty, incrementDutyDoneTotal,
   }
 })

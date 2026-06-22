@@ -63,17 +63,6 @@ export function matchSeasonalTerm(date: Date): SeasonalTerm | null {
 }
 
 /**
- * 判断今天是否是某个节气的起始日（第一天）
- * 用于贴纸规则：节气当天记录可获得对应节气贴纸
- */
-export function isSolarTermStartDay(date?: Date): boolean {
-  const d = date || new Date()
-  const m = d.getMonth() + 1
-  const day = d.getDate()
-  return SEASONAL_TERMS.some(t => t.start[0] === m && t.start[1] === day)
-}
-
-/**
  * 获取当前节气提示文本
  * 格式：{emoji} 今日{节气名} · {诗意文案}
  */

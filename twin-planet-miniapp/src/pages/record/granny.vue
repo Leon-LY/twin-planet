@@ -8,7 +8,7 @@
         :class="{ active: activeBabyId === babyA?.id, amber: true }"
         @click="activeBabyId = babyA?.id"
       >
-        <text class="granny-baby-emoji iconfont icon-baby-a"></text>
+        <image class="granny-baby-avatar" src="/static/avatars/baby-a-amber.png" mode="aspectFill" @error="handleImageError" />
         <text class="granny-baby-name">{{ babyA?.nickname || '大宝' }}</text>
       </view>
       <view
@@ -16,7 +16,7 @@
         :class="{ active: activeBabyId === babyB?.id, rose: true }"
         @click="activeBabyId = babyB?.id"
       >
-        <text class="granny-baby-emoji iconfont icon-baby-b"></text>
+        <image class="granny-baby-avatar" src="/static/avatars/baby-b-terracotta.png" mode="aspectFill" @error="handleImageError" />
         <text class="granny-baby-name">{{ babyB?.nickname || '小宝' }}</text>
       </view>
     </view>
@@ -57,7 +57,9 @@
 import { ref, computed } from 'vue'
 import { useBabiesStore } from '@/stores/babies'
 import { useRecordsStore } from '@/stores/records'
+import { useBabyStatus } from '@/composables/useBabyStatus'
 
+const { handleImageError } = useBabyStatus()
 const babiesStore = useBabiesStore()
 const recordsStore = useRecordsStore()
 
@@ -101,7 +103,7 @@ function doRecord(type: string) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60rpx 40rpx calc(100rpx + env(safe-area-inset-bottom));
+  padding: 60rpx 40rpx calc(120rpx + env(safe-area-inset-bottom));
   background: var(--paper);
 }
 
@@ -141,8 +143,8 @@ function doRecord(type: string) {
 
 .granny-baby-tab.active.rose {
   border-color: var(--rose);
-  background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, transparent 40%, rgba(212,128,104,0.04) 100%), var(--rose-lt);
-  box-shadow: 0 3rpx 0 rgba(212,128,104,0.2), 0 4rpx 12rpx rgba(212,128,104,0.1);
+  background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, transparent 40%, rgba(192,133,82,0.04) 100%), var(--rose-lt);
+  box-shadow: 0 3rpx 0 rgba(192,133,82,0.2), 0 4rpx 12rpx rgba(192,133,82,0.1);
 }
 
 .granny-baby-tab:active {
@@ -150,12 +152,14 @@ function doRecord(type: string) {
   box-shadow: inset 0 2rpx 6rpx rgba(0,0,0,0.06);
 }
 
-.granny-baby-emoji {
-  font-size: 48rpx;
+.granny-baby-avatar {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
   transition: transform 0.3s var(--ease-bounce);
 }
 
-.granny-baby-tab:active .granny-baby-emoji {
+.granny-baby-tab:active .granny-baby-avatar {
   transform: scale(1.2);
 }
 

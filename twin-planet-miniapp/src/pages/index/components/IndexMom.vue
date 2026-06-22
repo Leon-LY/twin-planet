@@ -54,7 +54,10 @@
     <view class="twins reveal-3">
       <view class="twin-card card-a journal-holes" :class="{ 'has-timer': isRunningA }" @click="goRecord">
         <view class="card-surface">
-          <view class="avatar-ring" :class="{ pulsing: isRunningA }"><text class="avatar-emoji iconfont" :class="babyEmoji(babyA?.id, 0)"></text></view>
+          <view class="avatar-ring" :class="{ pulsing: isRunningA }">
+            <image class="avatar-image" src="/static/avatars/baby-a-amber.png" mode="aspectFill" @error="handleImageError" />
+            <text v-if="babyStatusIcon(babyA?.id, 0)" class="avatar-status iconfont" :class="babyStatusIcon(babyA?.id, 0)"></text>
+          </view>
           <text class="twin-name">{{ babyA?.nickname || babyA?.name || '大宝' }}</text>
           <view class="twin-status-row">
             <text v-if="isRunningA" class="status-live">计时中</text>
@@ -65,7 +68,10 @@
       </view>
       <view class="twin-card card-b journal-holes" :class="{ 'has-timer': isRunningB }" @click="goRecord">
         <view class="card-surface">
-          <view class="avatar-ring" :class="{ pulsing: isRunningB }"><text class="avatar-emoji iconfont" :class="babyEmoji(babyB?.id, 1)"></text></view>
+          <view class="avatar-ring" :class="{ pulsing: isRunningB }">
+            <image class="avatar-image" src="/static/avatars/baby-b-terracotta.png" mode="aspectFill" @error="handleImageError" />
+            <text v-if="babyStatusIcon(babyB?.id, 1)" class="avatar-status iconfont" :class="babyStatusIcon(babyB?.id, 1)"></text>
+          </view>
           <text class="twin-name">{{ babyB?.nickname || babyB?.name || '小宝' }}</text>
           <view class="twin-status-row">
             <text v-if="isRunningB" class="status-live">计时中</text>
@@ -76,19 +82,33 @@
       </view>
     </view>
 
+    <!-- 双宝今日对比微卡片 -->
+    <view class="twin-compare reveal-3" v-if="todayLogCount > 0">
+      <view class="tc-row">
+        <view class="tc-bar tc-bar-a" :style="{ width: compareBarA + '%' }"></view>
+        <view class="tc-bar tc-bar-b" :style="{ width: compareBarB + '%' }"></view>
+      </view>
+      <view class="tc-labels">
+        <text class="tc-label tc-label-a">{{ babyA?.nickname || '大宝' }} {{ todayCountA }}次</text>
+        <text class="tc-sync" v-if="twinSyncRate > 0">同步率 {{ twinSyncRate }}%</text>
+        <text class="tc-label tc-label-b">{{ babyB?.nickname || '小宝' }} {{ todayCountB }}次</text>
+      </view>
+    </view>
+
     <view class="sticker-zone reveal-4" v-if="userStore.roleConfig.homeLayout==='full'">
       <StickerStrip :stickers="stickersStore.todayStickers" :showMore="true" @viewAll="$emit('navigate','/pages/stickers/index')" />
     </view>
 
     <view class="quick-ref reveal-4" v-if="quickRef.lastFeeding!=='—' || quickRef.activeTimer">
-      <view class="qr-item journal-sticky" v-if="quickRef.activeTimer"><text class="qr-emoji">⏱️</text><text class="qr-text">{{ quickRef.activeTimer }}</text></view>
+      <view class="qr-item journal-sticky" v-if="quickRef.activeTimer"><text class="qr-emoji iconfont icon-clock"></text><text class="qr-text">{{ quickRef.activeTimer }}</text></view>
       <view class="qr-item journal-sticky" v-if="quickRef.lastFeeding!=='—'"><text class="qr-emoji iconfont icon-bottle"></text><text class="qr-text">上次喂奶 {{ quickRef.lastFeeding }}</text></view>
       <view class="qr-item journal-sticky" v-if="quickRef.lastSleep!=='—'"><text class="qr-emoji iconfont icon-sleep"></text><text class="qr-text">上次睡觉 {{ quickRef.lastSleep }}</text></view>
     </view>
 
     <view class="action-center reveal-5">
       <button class="main-btn" @click="goRecord">
-        <text class="btn-icon iconfont icon-edit"></text><text class="btn-text">记一笔</text>
+        <image class="pen-image" src="/static/images/pen.png" mode="aspectFit" @error="handleImageError" />
+        <text class="btn-text">记一笔</text>
       </button>
     </view>
 
@@ -96,6 +116,22 @@
       <view class="q-chip q-primary" @click="dualRecord('feeding')"><text class="iconfont icon-bottle icon-sm"></text> 都喂了</view>
       <view class="q-chip" @click="dualRecord('sleep')"><text class="iconfont icon-sleep icon-sm"></text> 都睡了</view>
       <view class="q-chip" @click="dualRecord('diaper')"><text class="iconfont icon-diaper"></text></view>
+    </view>
+
+    <!-- journal-nav: 手帳导航（生长/贴纸/发现） -->
+    <view class="journal-nav reveal-5" v-if="userStore.roleConfig.homeLayout==='full'">
+      <view class="jn-item" @click="$emit('navigate', '/pages/growth/index')">
+        <text class="jn-emoji">📈</text>
+        <text class="jn-label">生长</text>
+      </view>
+      <view class="jn-item" @click="$emit('navigate', '/pages/stickers/index')">
+        <text class="jn-emoji">🏷️</text>
+        <text class="jn-label">贴纸</text>
+      </view>
+      <view class="jn-item" @click="$emit('navigate', '/pages/discover/index')">
+        <text class="jn-emoji">🌟</text>
+        <text class="jn-label">发现</text>
+      </view>
     </view>
 
     <view class="duty-card reveal-6" v-if="userStore.roleConfig.homeLayout==='compact' && babyA && babyB">
@@ -139,14 +175,8 @@
 
     <text class="journal-footer-text" v-if="streakDays > 0">连续记录第 {{ streakDays }} 天 ✦</text>
 
-    <view class="journal-nav">
-      <text class="jnav-item active">手帳</text>
-      <text class="jnav-item" @click="goGrowth">生长</text>
-      <text class="jnav-item" @click="goSnapshot">快照</text>
-      <text class="jnav-item" @click="goMore">更多</text>
-    </view>
-
-    <view class="drawer-overlay" v-if="showRoleDrawer" @click="showRoleDrawer=false">
+    <!-- 角色抽屉 -->
+    <view class="drawer-overlay" v-if="showRoleDrawer" @click="$emit('switchToRole', userStore.profile?.role || 'mom')">
       <view class="drawer-sheet" @click.stop>
         <view class="drawer-handle" />
         <text class="drawer-title">切换角色</text>
@@ -154,13 +184,13 @@
           <view v-for="r in roleOptions" :key="r.key" class="drawer-role" @click="$emit('switchToRole', r.key)">
             <text class="dr-emoji">{{ r.emoji }}</text>
             <view class="dr-body"><text class="dr-label">{{ r.label }}</text><text class="dr-desc">{{ r.desc }}</text></view>
-            <text class="dr-check icon-check" v-if="userStore.profile?.role===r.key"></text>
+            <text class="dr-check" v-if="userStore.profile?.role===r.key">✓</text>
           </view>
         </view>
         <view class="drawer-divider" />
         <view class="drawer-role drawer-danger" @click="$emit('resetFamily')"><text class="dr-emoji">📝</text><text class="dr-label">重新创建家庭</text></view>
         <view class="drawer-role drawer-danger" @click="$emit('logout')"><text class="dr-emoji">🚪</text><text class="dr-label">退出登录</text></view>
-        <view class="drawer-cancel" @click="showRoleDrawer=false"><text>取消</text></view>
+        <view class="drawer-cancel" @click="$emit('switchToRole', userStore.profile?.role || 'mom')"><text>取消</text></view>
       </view>
     </view>
   </view>
@@ -176,18 +206,19 @@ import { useStickersStore } from '@/stores/stickers'
 import { useQuickRef } from '@/composables/useQuickRef'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
 import { getSeasonalHint } from '@/config/seasonal'
+import { useBabyStatus } from '@/composables/useBabyStatus'
 
 const emit = defineEmits<{
   navigate: [url: string]
-  switchRole: []
   dismissWelcome: []
-  switchToRole: [role: string]
-  resetFamily: []
-  logout: []
   acceptInvite: []
   dismissInvite: []
   milestoneAction: []
   dismissCelebrate: []
+  switchRole: []
+  switchToRole: [role: string]
+  resetFamily: []
+  logout: []
 }>()
 
 const props = defineProps<{
@@ -242,13 +273,27 @@ const greetFull = computed(() => {
   return '晚上好，小怪兽们在干嘛呢'
 })
 
-const syncRate = computed(() => recordsStore.twinSyncRate)
+const twinSyncRate = computed(() => recordsStore.twinSyncRate)
 const insightText = computed(() => {
-  const s = syncRate.value
+  const s = twinSyncRate.value
   if (s>70) return '今天两个小家伙步调特别一致，果然是双胞胎~'
   if (s>30) return '两个小怪兽今天各有各的节奏，挺好的'
   if (s>0) return '各自精彩的一天~'
   return '今天两只小怪兽的故事又要开始啦'
+})
+
+// === 双宝今日对比 ===
+const todayLogs = computed(() => recordsStore.logs.filter(l => l.createdAt >= new Date().setHours(0,0,0,0)))
+const todayLogCount = computed(() => todayLogs.value.length)
+const todayCountA = computed(() => babyA.value ? todayLogs.value.filter(l => l.babyId === babyA.value.id).length : 0)
+const todayCountB = computed(() => babyB.value ? todayLogs.value.filter(l => l.babyId === babyB.value.id).length : 0)
+const compareBarA = computed(() => {
+  const total = todayCountA.value + todayCountB.value
+  return total > 0 ? Math.round(todayCountA.value / total * 100) : 50
+})
+const compareBarB = computed(() => {
+  const total = todayCountA.value + todayCountB.value
+  return total > 0 ? Math.round(todayCountB.value / total * 100) : 50
 })
 
 const seasonalHint = computed(() => getSeasonalHint())
@@ -305,22 +350,7 @@ function babyUrgency(b: any): string {
   if (h > 4) return 'urgent'; if (h > 3) return 'warn'; return ''
 }
 
-function babyEmoji(babyId: string | undefined, idx: number): string {
-  if (!babyId) return idx === 0 ? 'icon-baby-a' : 'icon-baby-b'
-  const timer = recordsStore.runningTimers.find(t => t.babyId === babyId)
-  if (timer) return timer.type === 'feeding' ? 'icon-bottle' : 'icon-sleep-zzz'
-  const logs = recordsStore.recentLogsByBaby[babyId]
-  if (logs?.length) {
-    const last = logs[logs.length - 1]
-    const minAgo = (Date.now() - last.createdAt) / 60000
-    if (minAgo < 30) {
-      if (last.type === 'feeding') return 'icon-bottle'
-      if (last.type === 'sleep') return 'icon-sleep'
-      if (last.type === 'diaper') return 'icon-diaper'
-    }
-  }
-  return idx === 0 ? 'icon-baby-a' : 'icon-baby-b'
-}
+const { babyStatusIcon, handleImageError } = useBabyStatus()
 
 function dualRecord(t: 'feeding' | 'sleep' | 'diaper') {
   if (babyA.value) recordsStore.quickLog(babyA.value.id, t)
@@ -329,16 +359,13 @@ function dualRecord(t: 'feeding' | 'sleep' | 'diaper') {
 }
 
 const goRecord = () => emit('navigate', '/pages/record/index')
-const goGrowth = () => emit('navigate', '/pages/growth/index')
-const goSnapshot = () => emit('navigate', '/pages/snapshot/index')
-const goMore = () => emit('navigate', '/pages/discover/index')
 </script>
 
 <style scoped>
-.journal{position:relative;padding-bottom:calc(100rpx + env(safe-area-inset-bottom))}
+.journal{position:relative}
 .bg-spot{position:absolute;pointer-events:none;z-index:0}
 .spot-a{width:400rpx;height:360rpx;top:20rpx;left:-100rpx;background:radial-gradient(ellipse 60% 55% at 35% 40%,rgba(224,123,62,0.025) 0%,transparent 70%),radial-gradient(ellipse 40% 50% at 55% 35%,rgba(224,123,62,0.015) 0%,transparent 60%)}
-.spot-b{width:300rpx;height:260rpx;bottom:320rpx;right:-60rpx;background:radial-gradient(ellipse 50% 60% at 40% 45%,rgba(92,154,110,0.02) 0%,transparent 70%),radial-gradient(ellipse 35% 45% at 55% 35%,rgba(92,154,110,0.012) 0%,transparent 60%)}
+.spot-b{width:300rpx;height:260rpx;bottom:320rpx;right:-60rpx;background:radial-gradient(ellipse 50% 60% at 40% 45%,rgba(79,174,110,0.02) 0%,transparent 70%),radial-gradient(ellipse 35% 45% at 55% 35%,rgba(79,174,110,0.012) 0%,transparent 60%)}
 
 .masthead{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32rpx}
 .masthead-left{display:flex;flex-direction:column;gap:8rpx}
@@ -383,14 +410,17 @@ const goMore = () => emit('navigate', '/pages/discover/index')
 .twin-card.card-b{flex:48;z-index:1;margin-left:-24rpx;margin-top:8rpx}
 .card-surface{padding:28rpx 20rpx 22rpx;border-radius:8rpx 24rpx 8rpx 24rpx;position:relative;box-shadow:0 2rpx 12rpx rgba(45,35,24,0.04),0 1rpx 0 rgba(45,35,24,0.02)}
 .card-a .card-surface{background:linear-gradient(175deg,var(--amber-lt) 0%,rgba(224,123,62,0.03) 100%);border:1.5px solid rgba(224,123,62,0.1);transform:rotate(-1.2deg)}
-.card-b .card-surface{background:linear-gradient(185deg,var(--rose-lt) 0%,rgba(212,128,104,0.03) 100%);border:1.5px solid rgba(212,128,104,0.1);transform:rotate(1.5deg)}
-.avatar-ring{width:88rpx;height:88rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12rpx;transition:transform .3s var(--ease-bounce)}
+.card-b .card-surface{background:linear-gradient(185deg,var(--rose-lt) 0%,rgba(192,133,82,0.03) 100%);border:1.5px solid rgba(192,133,82,0.1);transform:rotate(1.5deg)}
+.avatar-ring{width:88rpx;height:88rpx;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12rpx;transition:transform .3s var(--ease-bounce);position:relative;overflow:hidden}
 .twin-card:active .avatar-ring{transform:scale(1.08)}
 .card-a .avatar-ring{background:var(--amber-md)}
 .card-b .avatar-ring{background:var(--rose-md)}
 .avatar-ring.pulsing::before{content:'';position:absolute;top:-6rpx;right:-6rpx;bottom:-6rpx;left:-6rpx;border-radius:50%;border:2rpx solid var(--mint);opacity:.45;animation:ringPulse 2.5s ease-in-out infinite}
+.avatar-image{width:84rpx;height:84rpx;border-radius:50%;object-fit:cover}
+.avatar-status{position:absolute;bottom:2rpx;right:2rpx;width:32rpx;height:32rpx;border-radius:50%;background:var(--paper);border:2rpx solid var(--cream);font-size:20rpx;display:flex;align-items:center;justify-content:center;z-index:2;box-shadow:0 1rpx 4rpx rgba(0,0,0,0.1)}
 @keyframes ringPulse{0%,100%{transform:scale(1);opacity:.35}50%{transform:scale(1.1);opacity:.8}}
 .avatar-emoji{font-size:44rpx}
+
 .twin-name{font-family:var(--font-journal);font-size:30rpx;font-weight:700;color:var(--ink);text-align:center;display:block;margin-bottom:4rpx}
 .twin-status-row{text-align:center}
 .status-live{font-size:22rpx;color:var(--mint);font-weight:600}
@@ -400,6 +430,19 @@ const goMore = () => emit('navigate', '/pages/discover/index')
 .status-tap{font-size:22rpx;color:var(--ink-lt)}
 .sticker-zone{position:relative;z-index:1;margin-bottom:20rpx}
 
+/* === 双宝今日对比微卡片 === */
+.twin-compare{margin:8rpx 0 20rpx;padding:16rpx 24rpx;background:var(--cream);border-radius:12rpx 4rpx 12rpx 4rpx;border:1.5px solid var(--dot);position:relative;z-index:1}
+.twin-compare::before{content:'';position:absolute;top:-6rpx;left:24rpx;width:40rpx;height:12rpx;background:rgba(224,123,62,0.15);border-radius:0 0 4rpx 4rpx}
+.tc-row{display:flex;height:12rpx;border-radius:6rpx;overflow:hidden;margin-bottom:10rpx;background:var(--dot)}
+.tc-bar{height:100%;transition:width .5s var(--ease-soft)}
+.tc-bar-a{background:linear-gradient(90deg,var(--amber),var(--amber-lt))}
+.tc-bar-b{background:linear-gradient(90deg,var(--terracotta-lt,rgba(192,133,82,0.3)),var(--terracotta))}
+.tc-labels{display:flex;justify-content:space-between;align-items:center}
+.tc-label{font-size:20rpx;font-family:var(--font-journal);font-weight:600}
+.tc-label-a{color:var(--amber)}
+.tc-label-b{color:var(--terracotta)}
+.tc-sync{font-size:18rpx;color:var(--gold);font-family:var(--font-journal);padding:2rpx 10rpx;background:rgba(200,153,62,0.1);border-radius:8rpx}
+
 .quick-ref{display:flex;gap:16rpx;flex-wrap:wrap;justify-content:center;margin-bottom:20rpx;position:relative;z-index:1}
 .qr-item{display:flex;align-items:center;gap:8rpx;padding:10rpx 18rpx;background:linear-gradient(180deg,rgba(255,255,255,0.5) 0%,transparent 40%,rgba(0,0,0,0.02) 100%),var(--cream);border-radius:var(--radius-sm);border:2rpx solid var(--dot);box-shadow:0 1rpx 0 rgba(0,0,0,0.03),0 2rpx 4rpx rgba(0,0,0,0.02);transform:rotate(-0.3deg)}
 .qr-item:nth-child(2n){transform:rotate(0.4deg)}
@@ -407,10 +450,12 @@ const goMore = () => emit('navigate', '/pages/discover/index')
 .qr-text{font-size:24rpx;color:var(--ink-md);font-weight:500}
 
 .action-center{display:flex;align-items:center;justify-content:center;position:relative;z-index:1;margin-bottom:28rpx}
-.main-btn{width:300rpx;height:300rpx;border-radius:50%;position:relative;z-index:2;background:var(--amber);border:none;color:#FFF;font-family:var(--font-journal);box-shadow:0 20rpx 56rpx rgba(224,123,62,0.2),0 6rpx 12rpx rgba(224,123,62,0.1),inset 0 3rpx 0 rgba(255,255,255,.2),inset 0 -6rpx 12rpx rgba(0,0,0,.06);transform:rotate(-2deg);transition:transform .18s var(--ease-bounce),box-shadow .18s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6rpx;}
+.main-btn{width:300rpx;height:300rpx;border-radius:48% 52% 46% 54% / 52% 48% 54% 46%;position:relative;z-index:2;background:var(--amber);border:none;color:#FFF;font-family:var(--font-journal);box-shadow:0 20rpx 56rpx rgba(224,123,62,0.2),0 6rpx 12rpx rgba(224,123,62,0.1),inset 0 3rpx 0 rgba(255,255,255,.2),inset 0 -6rpx 12rpx rgba(0,0,0,.06);transform:rotate(-2deg);transition:transform .18s var(--ease-bounce),box-shadow .18s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10rpx;}
 .main-btn::after{content:'';position:absolute;top:14rpx;left:22%;right:22%;height:32%;background:radial-gradient(ellipse at center,rgba(255,255,255,.25) 0%,transparent 70%);border-radius:50%;pointer-events:none}
 .main-btn:active{transform:rotate(-2deg)scale(.86);box-shadow:0 6rpx 20rpx rgba(224,123,62,.16),0 2rpx 4rpx rgba(224,123,62,.08)}
-.btn-icon{font-size:56rpx;position:relative;z-index:1}
+
+.pen-image{width:56rpx;height:56rpx;z-index:1}
+
 .btn-text{font-size:32rpx;font-weight:700;letter-spacing:2rpx;position:relative;z-index:1}
 
 .quick-bar{display:flex;gap:12rpx;justify-content:center;position:relative;z-index:1;margin-bottom:20rpx;align-items:center}
@@ -419,6 +464,13 @@ const goMore = () => emit('navigate', '/pages/discover/index')
 .q-chip.q-primary{padding:18rpx 32rpx;font-size:26rpx;background:linear-gradient(180deg,rgba(255,255,255,0.15) 0%,transparent 55%,rgba(0,0,0,0.03) 100%),var(--amber-lt);border-color:var(--amber);color:var(--amber);box-shadow:0 2rpx 0 rgba(224,123,62,0.2),0 3rpx 6rpx rgba(224,123,62,0.1)}
 .q-chip.q-primary:active{box-shadow:inset 0 1rpx 3rpx rgba(224,123,62,0.1)}
 .duty-card{display:flex;gap:8rpx;justify-content:center;position:relative;z-index:1;margin-bottom:20rpx;flex-wrap:wrap}
+
+/* journal-nav — 手帳导航横条 */
+.journal-nav{display:flex;justify-content:space-around;padding:16rpx 32rpx;margin-bottom:16rpx;position:relative;z-index:1}
+.jn-item{display:flex;flex-direction:column;align-items:center;gap:4rpx;padding:8rpx 16rpx;transition:transform .15s var(--ease-stamp)}
+.jn-item:active{transform:scale(.92)}
+.jn-emoji{font-size:36rpx}
+.jn-label{font-size:22rpx;color:var(--ink-md);font-family:var(--font-journal)}
 
 .footer-tools{display:flex;flex-direction:column;align-items:center;gap:12rpx;margin-bottom:12rpx;position:relative;z-index:1}
 .ft-invite{width:100%;max-width:560rpx;padding:16rpx 0;background:linear-gradient(135deg,var(--amber-lt),var(--rose-lt));border:2rpx solid var(--dot);border-radius:20rpx;font-size:24rpx;font-weight:600;color:var(--ink);line-height:1.4;box-shadow:0 2rpx 0 rgba(0,0,0,0.03),0 3rpx 8rpx rgba(0,0,0,0.03);transition:all .15s var(--ease-stamp)}
@@ -451,25 +503,21 @@ const goMore = () => emit('navigate', '/pages/discover/index')
 .invite-decline:active{color:var(--ink);background:rgba(0,0,0,0.03);border-radius:var(--radius-sm)}
 
 .journal-footer-text{display:block;text-align:right;font-size:18rpx;color:var(--ink-lt);margin-bottom:20rpx;padding-right:8rpx;position:relative;z-index:1}
-.journal-nav{display:flex;justify-content:space-between;padding:20rpx 48rpx calc(20rpx + env(safe-area-inset-bottom));border-top:1.5px solid var(--dot);position:fixed;bottom:0;left:0;right:0;background:var(--paper);z-index:10}
-.jnav-item{font-family:var(--font-journal);font-size:26rpx;color:var(--ink-lt);letter-spacing:1rpx}
-.jnav-item.active{color:var(--amber);font-weight:700}
 
-.drawer-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(45,35,24,.4);z-index:1000;animation:fadeIn .25s var(--ease-soft)}
-.drawer-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--paper);border-radius:28rpx 28rpx 0 0;padding:0 28rpx calc(40rpx + env(safe-area-inset-bottom));animation:slideUp .3s var(--ease-soft);max-height:70vh;overflow-y:auto}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+/* 角色抽屉 */
+.drawer-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(45,35,24,.4);z-index:1000}
+.drawer-sheet{position:absolute;bottom:0;left:0;right:0;background:var(--paper);border-radius:28rpx 28rpx 0 0;padding:0 28rpx calc(40rpx + env(safe-area-inset-bottom));max-height:70vh;overflow-y:auto}
 .drawer-handle{width:64rpx;height:6rpx;background:var(--dot);border-radius:3rpx;margin:16rpx auto 24rpx}
 .drawer-title{display:block;font-family:var(--font-journal);font-size:36rpx;color:var(--ink);text-align:center;margin-bottom:24rpx;font-weight:700}
 .drawer-roles{display:flex;flex-direction:column;gap:4rpx}
-.drawer-role{display:flex;align-items:center;gap:16rpx;padding:24rpx 16rpx;border-radius:var(--radius-md);transition:background .15s}
+.drawer-role{display:flex;align-items:center;gap:16rpx;padding:24rpx 16rpx;border-radius:var(--radius-md)}
 .drawer-role:active{background:var(--cream)}
+.drawer-role.drawer-danger .dr-label{color:var(--twin-danger)}
 .dr-emoji{font-size:44rpx;flex-shrink:0}
 .dr-body{flex:1;display:flex;flex-direction:column;gap:4rpx}
 .dr-label{font-size:30rpx;font-weight:600;color:var(--ink)}
 .dr-desc{font-size:22rpx;color:var(--ink-md)}
 .dr-check{font-size:28rpx;color:var(--mint);font-weight:700}
 .drawer-divider{height:2rpx;background:var(--dot);margin:16rpx 0}
-.drawer-role.drawer-danger .dr-label{color:var(--twin-danger)}
-.drawer-cancel{text-align:center;padding:24rpx 0 8rpx;font-size:28rpx;color:var(--ink-md);margin-top:8rpx}
-.drawer-cancel:active{opacity:.6}
+.drawer-cancel{text-align:center;padding:24rpx 0 8rpx;font-size:28rpx;color:var(--ink-md)}
 </style>

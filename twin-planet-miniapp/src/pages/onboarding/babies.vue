@@ -267,9 +267,9 @@ button::after { border: none; }
 }
 .tab-anran.active {
   border-color: var(--twin-baby-b);
-  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 55%, rgba(0,0,0,0.02) 100%), rgba(212,128,104,0.08);
+  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 55%, rgba(0,0,0,0.02) 100%), rgba(192,133,82,0.08);
   color: var(--twin-text); font-weight: 600;
-  box-shadow: 0 2rpx 0 rgba(180,100,80,0.25), 0 3rpx 6rpx rgba(0,0,0,0.04), 0 6rpx 14rpx rgba(212,128,104,0.1);
+  box-shadow: 0 2rpx 0 rgba(180,100,80,0.25), 0 3rpx 6rpx rgba(0,0,0,0.04), 0 6rpx 14rpx rgba(192,133,82,0.1);
 }
 .tab-dot { width: 20rpx; height: 20rpx; border-radius: 50%; }
 

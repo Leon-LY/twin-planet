@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Simplified: only core shapes, bold, for small sizes -->
+  <!-- Left leaf -->
+  <path d="M 100 155
+           C 72 145, 48 115, 48 82
+           C 48 58, 62 42, 80 42
+           C 92 42, 96 55, 98 75
+           C 99 95, 100 120, 100 155 Z"
+        fill="#E07B3E"/>
+  <!-- Right leaf -->
+  <path d="M 100 155
+           C 128 145, 152 115, 152 82
+           C 152 58, 138 42, 120 42
+           C 108 42, 104 55, 102 75
+           C 101 95, 100 120, 100 155 Z"
+        fill="#D48068"/>
+  <!-- Heart negative space -->
+  <path d="M 100 70
+           C 95 62, 87 58, 83 64
+           C 79 70, 82 78, 88 84
+           L 100 96
+           L 112 84
+           C 118 78, 121 70, 117 64
+           C 113 58, 105 62, 100 70 Z"
+        fill="#FDFAF3"/>
+</svg>

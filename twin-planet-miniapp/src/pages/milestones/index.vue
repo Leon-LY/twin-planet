@@ -184,7 +184,7 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '能力观察' }) })
 .domain-detail { margin-top: 16rpx; padding-top: 16rpx; border-top: 2rpx solid var(--twin-border); }
 .detail-examples { display: block; font-size: 22rpx; color: var(--twin-text-secondary); margin-bottom: 12rpx; }
 .norm-item { display: flex; align-items: center; gap: 12rpx; padding: 10rpx 8rpx; border-radius: 8rpx; transition: background 0.2s; }
-.norm-item.status-achieved { background: linear-gradient(90deg, rgba(92,154,110,0.08), transparent); }
+.norm-item.status-achieved { background: linear-gradient(90deg, rgba(79,174,110,0.08), transparent); }
 .norm-item.status-emerging { background: linear-gradient(90deg, rgba(200,153,62,0.08), transparent); }
 .norm-check { font-size: 28rpx; flex-shrink: 0; }
 .norm-title { flex: 1; font-size: 26rpx; color: var(--ink); }

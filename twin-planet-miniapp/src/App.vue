@@ -8,6 +8,14 @@ export default {
     this._themeTimer = setInterval(() => this._syncTheme(), 60 * 60 * 1000)
     // 检查存储配额（首次启动时）
     setTimeout(() => monitorStorage(), 3000)
+    // 预加载子包（生长曲线/入园助手/能力观察），优化 tab 切换体验
+    setTimeout(() => {
+      try {
+        uni.loadSubPackage({ root: 'pages/growth' })
+        uni.loadSubPackage({ root: 'pages/milestones' })
+        uni.loadSubPackage({ root: 'pages/school' })
+      } catch (_) {}
+    }, 2000)
   },
   onShow() {
     this._syncTheme()
@@ -42,8 +50,9 @@ export default {
 @import "./styles/iconfont.wxss";
 
 /* ================================================================
-   双宝记 v5 · Twin Planet
-   设计方向：温暖手帳 × 贴纸收集 × 双宝成长
+   双宝记 v6 · Twin Journal
+   设计方向：暖手帐双狐 × 贴纸收集 × 双宝成长
+   2026-06-18 品牌统一：双狐为唯一 IP；小宝色 rose#D48068 → sage#6B8E5A → terracotta#C08552（去性别化+调暖）
    ================================================================ */
 page {
   --paper:  #FEF9F0;
@@ -54,11 +63,19 @@ page {
   --amber:  #E07B3E;
   --amber-lt: rgba(224,123,62,0.08);
   --amber-md: rgba(224,123,62,0.18);
-  --rose:   #D48068;
-  --rose-lt: rgba(212,128,104,0.08);
-  --rose-md: rgba(212,128,104,0.18);
-  --mint:   #5C9A6E;
-  --mint-lt: rgba(92,154,110,0.1);
+  /* 小宝色：terracotta 陶土色（去性别化，暖阳+暖土双生系统）。--sage/--rose 保留为别名向后兼容 */
+  --terracotta:   #C08552;
+  --terracotta-lt: rgba(192,133,82,0.08);
+  --terracotta-md: rgba(192,133,82,0.18);
+  --sage:   var(--terracotta);    /* 向后兼容别名 → 映射到 terracotta */
+  --sage-lt: var(--terracotta-lt);
+  --sage-md: var(--terracotta-md);
+  --rose:   var(--terracotta);    /* 向后兼容别名 → 映射到 terracotta */
+  --rose-lt: var(--terracotta-lt);
+  --rose-md: var(--terracotta-md);
+  /* success 调亮以与 terracotta 区分（spring 春绿，活跃；terracotta 暖土，沉稳） */
+  --mint:   #4FAE6E;
+  --mint-lt: rgba(79,174,110,0.1);
   --gold:   #C8993E;
   --gold-lt: rgba(200,153,62,0.12);
   --dot:    #E8DCC8;
@@ -81,8 +98,8 @@ page {
   --ease-drop:cubic-bezier(0.2,1.6,0.5,1);      /* 掉落：弹跳着陆 */
   --ease-ink:cubic-bezier(0.05,0,0.05,1);       /* 书写：极慢起笔 */
 
-  --twin-baby-a:var(--amber);--twin-baby-b:var(--rose);
-  --twin-baby-a-light:var(--amber-lt);--twin-baby-b-light:var(--rose-lt);
+  --twin-baby-a:var(--amber);--twin-baby-b:var(--terracotta);
+  --twin-baby-a-light:var(--amber-lt);--twin-baby-b-light:var(--terracotta-lt);
   --twin-bg:var(--paper);--twin-card-bg:var(--cream);
   --twin-text:var(--ink);--twin-text-secondary:var(--ink-md);--twin-text-muted:var(--ink-lt);
   --twin-accent:var(--mint);--twin-accent-light:var(--mint-lt);
@@ -95,8 +112,8 @@ page {
   /* 向后兼容别名 */
   --surface-card:var(--cream);--border-void:var(--dot);
   --text-starlight:var(--ink);--text-dust:var(--ink-md);--text-whisper:var(--ink-lt);
-  --twin-a:var(--amber);--twin-b:var(--rose);
-  --twin-a-glow:rgba(224,123,62,0.3);--twin-b-glow:rgba(212,128,104,0.3);
+  --twin-a:var(--amber);--twin-b:var(--terracotta);
+  --twin-a-glow:rgba(224,123,62,0.3);--twin-b-glow:rgba(192,133,82,0.3);
   --cosmic-cyan:var(--mint);--cosmic-gold:var(--gold);--cosmic-red:#D4706B;
   --border-glow:var(--gold-lt);
   --radius-xl:var(--radius-lg);
@@ -235,21 +252,21 @@ page {
 }
 .journal-tape.tape-rose {
   background: linear-gradient(175deg,
-    rgba(212,128,104,0.28) 0%,
-    rgba(212,128,104,0.18) 20%,
-    rgba(212,128,104,0.12) 55%,
-    rgba(212,128,104,0.20) 85%,
-    rgba(212,128,104,0.26) 100%);
+    rgba(192,133,82,0.28) 0%,
+    rgba(192,133,82,0.18) 20%,
+    rgba(192,133,82,0.12) 55%,
+    rgba(192,133,82,0.20) 85%,
+    rgba(192,133,82,0.26) 100%);
   transform: translateX(-50%) rotate(2.6deg);
   border-radius: 2rpx 7rpx 1rpx 4rpx;
 }
 .journal-tape.tape-mint {
   background: linear-gradient(175deg,
-    rgba(92,154,110,0.22) 0%,
-    rgba(92,154,110,0.14) 20%,
-    rgba(92,154,110,0.08) 55%,
-    rgba(92,154,110,0.16) 85%,
-    rgba(92,154,110,0.20) 100%);
+    rgba(79,174,110,0.22) 0%,
+    rgba(79,174,110,0.14) 20%,
+    rgba(79,174,110,0.08) 55%,
+    rgba(79,174,110,0.16) 85%,
+    rgba(79,174,110,0.20) 100%);
   transform: translateX(-50%) rotate(-1.8deg);
   border-radius: 5rpx 3rpx 7rpx 1rpx;
 }
@@ -711,8 +728,8 @@ page {
     inset 0 1rpx 2rpx rgba(224,123,62,0.08),
     0 0 0 1rpx rgba(224,123,62,0.08);
 }
-.chip.on.mint{background:var(--mint-lt);border-color:var(--mint);color:var(--mint);box-shadow:inset 0 1rpx 2rpx rgba(92,154,110,0.08),0 0 0 1rpx rgba(92,154,110,0.08)}
-.chip.on.rose{background:var(--rose-lt);border-color:var(--rose);color:var(--rose);box-shadow:inset 0 1rpx 2rpx rgba(212,128,104,0.08),0 0 0 1rpx rgba(212,128,104,0.08)}
+.chip.on.mint{background:var(--mint-lt);border-color:var(--mint);color:var(--mint);box-shadow:inset 0 1rpx 2rpx rgba(79,174,110,0.08),0 0 0 1rpx rgba(79,174,110,0.08)}
+.chip.on.rose{background:var(--rose-lt);border-color:var(--rose);color:var(--rose);box-shadow:inset 0 1rpx 2rpx rgba(192,133,82,0.08),0 0 0 1rpx rgba(192,133,82,0.08)}
 
 /* 标签芯片 — 带有撕纸边缘感的不规则标签 */
 .chip-tag{
@@ -843,7 +860,7 @@ page {
   border-color:var(--mint);
   color:var(--mint);
   box-shadow:
-    inset 0 1rpx 2rpx rgba(92,154,110,0.1),
+    inset 0 1rpx 2rpx rgba(79,174,110,0.1),
     0 0 0 2rpx var(--mint-lt);
   animation:stampDown .35s var(--ease-stamp) both;
 }
@@ -908,9 +925,25 @@ page {
 .page-subtitle{display:block;font-size:var(--font-body);color:var(--ink-md);margin-top:8rpx}
 .page-icon{font-size:80rpx;display:block;margin-bottom:8rpx}
 
-/* 全局淡入 */
-.page-enter{animation:revealUp .5s var(--ease-soft) both}
+/* 全局页面入场动画 — 手帐翻页感 */
+.page-enter{animation:pageRevealIn .5s var(--ease-page) both}
 @keyframes revealUp{from{opacity:0;transform:translateY(18rpx)}to{opacity:1;transform:translateY(0)}}
+@keyframes pageRevealIn{
+  from{opacity:0;transform:translateY(12rpx) scale(0.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* 手帐卡片入场 — 交错浮入 */
+.reveal-1{animation:cardFloatIn .5s var(--ease-page) .05s both}
+.reveal-2{animation:cardFloatIn .5s var(--ease-page) .12s both}
+.reveal-3{animation:cardFloatIn .5s var(--ease-page) .20s both}
+.reveal-4{animation:cardFloatIn .5s var(--ease-page) .28s both}
+.reveal-5{animation:cardFloatIn .5s var(--ease-page) .36s both}
+.reveal-6{animation:cardFloatIn .5s var(--ease-page) .44s both}
+
+/* 统一交互反馈 */
+.tap-feedback{transition:transform .15s var(--ease-bounce)}
+.tap-feedback:active{transform:scale(.96)}
 
 /* ═══════════════════════════════════════════
    手帳动效关键帧 · Journal Motion System

@@ -118,7 +118,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.guard-page { min-height: 100vh; background: var(--paper); position: relative; padding: 40rpx 28rpx calc(64rpx + env(safe-area-inset-bottom)); }
+.guard-page { min-height: 100vh; background: var(--paper); position: relative; padding: 40rpx 28rpx calc(120rpx + env(safe-area-inset-bottom)); }
 
 .page-header { margin-bottom: 32rpx; position: relative; z-index: 1; }
 .page-title { display: block; font-family: var(--font-journal); font-size: var(--font-title); color: var(--ink); }
@@ -192,11 +192,11 @@ onMounted(() => {
 }
 .time-slot.rose {
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 50%, rgba(212,128,104,0.03) 100%),
+    linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 50%, rgba(192,133,82,0.03) 100%),
     var(--rose-lt);
   box-shadow:
-    0 1rpx 0 rgba(212,128,104,0.03),
-    0 2rpx 8rpx rgba(212,128,104,0.04);
+    0 1rpx 0 rgba(192,133,82,0.03),
+    0 2rpx 8rpx rgba(192,133,82,0.04);
 }
 .time-baby { display: block; font-size: 24rpx; color: var(--ink-md); }
 .time-val { font-family: var(--font-journal); font-size: 44rpx; font-weight: 700; color: var(--ink); }
@@ -227,19 +227,19 @@ onMounted(() => {
 }
 .timer-btn.rose {
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.35) 0%, transparent 50%, rgba(212,128,104,0.04) 100%),
+    linear-gradient(180deg, rgba(255,255,255,0.35) 0%, transparent 50%, rgba(192,133,82,0.04) 100%),
     var(--rose-lt);
   color: var(--rose); border: 2rpx solid var(--rose);
   box-shadow:
-    0 1rpx 0 rgba(212,128,104,0.06),
-    0 3rpx 10rpx rgba(212,128,104,0.08),
+    0 1rpx 0 rgba(192,133,82,0.06),
+    0 3rpx 10rpx rgba(192,133,82,0.08),
     0 1rpx 0 rgba(255,255,255,0.3) inset;
 }
 .timer-btn.rose:active {
   transform: scale(.96) translateY(1rpx);
   box-shadow:
-    0 1rpx 0 rgba(212,128,104,0.03),
-    0 1rpx 3rpx rgba(212,128,104,0.06);
+    0 1rpx 0 rgba(192,133,82,0.03),
+    0 1rpx 3rpx rgba(192,133,82,0.06);
 }
 
 .active-timer {
@@ -249,9 +249,9 @@ onMounted(() => {
     var(--cream);
   border-radius: var(--radius-md); border: 2rpx solid var(--mint); margin-bottom: 16rpx;
   box-shadow:
-    0 1rpx 0 rgba(92,154,110,0.03),
+    0 1rpx 0 rgba(79,174,110,0.03),
     0 2rpx 8rpx rgba(45,35,24,0.04),
-    0 4rpx 20rpx rgba(92,154,110,0.06);
+    0 4rpx 20rpx rgba(79,174,110,0.06);
 }
 .timer-baby-name { display: block; font-size: 36rpx; font-weight: 700; color: var(--ink); }
 .timer-elapsed { display: block; font-family: var(--font-journal); font-size: 56rpx; color: var(--ink); margin: 8rpx 0; letter-spacing: 3rpx; }

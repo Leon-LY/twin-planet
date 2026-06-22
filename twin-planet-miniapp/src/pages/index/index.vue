@@ -21,16 +21,17 @@
       :showRoleDrawer="showRoleDrawer"
       :roleOptions="roleOptions"
       @navigate="navigate"
-      @switchRole="switchRole"
+      @switchRole="showRoleDrawer = true"
       @dismissWelcome="dismissWelcome"
-      @switchToRole="switchToRole"
-      @resetFamily="resetFamily"
-      @logout="logoutApp"
       @acceptInvite="acceptInvite"
       @dismissInvite="() => showInvitePrompt = false"
       @dismissCelebrate="() => showCelebrate = false"
       @milestoneAction="doMilestoneAction"
+      @switchToRole="switchToRole"
+      @resetFamily="resetFamily"
+      @logout="logoutApp"
     />
+
   </view>
 </template>
 
@@ -167,7 +168,14 @@ onShareAppMessage(() => {
 })
 
 // ---- 导航 ----
-const navigate = (url: string) => uni.navigateTo({ url })
+const TAB_PAGES = ['/pages/index/index', '/pages/record/index', '/pages/stickers/index', '/pages/discover/index']
+const navigate = (url: string) => {
+  if (TAB_PAGES.includes(url)) {
+    uni.switchTab({ url })
+  } else {
+    uni.navigateTo({ url })
+  }
+}
 const goRecord = () => navigate('/pages/record/granny')
 const goGrowth = () => navigate('/pages/growth/index')
 const goSnapshot = () => navigate('/pages/snapshot/index')
@@ -182,11 +190,13 @@ const roleOptions = [
   { key: 'grandpa', emoji: '👴', label: '爷爷', desc: '大字模式 · 3 个大按钮' },
   { key: 'nanny', emoji: '👩‍🍼', label: '育儿嫂', desc: '高效记录 · 交接同步' },
 ]
-const switchRole = () => { showRoleDrawer.value = true }
 function switchToRole(r: string) {
+  const currentRole = userStore.profile?.role
   userStore.setRole(r as any); showRoleDrawer.value = false
-  const label = roleOptions.find(o => o.key === r)?.label || r
-  uni.showToast({ title: '已切换为' + label + '模式', icon: 'success', duration: 1500 })
+  if (currentRole !== r) {
+    const label = roleOptions.find(o => o.key === r)?.label || r
+    uni.showToast({ title: '已切换为' + label + '模式', icon: 'success', duration: 1500 })
+  }
 }
 function resetFamily() { showRoleDrawer.value = false; uni.reLaunch({ url: '/pages/onboarding/family' }) }
 function logoutApp() { showRoleDrawer.value = false; userStore.logout(); uni.reLaunch({ url: '/pages/login/index' }) }
@@ -212,8 +222,10 @@ onMounted(() => {
     genShareCard().catch(() => {})
   }, 400)
 })
+
+
 </script>
 
 <style scoped>
-.page-root { min-height: 100vh; }
+.page-root { min-height: 100vh; padding-bottom: calc(100rpx + env(safe-area-inset-bottom)); }
 </style>
