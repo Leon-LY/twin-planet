@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
-  <!-- Knockout: paper-color for dark backgrounds -->
-  <path d="M 70 45 A 60 60 0 0 0 70 155" stroke="#FDFAF3" stroke-width="8" fill="none" stroke-linecap="round"/>
-  <path d="M 130 45 A 60 60 0 0 1 130 155" stroke="#FDFAF3" stroke-width="8" fill="none" stroke-linecap="round"/>
-  <circle cx="76" cy="100" r="6" fill="#FDFAF3"/>
-  <circle cx="124" cy="100" r="6" fill="#FDFAF3"/>
-</svg>

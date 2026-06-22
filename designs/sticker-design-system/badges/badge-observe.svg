@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img">
-  <title>细心观察者 — 记录10次萌芽</title>
-  <!-- Magnifying glass lens -->
-  <path d="M8 8 A6 6 0 1 1 8 20 A6 6 0 1 1 8 8Z M8 10 A4 4 0 1 0 8 18 A4 4 0 1 0 8 10Z" fill="#5C9A6E" fill-rule="evenodd"/>
-  <!-- Glass shine -->
-  <path d="M5 9 A3 3 0 0 1 9 6" fill="none" stroke="#FEF9F0" stroke-width="0.8" stroke-linecap="round"/>
-  <!-- Handle -->
-  <path d="M12.5 12.5 L21 21" stroke="#5C9A6E" stroke-width="2.5" stroke-linecap="round"/>
-</svg>

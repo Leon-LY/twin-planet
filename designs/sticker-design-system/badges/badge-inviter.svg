@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img">
-  <title>召集者 — 邀请家人加入</title>
-  <!-- Envelope body -->
-  <path d="M3 6 L21 6 Q22 6 22 7 L22 18 Q22 19 21 19 L3 19 Q2 19 2 18 L2 7 Q2 6 3 6Z" fill="#E07B3E" opacity="0.85"/>
-  <!-- Envelope flap -->
-  <path d="M3 6 L12 13 L21 6" fill="none" stroke="#E07B3E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- Send indicator — small outward arrow -->
-  <path d="M19 4 L22 3 L21 6" fill="none" stroke="#5C9A6E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
