@@ -16,14 +16,45 @@ export default {
         uni.loadSubPackage({ root: 'pages/school' })
       } catch (_) {}
     }, 2000)
+
+    // 启动门禁：检查登录 → 家庭 → 宝宝，缺一步则跳转对应页面
+    this._checkOnboarding()
   },
   onShow() {
     this._syncTheme()
+    this._checkOnboarding()
   },
   onHide() {
     // keep timer running while app is in background
   },
   methods: {
+    _checkOnboarding() {
+      try {
+        // ① 是否已登录？
+        const raw = uni.getStorageSync('tp_user')
+        const profile = raw ? JSON.parse(raw) : null
+        if (!profile?.id && !profile?.openid) {
+          uni.reLaunch({ url: '/pages/login/index' })
+          return
+        }
+
+        // ② 是否已创建家庭？
+        const fam = uni.getStorageSync('tp_family')
+        const family = fam ? JSON.parse(fam) : null
+        if (!family?.id) {
+          uni.reLaunch({ url: '/pages/onboarding/family' })
+          return
+        }
+
+        // ③ 是否有至少 2 个宝宝？
+        const bab = uni.getStorageSync('tp_babies')
+        const babies = bab ? JSON.parse(bab) : []
+        if (!Array.isArray(babies) || babies.length < 2) {
+          uni.reLaunch({ url: '/pages/onboarding/babies' })
+          return
+        }
+      } catch (_) {}
+    },
     _syncTheme() {
       try {
         const app = getApp()

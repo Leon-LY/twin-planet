@@ -82,8 +82,21 @@ function openPrivacy(type: string) {
 
 onMounted(() => {
   uni.setNavigationBarTitle({ title: '欢迎' })
-  // 已登录且有家庭 → 直接进首页
-  if (userStore.isLoggedIn && uni.getStorageSync('tp_family')) {
+  if (userStore.isLoggedIn) {
+    // 已登录：按需跳转（家庭 → 宝宝 → 首页）
+    const fam = uni.getStorageSync('tp_family')
+    if (!fam || !JSON.parse(fam)?.id) {
+      uni.reLaunch({ url: '/pages/onboarding/family' })
+      return
+    }
+    try {
+      const bab = uni.getStorageSync('tp_babies')
+      const babies = bab ? JSON.parse(bab) : []
+      if (!Array.isArray(babies) || babies.length < 2) {
+        uni.reLaunch({ url: '/pages/onboarding/babies' })
+        return
+      }
+    } catch (_) {}
     uni.reLaunch({ url: '/pages/index/index' })
   }
 })
