@@ -299,8 +299,8 @@ onShareAppMessage(() => ({
 /* === 贴纸网格 === */
 .col-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14rpx;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16rpx;
 }
 
 /* === 贴纸格子基础 === */
@@ -309,9 +309,9 @@ onShareAppMessage(() => ({
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4rpx;
-  height: 160rpx;
-  padding: 8rpx 6rpx;
+  gap: 6rpx;
+  height: 220rpx;
+  padding: 12rpx 8rpx;
   border-radius: var(--radius-sm);
   position: relative;
   overflow: hidden;
@@ -324,15 +324,15 @@ onShareAppMessage(() => ({
 }
 /* 幽灵预览 — PNG图片版：透明度降到极低 + 覆盖灰色遮罩 */
 .cell-ghost-img {
-  width: 64rpx;
-  height: 64rpx;
+  width: 100rpx;
+  height: 100rpx;
   opacity: 0.12;
   position: relative;
   z-index: 0;
 }
 /* 幽灵预览 — emoji/icon文本版 */
 .cell-ghost {
-  font-size: 48rpx;
+  font-size: 56rpx;
   opacity: 0.15;
   position: relative;
   z-index: 0;
@@ -364,17 +364,17 @@ onShareAppMessage(() => ({
 /* === 已解锁通用 === */
 .sticker-cell.earned { opacity: 1; }
 .cell-illustration {
-  width: 80rpx;
-  height: 80rpx;
+  width: 120rpx;
+  height: 120rpx;
   border-radius: 50%;
 }
 .cell-emoji {
-  width: 56rpx;
-  height: 56rpx;
+  width: 72rpx;
+  height: 72rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32rpx;
+  font-size: 40rpx;
   border-radius: 50%;
 }
 .cell-label {
