@@ -23,35 +23,21 @@ Component({
         } catch (_) {}
       }
 
-      // 选中当前页
-      this._syncSelected()
-    },
-  },
-
-  pageLifetimes: {
-    show() {
-      this._syncSelected()
+      // 初始加载时选中当前页
+      try {
+        const pages = getCurrentPages()
+        if (pages.length) {
+          const route = pages[pages.length - 1].route || ''
+          const idx = this.data.list.findIndex(item => item.pagePath === '/' + route)
+          if (idx >= 0) this.setData({ selected: idx })
+        }
+      } catch (_) {}
     },
   },
 
   methods: {
-    _syncSelected() {
-      try {
-        const pages = getCurrentPages()
-        if (!pages.length) return
-        const page = pages[pages.length - 1]
-        const route = page.route || page.__route__ || ''
-        const path = '/' + route
-        const idx = this.data.list.findIndex(item => item.pagePath === path)
-        if (idx >= 0 && idx !== this.data.selected) {
-          this.setData({ selected: idx })
-        }
-      } catch (_) {}
-    },
-
     switchTab(e) {
       const { index, path } = e.currentTarget.dataset
-      // 即时高亮反馈，wx.switchTab 完成后 pageLifetimes.show 会再次确认
       this.setData({ selected: index })
       wx.switchTab({ url: path })
     },
