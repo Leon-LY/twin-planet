@@ -132,16 +132,32 @@ export const useUserStore = defineStore('user', () => {
     _createLocalProfile()
   }
 
+  /** 同步 profile 到服务器（静默，失败不影响本地） */
+  async function _syncProfileToServer() {
+    if (_isOffline.value || !profile.value) return
+    try {
+      await request('/auth/profile', {
+        method: 'PUT',
+        data: {
+          nickname: profile.value.nickname,
+          role: profile.value.role,
+          preferredUiMode: profile.value.preferredUiMode,
+          uiConfig: profile.value.uiConfig,
+        },
+      })
+    } catch { /* 静默失败，本地状态已保存 */ }
+  }
+
   /** 设置角色（不可变更新） */
   function setRole(role: UserProfile['role']) {
     if (!profile.value) return
     profile.value = { ...profile.value, role }
-    // 奶奶/外婆自动启用大字模式
     if (role === 'grandma' || role === 'grandpa') {
       toggleLargeMode(true)
-      return // toggleLargeMode 内部会 _save()
+      return
     }
     _save()
+    _syncProfileToServer()
   }
 
   /** 切换大字模式（不可变更新） */
@@ -158,12 +174,14 @@ export const useUserStore = defineStore('user', () => {
       },
     }
     _save()
+    _syncProfileToServer()
   }
 
   function setNickname(name: string) {
     if (profile.value) {
       profile.value = { ...profile.value, nickname: name }
       _save()
+      _syncProfileToServer()
     }
   }
 
