@@ -148,15 +148,19 @@ export function drawStickerShareCard(
     ctx.fillText('并蒂而生 · 同步成长', W / 2, footerY)
     ctx.fillText('双宝记 Twin Journal', W / 2, footerY + 16)
 
-    // 渲染输出
+    // 渲染输出（延迟 400ms 确保 Canvas 完成光栅化，与 clinicCard.ts 一致）
     ctx.draw(false, () => {
-      uni.canvasToTempFilePath({
-        canvasId,
-        destWidth: W * 2,
-        destHeight: H * 2,
-        success: (res) => resolve(res.tempFilePath),
-        fail: (err) => reject(err),
-      })
+      setTimeout(() => {
+        uni.canvasToTempFilePath({
+          canvasId,
+          destWidth: W * 2,
+          destHeight: H * 2,
+          success: (res) => resolve(res.tempFilePath),
+          fail: (err) => reject(err),
+        })
+      }, 400)
     })
+    // 超时保护：10 秒未完成则 reject，防止 loading 永久卡死
+    setTimeout(() => reject(new Error('Canvas render timed out')), 10000)
   })
 }

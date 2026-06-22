@@ -113,8 +113,12 @@ function rarityIcon(rarity: StickerRarity): string {
   return RARITY_CONFIG[rarity]?.icon || ''
 }
 
+const _saving = ref(false)
+
 /** 生成并保存贴纸收集分享卡片 */
 async function saveShareCard() {
+  if (_saving.value) return
+  _saving.value = true
   try {
     uni.showLoading({ title: '生成中...' })
     const progress = store.collectionProgress
@@ -134,9 +138,12 @@ async function saveShareCard() {
     uni.hideLoading()
     await saveToAlbum(path)
     uni.showToast({ title: '已保存到相册，去分享吧 📸', icon: 'success', duration: 2000 })
-  } catch {
+  } catch (err) {
     uni.hideLoading()
+    console.error('[stickerShareCard]', err)
     uni.showToast({ title: '生成失败，稍后再试', icon: 'none' })
+  } finally {
+    _saving.value = false
   }
 }
 

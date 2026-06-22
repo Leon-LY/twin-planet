@@ -126,7 +126,7 @@
     </view>
 
     <!-- 快速参数选择 — 记录创建后出现，可选细化 -->
-    <view class="detail-pills" v-if="detailPills" :class="{ 'pills-enter': detailPills }">
+    <view class="detail-pills" v-if="detailPills">
       <view
         v-for="opt in PILL_OPTIONS[detailPills.type]"
         :key="opt.label"
@@ -276,7 +276,7 @@ const roleLabel = computed(() => userStore.roleLabel)
 const nowTick = ref(Date.now())
 let tickTimer: ReturnType<typeof setInterval> | null = null
 onMounted(() => { tickTimer = setInterval(() => { nowTick.value = Date.now() }, 30000) })
-onUnmounted(() => { if (tickTimer) clearInterval(tickTimer) })
+onUnmounted(() => { if (tickTimer) clearInterval(tickTimer); if (_pillTimer) clearTimeout(_pillTimer) })
 
 const dateStr = computed(() => {
   const d = new Date(); const days = ['日','一','二','三','四','五','六']
@@ -322,9 +322,9 @@ const compareBarB = computed(() => {
 
 const seasonalHint = computed(() => getSeasonalHint())
 
-/** 「该喂了」提醒 — 基于过去3天的喂养间隔推算预期下次喂奶时间 */
+/** 「该喂了」提醒 — 基于过去3天的喂养间隔推算预期下次喂奶时间（30秒刷新一次） */
 const feedingReminder = computed(() => {
-  const now = Date.now()
+  const now = nowTick.value
   const threeDaysAgo = now - 3 * 86400000
   const reminders: { babyId: string; name: string; color: string; minutesAgo: number; avgInterval: number }[] = []
 

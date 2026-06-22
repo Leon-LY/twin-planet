@@ -102,7 +102,7 @@ function switchRoleAction() {
 const nowTick = ref(Date.now())
 let tickTimer: ReturnType<typeof setInterval> | null = null
 onMounted(() => { tickTimer = setInterval(() => { nowTick.value = Date.now() }, 30000) })
-onUnmounted(() => { if (tickTimer) clearInterval(tickTimer) })
+onUnmounted(() => { if (tickTimer) clearInterval(tickTimer); if (_pillTimer) clearTimeout(_pillTimer) })
 
 const dateStr = computed(() => {
   const d = new Date(); const days = ['日','一','二','三','四','五','六']

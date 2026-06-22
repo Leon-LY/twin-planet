@@ -37,7 +37,7 @@
       <view class="weekly-tape journal-tape tape-gold"></view>
       <text class="section-label">本周大事记</text>
       <view class="hl-list">
-        <view class="hl-item" v-for="(h, i) in weekHighlights" :key="i" :style="{ animationDelay: (0.08 * i) + 's' }">
+        <view class="hl-item" v-for="(h, i) in weekHighlights" :key="i" :style="{ animationDelay: (0.08 * i).toFixed(2) + 's' }">
           <text class="hl-emoji">{{ h.emoji }}</text>
           <text class="hl-text">{{ h.text }}</text>
         </view>

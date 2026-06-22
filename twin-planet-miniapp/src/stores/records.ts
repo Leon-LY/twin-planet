@@ -76,8 +76,17 @@ export const useRecordsStore = defineStore('records', () => {
   const _timers = ref<Record<string, TimerState>>({})
   const logs = ref<RecordLog[]>(_p.load() ?? [])
   const selectedBabyId = ref<string | null>(null)
-  /** 连胜冻结：每月可免一次断签（记录上次冻结月份，同月不重复） */
+  /** 连胜冻结：每月可免一次断签（持久化到本地存储） */
+  const FREEZE_KEY = 'tp_last_freeze_month'
+  const FREEZE_DATE_KEY = 'tp_freeze_gap_date'
   let _lastFreezeMonth: number | null = null
+  let _freezeGapDate: string | null = null
+  try {
+    const saved = uni.getStorageSync(FREEZE_KEY)
+    if (typeof saved === 'number') _lastFreezeMonth = saved
+    const savedDate = uni.getStorageSync(FREEZE_DATE_KEY)
+    if (typeof savedDate === 'string') _freezeGapDate = savedDate
+  } catch { /* 首次使用，无缓存 */ }
 
   // 恢复持久化的计时器（App 被杀后恢复）—— 支持双计时器
   try {
@@ -177,10 +186,11 @@ export const useRecordsStore = defineStore('records', () => {
       let bothSproutToday = false
       let bothMilestoneToday = false
       let bothMeasureToday = false
+      let sproutStore: any = null
       try {
         // 惰性加载子包 store（growth/milestones），避免循环依赖
         const sproutMod = require('@/stores/sprout')
-        const sproutStore = sproutMod.useSproutStore()
+        sproutStore = sproutMod.useSproutStore()
         bothSproutToday = sproutStore.entries.some((e: any) => e.recordedAt >= t0)
 
         const msMod = require('@/pages/milestones/store')
@@ -223,7 +233,7 @@ export const useRecordsStore = defineStore('records', () => {
         streakDays: streakDays.value,
         totalLogCount: logs.value.length,
         twinSyncCount: (babyAHasRecord && babyBHasRecord) ? 1 : 0,
-        sproutCount: sproutStore.entries.filter((e: any) => e.recordedAt >= t0).length,
+        sproutCount: sproutStore?.entries?.filter((e: any) => e.recordedAt >= t0).length ?? 0,
         dutyDoneCount: 0,
         babyAHasRecord,
         babyBHasRecord,
@@ -600,6 +610,10 @@ export const useRecordsStore = defineStore('records', () => {
       const thisMonth = new Date().getMonth()
       if (_lastFreezeMonth !== thisMonth) {
         _lastFreezeMonth = thisMonth
+        uni.setStorageSync(FREEZE_KEY, thisMonth)
+        // 记录冻结覆盖的缺失日，供后续正常分支桥接
+        _freezeGapDate = yesterday
+        uni.setStorageSync(FREEZE_DATE_KEY, yesterday)
         // 从最近记录日开始计数，视为「冻结保护中」
         let streak = 1
         for (let i = 1; i < dates.length; i++) {
@@ -613,10 +627,21 @@ export const useRecordsStore = defineStore('records', () => {
     }
     // 修复 off-by-one：最近记录日是今天或昨天，都应该从 1 开始计数
     let streak = 1
+    const bridged = _freezeGapDate
     for (let i = 1; i < dates.length; i++) {
       const prev = new Date(dates[i-1]); prev.setDate(prev.getDate() - 1)
-      if (dates[i] === localDateStr(prev.getTime())) streak++
-      else break
+      const expected = localDateStr(prev.getTime())
+      if (dates[i] === expected) { streak++; continue }
+      // 冻结桥接：跳过被冻结覆盖的缺失日（每月一次）
+      if (bridged && expected === bridged) {
+        streak++
+        _freezeGapDate = null
+        uni.removeStorageSync(FREEZE_DATE_KEY)
+        // 跨过桥接日后，继续检查当前位置是否匹配再前一天
+        prev.setDate(prev.getDate() - 1)
+        if (dates[i] === localDateStr(prev.getTime())) { streak++; continue }
+      }
+      break
     }
     return streak
   })
