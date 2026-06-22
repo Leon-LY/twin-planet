@@ -99,6 +99,13 @@
       <StickerStrip :stickers="stickersStore.todayStickers" :showMore="true" @viewAll="$emit('navigate','/pages/stickers/index')" />
     </view>
 
+    <!-- 「该喂了」提醒 — 基于历史模式推算 -->
+    <view class="feed-reminder reveal-4" v-for="r in feedingReminder" :key="r.babyId">
+      <text class="fr-emoji">🍼</text>
+      <text class="fr-text" :class="`fr-${r.color}`">{{ r.name }}</text>
+      <text class="fr-text">距上次喂奶 {{ Math.floor(r.minutesAgo / 60) }}h{{ r.minutesAgo % 60 }}min · 通常间隔 {{ Math.floor(r.avgInterval / 60) }}h{{ r.avgInterval % 60 }}min</text>
+    </view>
+
     <view class="quick-ref reveal-4" v-if="quickRef.lastFeeding!=='—' || quickRef.activeTimer">
       <view class="qr-item journal-sticky" v-if="quickRef.activeTimer"><text class="qr-emoji iconfont icon-clock"></text><text class="qr-text">{{ quickRef.activeTimer }}</text></view>
       <view class="qr-item journal-sticky" v-if="quickRef.lastFeeding!=='—'"><text class="qr-emoji iconfont icon-bottle"></text><text class="qr-text">上次喂奶 {{ quickRef.lastFeeding }}</text></view>
@@ -116,6 +123,22 @@
       <view class="q-chip q-primary" :class="{ 'chip-stamped': stampedType === 'feeding' }" @click="dualRecord('feeding')"><text class="iconfont icon-bottle icon-sm"></text> 都喂了</view>
       <view class="q-chip" :class="{ 'chip-stamped': stampedType === 'sleep' }" @click="dualRecord('sleep')"><text class="iconfont icon-sleep icon-sm"></text> 都睡了</view>
       <view class="q-chip" :class="{ 'chip-stamped': stampedType === 'diaper' }" @click="dualRecord('diaper')"><text class="iconfont icon-diaper"></text></view>
+    </view>
+
+    <!-- 快速参数选择 — 记录创建后出现，可选细化 -->
+    <view class="detail-pills" v-if="detailPills" :class="{ 'pills-enter': detailPills }">
+      <view
+        v-for="opt in PILL_OPTIONS[detailPills.type]"
+        :key="opt.label"
+        class="dp-chip"
+        @click="refineRecord(opt.key, opt.value)"
+      >
+        <text v-if="opt.emoji" class="dp-emoji">{{ opt.emoji }}</text>
+        <text class="dp-label">{{ opt.label }}</text>
+      </view>
+      <view class="dp-chip dp-dismiss" @click="dismissPills">
+        <text class="dp-label">✕</text>
+      </view>
     </view>
 
     <!-- journal-nav: 手帳导航（生长/贴纸/发现） -->
@@ -299,6 +322,48 @@ const compareBarB = computed(() => {
 
 const seasonalHint = computed(() => getSeasonalHint())
 
+/** 「该喂了」提醒 — 基于过去3天的喂养间隔推算预期下次喂奶时间 */
+const feedingReminder = computed(() => {
+  const now = Date.now()
+  const threeDaysAgo = now - 3 * 86400000
+  const reminders: { babyId: string; name: string; color: string; minutesAgo: number; avgInterval: number }[] = []
+
+  for (const baby of [babiesStore.babyA, babiesStore.babyB]) {
+    if (!baby) continue
+    const feedLogs = recordsStore.logs
+      .filter(l => l.babyId === baby.id && l.type === 'feeding' && l.createdAt >= threeDaysAgo)
+      .sort((a, b) => b.createdAt - a.createdAt)
+    if (feedLogs.length < 2) continue // 数据不足
+
+    const lastFeed = feedLogs[0].createdAt
+    const minutesSince = Math.floor((now - lastFeed) / 60000)
+
+    // 计算过去3天的平均喂奶间隔
+    let totalInterval = 0; let intervalCount = 0
+    for (let i = 0; i < feedLogs.length - 1; i++) {
+      const interval = (feedLogs[i].createdAt - feedLogs[i + 1].createdAt) / 60000
+      if (interval > 30 && interval < 480) { // 排除异常值：<30min 或 >8h
+        totalInterval += interval
+        intervalCount++
+      }
+    }
+    if (intervalCount === 0) continue
+    const avgInterval = Math.round(totalInterval / intervalCount)
+
+    // 超过平均间隔的80%就提醒
+    if (minutesSince >= avgInterval * 0.8) {
+      reminders.push({
+        babyId: baby.id,
+        name: baby.nickname || baby.name,
+        color: baby.birthOrder === 1 ? 'amber' : 'terracotta',
+        minutesAgo: minutesSince,
+        avgInterval,
+      })
+    }
+  }
+  return reminders
+})
+
 const todaySummary = computed(() => {
   const today = recordsStore.logs.filter(l => l.createdAt >= new Date().setHours(0,0,0,0))
   if (!today.length) return ''
@@ -354,14 +419,65 @@ function babyUrgency(b: any): string {
 const { babyStatusIcon, handleImageError } = useBabyStatus()
 const haptic = useHaptic()
 const stampedType = ref('')
+/** 快速参数选择：{ type, logIds } — 用户可选的细化参数 */
+const detailPills = ref<{ type: string; logIds: string[] } | null>(null)
+let _pillTimer: ReturnType<typeof setTimeout> | null = null
+
+const PILL_OPTIONS: Record<string, { emoji: string; label: string; key: string; value: any }[]> = {
+  feeding: [
+    { emoji: '', label: '30ml', key: 'amountMl', value: 30 },
+    { emoji: '', label: '60ml', key: 'amountMl', value: 60 },
+    { emoji: '', label: '90ml', key: 'amountMl', value: 90 },
+    { emoji: '', label: '120ml', key: 'amountMl', value: 120 },
+  ],
+  sleep: [
+    { emoji: '', label: '30min', key: 'durationMin', value: 30 },
+    { emoji: '', label: '1h', key: 'durationMin', value: 60 },
+    { emoji: '', label: '2h', key: 'durationMin', value: 120 },
+  ],
+  diaper: [
+    { emoji: '💧', label: '小便', key: 'diaperType', value: 'wet' },
+    { emoji: '💩', label: '大便', key: 'diaperType', value: 'dirty' },
+    { emoji: '💧💩', label: '都有', key: 'diaperType', value: 'both' },
+  ],
+}
 
 function dualRecord(t: 'feeding' | 'sleep' | 'diaper') {
-  if (babyA.value) recordsStore.quickLog(babyA.value.id, t)
-  if (babyB.value) recordsStore.quickLog(babyB.value.id, t)
+  const ids: string[] = []
+  if (babyA.value) {
+    const log = recordsStore.quickLog(babyA.value.id, t)
+    if (log) ids.push(log.id)
+  }
+  if (babyB.value) {
+    const log = recordsStore.quickLog(babyB.value.id, t)
+    if (log) ids.push(log.id)
+  }
   haptic.sparkle()
   stampedType.value = t
   setTimeout(() => { stampedType.value = '' }, 500)
   uni.showToast({ title: t === 'feeding' ? '都喂了' : t === 'sleep' ? '都睡了' : '都换了', icon: 'success', duration: 800 })
+  // 显示快速参数选择（3 秒后自动消失）
+  if (ids.length && PILL_OPTIONS[t]) {
+    detailPills.value = { type: t, logIds: ids }
+    if (_pillTimer) clearTimeout(_pillTimer)
+    _pillTimer = setTimeout(() => { detailPills.value = null }, 3500)
+  }
+}
+
+/** 细化记录参数 — 用户选择了金额/时长/类型后更新已创建记录 */
+function refineRecord(key: string, value: any) {
+  if (!detailPills.value) return
+  for (const id of detailPills.value.logIds) {
+    recordsStore.updateLog(id, { [key]: value } as any)
+  }
+  detailPills.value = null
+  if (_pillTimer) { clearTimeout(_pillTimer); _pillTimer = null }
+  haptic.tick()
+}
+
+function dismissPills() {
+  detailPills.value = null
+  if (_pillTimer) { clearTimeout(_pillTimer); _pillTimer = null }
 }
 
 const goRecord = () => emit('navigate', '/pages/record/index')
@@ -449,6 +565,13 @@ const goRecord = () => emit('navigate', '/pages/record/index')
 .tc-label-b{color:var(--terracotta)}
 .tc-sync{font-size:18rpx;color:var(--gold);font-family:var(--font-journal);padding:2rpx 10rpx;background:rgba(200,153,62,0.1);border-radius:8rpx}
 
+/* 「该喂了」提醒 */
+.feed-reminder{display:flex;align-items:center;gap:8rpx;padding:12rpx 18rpx;margin-bottom:12rpx;background:linear-gradient(135deg,rgba(224,123,62,0.08),rgba(224,123,62,0.03));border-radius:12rpx;border:1.5rpx solid rgba(224,123,62,0.15);position:relative;z-index:1}
+.fr-emoji{font-size:28rpx;flex-shrink:0}
+.fr-text{font-size:22rpx;color:var(--ink-md);font-family:var(--font-journal)}
+.fr-amber{color:var(--amber);font-weight:700}
+.fr-terracotta{color:var(--terracotta);font-weight:700}
+
 .quick-ref{display:flex;gap:16rpx;flex-wrap:wrap;justify-content:center;margin-bottom:20rpx;position:relative;z-index:1}
 .qr-item{display:flex;align-items:center;gap:8rpx;padding:10rpx 18rpx;background:linear-gradient(180deg,rgba(255,255,255,0.5) 0%,transparent 40%,rgba(0,0,0,0.02) 100%),var(--cream);border-radius:var(--radius-sm);border:2rpx solid var(--dot);box-shadow:0 1rpx 0 rgba(0,0,0,0.03),0 2rpx 4rpx rgba(0,0,0,0.02);transform:rotate(-0.3deg)}
 .qr-item:nth-child(2n){transform:rotate(0.4deg)}
@@ -472,6 +595,44 @@ const goRecord = () => emit('navigate', '/pages/record/index')
 /* 盖章反馈 — dualRecord 触发时播放 stampDown 动画 */
 .chip-stamped{animation:stampDown .5s var(--ease-stamp) both}
 .duty-card{display:flex;gap:8rpx;justify-content:center;position:relative;z-index:1;margin-bottom:20rpx;flex-wrap:wrap}
+
+/* 快速参数选择 — 记录创建后出现的细化药丸 */
+.detail-pills {
+  display: flex;
+  gap: 10rpx;
+  justify-content: center;
+  margin-bottom: 16rpx;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 2;
+  animation: cardFloatIn .35s var(--ease-page) both;
+}
+.dp-chip {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 10rpx 18rpx;
+  border-radius: 24rpx;
+  background: var(--paper);
+  border: 1.5px solid var(--dot);
+  font-size: 22rpx;
+  color: var(--ink-md);
+  transition: all .15s var(--ease-stamp);
+}
+.dp-chip:active {
+  transform: scale(.92);
+  border-color: var(--amber);
+  color: var(--amber);
+  background: var(--amber-lt);
+}
+.dp-emoji { font-size: 24rpx; }
+.dp-label { font-family: var(--font-journal); font-weight: 600; }
+.dp-dismiss {
+  border-color: transparent;
+  background: transparent;
+  opacity: 0.5;
+  padding: 10rpx 14rpx;
+}
 
 /* journal-nav — 手帳导航横条 */
 .journal-nav{display:flex;justify-content:space-around;padding:16rpx 32rpx;margin-bottom:16rpx;position:relative;z-index:1}

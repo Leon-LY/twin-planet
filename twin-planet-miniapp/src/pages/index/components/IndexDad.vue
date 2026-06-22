@@ -52,6 +52,14 @@
       <view class="q-chip" :class="{ 'chip-stamped': stampedType === 'sleep' }" @click="dualRecord('sleep')"><text class="iconfont icon-sleep icon-sm"></text> 都睡了</view>
       <view class="q-chip" :class="{ 'chip-stamped': stampedType === 'diaper' }" @click="dualRecord('diaper')"><text class="iconfont icon-diaper icon-sm"></text> 都换了</view>
     </view>
+    <!-- 快速参数选择 -->
+    <view class="detail-pills" v-if="detailPills">
+      <view v-for="opt in PILL_OPTIONS[detailPills.type]" :key="opt.label" class="dp-chip" @click="refineRecord(opt.key, opt.value)">
+        <text v-if="opt.emoji" class="dp-emoji">{{ opt.emoji }}</text>
+        <text class="dp-label">{{ opt.label }}</text>
+      </view>
+      <view class="dp-chip dp-dismiss" @click="dismissPills"><text class="dp-label">✕</text></view>
+    </view>
     <view class="dad-footer">
       <text class="ft-link" @click="goSnapshot">📸 查看快照</text>
       <text class="ft-dot">·</text>
@@ -141,6 +149,27 @@ function babyUrgency(b: any): string {
 const { babyStatusIcon, handleImageError } = useBabyStatus()
 const haptic = useHaptic()
 const stampedType = ref('')
+const detailPills = ref<{ type: string; logIds: string[] } | null>(null)
+let _pillTimer: ReturnType<typeof setTimeout> | null = null
+
+const PILL_OPTIONS: Record<string, { emoji: string; label: string; key: string; value: any }[]> = {
+  feeding: [
+    { emoji: '', label: '30ml', key: 'amountMl', value: 30 },
+    { emoji: '', label: '60ml', key: 'amountMl', value: 60 },
+    { emoji: '', label: '90ml', key: 'amountMl', value: 90 },
+    { emoji: '', label: '120ml', key: 'amountMl', value: 120 },
+  ],
+  sleep: [
+    { emoji: '', label: '30min', key: 'durationMin', value: 30 },
+    { emoji: '', label: '1h', key: 'durationMin', value: 60 },
+    { emoji: '', label: '2h', key: 'durationMin', value: 120 },
+  ],
+  diaper: [
+    { emoji: '💧', label: '小便', key: 'diaperType', value: 'wet' },
+    { emoji: '💩', label: '大便', key: 'diaperType', value: 'dirty' },
+    { emoji: '💧💩', label: '都有', key: 'diaperType', value: 'both' },
+  ],
+}
 
 const todaySummary = computed(() => {
   const today = recordsStore.logs.filter(l => l.createdAt >= new Date().setHours(0,0,0,0))
@@ -156,12 +185,39 @@ const todaySummary = computed(() => {
 })
 
 function dualRecord(t: 'feeding' | 'sleep' | 'diaper') {
-  if (babyA.value) recordsStore.quickLog(babyA.value.id, t)
-  if (babyB.value) recordsStore.quickLog(babyB.value.id, t)
+  const ids: string[] = []
+  if (babyA.value) {
+    const log = recordsStore.quickLog(babyA.value.id, t)
+    if (log) ids.push(log.id)
+  }
+  if (babyB.value) {
+    const log = recordsStore.quickLog(babyB.value.id, t)
+    if (log) ids.push(log.id)
+  }
   haptic.sparkle()
   stampedType.value = t
   setTimeout(() => { stampedType.value = '' }, 500)
   uni.showToast({ title: t === 'feeding' ? '都喂了' : t === 'sleep' ? '都睡了' : '都换了', icon: 'success', duration: 800 })
+  if (ids.length && PILL_OPTIONS[t]) {
+    detailPills.value = { type: t, logIds: ids }
+    if (_pillTimer) clearTimeout(_pillTimer)
+    _pillTimer = setTimeout(() => { detailPills.value = null }, 3500)
+  }
+}
+
+function refineRecord(key: string, value: any) {
+  if (!detailPills.value) return
+  for (const id of detailPills.value.logIds) {
+    recordsStore.updateLog(id, { [key]: value } as any)
+  }
+  detailPills.value = null
+  if (_pillTimer) { clearTimeout(_pillTimer); _pillTimer = null }
+  haptic.tick()
+}
+
+function dismissPills() {
+  detailPills.value = null
+  if (_pillTimer) { clearTimeout(_pillTimer); _pillTimer = null }
 }
 
 const goRecord = () => emit('navigate', '/pages/record/index')
@@ -218,6 +274,14 @@ const goDuty = () => emit('navigate', '/pages/duty/index')
 .q-chip.q-primary:active{box-shadow:inset 0 1rpx 3rpx rgba(224,123,62,0.1)}
 /* 盖章反馈 — dualRecord 触发时播放 stampDown 动画 */
 .chip-stamped{animation:stampDown .5s var(--ease-stamp) both}
+/* 快速参数选择 */
+.detail-pills{display:flex;gap:10rpx;justify-content:center;margin-bottom:14rpx;flex-wrap:wrap;position:relative;z-index:2;animation:cardFloatIn .35s var(--ease-page) both}
+.dp-chip{display:flex;align-items:center;gap:4rpx;padding:10rpx 18rpx;border-radius:24rpx;background:var(--paper);border:1.5px solid var(--dot);font-size:22rpx;color:var(--ink-md);transition:all .15s var(--ease-stamp)}
+.dp-chip:active{transform:scale(.92);border-color:var(--amber);color:var(--amber);background:var(--amber-lt)}
+.dp-emoji{font-size:24rpx}
+.dp-label{font-family:var(--font-journal);font-weight:600}
+.dp-dismiss{border-color:transparent;background:transparent;opacity:0.5;padding:10rpx 14rpx}
+
 .dad-footer{display:flex;justify-content:center;gap:16rpx;margin-top:28rpx}
 .ft-link{font-size:20rpx;color:var(--ink-lt)}.ft-link:active{color:var(--amber)}.ft-dot{font-size:20rpx;color:var(--ink-lt)}
 </style>
