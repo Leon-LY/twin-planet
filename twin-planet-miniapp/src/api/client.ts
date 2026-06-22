@@ -5,10 +5,9 @@
 import type { ApiResponse } from './types'
 import { PERSIST_KEYS } from '@/utils/persist'
 
-// 🔒 P1-5 修复: 移除硬编码服务器 IP 和 HTTP 明文 fallback
-// 生产环境必须通过域名 + HTTPS 访问，开发环境通过环境变量注入
+// 优先用环境变量，其次用服务器 IP（开发环境在微信开发者工具中勾选「不校验合法域名」）
 const BASE_URL = (typeof process !== 'undefined' && process.env?.API_BASE_URL)
-  || 'https://api.twin-planet.example.com/api'  // 占位域名，部署时替换
+  || 'http://49.232.49.175:3003/api'
 
 const TOKEN_KEY = 'tp_' + PERSIST_KEYS.token
 
