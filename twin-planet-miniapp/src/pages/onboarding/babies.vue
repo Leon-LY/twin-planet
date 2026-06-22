@@ -287,7 +287,7 @@ button::after { border: none; }
 .required { color: var(--twin-baby-b); }
 .optional { font-weight: 400; color: var(--twin-text-secondary); font-size: 22rpx; }
 .form-input {
-  width: 100%; padding: 24rpx 28rpx;
+  width: 100%; height: 88rpx; padding: 0 28rpx;
   background: linear-gradient(180deg, rgba(0,0,0,0.015) 0%, transparent 8%), #FFF5E8;
   border: 4rpx solid var(--twin-border);
   border-radius: 20rpx; font-size: 30rpx; color: var(--twin-text);

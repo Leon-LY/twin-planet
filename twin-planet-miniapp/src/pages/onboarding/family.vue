@@ -134,7 +134,7 @@ button::after { border: none; }
 .form-group { margin-bottom: 40rpx; }
 .form-label { display: block; font-size: 26rpx; font-weight: 600; color: var(--ink); margin-bottom: 16rpx; }
 .form-input {
-  width: 100%; padding: 28rpx 32rpx;
+  width: 100%; height: 96rpx; padding: 0 32rpx;
   background: linear-gradient(180deg, rgba(0,0,0,0.015) 0%, transparent 8%), #FFF5E8;
   border: 4rpx solid var(--twin-border);
   border-radius: 24rpx; font-size: 32rpx; color: var(--twin-text);
