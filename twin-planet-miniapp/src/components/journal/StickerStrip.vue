@@ -9,7 +9,7 @@
           <!-- 贴纸光泽层 -->
           <view class="sticker-shine" />
           <!-- 贴纸图案 — 插画优先，降级 emoji -->
-          <image v-if="s.illustration" :src="s.illustration" mode="aspectFit" class="sticker-image" @error="handleImageError" />
+          <image v-if="s.illustration && !brokenIds.has(s.id)" :src="s.illustration" mode="aspectFit" class="sticker-image" @error="handleImageError(s.id)" />
           <text v-else class="sticker-emoji">{{ s.emoji }}</text>
           <!-- 贴纸标签 -->
           <text class="sticker-label">{{ s.label }}</text>
@@ -24,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import type { Sticker } from '@/stores/stickers'
 
 const props = defineProps<{
@@ -33,9 +34,12 @@ const props = defineProps<{
 
 defineEmits<{ viewAll: [] }>()
 
-/** 图片加载失败时的兜底处理 */
-function handleImageError(e: any) {
-  console.warn('[image] load failed:', (e?.target?.dataset?.src || ''))
+/** 记录加载失败的贴纸 ID → 降级到 emoji */
+const brokenIds = ref<Set<string>>(new Set())
+
+function handleImageError(id: string) {
+  brokenIds.value = new Set([...brokenIds.value, id])
+  console.warn('[StickerStrip] image load failed, fallback to emoji:', id)
 }
 
 function isNew(s: Sticker): boolean {

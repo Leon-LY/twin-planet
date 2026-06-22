@@ -60,8 +60,8 @@
         >
           <!-- 已解锁 -->
           <template v-if="s.earned">
-            <!-- 插画优先渲染，降级到 iconfont，再降级到 emoji -->
-            <image v-if="s.illustration" :src="s.illustration" mode="aspectFit" class="cell-illustration" @error="handleImageError" />
+            <!-- 插画优先渲染，加载失败自动降级到 emoji -->
+            <image v-if="s.illustration && !brokenImages.has(s.label)" :src="s.illustration" mode="aspectFit" class="cell-illustration" @error="handleImageError(s.label)" />
             <text v-else-if="s.iconClass" class="cell-emoji iconfont" :class="s.iconClass"></text>
             <text v-else class="cell-emoji">{{ s.emoji }}</text>
             <text class="cell-label">{{ s.label }}</text>
@@ -104,9 +104,13 @@ import { saveToAlbum } from '@/utils/media'
 
 const store = useStickersStore()
 
-/** 图片加载失败时的兜底处理 */
-function handleImageError(e: any) {
-  console.warn('[image] load failed:', (e?.target?.dataset?.src || ''))
+/** 记录加载失败的贴纸图片（label → true），用于降级到 emoji 显示 */
+const brokenImages = ref<Set<string>>(new Set())
+
+/** 图片加载失败时标记并触发降级 */
+function handleImageError(label: string) {
+  brokenImages.value = new Set([...brokenImages.value, label])
+  console.warn('[sticker] image load failed, fallback to emoji:', label)
 }
 
 function rarityIcon(rarity: StickerRarity): string {
