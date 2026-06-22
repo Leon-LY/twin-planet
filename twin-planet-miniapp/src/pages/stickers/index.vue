@@ -74,8 +74,9 @@
               <text class="cell-hint">???</text>
             </template>
             <template v-else>
-              <!-- 幽灵预览 — 展示实际emoji/icon但高度降透明，激发收集欲 -->
-              <text v-if="s.iconClass" class="cell-ghost iconfont" :class="s.iconClass"></text>
+              <!-- 幽灵预览 — 展示贴纸实际图片但高度降透明 + 锁标 -->
+              <image v-if="s.illustration" :src="s.illustration" mode="aspectFit" class="cell-ghost-img" />
+              <text v-else-if="s.iconClass" class="cell-ghost iconfont" :class="s.iconClass"></text>
               <text v-else class="cell-ghost">{{ s.emoji }}</text>
               <text class="cell-lock">🔒</text>
               <text class="cell-hint">{{ s.hint || s.label }}</text>
@@ -321,7 +322,15 @@ onShareAppMessage(() => ({
   border: 2rpx dashed var(--dot);
   background: rgba(0,0,0,0.02);
 }
-/* 幽灵预览 — 展示贴纸真实图案但高度透明，激发收集欲 */
+/* 幽灵预览 — PNG图片版：透明度降到极低 + 覆盖灰色遮罩 */
+.cell-ghost-img {
+  width: 64rpx;
+  height: 64rpx;
+  opacity: 0.12;
+  position: relative;
+  z-index: 0;
+}
+/* 幽灵预览 — emoji/icon文本版 */
 .cell-ghost {
   font-size: 48rpx;
   opacity: 0.15;
