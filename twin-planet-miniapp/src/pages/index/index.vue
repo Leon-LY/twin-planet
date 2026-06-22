@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
-import { onShareAppMessage } from '@dcloudio/uni-app'
+import { onShow, onShareAppMessage } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 import { useBabiesStore } from '@/stores/babies'
 import { useRecordsStore } from '@/stores/records'
@@ -223,6 +223,16 @@ onMounted(() => {
   }, 400)
 })
 
+/** 每次页面显示时同步 tab 高亮 */
+onShow(() => {
+  try {
+    const pages = getCurrentPages()
+    const page = pages[pages.length - 1]
+    if ((page as any)?.getTabBar) {
+      (page as any).getTabBar().setData({ selected: 0 })
+    }
+  } catch (_) {}
+})
 
 </script>
 

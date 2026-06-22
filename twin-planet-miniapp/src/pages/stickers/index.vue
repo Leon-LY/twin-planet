@@ -97,7 +97,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
-import { onShareAppMessage } from '@dcloudio/uni-app'
+import { onShow, onShareAppMessage } from '@dcloudio/uni-app'
 import { useStickersStore, STICKER_COLLECTIONS, RARITY_CONFIG, type StickerRarity } from '@/stores/stickers'
 import { trackPageView } from '@/utils/analytics'
 import { drawStickerShareCard } from '@/utils/stickerShareCard'
@@ -178,6 +178,16 @@ const collections = computed(() => {
 onMounted(() => {
   uni.setNavigationBarTitle({ title: '贴纸收集册' })
   trackPageView('stickers')
+})
+
+onShow(() => {
+  try {
+    const pages = getCurrentPages()
+    const page = pages[pages.length - 1]
+    if ((page as any)?.getTabBar) {
+      (page as any).getTabBar().setData({ selected: 2 })
+    }
+  } catch (_) {}
 })
 
 

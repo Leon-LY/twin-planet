@@ -87,7 +87,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { onShareAppMessage } from '@dcloudio/uni-app'
+import { onShow, onShareAppMessage } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 import { useRecordsStore } from '@/stores/records'
 import { useStickersStore } from '@/stores/stickers'
@@ -262,6 +262,16 @@ function goPage(path: string) {
 onMounted(() => {
   uni.setNavigationBarTitle({ title: '双宝广场' })
   trackPageView('discover')
+})
+
+onShow(() => {
+  try {
+    const pages = getCurrentPages()
+    const page = pages[pages.length - 1]
+    if ((page as any)?.getTabBar) {
+      (page as any).getTabBar().setData({ selected: 3 })
+    }
+  } catch (_) {}
 })
 
 

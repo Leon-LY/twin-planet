@@ -425,7 +425,7 @@ const todayStart=computed(()=>new Date().setHours(0,0,0,0))
 const recentLogs=computed(()=>{const t0=todayStart.value;return recordsStore.logs.filter(l=>l.createdAt>=t0).sort((a,b)=>b.createdAt-a.createdAt)})
 
 onMounted(()=>{uni.setNavigationBarTitle({title:"记录"});if(twins.value[0])sel.value=twins.value[0].id})
-onShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id;trackPageView('record')})
+onShow(()=>{if(twins.value[0]&&!sel.value)sel.value=twins.value[0].id;trackPageView('record');try{const p=getCurrentPages();const pg=p[p.length-1];if((pg as any)?.getTabBar){(pg as any).getTabBar().setData({selected:1})}}catch(_){}})
 
 const stopOne=(id?:string)=>{
   // 上下文字段已在计时过程中通过 setTimerField 实时同步到 store，直接停止即可
