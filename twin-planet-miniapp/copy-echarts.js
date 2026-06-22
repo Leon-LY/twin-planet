@@ -17,7 +17,4 @@ if (!fs.existsSync(src)) {
 
 fs.mkdirSync(destDir, { recursive: true })
 fs.copyFileSync(src, dest)
-fs.unlinkSync(src)
-// 清理空目录
-try { fs.rmdirSync(srcDir) } catch {}
-console.log('[copy-echarts] echarts.min.js → pages/growth/ (subpackage, removed from main)')
+console.log('[copy-echarts] echarts.min.js → pages/growth/ (subpackage copy)')
