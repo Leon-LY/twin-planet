@@ -76,6 +76,8 @@ export const useRecordsStore = defineStore('records', () => {
   const _timers = ref<Record<string, TimerState>>({})
   const logs = ref<RecordLog[]>(_p.load() ?? [])
   const selectedBabyId = ref<string | null>(null)
+  /** 连胜冻结：每月可免一次断签（记录上次冻结月份，同月不重复） */
+  let _lastFreezeMonth: number | null = null
 
   // 恢复持久化的计时器（App 被杀后恢复）—— 支持双计时器
   try {
@@ -579,7 +581,7 @@ export const useRecordsStore = defineStore('records', () => {
     return totalPairs > 0 ? Math.round((syncCount / totalPairs) * 100) : 0
   })
 
-  /** 连胜天数（使用本地日期，避免 UTC 时区偏移） */
+  /** 连胜天数（使用本地日期 + 每月一次自动冻结保护） */
   const streakDays = computed(() => {
     if (!logs.value.length) return 0
     const localDateStr = (ts: number) => {
@@ -593,7 +595,22 @@ export const useRecordsStore = defineStore('records', () => {
     const today = localDateStr(Date.now())
     const yesterday = localDateStr(Date.now() - 86400000)
     // 最近记录日必须是今天或昨天，否则连续已断
-    if (dates[0] !== today && dates[0] !== yesterday) return 0
+    if (dates[0] !== today && dates[0] !== yesterday) {
+      // 每月一次自动冻结：如果本月未冻结过，保护连胜不中断
+      const thisMonth = new Date().getMonth()
+      if (_lastFreezeMonth !== thisMonth) {
+        _lastFreezeMonth = thisMonth
+        // 从最近记录日开始计数，视为「冻结保护中」
+        let streak = 1
+        for (let i = 1; i < dates.length; i++) {
+          const prev = new Date(dates[i-1]); prev.setDate(prev.getDate() - 1)
+          if (dates[i] === localDateStr(prev.getTime())) streak++
+          else break
+        }
+        return streak
+      }
+      return 0
+    }
     // 修复 off-by-one：最近记录日是今天或昨天，都应该从 1 开始计数
     let streak = 1
     for (let i = 1; i < dates.length; i++) {

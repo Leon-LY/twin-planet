@@ -59,11 +59,19 @@
             <text class="cell-label">{{ s.label }}</text>
             <text class="cell-rarity-icon">{{ rarityIcon(s.rarity) }}</text>
           </template>
-          <!-- 未解锁：隐藏册显示神秘???，其他册显示线索 -->
+          <!-- 未解锁：隐藏册显示神秘?，其他册显示幽灵预览 -->
           <template v-else>
-            <text class="cell-silhouette">?</text>
-            <text class="cell-hint" v-if="col.key === 'hidden'">???</text>
-            <text class="cell-hint" v-else>{{ s.hint || '???' }}</text>
+            <template v-if="col.key === 'hidden'">
+              <text class="cell-silhouette">?</text>
+              <text class="cell-hint">???</text>
+            </template>
+            <template v-else>
+              <!-- 幽灵预览 — 展示实际emoji/icon但高度降透明，激发收集欲 -->
+              <text v-if="s.iconClass" class="cell-ghost iconfont" :class="s.iconClass"></text>
+              <text v-else class="cell-ghost">{{ s.emoji }}</text>
+              <text class="cell-lock">🔒</text>
+              <text class="cell-hint">{{ s.hint || s.label }}</text>
+            </template>
           </template>
         </view>
       </view>
@@ -243,8 +251,22 @@ onShareAppMessage(() => ({
 /* === 未解锁态 === */
 .sticker-cell.locked {
   border: 2rpx dashed var(--dot);
-  background: transparent;
-  opacity: 0.45;
+  background: rgba(0,0,0,0.02);
+}
+/* 幽灵预览 — 展示贴纸真实图案但高度透明，激发收集欲 */
+.cell-ghost {
+  font-size: 48rpx;
+  opacity: 0.15;
+  position: relative;
+  z-index: 0;
+}
+.cell-lock {
+  font-size: 16rpx;
+  position: absolute;
+  bottom: 4rpx;
+  right: 4rpx;
+  z-index: 1;
+  opacity: 0.5;
 }
 .cell-silhouette {
   font-size: 40rpx;

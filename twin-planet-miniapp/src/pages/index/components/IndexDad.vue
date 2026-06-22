@@ -48,9 +48,9 @@
       <button class="dad-duty-btn" @click="goDuty"><text class="dd-icon iconfont icon-clipboard"></text><text class="dd-label">值班清单</text></button>
     </view>
     <view class="quick-bar" v-if="babyA && babyB">
-      <view class="q-chip q-primary" @click="dualRecord('feeding')"><text class="iconfont icon-bottle icon-sm"></text> 都喂了</view>
-      <view class="q-chip" @click="dualRecord('sleep')"><text class="iconfont icon-sleep icon-sm"></text> 都睡了</view>
-      <view class="q-chip" @click="dualRecord('diaper')"><text class="iconfont icon-diaper icon-sm"></text> 都换了</view>
+      <view class="q-chip q-primary" :class="{ 'chip-stamped': stampedType === 'feeding' }" @click="dualRecord('feeding')"><text class="iconfont icon-bottle icon-sm"></text> 都喂了</view>
+      <view class="q-chip" :class="{ 'chip-stamped': stampedType === 'sleep' }" @click="dualRecord('sleep')"><text class="iconfont icon-sleep icon-sm"></text> 都睡了</view>
+      <view class="q-chip" :class="{ 'chip-stamped': stampedType === 'diaper' }" @click="dualRecord('diaper')"><text class="iconfont icon-diaper icon-sm"></text> 都换了</view>
     </view>
     <view class="dad-footer">
       <text class="ft-link" @click="goSnapshot">📸 查看快照</text>
@@ -66,6 +66,7 @@ import { useUserStore } from '@/stores/user'
 import { useBabiesStore } from '@/stores/babies'
 import { useRecordsStore } from '@/stores/records'
 import { useBabyStatus } from '@/composables/useBabyStatus'
+import { useHaptic } from '@/composables/useHaptic'
 
 const emit = defineEmits<{ navigate: [url: string] }>()
 const userStore = useUserStore()
@@ -138,6 +139,8 @@ function babyUrgency(b: any): string {
 }
 
 const { babyStatusIcon, handleImageError } = useBabyStatus()
+const haptic = useHaptic()
+const stampedType = ref('')
 
 const todaySummary = computed(() => {
   const today = recordsStore.logs.filter(l => l.createdAt >= new Date().setHours(0,0,0,0))
@@ -155,6 +158,9 @@ const todaySummary = computed(() => {
 function dualRecord(t: 'feeding' | 'sleep' | 'diaper') {
   if (babyA.value) recordsStore.quickLog(babyA.value.id, t)
   if (babyB.value) recordsStore.quickLog(babyB.value.id, t)
+  haptic.sparkle()
+  stampedType.value = t
+  setTimeout(() => { stampedType.value = '' }, 500)
   uni.showToast({ title: t === 'feeding' ? '都喂了' : t === 'sleep' ? '都睡了' : '都换了', icon: 'success', duration: 800 })
 }
 
@@ -210,6 +216,8 @@ const goDuty = () => emit('navigate', '/pages/duty/index')
 .q-chip:active{transform:scale(.9);background:var(--amber-lt);border-color:var(--amber);color:var(--amber);box-shadow:inset 0 1rpx 3rpx rgba(0,0,0,0.05)}
 .q-chip.q-primary{padding:18rpx 32rpx;font-size:26rpx;background:linear-gradient(180deg,rgba(255,255,255,0.15) 0%,transparent 55%,rgba(0,0,0,0.03) 100%),var(--amber-lt);border-color:var(--amber);color:var(--amber);box-shadow:0 2rpx 0 rgba(224,123,62,0.2),0 3rpx 6rpx rgba(224,123,62,0.1)}
 .q-chip.q-primary:active{box-shadow:inset 0 1rpx 3rpx rgba(224,123,62,0.1)}
+/* 盖章反馈 — dualRecord 触发时播放 stampDown 动画 */
+.chip-stamped{animation:stampDown .5s var(--ease-stamp) both}
 .dad-footer{display:flex;justify-content:center;gap:16rpx;margin-top:28rpx}
 .ft-link{font-size:20rpx;color:var(--ink-lt)}.ft-link:active{color:var(--amber)}.ft-dot{font-size:20rpx;color:var(--ink-lt)}
 </style>

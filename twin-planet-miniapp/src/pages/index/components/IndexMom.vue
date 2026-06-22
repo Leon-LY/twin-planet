@@ -113,9 +113,9 @@
     </view>
 
     <view class="quick-bar reveal-6" v-if="babyA && babyB && userStore.roleConfig.homeLayout!=='compact'">
-      <view class="q-chip q-primary" @click="dualRecord('feeding')"><text class="iconfont icon-bottle icon-sm"></text> 都喂了</view>
-      <view class="q-chip" @click="dualRecord('sleep')"><text class="iconfont icon-sleep icon-sm"></text> 都睡了</view>
-      <view class="q-chip" @click="dualRecord('diaper')"><text class="iconfont icon-diaper"></text></view>
+      <view class="q-chip q-primary" :class="{ 'chip-stamped': stampedType === 'feeding' }" @click="dualRecord('feeding')"><text class="iconfont icon-bottle icon-sm"></text> 都喂了</view>
+      <view class="q-chip" :class="{ 'chip-stamped': stampedType === 'sleep' }" @click="dualRecord('sleep')"><text class="iconfont icon-sleep icon-sm"></text> 都睡了</view>
+      <view class="q-chip" :class="{ 'chip-stamped': stampedType === 'diaper' }" @click="dualRecord('diaper')"><text class="iconfont icon-diaper"></text></view>
     </view>
 
     <!-- journal-nav: 手帳导航（生长/贴纸/发现） -->
@@ -207,6 +207,7 @@ import { useQuickRef } from '@/composables/useQuickRef'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
 import { getSeasonalHint } from '@/config/seasonal'
 import { useBabyStatus } from '@/composables/useBabyStatus'
+import { useHaptic } from '@/composables/useHaptic'
 
 const emit = defineEmits<{
   navigate: [url: string]
@@ -351,10 +352,15 @@ function babyUrgency(b: any): string {
 }
 
 const { babyStatusIcon, handleImageError } = useBabyStatus()
+const haptic = useHaptic()
+const stampedType = ref('')
 
 function dualRecord(t: 'feeding' | 'sleep' | 'diaper') {
   if (babyA.value) recordsStore.quickLog(babyA.value.id, t)
   if (babyB.value) recordsStore.quickLog(babyB.value.id, t)
+  haptic.sparkle()
+  stampedType.value = t
+  setTimeout(() => { stampedType.value = '' }, 500)
   uni.showToast({ title: t === 'feeding' ? '都喂了' : t === 'sleep' ? '都睡了' : '都换了', icon: 'success', duration: 800 })
 }
 
@@ -463,6 +469,8 @@ const goRecord = () => emit('navigate', '/pages/record/index')
 .q-chip:active{transform:scale(.9);background:var(--amber-lt);border-color:var(--amber);color:var(--amber);box-shadow:inset 0 1rpx 3rpx rgba(0,0,0,0.05)}
 .q-chip.q-primary{padding:18rpx 32rpx;font-size:26rpx;background:linear-gradient(180deg,rgba(255,255,255,0.15) 0%,transparent 55%,rgba(0,0,0,0.03) 100%),var(--amber-lt);border-color:var(--amber);color:var(--amber);box-shadow:0 2rpx 0 rgba(224,123,62,0.2),0 3rpx 6rpx rgba(224,123,62,0.1)}
 .q-chip.q-primary:active{box-shadow:inset 0 1rpx 3rpx rgba(224,123,62,0.1)}
+/* 盖章反馈 — dualRecord 触发时播放 stampDown 动画 */
+.chip-stamped{animation:stampDown .5s var(--ease-stamp) both}
 .duty-card{display:flex;gap:8rpx;justify-content:center;position:relative;z-index:1;margin-bottom:20rpx;flex-wrap:wrap}
 
 /* journal-nav — 手帳导航横条 */
