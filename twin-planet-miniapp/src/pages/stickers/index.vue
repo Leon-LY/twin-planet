@@ -324,8 +324,8 @@ onShareAppMessage(() => ({
 }
 /* 幽灵预览 — PNG图片版：透明度降到极低 + 覆盖灰色遮罩 */
 .cell-ghost-img {
-  width: 130rpx;
-  height: 130rpx;
+  width: 150rpx;
+  height: 150rpx;
   opacity: 0.12;
   position: relative;
   z-index: 0;
@@ -364,17 +364,16 @@ onShareAppMessage(() => ({
 /* === 已解锁通用 === */
 .sticker-cell.earned { opacity: 1; }
 .cell-illustration {
-  width: 150rpx;
-  height: 150rpx;
-  border-radius: 50%;
+  width: 170rpx;
+  height: 170rpx;
 }
 .cell-emoji {
-  width: 96rpx;
-  height: 96rpx;
+  width: 110rpx;
+  height: 110rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 52rpx;
+  font-size: 56rpx;
   border-radius: 50%;
 }
 .cell-label {
