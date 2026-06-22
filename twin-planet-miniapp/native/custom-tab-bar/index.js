@@ -36,6 +36,8 @@ Component({
 
   methods: {
     _syncSelected() {
+      // 手动切换后 300ms 内跳过，避免与 switchTab 中的即时 setData 竞态
+      if (this._switchStamp && Date.now() - this._switchStamp < 300) return
       try {
         const pages = getCurrentPages()
         if (!pages.length) return
@@ -52,6 +54,8 @@ Component({
     switchTab(e) {
       const { index, path } = e.currentTarget.dataset
       if (this.data.selected === index) return
+      this._switchStamp = Date.now()
+      this.setData({ selected: index })
       wx.switchTab({ url: path })
     },
   },
