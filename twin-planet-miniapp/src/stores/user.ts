@@ -67,48 +67,35 @@ export const useUserStore = defineStore('user', () => {
 
   async function loginByWechat() {
     try {
-      let code: string
+      // 优先尝试真实微信登录，失败自动降级 mock
+      let code = 'dev-mock-code'
       try {
         const wxLogin = await uni.login({ provider: 'weixin' })
-        code = wxLogin.code
-      } catch {
-        // 开发者工具中可能获取不到 code，用 mock
-        code = 'dev-mock-code'
-      }
+        if (wxLogin.code) code = wxLogin.code
+      } catch { /* 开发者工具可能无 wx.login，用 mock */ }
 
-      // 调用后端 API 换取 token 和用户资料
-      const res = await request<LoginResponse>('/auth/wechat-login', {
+      // 调用后端 API 换取 token
+      let res = await request<LoginResponse>('/auth/wechat-login', {
         method: 'POST',
         data: { code },
         auth: false,
       })
 
+      // 真实 code 失败则用 dev-mock-code 重试
+      if ((!res.success || !res.data) && code !== 'dev-mock-code') {
+        res = await request<LoginResponse>('/auth/wechat-login', {
+          method: 'POST',
+          data: { code: 'dev-mock-code' },
+          auth: false,
+        })
+      }
+
       if (!res.success || !res.data) {
-        // 微信 API 调用失败时，用 dev-mock-code 重试
-        if (code !== 'dev-mock-code') {
-          const retry = await request<LoginResponse>('/auth/wechat-login', {
-            method: 'POST',
-            data: { code: 'dev-mock-code' },
-            auth: false,
-          })
-          if (retry.success && retry.data) {
-            saveToken(retry.data.token)
-            _isOffline.value = false
-            profile.value = retry.data.profile
-            isLoggedIn.value = true
-            isNewUser.value = false
-            _save()
-            return
-          }
-        }
         throw new Error(res.error?.message || '登录失败')
       }
 
-      // 保存 JWT token
       saveToken(res.data.token)
       _isOffline.value = false
-
-      // 更新本地 profile
       profile.value = res.data.profile
       isLoggedIn.value = true
       isNewUser.value = false
