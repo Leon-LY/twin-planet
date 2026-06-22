@@ -32,6 +32,18 @@
       </view>
     </view>
 
+    <!-- 本周大事记 — 基于记录数据自动生成 -->
+    <view class="highlights-card journal-card reveal-2" v-if="weekHighlights.length">
+      <view class="weekly-tape journal-tape tape-gold"></view>
+      <text class="section-label">本周大事记</text>
+      <view class="hl-list">
+        <view class="hl-item" v-for="(h, i) in weekHighlights" :key="i" :style="{ animationDelay: (0.08 * i) + 's' }">
+          <text class="hl-emoji">{{ h.emoji }}</text>
+          <text class="hl-text">{{ h.text }}</text>
+        </view>
+      </view>
+    </view>
+
     <!-- 功能入口（手帐贴纸风格） -->
     <view class="section-label reveal-2">功能入口</view>
     <view class="feature-grid">
@@ -167,6 +179,76 @@ const weekAchievements = computed(() => {
   return achievements
 })
 
+/** 本周大事记 — 基于记录数据自动生成叙事摘要（学自亲宝宝时间线） */
+const weekHighlights = computed(() => {
+  const now = Date.now()
+  const weekAgo = now - 7 * 86400000
+  const weekLogs = recordsStore.logs.filter(l => l.createdAt >= weekAgo)
+  const aId = babiesStore.babyA?.id
+  const bId = babiesStore.babyB?.id
+  if (!weekLogs.length) return [] as { emoji: string; text: string }[]
+
+  const aName = babiesStore.babyA?.nickname || babiesStore.babyA?.name || '大宝'
+  const bName = babiesStore.babyB?.nickname || babiesStore.babyB?.name || '小宝'
+  const highlights: { emoji: string; text: string }[] = []
+
+  // ① 连续记录
+  if (streakDays.value >= 7) {
+    highlights.push({ emoji: '🔥', text: `连续记录 ${streakDays.value} 天，太强了` })
+  } else if (streakDays.value >= 3) {
+    highlights.push({ emoji: '📝', text: `连续记录 ${streakDays.value} 天，保持哦` })
+  }
+
+  // ② 新贴纸
+  const newStickers = stickersStore.stickers.filter(s => s.earnedAt >= weekAgo).length
+  if (newStickers >= 3) {
+    highlights.push({ emoji: '⭐', text: `本周解锁 ${newStickers} 张新贴纸` })
+  }
+
+  // ③ 双宝同步天数
+  if (aId && bId) {
+    let syncDays = 0
+    for (let i = 0; i < 7; i++) {
+      const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0)
+      dayStart.setDate(dayStart.getDate() - i)
+      const dayEnd = dayStart.getTime() + 86400000
+      const dayLogs = weekLogs.filter(l => l.createdAt >= dayStart.getTime() && l.createdAt < dayEnd)
+      if (dayLogs.some(l => l.babyId === aId) && dayLogs.some(l => l.babyId === bId)) syncDays++
+    }
+    if (syncDays >= 5) {
+      highlights.push({ emoji: '🦊', text: `双宝同步 ${syncDays} 天，默契十足` })
+    }
+  }
+
+  // ④ 喂养统计
+  const totalFeeding = weekLogs.filter(l => l.type === 'feeding').length
+  if (totalFeeding >= 20) {
+    highlights.push({ emoji: '🍼', text: `共喂奶 ${totalFeeding} 次，辛苦啦` })
+  }
+
+  // ⑤ 睡眠差异洞察
+  if (aId && bId) {
+    const aSleep = weekLogs.filter(l => l.babyId === aId && l.type === 'sleep').length
+    const bSleep = weekLogs.filter(l => l.babyId === bId && l.type === 'sleep').length
+    if (aSleep > 0 && bSleep > 0) {
+      const diff = Math.abs(aSleep - bSleep)
+      if (diff >= 3) {
+        const more = aSleep > bSleep ? aName : bName
+        const less = aSleep > bSleep ? bName : aName
+        highlights.push({ emoji: '😴', text: `${more}比${less}多睡了 ${diff} 觉` })
+      }
+    }
+  }
+
+  // ⑥ 记录总量
+  if (weekLogs.length >= 40) {
+    highlights.push({ emoji: '📊', text: `本周记录 ${weekLogs.length} 次，了不起` })
+  }
+
+  // 限 4 条，优先保留有洞察价值的
+  return highlights.slice(0, 4)
+})
+
 function goPage(path: string) {
   uni.navigateTo({ url: path })
 }
@@ -255,6 +337,43 @@ onShareAppMessage(() => ({
   width: 1rpx;
   height: 48rpx;
   background: var(--dot);
+}
+
+/* === 本周大事记卡片 === */
+.highlights-card {
+  position: relative;
+  background: var(--cream);
+  border-radius: var(--radius-md);
+  padding: 28rpx 28rpx 20rpx;
+  margin-bottom: 28rpx;
+  border: 1.5rpx solid var(--dot);
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+}
+.hl-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  margin-top: 8rpx;
+}
+.hl-item {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 10rpx 14rpx;
+  background: linear-gradient(135deg, rgba(255,255,255,0.6), var(--paper));
+  border-radius: 10rpx;
+  border: 1rpx solid var(--dot);
+  animation: cardFloatIn .5s var(--ease-page) both;
+}
+.hl-emoji {
+  font-size: 32rpx;
+  flex-shrink: 0;
+}
+.hl-text {
+  font-size: 24rpx;
+  color: var(--ink);
+  font-family: var(--font-journal);
+  line-height: 1.5;
 }
 
 /* === 区段标签 === */
