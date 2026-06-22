@@ -52,7 +52,6 @@ Component({
     switchTab(e) {
       const { index, path } = e.currentTarget.dataset
       if (this.data.selected === index) return
-      this.setData({ selected: index })
       wx.switchTab({ url: path })
     },
   },
