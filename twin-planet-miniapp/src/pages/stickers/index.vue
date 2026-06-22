@@ -17,7 +17,15 @@
         <text><text class="iconfont icon-share"></text> 分享我的贴纸成就</text>
         <text class="share-sub">{{ store.completionRate }}% · {{ store.collectionCount }}/{{ store.totalStickers }}</text>
       </button>
+      <view class="save-card-btn" @click="saveShareCard">
+        <text>📸 保存收集卡到相册</text>
+      </view>
     </view>
+
+    <!-- Canvas 分享卡片（隐藏） -->
+    <canvas canvas-id="stickerShareCanvas"
+      style="position:fixed;left:-9999px;top:-9999px;width:345px;height:500px">
+    </canvas>
 
     <!-- 按收藏册分组展示 -->
     <view v-for="col in collections" :key="col.key" class="collection">
@@ -91,6 +99,8 @@ import { computed, onMounted } from 'vue'
 import { onShareAppMessage } from '@dcloudio/uni-app'
 import { useStickersStore, STICKER_COLLECTIONS, RARITY_CONFIG, type StickerRarity } from '@/stores/stickers'
 import { trackPageView } from '@/utils/analytics'
+import { drawStickerShareCard } from '@/utils/stickerShareCard'
+import { saveToAlbum } from '@/utils/media'
 
 const store = useStickersStore()
 
@@ -101,6 +111,33 @@ function handleImageError(e: any) {
 
 function rarityIcon(rarity: StickerRarity): string {
   return RARITY_CONFIG[rarity]?.icon || ''
+}
+
+/** 生成并保存贴纸收集分享卡片 */
+async function saveShareCard() {
+  try {
+    uni.showLoading({ title: '生成中...' })
+    const progress = store.collectionProgress
+    const data = {
+      earned: store.collectionCount,
+      total: store.totalStickers,
+      rate: store.completionRate,
+      collections: progress.map(c => ({
+        icon: c.icon,
+        title: c.title,
+        earned: c.earned,
+        total: c.total,
+        completed: c.completed,
+      })),
+    }
+    const path = await drawStickerShareCard('stickerShareCanvas', data)
+    uni.hideLoading()
+    await saveToAlbum(path)
+    uni.showToast({ title: '已保存到相册，去分享吧 📸', icon: 'success', duration: 2000 })
+  } catch {
+    uni.hideLoading()
+    uni.showToast({ title: '生成失败，稍后再试', icon: 'none' })
+  }
 }
 
 /** 按收藏册分组，合并规则与已解锁状态 */
@@ -184,6 +221,26 @@ onShareAppMessage(() => ({
 }
 .share-btn::after { border: none; }
 .share-sub { font-size: 22rpx; font-weight: 400; color: var(--ink-md); }
+
+/* 保存收集卡按钮 */
+.save-card-btn {
+  width: 100%;
+  padding: 16rpx 0;
+  margin-top: 12rpx;
+  background: var(--cream);
+  border: 1.5px dashed var(--dot);
+  border-radius: var(--radius-md);
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--ink-md);
+  font-family: var(--font-journal);
+  transition: all .15s var(--ease-stamp);
+}
+.save-card-btn:active {
+  border-color: var(--mint);
+  color: var(--mint);
+  background: rgba(79,174,110,0.06);
+}
 
 /* === 收藏册区块 === */
 .collection { margin-bottom: 40rpx; }
