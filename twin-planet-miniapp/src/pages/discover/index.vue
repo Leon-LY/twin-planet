@@ -249,8 +249,14 @@ const weekHighlights = computed(() => {
   return highlights.slice(0, 4)
 })
 
+const TAB_PAGES = ['/pages/index/index', '/pages/record/index', '/pages/stickers/index', '/pages/discover/index']
+
 function goPage(path: string) {
-  uni.navigateTo({ url: path })
+  if (TAB_PAGES.includes(path)) {
+    uni.switchTab({ url: path })
+  } else {
+    uni.navigateTo({ url: path })
+  }
 }
 
 onMounted(() => {
