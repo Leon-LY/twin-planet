@@ -95,7 +95,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { onShareAppMessage } from '@dcloudio/uni-app'
 import { useStickersStore, STICKER_COLLECTIONS, RARITY_CONFIG, type StickerRarity } from '@/stores/stickers'
 import { trackPageView } from '@/utils/analytics'
