@@ -203,6 +203,7 @@ function logoutApp() { showRoleDrawer.value = false; userStore.logout(); uni.reL
 
 // ---- 数据同步 ----
 async function initSync() {
+  if (userStore.isOffline) return
   try {
     const server = await pullRecords()
     if (server.length) recordsStore.mergeServerLogs(server)
@@ -216,9 +217,13 @@ onMounted(() => {
   setTimeout(() => {
     loading.value = false
     trackSessionStart(); trackPageView('index')
-    syncStickers(); initSync().catch(() => {})
+    syncStickers()
+    // 仅在有服务器 token 时同步和请求，避免 401 刷屏
+    if (!userStore.isOffline) {
+      initSync().catch(() => {})
+      if (userStore.isLoggedIn) ensureInviteToken().catch(() => {})
+    }
     checkCelebrate(); checkInviteAndAccept()
-    if (userStore.isLoggedIn) ensureInviteToken().catch(() => {})
     genShareCard().catch(() => {})
   }, 400)
 })
