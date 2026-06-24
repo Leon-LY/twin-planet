@@ -1,6 +1,7 @@
 <!-- 贴纸收集册 v2.0 — 按收藏册分组 + 稀有度系统 -->
 <template>
   <view class="stickers-page journal-paper page-enter">
+    <view class="bg-spot spot-a breathe-wash"></view>
     <view class="page-header">
       <text class="page-title">贴纸收集册</text>
       <text class="page-subtitle">{{ store.collectionCount }} / {{ store.totalStickers }} 已收集 · {{ store.completionRate }}%</text>
@@ -204,6 +205,7 @@ onShareAppMessage(() => ({
   min-height: 100vh;
   background: var(--paper);
   padding: 40rpx 28rpx calc(100rpx + env(safe-area-inset-bottom));
+  position: relative;
 }
 .page-header { margin-bottom: 24rpx; }
 .page-title { display: block; font-family: var(--font-journal); font-size: var(--font-title); color: var(--ink); }
