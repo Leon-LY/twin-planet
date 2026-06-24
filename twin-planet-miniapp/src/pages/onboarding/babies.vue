@@ -1,5 +1,5 @@
 <template>
-  <view class="onboard-page">
+  <JournalPage>
     <!-- 进度条 -->
     <view class="progress-bar">
       <view class="progress-step done"><text class="iconfont icon-check"></text></view>
@@ -10,13 +10,11 @@
     </view>
 
     <!-- 标题 -->
-    <view class="section-header">
-      <text class="section-icon">👶👶</text>
-      <text class="section-title">{{ currentBaby === 1 ? '添加大宝' : '添加小宝' }}</text>
-      <text class="section-desc">
-        {{ currentBaby === 1 ? '先填大宝的信息吧' : '小宝来啦，出生日期已帮你填好了~' }}
-      </text>
-    </view>
+    <JournalPageHeader
+      :icon="currentBaby === 1 ? '👶' : '👶'"
+      :title="currentBaby === 1 ? '添加大宝' : '添加小宝'"
+      :subtitle="currentBaby === 1 ? '先填大宝的信息吧' : '小宝来啦，出生日期已帮你填好了~'"
+    />
 
     <!-- 宝宝表单切换 -->
     <view class="baby-tabs">
@@ -26,7 +24,7 @@
         hover-class="tab-press"
         @click="currentBaby = 1"
       >
-        <view class="tab-dot" style="background: var(--twin-baby-a)" />
+        <view class="tab-dot" style="background: var(--amber)" />
         <text>大宝</text>
       </view>
       <view
@@ -35,7 +33,7 @@
         hover-class="tab-press"
         @click="currentBaby = 2"
       >
-        <view class="tab-dot" style="background: var(--twin-baby-b)" />
+        <view class="tab-dot" style="background: var(--terracotta)" />
         <text>小宝</text>
       </view>
     </view>
@@ -43,23 +41,19 @@
     <!-- 表单 -->
     <view class="form-group">
       <text class="form-label">大名 <text class="required">*</text></text>
-      <input
-        class="form-input"
+      <JournalInput
         v-model="form.name"
         placeholder="宝宝的大名"
-        placeholder-style="color: var(--twin-text-muted)"
-        maxlength="10"
+        :maxlength="10"
       />
     </view>
 
     <view class="form-group">
       <text class="form-label">小名</text>
-      <input
-        class="form-input"
+      <JournalInput
         v-model="form.nickname"
         placeholder="平时怎么叫TA"
-        placeholder-style="color: var(--twin-text-muted)"
-        maxlength="10"
+        :maxlength="10"
       />
     </view>
 
@@ -99,22 +93,18 @@
     <view class="form-row">
       <view class="form-group half">
         <text class="form-label">出生体重 (kg) <text class="optional">选填</text></text>
-        <input
-          class="form-input"
+        <JournalInput
           v-model="form.birthWeight"
           type="digit"
           placeholder="记不清可跳过"
-          placeholder-style="color: var(--twin-text-muted)"
         />
       </view>
       <view class="form-group half">
         <text class="form-label">出生身长 (cm) <text class="optional">选填</text></text>
-        <input
-          class="form-input"
+        <JournalInput
           v-model="form.birthHeight"
           type="digit"
           placeholder="记不清可跳过"
-          placeholder-style="color: var(--twin-text-muted)"
         />
         <text class="form-sublabel">记不清也没关系，不影响使用</text>
       </view>
@@ -122,17 +112,18 @@
 
     <!-- 底部操作 -->
     <view class="bottom-action">
-      <button class="btn-primary" hover-class="btn-press" @click="saveBaby">
+      <JournalButton variant="primary" size="lg" @click="saveBaby">
         {{ currentBaby === 1 ? '保存 · 添加小宝' : '保存 · 完成注册' }}
-      </button>
+      </JournalButton>
       <text class="back-link" @click="goBack" v-if="currentBaby===1">← 返回修改家庭信息</text>
     </view>
-  </view>
+  </JournalPage>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useBabiesStore } from '@/stores/babies'
+import { JournalPage, JournalPageHeader, JournalInput, JournalButton } from '@/components/journal'
 
 const babiesStore = useBabiesStore()
 const currentBaby = ref(1)
@@ -151,7 +142,7 @@ const baby2Form = reactive({
   name: '',
   nickname: '',
   gender: 'female' as 'male' | 'female',
-  birthDate: '', // 自动从大宝继承
+  birthDate: '',
   birthWeight: '',
   birthHeight: '',
 })
@@ -188,7 +179,6 @@ function saveBaby() {
   })
 
   if (currentBaby.value === 1) {
-    // 自动将大宝的出生日期填充到小宝
     baby2Form.birthDate = baby1Form.birthDate
     currentBaby.value = 2
     uni.showToast({ title: '大宝已保存，请添加小宝', icon: 'none' })
@@ -206,152 +196,96 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.onboard-page {
-  min-height: 100vh;
-  background: var(--twin-bg);
-  padding: 48rpx 32rpx 40px;
-}
-
-/* 清除原生 button ::after 边框 */
-button::after { border: none; }
-
-/* 进度条 */
 .progress-bar {
   display: flex; align-items: center; justify-content: center;
-  margin-bottom: 40rpx;
+  margin-bottom: 32rpx;
 }
 .progress-step {
   width: 64rpx; height: 64rpx; border-radius: 50%;
-  background: var(--twin-border);
+  background: var(--dot);
   display: flex; align-items: center; justify-content: center;
-  font-size: 28rpx; color: var(--twin-text-secondary); font-weight: 600;
+  font-size: 28rpx; color: var(--ink-md); font-weight: 600;
 }
-.progress-step.active { background: var(--twin-accent); color: var(--twin-card-bg); }
-.progress-step.done { background: var(--twin-accent); color: var(--twin-card-bg); }
-.progress-line { flex: 1; max-width: 120rpx; height: 4rpx; background: var(--twin-border); }
-.progress-line.done { background: var(--twin-accent); }
+.progress-step.active { background: var(--mint); color: var(--cream); }
+.progress-step.done { background: var(--mint); color: var(--cream); }
+.progress-line { flex: 1; max-width: 120rpx; height: 4rpx; background: var(--dot); }
+.progress-line.done { background: var(--mint); }
 
-/* 标题 */
-.section-header { text-align: center; margin-bottom: 32rpx; }
-.section-icon { font-size: 32rpx; }
-.section-title { display: block; font-size: 40rpx; font-weight: 700; color: var(--twin-text); margin-top: 12rpx; }
-.section-desc { display: block; font-size: 24rpx; color: var(--twin-text-secondary); margin-top: 8rpx; }
-
-/* 宝宝切换 -- 物理卡片 */
-.baby-tabs { display: flex; gap: 20rpx; margin-bottom: 32rpx; }
+/* 宝宝切换卡片 */
+.baby-tabs { display: flex; gap: 20rpx; margin-bottom: 28rpx; }
 .baby-tab {
   flex: 1; display: flex; align-items: center; justify-content: center;
   gap: 16rpx; padding: 20rpx 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 55%, rgba(0,0,0,0.02) 100%), #FFF5E8;
-  border: 4rpx solid var(--twin-border); border-radius: 20rpx;
-  font-size: 28rpx; color: var(--twin-text-secondary);
-  box-shadow: 0 2rpx 0 rgba(200,180,160,0.2), 0 3rpx 6rpx rgba(0,0,0,0.04);
-  transition: all 0.15s cubic-bezier(0.25,0.1,0.1,1);
-  position: relative;
-  overflow: hidden;
+  background: var(--cream);
+  border: 4rpx solid var(--dot); border-radius: 20rpx;
+  font-size: 28rpx; color: var(--ink-md);
+  box-shadow: var(--shadow-layer-1);
+  transition: all 0.15s var(--ease-stamp);
+  position: relative; overflow: hidden;
 }
-/* 标签表面高光 */
 .baby-tab::after {
   content: '';
-  position: absolute;
-  top: 4rpx; left: 15%; right: 15%; height: 35%;
+  position: absolute; top: 4rpx; left: 15%; right: 15%; height: 35%;
   background: radial-gradient(ellipse at center, rgba(255,255,255,0.3) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
+  border-radius: 50%; pointer-events: none;
 }
 .tab-aning.active {
-  border-color: var(--twin-baby-a);
-  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 55%, rgba(0,0,0,0.02) 100%), rgba(224,123,62,0.08);
-  color: var(--twin-text); font-weight: 600;
-  box-shadow: 0 2rpx 0 rgba(191,90,40,0.25), 0 3rpx 6rpx rgba(0,0,0,0.04), 0 6rpx 14rpx rgba(224,123,62,0.1);
+  border-color: var(--amber); background: var(--amber-lt);
+  color: var(--ink); font-weight: 600;
 }
 .tab-anran.active {
-  border-color: var(--twin-baby-b);
-  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 55%, rgba(0,0,0,0.02) 100%), rgba(192,133,82,0.08);
-  color: var(--twin-text); font-weight: 600;
-  box-shadow: 0 2rpx 0 rgba(180,100,80,0.25), 0 3rpx 6rpx rgba(0,0,0,0.04), 0 6rpx 14rpx rgba(192,133,82,0.1);
+  border-color: var(--terracotta); background: var(--terracotta-lt);
+  color: var(--ink); font-weight: 600;
 }
 .tab-dot { width: 20rpx; height: 20rpx; border-radius: 50%; }
-
-/* 标签按压态 */
-.tab-press {
-  box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.08), 0 1rpx 0 rgba(200,180,160,0.2) !important;
-  transform: translateY(2rpx);
-}
+.tab-press { box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.08) !important; transform: translateY(2rpx); }
 
 /* 表单 */
-.form-group { margin-bottom: 28rpx; }
+.form-group { margin-bottom: 24rpx; }
 .form-group.half { flex: 1; margin-right: 0; }
 .form-group.half:first-child { margin-right: 16rpx; }
 .form-label { display: block; font-size: 24rpx; font-weight: 600; color: var(--ink); margin-bottom: 12rpx; }
-.required { color: var(--twin-baby-b); }
-.optional { font-weight: 400; color: var(--twin-text-secondary); font-size: 22rpx; }
+.required { color: var(--terracotta); }
+.optional { font-weight: 400; color: var(--ink-md); font-size: 22rpx; }
 .form-input {
   width: 100%; height: 88rpx; padding: 0 28rpx;
-  background: linear-gradient(180deg, rgba(0,0,0,0.015) 0%, transparent 8%), #FFF5E8;
-  border: 4rpx solid var(--twin-border);
-  border-radius: 20rpx; font-size: 30rpx; color: var(--twin-text);
+  background: var(--cream);
+  border: 4rpx solid var(--dot); border-radius: 20rpx;
+  font-size: 30rpx; color: var(--ink);
   box-sizing: border-box;
-  box-shadow: inset 0 2rpx 6rpx rgba(0,0,0,0.04), inset 0 0 0 1rpx rgba(0,0,0,0.02), 0 1rpx 0 rgba(255,255,255,0.6);
+  box-shadow: var(--shadow-recess);
 }
-.form-sublabel { display: block; font-size: 20rpx; color: var(--twin-text-muted); margin-top: 8rpx; }
+.form-sublabel { display: block; font-size: 20rpx; color: var(--ink-lt); margin-top: 8rpx; }
 .form-row { display: flex; }
-.date-picker { color: var(--twin-text); line-height: 1.6; }
+.date-picker { line-height: 88rpx; }
 
-/* 性别切换 — 物理按钮 */
+/* 性别切换 */
 .gender-toggle { display: flex; gap: 12rpx; }
 .gender-btn {
   flex: 1; text-align: center; padding: 20rpx 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 55%, rgba(0,0,0,0.02) 100%), #FFF5E8;
-  border: 4rpx solid var(--twin-border);
-  border-radius: 20rpx; font-size: 26rpx; color: var(--twin-text-tertiary);
-  box-shadow: 0 2rpx 0 rgba(200,180,160,0.2), 0 3rpx 6rpx rgba(0,0,0,0.04);
-  transition: all 0.15s cubic-bezier(0.25,0.1,0.1,1);
-  position: relative;
-  overflow: hidden;
+  background: var(--cream); border: 4rpx solid var(--dot); border-radius: 20rpx;
+  font-size: 26rpx; color: var(--ink-lt);
+  box-shadow: var(--shadow-layer-1);
+  transition: all 0.15s var(--ease-stamp);
+  position: relative; overflow: hidden;
 }
-/* 性别按钮表面高光 */
 .gender-btn::after {
   content: '';
-  position: absolute;
-  top: 4rpx; left: 15%; right: 15%; height: 35%;
+  position: absolute; top: 4rpx; left: 15%; right: 15%; height: 35%;
   background: radial-gradient(ellipse at center, rgba(255,255,255,0.3) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
+  border-radius: 50%; pointer-events: none;
 }
 .gender-btn.active {
-  border-color: var(--twin-baby-a);
-  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 55%, rgba(0,0,0,0.02) 100%), rgba(224,123,62,0.08);
-  color: var(--twin-text);
-  box-shadow: 0 2rpx 0 rgba(191,90,40,0.25), 0 3rpx 6rpx rgba(0,0,0,0.04), 0 6rpx 14rpx rgba(224,123,62,0.1);
+  border-color: var(--amber); background: var(--amber-lt);
+  color: var(--ink);
 }
-
-/* 性别按钮按压态 */
-.gender-press {
-  box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.08), 0 1rpx 0 rgba(200,180,160,0.2) !important;
-  transform: translateY(2rpx);
-}
+.gender-press { box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.08) !important; transform: translateY(2rpx); }
 
 /* 底部 */
 .bottom-action {
   position: fixed; bottom: 0; left: 0; right: 0;
   padding: 32rpx 32rpx calc(64rpx + env(safe-area-inset-bottom));
-  background: linear-gradient(transparent, var(--twin-bg) 30%);
+  background: linear-gradient(transparent, var(--paper) 30%);
 }
-.btn-primary {
-  width: 100%; padding: 28rpx 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.16) 0%, transparent 55%, rgba(0,0,0,0.05) 100%), #E07B3E;
-  color: #FFF5E8; border: none; border-radius: 24rpx;
-  font-size: 36rpx; font-weight: 600;
-  box-shadow: 0 3rpx 0 rgba(191,90,40,0.5), 0 4rpx 8rpx rgba(0,0,0,0.06), 0 8rpx 20rpx rgba(224,123,62,0.2);
-  transition: all 0.15s cubic-bezier(0.25,0.1,0.1,1);
-}
-
-/* 按钮按压态 — 下沉 + 内阴影 */
-.btn-press {
-  box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.1), 0 1rpx 0 rgba(0,0,0,0.15) !important;
-  transform: translateY(2rpx);
-}
-
-.back-link { display:block; text-align:center; margin-top:20rpx; font-size:26rpx; color:var(--ink-md); }
+.back-link { display: block; text-align: center; margin-top: 20rpx; font-size: 26rpx; color: var(--ink-md); }
 </style>

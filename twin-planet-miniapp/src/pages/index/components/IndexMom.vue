@@ -114,7 +114,7 @@
 
     <view class="action-center reveal-5">
       <button class="main-btn" @click="goRecord">
-        <image class="pen-image" src="/static/images/pen.png" mode="aspectFit" @error="handleImageError" />
+        <text class="iconfont icon-edit stamp-icon"></text>
         <text class="btn-text">记一笔</text>
       </button>
     </view>

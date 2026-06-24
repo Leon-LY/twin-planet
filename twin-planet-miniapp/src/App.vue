@@ -151,6 +151,41 @@ page {
   --ease-pulse:var(--ease-soft);--ease-orbit:var(--ease-soft);--ease-breathing:var(--ease-soft);--ease-stardust:var(--ease-soft);--ease-spring:var(--ease-bounce);
   --dur-quick:var(--dur-fast);--dur-flow:var(--dur-normal);--dur-breathe:3s;--dur-stardust:0.5s;--dur-instant:0.1s;
 
+  /* ── v7 新增：阴影层级系统 ── */
+  --shadow-layer-1:0 1rpx 0 rgba(45,35,24,0.025),0 2rpx 6rpx rgba(45,35,24,0.035),0 4rpx 14rpx rgba(45,35,24,0.025);
+  --shadow-layer-2:0 1.5rpx 0 rgba(45,35,24,0.03),0 3rpx 10rpx rgba(45,35,24,0.045),0 6rpx 22rpx rgba(45,35,24,0.03),0 10rpx 36rpx rgba(45,35,24,0.02);
+  --shadow-layer-3:0 2rpx 0 rgba(45,35,24,0.035),0 4rpx 14rpx rgba(45,35,24,0.05),0 8rpx 30rpx rgba(45,35,24,0.035),0 14rpx 48rpx rgba(45,35,24,0.022);
+  --shadow-raise:0 3rpx 0 rgba(192,104,52,0.5),0 4rpx 8rpx rgba(0,0,0,0.06),0 8rpx 20rpx rgba(224,123,62,0.18);
+  --shadow-recess:inset 0 2rpx 6rpx rgba(0,0,0,0.05),inset 0 0 0 1rpx rgba(0,0,0,0.03);
+
+  /* ── v7 新增：非对称圆角系统（手绘感）── */
+  --radius-top:8rpx 18rpx 3rpx 12rpx;
+  --radius-bottom:4rpx 10rpx 14rpx 6rpx;
+  --radius-left:16rpx 4rpx 6rpx 14rpx;
+  --radius-right:3rpx 16rpx 12rpx 5rpx;
+  --radius-hand-torn:3rpx 14rpx 3rpx 14rpx;
+
+  /* ── v7 新增：透明度层级 ── */
+  --opacity-solid:1;--opacity-body:0.85;--opacity-secondary:0.55;
+  --opacity-muted:0.35;--opacity-ghost:0.12;--opacity-shadow:0.06;--opacity-whisper:0.03;
+
+  /* ── v7 新增：z-index 纸层 ── */
+  --z-page-bg:0;--z-page-content:1;--z-decorative:2;--z-floating:3;
+  --z-overlay:100;--z-toast:200;--z-popup:999;
+
+  /* ── v7 新增：水彩渐变预设 ── */
+  --wash-amber:radial-gradient(ellipse 55% 60% at 38% 42%,rgba(224,123,62,0.07) 0%,transparent 55%),radial-gradient(ellipse 40% 48% at 55% 38%,rgba(224,123,62,0.05) 0%,transparent 50%);
+  --wash-terracotta:radial-gradient(ellipse 55% 60% at 42% 40%,rgba(192,133,82,0.07) 0%,transparent 55%),radial-gradient(ellipse 40% 48% at 52% 42%,rgba(192,133,82,0.05) 0%,transparent 50%);
+  --wash-ink:radial-gradient(ellipse 30% 40% at 38% 45%,rgba(45,35,24,0.04) 0%,transparent 60%),radial-gradient(ellipse 25% 35% at 55% 40%,rgba(45,35,24,0.03) 0%,transparent 55%);
+  --wash-mint:radial-gradient(ellipse 55% 60% at 40% 42%,rgba(79,174,110,0.05) 0%,transparent 55%);
+  --wash-gold:radial-gradient(ellipse 50% 55% at 45% 40%,rgba(200,153,62,0.06) 0%,transparent 55%),radial-gradient(ellipse 35% 42% at 50% 38%,rgba(200,153,62,0.04) 0%,transparent 50%);
+  --ink-bleed:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(45,35,24,0.08) 0%,rgba(45,35,24,0.04) 30%,rgba(45,35,24,0.01) 60%,transparent 80%);
+  --stain:radial-gradient(ellipse 70% 65% at 48% 52%,rgba(224,123,62,0.04) 0%,rgba(224,123,62,0.02) 35%,transparent 65%),radial-gradient(circle 25% at 45% 48%,rgba(224,123,62,0.025) 0%,transparent 50%);
+
+  /* ── v7 新增：装订线预设 ── */
+  --spine-width:6rpx;
+  --spine-stitch:repeating-linear-gradient(0deg,transparent,transparent 5rpx,var(--ink-lt) 5rpx,var(--ink-lt) 7rpx,transparent 7rpx,transparent 12rpx);
+
   background:var(--paper);
   color:var(--ink);
   font-family:'PingFang SC','Microsoft YaHei',sans-serif;
@@ -455,6 +490,87 @@ page {
     radial-gradient(circle 3rpx at 90rpx 3rpx, var(--paper) 2rpx, transparent 3rpx),
     radial-gradient(circle 3rpx at 110rpx 3rpx, var(--paper) 2rpx, transparent 3rpx);
   z-index: 1;
+}
+
+/* ── v7 新增：装订线（页面左边缘缝线装订）── */
+.journal-spine {
+  position: relative;
+  padding-left: 24rpx;
+}
+.journal-spine::before {
+  content: '';
+  position: absolute;
+  left: 8rpx; top: 0; bottom: 0;
+  width: var(--spine-width);
+  background: var(--spine-stitch);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* ── v7 新增：深层纸卡（3 层纸张叠加）── */
+.journal-card-deep {
+  position: relative;
+  background: var(--cream);
+  border-radius: 6rpx 22rpx 6rpx 22rpx;
+  border: 1.5px solid var(--dot);
+  box-shadow: var(--shadow-layer-1);
+}
+.journal-card-deep::before {
+  content: '';
+  position: absolute;
+  top: 6rpx; left: 4rpx; right: 4rpx; bottom: -4rpx;
+  background: var(--cream);
+  opacity: 0.7;
+  border-radius: 6rpx 22rpx 6rpx 22rpx;
+  border: 1px solid var(--dot);
+  z-index: -1;
+  transform: rotate(-0.5deg);
+}
+.journal-card-deep::after {
+  content: '';
+  position: absolute;
+  top: 10rpx; left: 6rpx; right: 6rpx; bottom: -8rpx;
+  background: var(--cream);
+  opacity: 0.45;
+  border-radius: 6rpx 22rpx 6rpx 22rpx;
+  border: 1px dashed var(--dot);
+  z-index: -2;
+  transform: rotate(0.8deg);
+}
+
+/* ── v7 新增：水彩斑点工具类 ── */
+.wash-spot {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-page-bg);
+}
+.wash-spot.amber  { background: var(--wash-amber); }
+.wash-spot.terracotta { background: var(--wash-terracotta); }
+.wash-spot.mint   { background: var(--wash-mint); }
+.wash-spot.gold   { background: var(--wash-gold); }
+.wash-spot.ink    { background: var(--wash-ink); }
+.wash-spot.stain  { background: var(--stain); }
+
+/* ── v7 新增：装订缝合线（卡片间可见缝线）── */
+.divider-dot   { border: none; border-top: 1.5px dotted var(--ink-lt); margin: 28rpx 0; opacity: 0.35; }
+.divider-stitch{ border: none; border-top: 1.5px dotted var(--ink-lt); margin: 24rpx 0; opacity: 0.4; }
+.divider-dashed{ border: none; border-top: 1.5px dashed var(--dot); margin: 20rpx 0; }
+
+/* ── v7 新增：页面根部 — 统一页面壳层 ── */
+.journal-page {
+  min-height: 100vh;
+  background: var(--paper);
+  padding: 48rpx 32rpx calc(64rpx + env(safe-area-inset-bottom));
+}
+.journal-page.has-paper {
+  background-image:
+    radial-gradient(circle, var(--dot) 0.8rpx, transparent 0.8rpx);
+  background-size: 44rpx 44rpx;
+  background-position: 6rpx 6rpx;
+}
+.journal-page.has-spine {
+  padding-left: 36rpx;
 }
 
 .heading-xl{font-family:var(--font-journal);font-size:var(--font-hero);font-weight:400;color:var(--ink);letter-spacing:-1rpx}
