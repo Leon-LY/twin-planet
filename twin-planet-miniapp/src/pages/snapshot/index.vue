@@ -1,5 +1,6 @@
 <template>
   <view class="snap-page page-enter">
+    <view class="bg-spot page-spot"></view>
     <canvas canvas-id="shareCanvas" style="position:fixed;left:-9999px;top:-9999px;width:345px;height:480px"></canvas>
     <view class="page-header">
       <text class="page-title">{{ greetingText }}</text>

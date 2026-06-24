@@ -1,5 +1,6 @@
 <template>
   <view class="growth-page page-enter">
+    <view class="bg-spot growth-spot"></view>
     <view class="page-header">
       <text class="page-title">生长曲线</text>
       <text class="page-subtitle">每个宝宝都有自己的生长节奏 <text class="iconfont icon-sprout"></text></text>
@@ -275,7 +276,9 @@ async function exportClinicCard(){
 </script>
 
 <style scoped>
-.growth-page{min-height:100vh;background:var(--paper);padding:32rpx 28rpx calc(64rpx + env(safe-area-inset-bottom))}
+.growth-page{min-height:100vh;background:var(--paper);padding:32rpx 28rpx calc(64rpx + env(safe-area-inset-bottom));position:relative}
+.bg-spot{position:absolute;pointer-events:none;z-index:0}
+.growth-spot{width:320rpx;height:280rpx;top:80rpx;right:-40rpx;background:radial-gradient(ellipse 55% 60% at 40% 45%,rgba(79,174,110,0.09) 0%,transparent 70%),radial-gradient(ellipse 40% 50% at 55% 38%,rgba(79,174,110,0.05) 0%,transparent 60%)}
 .page-header{margin-bottom:24rpx}
 .page-title{display:block;font-family:var(--font-journal);font-size:var(--font-title);color:var(--ink)}
 .page-subtitle{font-size:var(--font-body);color:var(--ink-md);margin-top:4rpx}

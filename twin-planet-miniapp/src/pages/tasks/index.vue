@@ -1,6 +1,7 @@
 <!-- 亲子任务 — 双宝家庭专属互动玩法 -->
 <template>
   <view class="tasks-page journal-paper page-enter">
+    <view class="bg-spot page-spot"></view>
     <view class="page-header">
       <text class="page-icon">✨</text>
       <text class="page-title">亲子任务</text>

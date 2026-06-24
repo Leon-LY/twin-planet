@@ -1,5 +1,6 @@
 <template>
   <view class="duty-page page-enter">
+    <view class="bg-spot page-spot"></view>
     <!-- 值班模式 -->
     <view class="page-header">
       <text class="page-icon iconfont icon-hero"></text>
