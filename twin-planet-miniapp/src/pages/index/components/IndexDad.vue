@@ -45,6 +45,11 @@
         </view>
       </view>
     </view>
+    <view class="feed-reminder" v-for="r in feedingReminder" :key="r.babyId">
+      <text class="fr-emoji">⏰</text>
+      <text class="fr-text">{{ r.name }}距上次喂奶 {{ formatMinutes(r.minutesAgo) }}</text>
+      <text class="fr-hint">（通常{{ r.avgInterval }}分钟）</text>
+    </view>
     <view class="dad-snapshot" v-if="todaySummary"><text class="ds-text">{{ todaySummary }}</text></view>
     <view class="dad-actions">
       <button class="dad-duty-btn" @click="goDuty"><text class="dd-icon iconfont icon-clipboard"></text><text class="dd-label">值班清单</text></button>
@@ -77,6 +82,7 @@ import { useBabiesStore } from '@/stores/babies'
 import { useRecordsStore } from '@/stores/records'
 import { useBabyStatus } from '@/composables/useBabyStatus'
 import { useHaptic } from '@/composables/useHaptic'
+import { useFeedingReminder } from '@/composables/useFeedingReminder'
 
 const emit = defineEmits<{ navigate: [url: string] }>()
 const userStore = useUserStore()
@@ -172,6 +178,9 @@ const PILL_OPTIONS: Record<string, { emoji: string; label: string; key: string; 
     { emoji: '💧💩', label: '都有', key: 'diaperType', value: 'both' },
   ],
 }
+
+const { reminders: feedingReminder } = useFeedingReminder()
+function formatMinutes(m: number) { if (m < 60) return m + '分钟'; const h = Math.floor(m / 60); const r = m % 60; return r > 0 ? h + '小时' + r + '分钟' : h + '小时' }
 
 const todaySummary = computed(() => {
   const today = recordsStore.logs.filter(l => l.createdAt >= new Date().setHours(0,0,0,0))
@@ -288,5 +297,9 @@ const goDuty = () => emit('navigate', '/pages/duty/index')
 .dp-dismiss{border-color:transparent;background:transparent;opacity:0.5;padding:10rpx 14rpx}
 
 .dad-footer{display:flex;justify-content:center;gap:16rpx;margin-top:28rpx}
+.feed-reminder{display:flex;align-items:center;gap:8rpx;padding:14rpx 20rpx;margin-bottom:16rpx;background:var(--amber-lt);border:1.5rpx solid var(--amber);border-radius:16rpx;font-size:22rpx;color:var(--amber);animation:cardFloatIn .5s var(--ease-page) both}
+.fr-emoji{font-size:28rpx}
+.fr-text{font-weight:600}
+.fr-hint{color:var(--ink-md);font-size:20rpx}
 .ft-link{font-size:20rpx;color:var(--ink-lt)}.ft-link:active{color:var(--amber)}.ft-dot{font-size:20rpx;color:var(--ink-lt)}
 </style>

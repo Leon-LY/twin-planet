@@ -230,6 +230,7 @@ import { useQuickRef } from '@/composables/useQuickRef'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
 import { getSeasonalHint } from '@/config/seasonal'
 import { useBabyStatus } from '@/composables/useBabyStatus'
+import { useFeedingReminder } from "/@/composables/useFeedingReminder"
 import { useHaptic } from '@/composables/useHaptic'
 
 const emit = defineEmits<{
