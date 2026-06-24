@@ -52,7 +52,10 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { saveExportData } from '@/utils/syncService'
-import { JournalPage, JournalPageHeader, JournalCard, JournalButton } from '@/components/journal'
+import JournalPage from '@/components/journal/JournalPage.vue'
+import JournalPageHeader from '@/components/journal/JournalPageHeader.vue'
+import JournalCard from '@/components/journal/JournalCard.vue'
+import JournalButton from '@/components/journal/JournalButton.vue'
 
 onMounted(() => { uni.setNavigationBarTitle({ title: '隐私政策' }) })
 

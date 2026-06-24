@@ -37,7 +37,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
-import { JournalPage, JournalButton, JournalDivider } from '@/components/journal'
+import JournalPage from '@/components/journal/JournalPage.vue'
+import JournalButton from '@/components/journal/JournalButton.vue'
+import JournalDivider from '@/components/journal/JournalDivider.vue'
 
 const userStore = useUserStore()
 const loading = ref(false)

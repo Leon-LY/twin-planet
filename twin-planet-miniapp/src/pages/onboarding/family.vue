@@ -59,7 +59,10 @@
 import { ref, computed, onMounted } from 'vue'
 import { useFamilyStore } from '@/stores/family'
 import { useUserStore, type UserProfile } from '@/stores/user'
-import { JournalPage, JournalPageHeader, JournalInput, JournalButton } from '@/components/journal'
+import JournalPage from '@/components/journal/JournalPage.vue'
+import JournalPageHeader from '@/components/journal/JournalPageHeader.vue'
+import JournalInput from '@/components/journal/JournalInput.vue'
+import JournalButton from '@/components/journal/JournalButton.vue'
 
 const familyStore = useFamilyStore()
 const userStore = useUserStore()

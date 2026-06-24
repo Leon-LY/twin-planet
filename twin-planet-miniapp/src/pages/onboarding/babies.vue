@@ -123,7 +123,10 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useBabiesStore } from '@/stores/babies'
-import { JournalPage, JournalPageHeader, JournalInput, JournalButton } from '@/components/journal'
+import JournalPage from '@/components/journal/JournalPage.vue'
+import JournalPageHeader from '@/components/journal/JournalPageHeader.vue'
+import JournalInput from '@/components/journal/JournalInput.vue'
+import JournalButton from '@/components/journal/JournalButton.vue'
 
 const babiesStore = useBabiesStore()
 const currentBaby = ref(1)
