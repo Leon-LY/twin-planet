@@ -88,6 +88,18 @@
               <text class="cs-item" v-if="todayCount(b.id,'sleep')>0">😴 {{ todayCount(b.id,'sleep') }}</text>
               <text class="cs-item" v-if="todayCount(b.id,'diaper')>0">💧 {{ todayCount(b.id,'diaper') }}</text>
             </view>
+            <!-- 高频快捷 chips：点一下即记录 -->
+            <view class="card-chips">
+              <view class="card-chip amber-chip" @click.stop="quickRecord(b.id,'feeding')">
+                <text class="card-chip-emoji">🍼</text>
+              </view>
+              <view class="card-chip" @click.stop="quickRecord(b.id,'diaper')">
+                <text class="card-chip-emoji">💧</text>
+              </view>
+              <view class="card-chip gray-chip" @click.stop="quickRecord(b.id,'sleep')">
+                <text class="card-chip-emoji">😴</text>
+              </view>
+            </view>
             <!-- 盖章提示 -->
             <view v-if="selectedStamp" class="stamp-hint">
               <text class="stamp-hint-icon">{{ selectedStampEmoji }}</text>
@@ -192,9 +204,6 @@ function todayCount(babyId: string, type: RecordType): number {
 // ---- 印章系统 ----
 const TIME_STAMPS = new Set(['feeding','sleep'])
 const STAMP_TYPES = [
-  { type:'feeding' as RecordType, emoji:'🍼', label:'喂奶' },
-  { type:'sleep' as RecordType, emoji:'😴', label:'哄睡' },
-  { type:'diaper' as RecordType, emoji:'💧', label:'尿布' },
   { type:'temperature' as RecordType, emoji:'🌡️', label:'体温' },
   { type:'medicine' as RecordType, emoji:'💊', label:'用药' },
   { type:'bath' as RecordType, emoji:'🛁', label:'洗澡' },
@@ -218,38 +227,44 @@ function deselectStamp() {
   selectedStamp.value = ''
 }
 
-function stampBaby(babyId: string) {
-  if (!selectedStamp.value) return
-  const stamp = STAMP_TYPES.find(s => s.type === selectedStamp.value)
-  if (!stamp) return
+/** 高频快捷记录：点 chip 即完成（喂养/尿布/哄睡） */
+function quickRecord(babyId: string, type: RecordType) {
+  // 点击动画
+  hitBabyId.value = babyId
+  setTimeout(() => { hitBabyId.value = '' }, 500)
 
-  // 如果该宝宝有计时器，先停旧的
-  if (TIME_STAMPS.has(stamp.type) && recordsStore.runningTimers[babyId]) {
-    recordsStore.stopTimer(babyId)
-  }
-
-  // 计时类型：启动计时器
-  if (TIME_STAMPS.has(stamp.type)) {
-    recordsStore.startTimer(babyId, stamp.type)
+  if (TIME_STAMPS.has(type)) {
+    // 计时类型：快速启动计时器
+    if (recordsStore.runningTimers[babyId]) recordsStore.stopTimer(babyId)
+    recordsStore.startTimer(babyId, type)
     haptic.thump()
   } else {
-    // 即时类型：直接记录
-    const log = recordsStore.quickLog(babyId, stamp.type)
+    const log = recordsStore.quickLog(babyId, type)
     if (log) showUndo(log)
     haptic.sparkle()
     syncStickers()
-    if (stamp.type) {
-      trackRecordCreated(stamp.type, 'stamp')
-      showKnowledge(stamp.type)
-    }
+    trackRecordCreated(type, 'chip')
+    showKnowledge(type)
   }
+  popSticker(type)
+}
+
+function stampBaby(babyId: string) {
+  if (!selectedStamp.value) return
+  const t = selectedStamp.value
+
+  // 低频操作：直接快速记录
+  const log = recordsStore.quickLog(babyId, t)
+  if (log) showUndo(log)
+  haptic.sparkle()
+  syncStickers()
+  trackRecordCreated(t, 'stamp')
+  showKnowledge(t)
+  popSticker(t)
 
   // 盖下动画
   hitBabyId.value = babyId
   setTimeout(() => { hitBabyId.value = '' }, 500)
-
-  // 贴纸弹出
-  popSticker(stamp.type)
 }
 
 function dualQuick(type: 'feeding'|'sleep') {
@@ -525,6 +540,18 @@ onMounted(() => {
   background:var(--paper); padding:2rpx 8rpx; border-radius:6rpx;
   font-family: var(--font-journal);
 }
+/* 高频快捷 chips */
+.card-chips { display:flex; gap:10rpx; margin-top:10rpx; justify-content:center; }
+.card-chip {
+  width:56rpx; height:56rpx; border-radius:50%;
+  background:var(--cream);
+  border:2rpx solid var(--dot);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2rpx 6rpx rgba(0,0,0,0.05);
+  transition:all 0.15s var(--ease-stamp);
+}
+.card-chip:active { transform:scale(0.88); background:var(--amber-lt); border-color:var(--amber); }
+.card-chip-emoji { font-size:26rpx; }
 .stamp-hint {
   margin-top:10rpx; display:flex; align-items:center; gap:6rpx;
   font-size:20rpx; color:var(--amber); font-weight:500;
