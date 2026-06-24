@@ -1,7 +1,7 @@
 <!-- 贴纸收集册 v2.0 — 按收藏册分组 + 稀有度系统 -->
 <template>
   <view class="stickers-page journal-paper page-enter">
-    <view class="bg-spot spot-a breathe-wash"></view>
+    <view class="sticker-spot"></view>
     <view class="page-header">
       <text class="page-title">贴纸收集册</text>
       <text class="page-subtitle">{{ store.collectionCount }} / {{ store.totalStickers }} 已收集 · {{ store.completionRate }}%</text>
@@ -206,6 +206,13 @@ onShareAppMessage(() => ({
   background: var(--paper);
   padding: 40rpx 28rpx calc(100rpx + env(safe-area-inset-bottom));
   position: relative;
+}
+.sticker-spot {
+  position: absolute; top: 100rpx; right: -40rpx;
+  width: 260rpx; height: 240rpx; z-index: 0; pointer-events: none;
+  background: radial-gradient(ellipse 50% 55% at 42% 45%, rgba(200,153,62,0.1) 0%, transparent 65%),
+              radial-gradient(ellipse 38% 45% at 55% 40%, rgba(200,153,62,0.06) 0%, transparent 55%);
+  animation: watercolorBreathe 8s var(--ease-soft) infinite;
 }
 .page-header { margin-bottom: 24rpx; }
 .page-title { display: block; font-family: var(--font-journal); font-size: var(--font-title); color: var(--ink); }

@@ -1,8 +1,8 @@
 <!-- 双宝广场 — 发现页 v2：周报+功能入口+成就动态 -->
 <template>
   <view class="discover-page journal-paper page-enter">
-    <view class="bg-spot spot-a breathe-wash"></view>
-    <view class="bg-spot spot-b breathe-wash"></view>
+    <view class="discover-spot-a"></view>
+    <view class="discover-spot-b"></view>
     <view class="page-header">
       <text class="page-icon">🧭</text>
       <text class="page-title">双宝广场</text>
@@ -290,6 +290,21 @@ onShareAppMessage(() => ({
   min-height: 100vh;
   padding: 32rpx 32rpx calc(100rpx + env(safe-area-inset-bottom));
   position: relative;
+}
+/* 水彩斑点 — 页面装饰 */
+.discover-spot-a {
+  position: absolute; top: 60rpx; right: -60rpx;
+  width: 300rpx; height: 280rpx; z-index: 0; pointer-events: none;
+  background: radial-gradient(ellipse 55% 60% at 40% 45%, rgba(224,123,62,0.12) 0%, transparent 65%),
+              radial-gradient(ellipse 40% 48% at 55% 38%, rgba(224,123,62,0.08) 0%, transparent 55%);
+  animation: watercolorBreathe 8s var(--ease-soft) infinite;
+}
+.discover-spot-b {
+  position: absolute; bottom: 300rpx; left: -50rpx;
+  width: 240rpx; height: 220rpx; z-index: 0; pointer-events: none;
+  background: radial-gradient(ellipse 50% 55% at 45% 40%, rgba(192,133,82,0.1) 0%, transparent 65%),
+              radial-gradient(ellipse 38% 45% at 50% 38%, rgba(192,133,82,0.06) 0%, transparent 55%);
+  animation: watercolorBreathe 8s var(--ease-soft) infinite reverse;
 }
 
 /* === 周报卡片 === */
