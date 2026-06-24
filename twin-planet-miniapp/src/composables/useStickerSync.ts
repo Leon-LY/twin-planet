@@ -151,7 +151,24 @@ export function useStickerSync() {
       isFullMoonNight: isFullMoonNight(),
     }
 
-    return stickersStore.sync(ctx)
+    const newStickers = stickersStore.sync(ctx)
+
+    // 更新 Tab 贴纸红点
+    if (newStickers && newStickers.length > 0) {
+      try {
+        const pages = getCurrentPages()
+        const page = pages[pages.length - 1] as any
+        const tabBar = page?.getTabBar?.()
+        if (tabBar?.setBadge) {
+          // 累加红点数（不清零，等用户进入贴纸页时清零）
+          const app = getApp()
+          const prev = app?.globalData?.__tabBadges?.[2] || 0
+          tabBar.setBadge(2, prev + newStickers.length)
+        }
+      } catch (_) {}
+    }
+
+    return newStickers
   }
 
   return { syncStickers }

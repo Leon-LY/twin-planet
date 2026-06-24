@@ -184,8 +184,11 @@ onShow(() => {
   try {
     const pages = getCurrentPages()
     const page = pages[pages.length - 1]
-    if ((page as any)?.getTabBar) {
-      (page as any).getTabBar().setData({ selected: 2 })
+    const tabBar = (page as any)?.getTabBar?.()
+    if (tabBar) {
+      tabBar.setData({ selected: 2 })
+      // 清除贴纸红点
+      if (tabBar.setBadge) tabBar.setBadge(2, 0)
     }
   } catch (_) {}
 })

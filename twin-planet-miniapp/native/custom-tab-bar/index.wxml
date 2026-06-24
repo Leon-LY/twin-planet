@@ -14,7 +14,8 @@
     >
       <text class="ctb-icon">{{item.icon}}</text>
       <text class="ctb-text">{{item.text}}</text>
-      <view wx:if="{{selected === index}}" class="ctb-dot"></view>
+      <view wx:if="{{badges[index] > 0 && selected !== index}}" class="ctb-badge">{{badges[index] > 99 ? '99+' : badges[index]}}</view>
+      <view wx:elif="{{selected === index}}" class="ctb-dot"></view>
     </view>
   </view>
 </view>

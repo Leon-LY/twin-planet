@@ -60,3 +60,20 @@
   border-radius: 50%;
   background: #E07B3E;
 }
+.ctb-badge {
+  position: absolute;
+  top: -2rpx;
+  right: 8rpx;
+  min-width: 28rpx;
+  height: 28rpx;
+  padding: 0 6rpx;
+  border-radius: 14rpx;
+  background: var(--twin-danger, #D4706B);
+  color: #FFF;
+  font-size: 18rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2rpx 6rpx rgba(212,112,107,0.3);
+}
