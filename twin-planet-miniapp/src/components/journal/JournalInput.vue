@@ -64,5 +64,6 @@ function onInput(e: any) {
 .j-input {
   width: 100%;
   box-sizing: border-box;
+  min-height: 88rpx;
 }
 </style>

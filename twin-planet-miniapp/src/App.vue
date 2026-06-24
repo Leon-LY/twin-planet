@@ -579,100 +579,74 @@ page {
 .caption{font-size:var(--font-caption);color:var(--ink-lt)}
 
 /* ═══════════════════════════════════════════
-   物理按钮系统 · Physical Button System
-   每个按钮都是纸面上的实体物件：凸起 = 可按，凹陷 = 已按
+   物理按钮系统 · Physical Button System  v7
+   干净温暖的按钮——无高光线、无反射伪元素，配色融入暖纸色系
    ═══════════════════════════════════════════ */
 
-/* 主按钮 — 凸起的蜡封印章。顶部受光、底部投影、按下时陷入纸面 */
+/* 主按钮 — 琥珀色凸起，纸面文字 */
 .btn-primary{
   display:flex;align-items:center;justify-content:center;
   min-height:var(--touch-min);padding:24rpx 40rpx;
-  /* 曲面渐变：上亮下暗模拟凸起圆柱 */
-  background: linear-gradient(180deg,
-    rgba(255,255,255,0.18) 0%,
-    rgba(255,255,255,0.04) 30%,
-    transparent 55%,
-    rgba(0,0,0,0.06) 100%
-  ), var(--amber);
-  color:#FFF;border:none;border-radius:var(--radius-full);
-  font-size:var(--font-body);font-weight:700;letter-spacing:3rpx;
-  /* 多层阴影：底面厚度 + 悬浮投影 + 环境光 */
+  background: var(--amber);
+  color:var(--cream);border:none;border-radius:var(--radius-full);
+  font-size:var(--font-body);font-weight:600;
   box-shadow:
-    inset 0 1rpx 0 rgba(255,255,255,0.25),
-    0 3rpx 0 rgba(192,104,52,0.5),
-    0 4rpx 8rpx rgba(0,0,0,0.06),
-    0 8rpx 24rpx rgba(224,123,62,0.2);
+    0 3rpx 0 rgba(192,104,52,0.4),
+    0 4rpx 12rpx rgba(224,123,62,0.15);
   transition: all var(--dur-fast) var(--ease-stamp);
-  position:relative;
 }
-.btn-primary::after{
-  content:'';position:absolute;top:8rpx;left:18%;right:18%;height:40%;
-  background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,0.22) 0%,transparent 100%);
-  border-radius:50%;pointer-events:none;
-}
-/* 按下：阴影收缩 → 按钮陷入纸面 */
+/* 按下：微微下沉 */
 .btn-primary:active{
-  transform:scale(0.94);
+  transform:scale(0.96);
   box-shadow:
-    inset 0 2rpx 6rpx rgba(0,0,0,0.12),
-    0 1rpx 0 rgba(192,104,52,0.4),
-    0 2rpx 4rpx rgba(0,0,0,0.04);
+    0 1rpx 0 rgba(192,104,52,0.3),
+    0 2rpx 6rpx rgba(224,123,62,0.08);
+}
+.btn-primary[disabled]{
+  background: var(--ink-lt);
+  color: var(--ink-md);
+  box-shadow: none;
+  opacity: 0.6;
 }
 
-/* 描边按钮 — 纸面凸起边框。轻微浮起 + 按压边框变色 */
+/* 描边按钮 — 纸面边框 */
 .btn-outline{
   display:flex;align-items:center;justify-content:center;
   min-height:var(--touch-min);padding:20rpx 32rpx;
-  background: linear-gradient(180deg,
-    rgba(255,255,255,0.5) 0%,
-    transparent 40%,
-    rgba(0,0,0,0.02) 100%
-  ), var(--paper);
+  background: var(--paper);
   color:var(--ink);border:2rpx solid var(--dot);
   border-radius:var(--radius-full);
   font-size:var(--font-body);font-weight:500;
-  box-shadow:
-    0 2rpx 0 rgba(0,0,0,0.04),
-    0 3rpx 8rpx rgba(0,0,0,0.03);
+  box-shadow: 0 2rpx 6rpx rgba(0,0,0,0.03);
   transition: all var(--dur-fast) var(--ease-stamp);
 }
 .btn-outline:active{
-  transform:scale(0.94);
+  transform:scale(0.96);
   border-color:var(--amber);
-  box-shadow:
-    inset 0 1rpx 4rpx rgba(0,0,0,0.06),
-    0 0 0 rgba(0,0,0,0);
   background:var(--amber-lt);
+  box-shadow: inset 0 1rpx 3rpx rgba(0,0,0,0.04);
 }
 
-/* 危险按钮 — 凸起红色，同主按钮物理感 */
+/* 危险按钮 */
 .btn-danger{
   display:flex;align-items:center;justify-content:center;
   min-height:var(--touch-min);padding:24rpx 40rpx;
-  background: linear-gradient(180deg,
-    rgba(255,255,255,0.16) 0%,
-    rgba(255,255,255,0.03) 30%,
-    transparent 55%,
-    rgba(0,0,0,0.08) 100%
-  ), var(--twin-danger);
-  color:#FFF;border:none;border-radius:var(--radius-full);
-  font-size:var(--font-body);font-weight:700;
+  background: var(--twin-danger);
+  color:var(--cream);border:none;border-radius:var(--radius-full);
+  font-size:var(--font-body);font-weight:600;
   box-shadow:
-    inset 0 1rpx 0 rgba(255,255,255,0.2),
-    0 3rpx 0 rgba(180,90,85,0.5),
-    0 4rpx 8rpx rgba(0,0,0,0.06),
-    0 8rpx 20rpx rgba(212,112,107,0.2);
+    0 3rpx 0 rgba(180,90,85,0.4),
+    0 4rpx 12rpx rgba(212,112,107,0.15);
   transition:all var(--dur-fast) var(--ease-stamp);
 }
 .btn-danger:active{
-  transform:scale(0.94);
+  transform:scale(0.96);
   box-shadow:
-    inset 0 2rpx 6rpx rgba(0,0,0,0.12),
-    0 1rpx 0 rgba(180,90,85,0.4),
-    0 2rpx 4rpx rgba(0,0,0,0.04);
+    0 1rpx 0 rgba(180,90,85,0.3),
+    0 2rpx 6rpx rgba(212,112,107,0.08);
 }
 
-/* 幽灵按钮 — 扁平文字，按压微微凹陷 */
+/* 幽灵按钮 */
 .btn-ghost{
   display:flex;align-items:center;justify-content:center;
   padding:16rpx 28rpx;background:transparent;color:var(--ink-md);
@@ -681,45 +655,33 @@ page {
   transition:all var(--dur-fast) var(--ease-soft);
 }
 .btn-ghost:active{
-  background:rgba(0,0,0,0.04);
+  background:var(--amber-lt);
   color:var(--amber);
-  box-shadow:inset 0 1rpx 3rpx rgba(0,0,0,0.04);
 }
 
-/* 小型操作按钮 — 凸起的小物件 */
+/* 小型按钮 */
 .btn-sm{
   display:inline-flex;align-items:center;justify-content:center;
   gap:6rpx;padding:14rpx 24rpx;
-  background: linear-gradient(180deg,
-    rgba(255,255,255,0.6) 0%, transparent 40%,
-    rgba(0,0,0,0.03) 100%
-  ), var(--cream);
+  background: var(--cream);
   border:1.5rpx solid var(--dot);
   border-radius:var(--radius-full);
   font-size:var(--font-sm);font-weight:600;color:var(--ink);
-  box-shadow:
-    0 1.5rpx 0 rgba(0,0,0,0.04),
-    0 2rpx 6rpx rgba(0,0,0,0.03);
+  box-shadow: 0 2rpx 6rpx rgba(0,0,0,0.03);
   transition:all var(--dur-fast) var(--ease-stamp);
 }
 .btn-sm:active{
-  transform:scale(0.92);
-  box-shadow:inset 0 1rpx 3rpx rgba(0,0,0,0.06);
+  transform:scale(0.94);
+  box-shadow:inset 0 1rpx 3rpx rgba(0,0,0,0.05);
   background:var(--amber-lt);
 }
 .btn-sm.primary{
-  background: linear-gradient(180deg,
-    rgba(255,255,255,0.15) 0%, transparent 55%,
-    rgba(0,0,0,0.05) 100%
-  ), var(--amber);
-  color:#FFF;border-color:var(--amber);
-  box-shadow:
-    inset 0 1rpx 0 rgba(255,255,255,0.2),
-    0 2rpx 0 rgba(192,104,52,0.5),
-    0 3rpx 8rpx rgba(224,123,62,0.15);
+  background: var(--amber);
+  color:var(--cream);border-color:var(--amber);
+  box-shadow: 0 2rpx 6rpx rgba(224,123,62,0.15);
 }
 .btn-sm.primary:active{
-  box-shadow:inset 0 2rpx 4rpx rgba(0,0,0,0.12);
+  box-shadow:inset 0 2rpx 4rpx rgba(0,0,0,0.08);
 }
 
 /* ═══════════════════════════════════════════
@@ -1758,26 +1720,19 @@ page {
 /* 暗色模式 — 物理按钮系统 */
 .theme-dark .btn-primary{
   box-shadow:
-    inset 0 1rpx 0 rgba(255,255,255,0.12),
     0 3rpx 0 rgba(160,85,42,0.5),
-    0 4rpx 8rpx rgba(0,0,0,0.15),
-    0 8rpx 24rpx rgba(0,0,0,0.2);
+    0 4rpx 12rpx rgba(0,0,0,0.25);
 }
 .theme-dark .btn-primary:active{
   box-shadow:
-    inset 0 2rpx 6rpx rgba(0,0,0,0.2),
     0 1rpx 0 rgba(160,85,42,0.3),
-    0 2rpx 4rpx rgba(0,0,0,0.08);
+    0 2rpx 6rpx rgba(0,0,0,0.15);
 }
-.theme-dark .btn-primary::after{opacity:0.5}
-.theme-dark .btn-outline{
-  background:linear-gradient(180deg,rgba(255,255,255,0.08) 0%,transparent 40%,rgba(0,0,0,0.06) 100%),var(--paper);
-}
-.theme-dark .btn-outline:active{background:rgba(232,145,90,0.1)}
-.theme-dark .btn-sm{background:linear-gradient(180deg,rgba(255,255,255,0.06) 0%,transparent 40%,rgba(0,0,0,0.06) 100%),var(--cream)}
-.theme-dark .btn-sm:active{background:rgba(232,145,90,0.1)}
-.theme-dark .close-btn{background:linear-gradient(180deg,rgba(255,255,255,0.08) 0%,transparent 50%,rgba(0,0,0,0.06) 100%),var(--cream)}
-.theme-dark .close-btn::after{opacity:0.4}
+.theme-dark .btn-outline{ background:var(--paper); }
+.theme-dark .btn-outline:active{ background:rgba(232,145,90,0.1); }
+.theme-dark .btn-sm{ background:var(--cream); }
+.theme-dark .btn-sm:active{ background:rgba(232,145,90,0.1); }
+.theme-dark .close-btn{ background:var(--cream); }
 
 /* 暗色模式 — 物理输入框 */
 .theme-dark .input-field{
