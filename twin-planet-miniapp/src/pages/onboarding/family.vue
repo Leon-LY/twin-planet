@@ -1,5 +1,5 @@
 <template>
-  <JournalPage>
+  <view class="onboard-page">
     <!-- 进度条 -->
     <view class="progress-bar">
       <view class="progress-step active"><text>1</text></view>
@@ -52,14 +52,13 @@
         下一步 · 添加宝宝
       </JournalButton>
     </view>
-  </JournalPage>
+  </view>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useFamilyStore } from '@/stores/family'
 import { useUserStore, type UserProfile } from '@/stores/user'
-import JournalPage from '@/components/journal/JournalPage.vue'
 import JournalPageHeader from '@/components/journal/JournalPageHeader.vue'
 import JournalInput from '@/components/journal/JournalInput.vue'
 import JournalButton from '@/components/journal/JournalButton.vue'
@@ -97,6 +96,11 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.onboard-page {
+  min-height: 100vh;
+  background: var(--paper);
+  padding: 48rpx 32rpx 40rpx;
+}
 .progress-bar {
   display: flex; align-items: center; justify-content: center;
   margin-bottom: 48rpx;

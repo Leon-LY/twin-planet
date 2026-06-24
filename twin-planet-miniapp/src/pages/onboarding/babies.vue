@@ -1,5 +1,5 @@
 <template>
-  <JournalPage>
+  <view class="onboard-page">
     <!-- 进度条 -->
     <view class="progress-bar">
       <view class="progress-step done"><text class="iconfont icon-check"></text></view>
@@ -117,13 +117,12 @@
       </JournalButton>
       <text class="back-link" @click="goBack" v-if="currentBaby===1">← 返回修改家庭信息</text>
     </view>
-  </JournalPage>
+  </view>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useBabiesStore } from '@/stores/babies'
-import JournalPage from '@/components/journal/JournalPage.vue'
 import JournalPageHeader from '@/components/journal/JournalPageHeader.vue'
 import JournalInput from '@/components/journal/JournalInput.vue'
 import JournalButton from '@/components/journal/JournalButton.vue'
