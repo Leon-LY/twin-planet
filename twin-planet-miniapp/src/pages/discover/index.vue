@@ -1,6 +1,8 @@
 <!-- 双宝广场 — 发现页 v2：周报+功能入口+成就动态 -->
 <template>
   <view class="discover-page journal-paper page-enter">
+    <view class="bg-spot spot-a breathe-wash"></view>
+    <view class="bg-spot spot-b breathe-wash"></view>
     <view class="page-header">
       <text class="page-icon">🧭</text>
       <text class="page-title">双宝广场</text>
@@ -287,6 +289,7 @@ onShareAppMessage(() => ({
 .discover-page {
   min-height: 100vh;
   padding: 32rpx 32rpx calc(100rpx + env(safe-area-inset-bottom));
+  position: relative;
 }
 
 /* === 周报卡片 === */
