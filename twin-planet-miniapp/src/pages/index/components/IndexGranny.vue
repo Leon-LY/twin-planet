@@ -1,6 +1,7 @@
 <!-- 奶奶/爷爷模式 — 3个大按钮 + 今日摘要 -->
 <template>
   <view class="page-shell granny-shell journal-paper page-enter">
+    <view class="bg-spot spot-ga"></view>
     <text class="heading-xl" style="text-align:center;display:block;margin-bottom:8rpx">双宝记</text>
     <text class="body-text" style="text-align:center;display:block;margin-bottom:32rpx">{{ greeting }}</text>
 
@@ -88,7 +89,9 @@ const lastUpdateText = computed(() => {
 </script>
 
 <style scoped>
-.granny-shell{display:flex;flex-direction:column;justify-content:center;min-height:100vh;padding:80rpx 56rpx}
+.granny-shell{display:flex;flex-direction:column;justify-content:center;min-height:100vh;padding:80rpx 56rpx;position:relative}
+.bg-spot{position:absolute;pointer-events:none;z-index:0}
+.spot-ga{width:340rpx;height:300rpx;top:60rpx;right:-60rpx;background:radial-gradient(ellipse 55% 60% at 40% 45%,rgba(224,123,62,0.08) 0%,transparent 70%),radial-gradient(ellipse 40% 50% at 55% 38%,rgba(224,123,62,0.05) 0%,transparent 60%)}
 .granny-actions{display:flex;flex-direction:column;gap:40rpx}
 .granny-btn{text-align:center;padding:64rpx;background:linear-gradient(180deg,rgba(255,255,255,0.5) 0%,transparent 35%,rgba(0,0,0,0.03) 100%),var(--cream);border-radius:var(--radius-lg);border:3rpx solid var(--dot);display:flex;flex-direction:column;align-items:center;gap:16rpx;box-shadow:0 4rpx 0 rgba(0,0,0,0.06),0 6rpx 16rpx rgba(0,0,0,0.04),0 10rpx 28rpx rgba(0,0,0,0.03)}
 .granny-btn:active{border-color:var(--amber);transform:scale(.97);box-shadow:0 2rpx 0 rgba(0,0,0,0.04),0 3rpx 8rpx rgba(0,0,0,0.03)}

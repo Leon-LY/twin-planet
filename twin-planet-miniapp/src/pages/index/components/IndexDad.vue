@@ -1,6 +1,8 @@
 <!-- 爸爸模式 — 战术面板 -->
 <template>
   <view class="page-shell dad-shell journal-paper page-enter">
+    <view class="bg-spot spot-da"></view>
+    <view class="bg-spot spot-db"></view>
     <view class="dad-header">
       <view class="masthead-left">
         <text class="date-line">{{ dateStr }}</text>
@@ -227,7 +229,10 @@ const goDuty = () => emit('navigate', '/pages/duty/index')
 </script>
 
 <style scoped>
-.dad-shell{padding:32rpx 28rpx calc(64rpx + env(safe-area-inset-bottom))}
+.dad-shell{padding:32rpx 28rpx calc(64rpx + env(safe-area-inset-bottom));position:relative}
+.bg-spot{position:absolute;pointer-events:none;z-index:0}
+.spot-da{width:360rpx;height:320rpx;top:40rpx;right:-80rpx;background:radial-gradient(ellipse 55% 60% at 40% 45%,rgba(224,123,62,0.10) 0%,transparent 70%),radial-gradient(ellipse 40% 50% at 55% 38%,rgba(224,123,62,0.06) 0%,transparent 60%)}
+.spot-db{width:280rpx;height:240rpx;bottom:300rpx;left:-60rpx;background:radial-gradient(ellipse 50% 55% at 45% 40%,rgba(79,174,110,0.08) 0%,transparent 70%),radial-gradient(ellipse 38% 45% at 50% 35%,rgba(79,174,110,0.05) 0%,transparent 55%)}
 .dad-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28rpx}
 .masthead-left{display:flex;flex-direction:column;gap:8rpx}
 .date-line{font-family:var(--font-journal);font-size:24rpx;color:var(--ink-md);letter-spacing:2rpx}
