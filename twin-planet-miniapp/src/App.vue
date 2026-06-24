@@ -206,8 +206,8 @@ page {
   background-position: 6rpx 6rpx;
 }
 /* 点阵页面上隐藏全局光斑，避免纹理叠加 */
-/* 点阵纸上水彩斑点低透明度共存，不再隐藏 */
-.journal-paper > .bg-spot { opacity: 0.5; }
+/* 点阵纸上水彩斑点：提高透明度确保可见 */
+.journal-paper > .bg-spot { opacity: 0.75; z-index: 0; }
 
 /* 纸页层叠阴影 — 立体"翻开中"的厚度感 */
 .journal-card {

@@ -74,9 +74,9 @@
           >
             <!-- 卡片装饰：和纸胶带 -->
             <view class="card-tape" :class="i===0?'tape-amber':'tape-terracotta'"></view>
-            <!-- 头像：手绘水彩狐狸 -->
+            <!-- 头像 -->
             <image
-              :src="i===0 ? '/static/avatars/baby-a-amber.png' : '/static/avatars/baby-b-terracotta.png'"
+              :src="i===0 ? avatars.a : avatars.b"
               class="card-avatar"
               mode="aspectFill"
             />
@@ -182,6 +182,7 @@ const haptic = useHaptic()
 const twins = computed(() => [babiesStore.babyA, babiesStore.babyB].filter((b): b is NonNullable<typeof b> => !!b))
 const babyA = computed(() => babiesStore.babyA)
 const babyB = computed(() => babiesStore.babyB)
+const avatars = { a: '/static/avatars/baby-a-amber.png', b: '/static/avatars/baby-b-terracotta.png' }
 
 function todayCount(babyId: string, type: RecordType): number {
   const t0 = new Date().setHours(0,0,0,0)
@@ -189,13 +190,14 @@ function todayCount(babyId: string, type: RecordType): number {
 }
 
 // ---- 印章系统 ----
-const STAMP_TYPES: Array<{type:RecordType;emoji:string;label:string;timer?:boolean}> = [
-  { type:'feeding', emoji:'🍼', label:'喂奶', timer:true },
-  { type:'sleep', emoji:'😴', label:'哄睡', timer:true },
-  { type:'diaper', emoji:'💧', label:'尿布' },
-  { type:'temperature', emoji:'🌡️', label:'体温' },
-  { type:'medicine', emoji:'💊', label:'用药' },
-  { type:'bath', emoji:'🛁', label:'洗澡' },
+const TIME_STAMPS = new Set(['feeding','sleep'])
+const STAMP_TYPES = [
+  { type:'feeding' as RecordType, emoji:'🍼', label:'喂奶' },
+  { type:'sleep' as RecordType, emoji:'😴', label:'哄睡' },
+  { type:'diaper' as RecordType, emoji:'💧', label:'尿布' },
+  { type:'temperature' as RecordType, emoji:'🌡️', label:'体温' },
+  { type:'medicine' as RecordType, emoji:'💊', label:'用药' },
+  { type:'bath' as RecordType, emoji:'🛁', label:'洗澡' },
 ]
 
 const selectedStamp = ref<RecordType|''>('')
@@ -222,12 +224,12 @@ function stampBaby(babyId: string) {
   if (!stamp) return
 
   // 如果该宝宝有计时器，先停旧的
-  if (stamp.timer && recordsStore.runningTimers[babyId]) {
+  if (TIME_STAMPS.has(stamp.type) && recordsStore.runningTimers[babyId]) {
     recordsStore.stopTimer(babyId)
   }
 
   // 计时类型：启动计时器
-  if (stamp.timer) {
+  if (TIME_STAMPS.has(stamp.type)) {
     recordsStore.startTimer(babyId, stamp.type)
     haptic.thump()
   } else {
