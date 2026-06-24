@@ -1,5 +1,5 @@
 <template>
-  <JournalPage>
+  <view class="login-page">
     <view class="brand-hero">
       <view class="brand-icon">🌺🌺</view>
       <text class="brand-name">双宝记</text>
@@ -31,7 +31,7 @@
     <view class="dev-skip" v-if="isDev">
       <text class="skip-link" @click="skipLogin">⚙️ 跳过登录（开发用）</text>
     </view>
-  </JournalPage>
+  </view>
 </template>
 
 <script setup lang="ts">
@@ -101,6 +101,16 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.login-page {
+  min-height: 100vh;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60rpx 32rpx calc(60rpx + env(safe-area-inset-bottom));
+}
+
 .brand-hero { text-align: center; margin-bottom: 80rpx; }
 .brand-icon { font-size: 56rpx; margin-bottom: 12rpx; }
 .brand-name { display: block; font-size: 64rpx; font-weight: 700; color: var(--ink); letter-spacing: 4px; }

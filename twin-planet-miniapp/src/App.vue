@@ -579,23 +579,23 @@ page {
 .caption{font-size:var(--font-caption);color:var(--ink-lt)}
 
 /* ═══════════════════════════════════════════
-   物理按钮系统 · Button System v7.1
-   深墨色主按钮 — 精装手帐皮面的沉稳感，纸面暖白文字
+   按钮系统 · Button System v7.2
+   暖陶土主按钮 — 品牌小宝色，暖而不燥，沉静有分量
    ═══════════════════════════════════════════ */
 
-/* 主按钮 — 深墨色，精装手帐封面的重量感 */
+/* 主按钮 — 陶土色，暖手帐中最温润的实体 */
 .btn-primary{
   display:flex;align-items:center;justify-content:center;
   min-height:var(--touch-min);padding:24rpx 40rpx;
-  background: var(--ink);
-  color:var(--paper);border:none;border-radius:var(--radius-full);
+  background: var(--terracotta);
+  color:var(--cream);border:none;border-radius:var(--radius-full);
   font-size:var(--font-body);font-weight:600;
-  box-shadow: 0 4rpx 16rpx rgba(45,35,24,0.15);
+  box-shadow: 0 4rpx 16rpx rgba(192,133,82,0.25);
   transition: all var(--dur-fast) var(--ease-stamp);
 }
 .btn-primary:active{
   transform:scale(0.96);
-  box-shadow: 0 2rpx 8rpx rgba(45,35,24,0.1);
+  box-shadow: 0 2rpx 8rpx rgba(192,133,82,0.15);
 }
 .btn-primary[disabled]{
   background: var(--ink-lt);
@@ -604,21 +604,21 @@ page {
   opacity: 0.6;
 }
 
-/* 描边按钮 — 纸面留白，墨色边框 */
+/* 描边按钮 — 纸面留白，陶土色边框 */
 .btn-outline{
   display:flex;align-items:center;justify-content:center;
   min-height:var(--touch-min);padding:20rpx 32rpx;
   background: var(--paper);
-  color:var(--ink);border:2rpx solid var(--ink-lt);
+  color:var(--ink);border:2rpx solid var(--dot);
   border-radius:var(--radius-full);
   font-size:var(--font-body);font-weight:500;
-  box-shadow: 0 2rpx 6rpx rgba(45,35,24,0.04);
+  box-shadow: 0 2rpx 6rpx rgba(45,35,24,0.03);
   transition: all var(--dur-fast) var(--ease-stamp);
 }
 .btn-outline:active{
   transform:scale(0.96);
-  border-color:var(--ink);
-  background:var(--cream);
+  border-color:var(--terracotta);
+  background:var(--terracotta-lt);
 }
 
 /* 危险按钮 */
@@ -626,7 +626,7 @@ page {
   display:flex;align-items:center;justify-content:center;
   min-height:var(--touch-min);padding:24rpx 40rpx;
   background: var(--twin-danger);
-  color:var(--paper);border:none;border-radius:var(--radius-full);
+  color:var(--cream);border:none;border-radius:var(--radius-full);
   font-size:var(--font-body);font-weight:600;
   box-shadow: 0 4rpx 16rpx rgba(212,112,107,0.2);
   transition:all var(--dur-fast) var(--ease-stamp);
@@ -645,8 +645,8 @@ page {
   transition:all var(--dur-fast) var(--ease-soft);
 }
 .btn-ghost:active{
-  background:var(--amber-lt);
-  color:var(--amber);
+  background:var(--terracotta-lt);
+  color:var(--terracotta);
 }
 
 /* 小型按钮 */
@@ -657,21 +657,21 @@ page {
   border:1.5rpx solid var(--dot);
   border-radius:var(--radius-full);
   font-size:var(--font-sm);font-weight:600;color:var(--ink);
-  box-shadow: 0 2rpx 6rpx rgba(45,35,24,0.04);
+  box-shadow: 0 2rpx 6rpx rgba(45,35,24,0.03);
   transition:all var(--dur-fast) var(--ease-stamp);
 }
 .btn-sm:active{
   transform:scale(0.94);
-  background:var(--amber-lt);
-  border-color:var(--amber);
+  background:var(--terracotta-lt);
+  border-color:var(--terracotta);
 }
 .btn-sm.primary{
-  background: var(--ink);
-  color:var(--paper);border-color:var(--ink);
-  box-shadow: 0 2rpx 8rpx rgba(45,35,24,0.12);
+  background: var(--terracotta);
+  color:var(--cream);border-color:var(--terracotta);
+  box-shadow: 0 2rpx 8rpx rgba(192,133,82,0.2);
 }
 .btn-sm.primary:active{
-  box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.1);
+  box-shadow: inset 0 2rpx 4rpx rgba(0,0,0,0.08);
 }
 
 /* ═══════════════════════════════════════════
@@ -1707,19 +1707,17 @@ page {
   box-shadow: -2rpx 2rpx 4rpx rgba(0,0,0,0.2);
 }
 
-/* 暗色模式 — 物理按钮系统 */
+/* 暗色模式 — 按钮系统 */
 .theme-dark .btn-primary{
-  background: var(--cream);
-  color: var(--ink);
-  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.3);
+  box-shadow: 0 4rpx 16rpx rgba(192,133,82,0.3);
 }
 .theme-dark .btn-primary:active{
-  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.2);
+  box-shadow: 0 2rpx 8rpx rgba(192,133,82,0.2);
 }
-.theme-dark .btn-outline{ background:var(--paper); border-color:var(--ink-lt); }
-.theme-dark .btn-outline:active{ border-color:var(--cream); background:rgba(255,245,232,0.08); }
+.theme-dark .btn-outline{ background:var(--paper); }
+.theme-dark .btn-outline:active{ background:var(--terracotta-lt); }
 .theme-dark .btn-sm{ background:var(--cream); }
-.theme-dark .btn-sm:active{ background:var(--amber-lt); }
+.theme-dark .btn-sm:active{ background:var(--terracotta-lt); }
 .theme-dark .close-btn{ background:var(--cream); }
 
 /* 暗色模式 — 物理输入框 */
