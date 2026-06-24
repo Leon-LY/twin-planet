@@ -186,9 +186,9 @@ onShow(() => {
     const page = pages[pages.length - 1]
     const tabBar = (page as any)?.getTabBar?.()
     if (tabBar) {
-      tabBar.setData({ selected: 2 })
+      tabBar.setData({ selected: 1 })
       // 清除贴纸红点
-      if (tabBar.setBadge) tabBar.setBadge(2, 0)
+      if (tabBar.setBadge) tabBar.setBadge(1, 0)
     }
   } catch (_) {}
 })

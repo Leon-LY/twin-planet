@@ -198,7 +198,7 @@ onShareAppMessage(() => {
 })
 
 // ---- 导航 ----
-const TAB_PAGES = ['/pages/index/index', '/pages/record/index', '/pages/stickers/index', '/pages/discover/index']
+const TAB_PAGES = ['/pages/index/index', '/pages/stickers/index', '/pages/discover/index']
 const navigate = (url: string) => {
   if (TAB_PAGES.includes(url)) {
     uni.switchTab({ url })

@@ -16,7 +16,7 @@
       </view>
     </view>
     <view class="twins dad-twins">
-      <view class="twin-card card-a journal-holes" @click="goRecord">
+      <view class="twin-card card-a journal-holes" @click="handleBabyTap(babyA)">
         <view class="card-surface">
           <view class="avatar-ring" :class="{ pulsing: isRunningA }">
             <image class="avatar-image" src="/static/avatars/baby-a-amber.png" mode="aspectFill" @error="handleImageError" />
@@ -30,7 +30,7 @@
           </view>
         </view>
       </view>
-      <view class="twin-card card-b journal-holes" @click="goRecord">
+      <view class="twin-card card-b journal-holes" @click="handleBabyTap(babyB)">
         <view class="card-surface">
           <view class="avatar-ring" :class="{ pulsing: isRunningB }">
             <image class="avatar-image" src="/static/avatars/baby-b-terracotta.png" mode="aspectFill" @error="handleImageError" />
@@ -50,7 +50,7 @@
       <text class="fr-text">{{ r.name }}距上次喂奶 {{ formatMinutes(r.minutesAgo) }}</text>
       <text class="fr-hint">（通常{{ r.avgInterval }}分钟）</text>
     </view>
-    <view class="gap-nudge" v-if="showGapNudge" @click="goRecord">
+    <view class="gap-nudge" v-if="showGapNudge" @click="openStampNote">
       <text class="gn-emoji">📝</text>
       <view class="gn-body">
         <text class="gn-title">今天还没有记录</text>
@@ -80,6 +80,15 @@
       <text class="ft-dot">·</text>
       <text class="ft-link" @click="goGrowth"><text class="iconfont icon-chart icon-sm"></text> 生长曲线</text>
     </view>
+
+    <!-- 便签式盖章卡片 -->
+    <StampNote
+      :visible="showStampNote"
+      :babyA="babyA"
+      :babyB="babyB"
+      :defaultBabyId="stampDefaultBabyId"
+      @close="showStampNote = false"
+    />
   </view>
 </template>
 
@@ -91,6 +100,7 @@ import { useRecordsStore } from '@/stores/records'
 import { useBabyStatus } from '@/composables/useBabyStatus'
 import { useHaptic } from '@/composables/useHaptic'
 import { useFeedingReminder } from '@/composables/useFeedingReminder'
+import StampNote from '@/components/journal/StampNote.vue'
 
 const emit = defineEmits<{ navigate: [url: string] }>()
 const userStore = useUserStore()
@@ -164,6 +174,34 @@ function babyUrgency(b: any): string {
 
 const { babyStatusIcon, handleImageError } = useBabyStatus()
 const haptic = useHaptic()
+
+// === 便签卡片 ===
+const showStampNote = ref(false)
+const stampDefaultBabyId = ref<string | null>(null)
+
+function handleBabyTap(baby: any) {
+  if (!baby) return
+  if (recordsStore.isBabyRunning(baby.id)) {
+    recordsStore.stopTimer(baby.id)
+    haptic.thump()
+    uni.showToast({ title: '⏹ 计时结束', icon: 'success', duration: 800 })
+    return
+  }
+  stampDefaultBabyId.value = baby.id
+  showStampNote.value = true
+}
+
+function openStampNote() {
+  if (babyA.value && babyB.value) {
+    const lastA = recordsStore.recentLogsByBaby[babyA.value.id]?.[0]?.createdAt ?? 0
+    const lastB = recordsStore.recentLogsByBaby[babyB.value.id]?.[0]?.createdAt ?? 0
+    stampDefaultBabyId.value = lastA <= lastB ? babyA.value.id : babyB.value.id
+  } else {
+    stampDefaultBabyId.value = babyA.value?.id ?? babyB.value?.id ?? null
+  }
+  showStampNote.value = true
+}
+
 const stampedType = ref('')
 const detailPills = ref<{ type: string; logIds: string[] } | null>(null)
 let _pillTimer: ReturnType<typeof setTimeout> | null = null
@@ -243,7 +281,6 @@ function dismissPills() {
   if (_pillTimer) { clearTimeout(_pillTimer); _pillTimer = null }
 }
 
-const goRecord = () => emit('navigate', '/pages/record/index')
 const goGrowth = () => emit('navigate', '/pages/growth/index')
 const goSnapshot = () => emit('navigate', '/pages/snapshot/index')
 const goDuty = () => emit('navigate', '/pages/duty/index')

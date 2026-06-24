@@ -175,7 +175,6 @@
 		"borderStyle": "white",
 		"list": [
 			{ "pagePath": "pages/index/index", "text": "手帳" },
-			{ "pagePath": "pages/record/index", "text": "记录" },
 			{ "pagePath": "pages/stickers/index", "text": "贴纸" },
 			{ "pagePath": "pages/discover/index", "text": "发现" }
 		]

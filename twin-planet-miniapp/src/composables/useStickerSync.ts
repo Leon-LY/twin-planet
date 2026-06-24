@@ -190,8 +190,8 @@ export function useStickerSync() {
         if (tabBar?.setBadge) {
           // 累加红点数（不清零，等用户进入贴纸页时清零）
           const app = getApp()
-          const prev = app?.globalData?.__tabBadges?.[2] || 0
-          tabBar.setBadge(2, prev + newStickers.length)
+          const prev = app?.globalData?.__tabBadges?.[1] || 0
+          tabBar.setBadge(1, prev + newStickers.length)
         }
       } catch (_) {}
     }

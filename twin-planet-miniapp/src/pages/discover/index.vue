@@ -7,6 +7,27 @@
       <text class="page-subtitle">双宝手帳的更多玩法</text>
     </view>
 
+    <!-- 水平周条 -->
+    <scroll-view scroll-x class="week-strip reveal-1">
+      <view class="ws-inner">
+        <view class="ws-day" :class="{ active: selectedDay === 'week' }" @click="selectedDay = 'week'">
+          <text class="ws-dow">本周</text>
+          <text class="ws-date">📊</text>
+        </view>
+        <view v-for="day in weekDays" :key="day.key"
+          class="ws-day"
+          :class="{ today: day.isToday, active: selectedDay === day.key }"
+          @click="selectedDay = day.key">
+          <text class="ws-dow">{{ day.dow }}</text>
+          <text class="ws-date">{{ day.date }}</text>
+          <view class="ws-dot" v-if="day.hasRecords" />
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 周报模式 -->
+    <template v-if="selectedDay === 'week'">
+
     <!-- 本周双宝周报卡片 -->
     <view class="weekly-card journal-card reveal-1">
       <view class="weekly-tape journal-tape tape-amber"></view>
@@ -74,6 +95,32 @@
       </view>
     </view>
 
+    </template>
+
+    <!-- 单日模式 -->
+    <template v-else>
+      <view class="day-timeline reveal-2">
+        <text class="dt-date-head">{{ formatFullDate(selectedDay) }}</text>
+        <view class="dt-stats" v-if="dayStats.count > 0">
+          <text class="dts-item">📝 {{ dayStats.count }} 条</text>
+          <text class="dts-item" v-if="dayStats.ababy > 0">{{ babyA?.nickname || '大宝' }} {{ dayStats.ababy }} 条</text>
+          <text class="dts-item" v-if="dayStats.bbaby > 0">{{ babyB?.nickname || '小宝' }} {{ dayStats.bbaby }} 条</text>
+        </view>
+        <view class="dt-list">
+          <view v-for="log in dayLogs" :key="log.id" class="dt-item">
+            <text class="dti-emoji">{{ LOG_EMOJI[log.type] || '📝' }}</text>
+            <view class="dti-body">
+              <text class="dti-line1">{{ log.babyName }} · {{ LOG_LABELS[log.type] || log.type }}</text>
+              <text class="dti-line2">{{ formatTime(log.createdAt) }}</text>
+            </view>
+          </view>
+          <view class="dt-empty" v-if="dayStats.count === 0">
+            <text>这天没有记录 📭</text>
+          </view>
+        </view>
+      </view>
+    </template>
+
     <!-- 底部工具 -->
     <view class="discover-tools">
       <view class="tool-card" @click="goPage('/pages/stickers/index')">
@@ -87,7 +134,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { onShow, onShareAppMessage } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 import { useRecordsStore } from '@/stores/records'
@@ -130,6 +177,62 @@ const features = computed<FeatureItem[]>(() => {
 
 // === 本周统计 ===
 const streakDays = computed(() => recordsStore.streakDays)
+
+// === 周条导航 + 单日历史 ===
+const selectedDay = ref<string>('week')
+const LOG_EMOJI: Record<string, string> = { feeding: '🍼', sleep: '😴', diaper: '💧', temperature: '🌡️', medicine: '💊', bath: '🛁' }
+const LOG_LABELS: Record<string, string> = { feeding: '喂奶', sleep: '哄睡', diaper: '尿布', temperature: '体温', medicine: '用药', bath: '洗澡' }
+
+const weekDays = computed(() => {
+  const days: Array<{ key: string; dow: string; date: string; isToday: boolean; hasRecords: boolean }> = []
+  const now = new Date()
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now)
+    d.setDate(d.getDate() - i)
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
+    const dowLabel = ['日','一','二','三','四','五','六'][d.getDay()]
+    const t0 = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
+    const t1 = t0 + 86400000
+    days.push({
+      key,
+      dow: dowLabel,
+      date: String(d.getDate()),
+      isToday: i === 0,
+      hasRecords: recordsStore.logs.some(l => l.createdAt >= t0 && l.createdAt < t1),
+    })
+  }
+  return days
+})
+
+const dayLogs = computed(() => {
+  if (selectedDay.value === 'week') return []
+  const [y, m, d] = selectedDay.value.split('-').map(Number)
+  const t0 = new Date(y, m-1, d).getTime()
+  const t1 = t0 + 86400000
+  return recordsStore.logs.filter(l => l.createdAt >= t0 && l.createdAt < t1).sort((a, b) => b.createdAt - a.createdAt)
+})
+
+const dayStats = computed(() => {
+  const logs = dayLogs.value
+  const aId = babyA.value?.id; const bId = babyB.value?.id
+  return {
+    count: logs.length,
+    ababy: logs.filter(l => l.babyId === aId).length,
+    bbaby: logs.filter(l => l.babyId === bId).length,
+  }
+})
+
+function formatFullDate(key: string) {
+  if (key === 'week') return ''
+  const [y, m, d] = key.split('-').map(Number)
+  const dow = ['日','一','二','三','四','五','六'][new Date(y, m-1, d).getDay()]
+  return `${m}月${d}日 星期${dow}`
+}
+
+function formatTime(ts: number) {
+  const d = new Date(ts)
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
+}
 const weekStats = computed(() => {
   const now = Date.now()
   const weekAgo = now - 7 * 86400000
@@ -250,7 +353,7 @@ const weekHighlights = computed(() => {
   return highlights.slice(0, 4)
 })
 
-const TAB_PAGES = ['/pages/index/index', '/pages/record/index', '/pages/stickers/index', '/pages/discover/index']
+const TAB_PAGES = ['/pages/index/index', '/pages/stickers/index', '/pages/discover/index']
 
 function goPage(path: string) {
   if (TAB_PAGES.includes(path)) {
@@ -295,6 +398,31 @@ onShareAppMessage(() => ({
     radial-gradient(circle 200rpx at 85% 12%, rgba(224,123,62,0.10) 0%, transparent 70%),
     radial-gradient(circle 160rpx at 15% 70%, rgba(192,133,82,0.08) 0%, transparent 70%);
 }
+/* === 水平周条 === */
+.week-strip{width:100%;margin-bottom:20rpx;flex-shrink:0}
+.ws-inner{display:flex;gap:12rpx;padding:12rpx 4rpx}
+.ws-day{display:flex;flex-direction:column;align-items:center;gap:2rpx;padding:10rpx 16rpx;border-radius:14rpx;background:var(--cream);border:1.5px solid var(--dot);min-width:80rpx;transition:all .15s var(--ease-stamp);position:relative}
+.ws-day.today{border-color:var(--amber);background:var(--amber-lt)}
+.ws-day.active{border-color:var(--amber);background:var(--amber);box-shadow:0 2rpx 12rpx rgba(224,123,62,0.2)}
+.ws-day.active .ws-dow{color:var(--cream)}
+.ws-day.active .ws-date{color:var(--cream)}
+.ws-dow{font-size:18rpx;color:var(--ink-md)}
+.ws-date{font-size:28rpx;font-weight:700;color:var(--ink);font-family:var(--font-journal)}
+.ws-dot{width:8rpx;height:8rpx;border-radius:50%;background:var(--mint);margin-top:2rpx}
+
+/* === 单日时间线 === */
+.day-timeline{margin-bottom:28rpx}
+.dt-date-head{display:block;font-family:var(--font-journal);font-size:var(--font-card);font-weight:700;color:var(--ink);margin-bottom:12rpx}
+.dt-stats{display:flex;gap:16rpx;margin-bottom:16rpx}
+.dts-item{font-size:22rpx;color:var(--ink-md);background:var(--cream);padding:6rpx 14rpx;border-radius:10rpx;font-family:var(--font-journal)}
+.dt-list{display:flex;flex-direction:column;gap:8rpx}
+.dt-item{display:flex;align-items:flex-start;gap:12rpx;padding:14rpx 16rpx;background:var(--cream);border-radius:12rpx;border:1px solid var(--dot);border-left:4rpx solid var(--amber)}
+.dti-emoji{font-size:28rpx;flex-shrink:0}
+.dti-body{flex:1;display:flex;flex-direction:column;gap:2rpx}
+.dti-line1{font-size:24rpx;color:var(--ink);font-weight:600}
+.dti-line2{font-size:20rpx;color:var(--ink-md)}
+.dt-empty{text-align:center;padding:40rpx;color:var(--ink-md);font-size:24rpx}
+
 /* 功能卡片交错入场 — 引用全局 cardFloatIn keyframe */
 .feature-enter {
   animation: cardFloatIn 0.45s var(--ease-page) both;

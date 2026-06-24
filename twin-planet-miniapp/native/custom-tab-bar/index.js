@@ -2,10 +2,9 @@ Component({
   data: {
     selected: 0,
     safeBottom: 0,
-    badges: { 0: 0, 1: 0, 2: 0, 3: 0 },
+    badges: { 0: 0, 1: 0, 2: 0 },
     list: [
       { pagePath: '/pages/index/index', text: '手帳', icon: '🦊' },
-      { pagePath: '/pages/record/index', text: '记录', icon: '📝' },
       { pagePath: '/pages/stickers/index', text: '贴纸', icon: '⭐' },
       { pagePath: '/pages/discover/index', text: '发现', icon: '🧭' },
     ],

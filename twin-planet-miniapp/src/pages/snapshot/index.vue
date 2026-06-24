@@ -73,7 +73,7 @@
     <view class="quick-actions">
       <text class="section-label">快速操作</text>
       <view class="action-row">
-        <view class="quick-btn" @click="goRecord"><text class="quick-emoji iconfont icon-bottle"></text><text class="quick-label">记录</text></view>
+        <view class="quick-btn" @click="goHome"><text class="quick-emoji iconfont icon-bottle"></text><text class="quick-label">记录</text></view>
         <view class="quick-btn" @click="goDuty"><text class="quick-emoji iconfont icon-hero"></text><text class="quick-label">值班</text></view>
         <view class="quick-btn" @click="goHandover"><text class="quick-emoji iconfont icon-microphone"></text><text class="quick-label">交接</text></view>
         <view class="quick-btn" @click="goSprout"><text class="quick-emoji iconfont icon-sprout"></text><text class="quick-label">萌芽</text></view>
@@ -156,7 +156,7 @@ function getLastSleep(baby: Baby | null): string {
   return `${relative} · ${durStr || '睡眠'}`
 }
 
-const goRecord = () => uni.navigateTo({ url: '/pages/record/index' })
+const goHome = () => uni.switchTab({ url: '/pages/index/index' })
 const goDuty = () => uni.navigateTo({ url: '/pages/duty/index' })
 const goHandover = () => uni.navigateTo({ url: '/pages/handover/index' })
 const goSprout = () => uni.navigateTo({ url: '/pages/sprout/index' })

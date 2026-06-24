@@ -52,7 +52,7 @@
     </view>
 
     <view class="twins reveal-3">
-      <view class="twin-card card-a journal-holes" :class="{ 'has-timer': isRunningA }" @click="goRecord">
+      <view class="twin-card card-a journal-holes" :class="{ 'has-timer': isRunningA }" @click="handleBabyTap(babyA)">
         <view class="card-surface">
           <view class="avatar-ring" :class="{ pulsing: isRunningA }">
             <image class="avatar-image" src="/static/avatars/baby-a-amber.png" mode="aspectFill" @error="handleImageError" />
@@ -66,7 +66,7 @@
           </view>
         </view>
       </view>
-      <view class="twin-card card-b journal-holes" :class="{ 'has-timer': isRunningB }" @click="goRecord">
+      <view class="twin-card card-b journal-holes" :class="{ 'has-timer': isRunningB }" @click="handleBabyTap(babyB)">
         <view class="card-surface">
           <view class="avatar-ring" :class="{ pulsing: isRunningB }">
             <image class="avatar-image" src="/static/avatars/baby-b-terracotta.png" mode="aspectFill" @error="handleImageError" />
@@ -99,8 +99,25 @@
       <StickerStrip :stickers="stickersStore.todayStickers" :showMore="true" @viewAll="$emit('navigate','/pages/stickers/index')" />
     </view>
 
+    <!-- 紧凑今日时间线 -->
+    <view class="today-timeline reveal-4" v-if="todayLogCount > 0">
+      <view class="tt-header" @click="showTimeline = !showTimeline">
+        <text class="tt-title">📝 今日已记 {{ todayLogCount }} 条</text>
+        <text class="tt-toggle">{{ showTimeline ? '收起 ▲' : '展开 ▼' }}</text>
+      </view>
+      <view class="tt-list" v-if="showTimeline">
+        <view v-for="log in todayLogs.slice().reverse().slice(0, 10)" :key="log.id" class="tt-item"
+          @longpress="undoRecord(log.id)">
+          <text class="tti-emoji">{{ LOG_EMOJI[log.type] || '📝' }}</text>
+          <text class="tti-baby" :style="{ color: log.babyColor || 'var(--ink)' }">{{ log.babyName }}</text>
+          <text class="tti-type">{{ LOG_LABELS[log.type] || log.type }}</text>
+          <text class="tti-time">{{ tlTime(log.createdAt) }}</text>
+        </view>
+      </view>
+    </view>
+
     <!-- 记录空窗提醒 — 今天还没记过 -->
-    <view class="gap-nudge reveal-3" v-if="showGapNudge" @click="goRecord">
+    <view class="gap-nudge reveal-3" v-if="showGapNudge" @click="openStampNote">
       <text class="gn-emoji">📝</text>
       <view class="gn-body">
         <text class="gn-title">今天还没有记录哦</text>
@@ -123,7 +140,7 @@
     </view>
 
     <view class="action-center reveal-5">
-      <button class="main-btn" @click="goRecord">
+      <button class="main-btn" @click="openStampNote">
         <text class="iconfont icon-edit stamp-icon"></text>
         <text class="btn-text">记一笔</text>
       </button>
@@ -208,6 +225,15 @@
 
     <text class="journal-footer-text" v-if="streakDays > 0">连续记录第 {{ streakDays }} 天 ✦</text>
 
+    <!-- 便签式盖章卡片 -->
+    <StampNote
+      :visible="showStampNote"
+      :babyA="babyA"
+      :babyB="babyB"
+      :defaultBabyId="stampDefaultBabyId"
+      @close="showStampNote = false"
+    />
+
     <!-- 角色抽屉 -->
     <view class="drawer-overlay" v-if="showRoleDrawer" @click="$emit('switchToRole', userStore.profile?.role || 'mom')">
       <view class="drawer-sheet" @click.stop>
@@ -238,6 +264,7 @@ import { useAlertsStore } from '@/stores/alerts'
 import { useStickersStore } from '@/stores/stickers'
 import { useQuickRef } from '@/composables/useQuickRef'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
+import StampNote from '@/components/journal/StampNote.vue'
 import { getSeasonalHint } from '@/config/seasonal'
 import { useBabyStatus } from '@/composables/useBabyStatus'
 import { useFeedingReminder } from '@/composables/useFeedingReminder'
@@ -395,6 +422,44 @@ function babyUrgency(b: any): string {
 
 const { babyStatusIcon, handleImageError } = useBabyStatus()
 const haptic = useHaptic()
+
+// === 便签卡片 ===
+const showStampNote = ref(false)
+const stampDefaultBabyId = ref<string | null>(null)
+
+function handleBabyTap(baby: any) {
+  if (!baby) return
+  if (recordsStore.isBabyRunning(baby.id)) {
+    recordsStore.stopTimer(baby.id)
+    haptic.thump()
+    uni.showToast({ title: '⏹ 计时结束', icon: 'success', duration: 800 })
+    return
+  }
+  stampDefaultBabyId.value = baby.id
+  showStampNote.value = true
+}
+
+function openStampNote() {
+  if (babyA.value && babyB.value) {
+    const lastA = recordsStore.recentLogsByBaby[babyA.value.id]?.[0]?.createdAt ?? 0
+    const lastB = recordsStore.recentLogsByBaby[babyB.value.id]?.[0]?.createdAt ?? 0
+    stampDefaultBabyId.value = lastA <= lastB ? babyA.value.id : babyB.value.id
+  } else {
+    stampDefaultBabyId.value = babyA.value?.id ?? babyB.value?.id ?? null
+  }
+  showStampNote.value = true
+}
+
+// === 紧凑时间线 ===
+const showTimeline = ref(false)
+const LOG_EMOJI: Record<string, string> = { feeding: '🍼', sleep: '😴', diaper: '💧', temperature: '🌡️', medicine: '💊', bath: '🛁' }
+const LOG_LABELS: Record<string, string> = { feeding: '喂奶', sleep: '哄睡', diaper: '尿布', temperature: '体温', medicine: '用药', bath: '洗澡' }
+function tlTime(ts: number) { const d = new Date(ts); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` }
+function undoRecord(id: string) {
+  recordsStore.removeLog(id)
+  uni.showToast({ title: '已撤销 ✓', icon: 'success', duration: 1500 })
+}
+
 const stampedType = ref('')
 /** 快速参数选择：{ type, logIds } — 用户可选的细化参数 */
 const detailPills = ref<{ type: string; logIds: string[] } | null>(null)
@@ -457,7 +522,6 @@ function dismissPills() {
   if (_pillTimer) { clearTimeout(_pillTimer); _pillTimer = null }
 }
 
-const goRecord = () => emit('navigate', '/pages/record/index')
 </script>
 
 <style scoped>
@@ -558,6 +622,19 @@ const goRecord = () => emit('navigate', '/pages/record/index')
 .fr-amber{color:var(--amber);font-weight:700}
 .fr-terracotta{color:var(--terracotta);font-weight:700}
 
+/* === 紧凑今日时间线 === */
+.today-timeline{margin-bottom:16rpx;position:relative;z-index:1}
+.tt-header{display:flex;justify-content:space-between;align-items:center;padding:12rpx 18rpx;background:var(--cream);border-radius:12rpx;border:1.5px solid var(--dot);box-shadow:0 1rpx 4rpx rgba(0,0,0,0.03);transition:all .15s var(--ease-stamp)}
+.tt-header:active{transform:scale(.98);background:var(--amber-lt);border-color:var(--amber)}
+.tt-title{font-family:var(--font-journal);font-size:24rpx;color:var(--ink);font-weight:600}
+.tt-toggle{font-size:20rpx;color:var(--ink-md)}
+.tt-list{margin-top:8rpx;display:flex;flex-direction:column;gap:4rpx}
+.tt-item{display:flex;align-items:center;gap:8rpx;padding:10rpx 14rpx;background:rgba(254,249,240,0.7);border-radius:8rpx;border:1px solid var(--dot)}
+.tt-item:active{background:rgba(212,112,107,0.08)}
+.tti-emoji{font-size:24rpx;flex-shrink:0}
+.tti-baby{font-size:22rpx;font-weight:600;flex-shrink:0;min-width:56rpx}
+.tti-type{font-size:22rpx;color:var(--ink-md);flex:1}
+.tti-time{font-size:20rpx;color:var(--ink-lt);flex-shrink:0}
 .quick-ref{display:flex;gap:16rpx;flex-wrap:wrap;justify-content:center;margin-bottom:20rpx;position:relative;z-index:1}
 .qr-item{display:flex;align-items:center;gap:8rpx;padding:10rpx 18rpx;background:linear-gradient(180deg,rgba(255,255,255,0.5) 0%,transparent 40%,rgba(0,0,0,0.02) 100%),var(--cream);border-radius:var(--radius-sm);border:2rpx solid var(--dot);box-shadow:0 1rpx 0 rgba(0,0,0,0.03),0 2rpx 4rpx rgba(0,0,0,0.02);transform:rotate(-0.3deg)}
 .qr-item:nth-child(2n){transform:rotate(0.4deg)}
