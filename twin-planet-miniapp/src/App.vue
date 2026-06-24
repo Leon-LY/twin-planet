@@ -1332,14 +1332,14 @@ page {
 .press-in:active { animation: pressIn 0.25s var(--ease-stamp) both; }
 
 /* 列表交错入场 — 父元素添加此类，子元素自动错位 */
-.stagger-list > *:nth-child(1) { animation: slideInRight 0.4s var(--ease-page) 0.04s both; }
-.stagger-list > *:nth-child(2) { animation: slideInRight 0.4s var(--ease-page) 0.10s both; }
-.stagger-list > *:nth-child(3) { animation: slideInRight 0.4s var(--ease-page) 0.16s both; }
-.stagger-list > *:nth-child(4) { animation: slideInRight 0.4s var(--ease-page) 0.22s both; }
-.stagger-list > *:nth-child(5) { animation: slideInRight 0.4s var(--ease-page) 0.28s both; }
-.stagger-list > *:nth-child(6) { animation: slideInRight 0.4s var(--ease-page) 0.34s both; }
-.stagger-list > *:nth-child(7) { animation: slideInRight 0.4s var(--ease-page) 0.40s both; }
-.stagger-list > *:nth-child(8) { animation: slideInRight 0.4s var(--ease-page) 0.46s both; }
+.stagger-list > view:nth-child(1) { animation: slideInRight 0.4s var(--ease-page) 0.04s both; }
+.stagger-list > view:nth-child(2) { animation: slideInRight 0.4s var(--ease-page) 0.10s both; }
+.stagger-list > view:nth-child(3) { animation: slideInRight 0.4s var(--ease-page) 0.16s both; }
+.stagger-list > view:nth-child(4) { animation: slideInRight 0.4s var(--ease-page) 0.22s both; }
+.stagger-list > view:nth-child(5) { animation: slideInRight 0.4s var(--ease-page) 0.28s both; }
+.stagger-list > view:nth-child(6) { animation: slideInRight 0.4s var(--ease-page) 0.34s both; }
+.stagger-list > view:nth-child(7) { animation: slideInRight 0.4s var(--ease-page) 0.40s both; }
+.stagger-list > view:nth-child(8) { animation: slideInRight 0.4s var(--ease-page) 0.46s both; }
 
 /* 淡入放大 — 焦点卡片入场 */
 .enter-scale { animation: fadeInScale 0.5s var(--ease-page) both; }
