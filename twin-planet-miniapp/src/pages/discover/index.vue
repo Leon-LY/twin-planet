@@ -288,7 +288,11 @@ onShareAppMessage(() => ({
   min-height: 100vh;
   padding: 32rpx 32rpx calc(100rpx + env(safe-area-inset-bottom));
   position: relative;
-  background: #ff0000 !important;
+  background: var(--paper);
+  /* 水彩光斑 — 用渐变背景直接画在页面上 */
+  background-image:
+    radial-gradient(circle 200rpx at 85% 12%, rgba(224,123,62,0.10) 0%, transparent 70%),
+    radial-gradient(circle 160rpx at 15% 70%, rgba(192,133,82,0.08) 0%, transparent 70%);
 }
 /* 功能卡片交错入场 */
 .feature-card:nth-child(1) { animation: slideInRight 0.4s var(--ease-page) 0.04s both; }
