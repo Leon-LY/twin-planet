@@ -1,7 +1,7 @@
 <!-- 双宝记 v5 · 首页（薄外壳，三角色组件分发） -->
 <template>
   <view :class="[themeClass, { 'font-large': isGrandma }]">
-    <canvas v-if="babyA && babyB" canvas-id="index-share-canvas" style="position:fixed;left:-9999px;top:-9999px;width:345px;height:480px"></canvas>
+    <canvas v-if="canvasReady" canvas-id="index-share-canvas" style="position:fixed;left:-9999px;top:-9999px;width:345px;height:480px"></canvas>
     <template v-if="loading">
       <view class="page-shell"><TwinSkeleton type="brand" /><TwinSkeleton type="twins" /></view>
     </template>
@@ -91,6 +91,9 @@ const themeClass = computed(() => {
 })
 const babyA = computed(() => babiesStore.babyA)
 const babyB = computed(() => babiesStore.babyB)
+const canvasReady = computed(() => {
+  try { return !!(babyA.value && babyB.value) } catch { return false }
+})
 const streakDays = computed(() => recordsStore.streakDays)
 
 // ---- 新手引导 ----
