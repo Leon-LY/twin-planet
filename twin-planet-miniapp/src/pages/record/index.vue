@@ -74,12 +74,11 @@
           >
             <!-- 卡片装饰：和纸胶带 -->
             <view class="card-tape" :class="i===0?'tape-amber':'tape-terracotta'"></view>
-            <!-- 头像 -->
+            <!-- 头像：手绘水彩狐狸 -->
             <image
               :src="i===0 ? '/static/avatars/baby-a-amber.png' : '/static/avatars/baby-b-terracotta.png'"
               class="card-avatar"
               mode="aspectFill"
-              @error="e => e.target.style.display='none'"
             />
             <!-- 名字 -->
             <text class="card-name">{{ b.nickname || b.name }}</text>
