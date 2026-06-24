@@ -336,9 +336,9 @@ onShareAppMessage(() => ({
   background:
     linear-gradient(180deg, rgba(255,255,255,0.16) 0%, transparent 55%, rgba(0,0,0,0.05) 100%),
     var(--amber);
-  border-radius: var(--radius-full); color: #FFF; font-size: var(--font-card); font-weight: 600;
+  border-radius: var(--radius-full); color: var(--cream); font-size: var(--font-card); font-weight: 600;
   box-shadow:
-    0 2rpx 0 #C8702E,
+    0 2rpx 0 rgba(192,104,52,0.5),
     0 4rpx 12rpx rgba(224,123,62,0.18),
     0 1rpx 0 rgba(255,255,255,0.12) inset;
   transition: all .15s var(--ease-stamp);
@@ -346,7 +346,7 @@ onShareAppMessage(() => ({
 .btn-record:active {
   transform: scale(.96) translateY(1rpx);
   box-shadow:
-    0 1rpx 0 #C8702E,
+    0 1rpx 0 rgba(192,104,52,0.5),
     0 1rpx 3rpx rgba(224,123,62,0.1);
 }
 .recorder-btns { display: flex; justify-content: center; gap: 24rpx; }
@@ -373,9 +373,9 @@ onShareAppMessage(() => ({
   background:
     linear-gradient(180deg, rgba(255,255,255,0.16) 0%, transparent 55%, rgba(0,0,0,0.05) 100%),
     var(--mint);
-  border-radius: var(--radius-full); color: #FFF; font-size: var(--font-body); font-weight: 600;
+  border-radius: var(--radius-full); color: var(--cream); font-size: var(--font-body); font-weight: 600;
   box-shadow:
-    0 2rpx 0 #4E8A5E,
+    0 2rpx 0 rgba(79,174,110,0.5),
     0 4rpx 12rpx rgba(79,174,110,0.18),
     0 1rpx 0 rgba(255,255,255,0.12) inset;
   transition: all .15s var(--ease-stamp);
@@ -383,7 +383,7 @@ onShareAppMessage(() => ({
 .btn-done:active {
   transform: scale(.96) translateY(1rpx);
   box-shadow:
-    0 1rpx 0 #4E8A5E,
+    0 1rpx 0 rgba(79,174,110,0.5),
     0 1rpx 3rpx rgba(79,174,110,0.1);
 }
 
@@ -440,9 +440,9 @@ onShareAppMessage(() => ({
     radial-gradient(circle at 35% 30%, rgba(255,255,255,0.3) 0%, transparent 60%),
     linear-gradient(180deg, rgba(255,255,255,0.16) 0%, transparent 55%, rgba(0,0,0,0.05) 100%),
     var(--mint);
-  color: #FFF;
+  color: var(--cream);
   box-shadow:
-    0 2rpx 0 #4E8A5E,
+    0 2rpx 0 rgba(79,174,110,0.5),
     0 4rpx 12rpx rgba(79,174,110,0.18),
     0 1rpx 0 rgba(255,255,255,0.12) inset;
 }
@@ -471,9 +471,9 @@ onShareAppMessage(() => ({
   background:
     linear-gradient(180deg, rgba(255,255,255,0.16) 0%, transparent 55%, rgba(0,0,0,0.05) 100%),
     var(--amber);
-  border-radius: var(--radius-md); color: #FFF; font-size: 28rpx; font-weight: 700;
+  border-radius: var(--radius-md); color: var(--cream); font-size: 28rpx; font-weight: 700;
   box-shadow:
-    0 2rpx 0 #C8702E,
+    0 2rpx 0 rgba(192,104,52,0.5),
     0 3rpx 10rpx rgba(224,123,62,0.15),
     0 1rpx 0 rgba(255,255,255,0.12) inset;
   transition: all .15s var(--ease-stamp);
@@ -481,7 +481,7 @@ onShareAppMessage(() => ({
 .note-send:active{
   transform: scale(.96) translateY(1rpx);
   box-shadow:
-    0 1rpx 0 #C8702E,
+    0 1rpx 0 rgba(192,104,52,0.5),
     0 1rpx 3rpx rgba(224,123,62,0.08);
 }
 .msg-text{font-size:26rpx;color:var(--ink);line-height:1.5;margin-top:4rpx;background:var(--amber-lt);padding:8rpx 12rpx;border-radius:8rpx;display:block}

@@ -236,7 +236,7 @@ onShareAppMessage(() => {
 .btn-send {
   padding: 0 32rpx; border-radius: 24rpx;
   display: flex; align-items: center; justify-content: center;
-  color: #FFF; font-size: 28rpx; font-weight: 600;
+  color: var(--cream); font-size: 28rpx; font-weight: 600;
   /* 凸起3D按钮 */
   background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 50%, rgba(0,0,0,0.06) 100%), var(--twin-accent);
   box-shadow: 0 2rpx 0 rgba(0,0,0,0.06), 0 4rpx 12rpx rgba(0,0,0,0.08);

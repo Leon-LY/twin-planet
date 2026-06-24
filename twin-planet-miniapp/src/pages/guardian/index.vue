@@ -261,9 +261,9 @@ onMounted(() => {
   background:
     linear-gradient(180deg, rgba(255,255,255,0.14) 0%, transparent 55%, rgba(0,0,0,0.05) 100%),
     var(--twin-danger);
-  color: #FFF; border: none; border-radius: var(--radius-md); font-size: 28rpx;
+  color: var(--cream); border: none; border-radius: var(--radius-md); font-size: 28rpx;
   box-shadow:
-    0 2rpx 0 #B85A5A,
+    0 2rpx 0 rgba(184,90,90,0.5),
     0 4rpx 12rpx rgba(212,112,107,0.2),
     0 1rpx 0 rgba(255,255,255,0.1) inset;
   transition: all .15s var(--ease-stamp);
@@ -271,7 +271,7 @@ onMounted(() => {
 .btn-end:active {
   transform: scale(.97) translateY(1rpx);
   box-shadow:
-    0 1rpx 0 #B85A5A,
+    0 1rpx 0 rgba(184,90,90,0.5),
     0 1rpx 4rpx rgba(212,112,107,0.1);
 }
 

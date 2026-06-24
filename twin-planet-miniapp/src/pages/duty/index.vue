@@ -205,9 +205,9 @@ onShow(() => {
   background:
     linear-gradient(180deg, rgba(255,255,255,0.16) 0%, transparent 55%, rgba(0,0,0,0.05) 100%),
     var(--twin-baby-a);
-  color: #FFF; border: none; border-radius: 24rpx; font-size: 36rpx; font-weight: 600;
+  color: var(--cream); border: none; border-radius: 24rpx; font-size: 36rpx; font-weight: 600;
   box-shadow:
-    0 2rpx 0 #C8702E,
+    0 2rpx 0 rgba(192,104,52,0.5),
     0 4rpx 14rpx rgba(224,123,62,0.2),
     0 1rpx 0 rgba(255,255,255,0.12) inset;
   transition: all .15s var(--ease-stamp);
@@ -215,7 +215,7 @@ onShow(() => {
 .btn-start:active, .btn-done:active {
   transform: scale(.97) translateY(1rpx);
   box-shadow:
-    0 1rpx 0 #C8702E,
+    0 1rpx 0 rgba(192,104,52,0.5),
     0 1rpx 4rpx rgba(224,123,62,0.1);
 }
 .btn-done {
@@ -223,13 +223,13 @@ onShow(() => {
     linear-gradient(180deg, rgba(255,255,255,0.16) 0%, transparent 55%, rgba(0,0,0,0.05) 100%),
     var(--twin-accent);
   box-shadow:
-    0 2rpx 0 #4E8A5E,
+    0 2rpx 0 rgba(79,174,110,0.5),
     0 4rpx 14rpx rgba(79,174,110,0.2),
     0 1rpx 0 rgba(255,255,255,0.12) inset;
 }
 .btn-done:active {
   box-shadow:
-    0 1rpx 0 #4E8A5E,
+    0 1rpx 0 rgba(79,174,110,0.5),
     0 1rpx 4rpx rgba(79,174,110,0.1);
 }
 .btn-reset {
