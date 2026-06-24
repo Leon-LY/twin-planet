@@ -46,12 +46,13 @@
 
     <!-- 功能入口（手帐贴纸风格） -->
     <view class="section-label reveal-2">功能入口</view>
-    <view class="feature-grid stagger-list">
+    <view class="feature-grid">
       <view
         v-for="(f, i) in features"
         :key="f.key"
-        class="feature-card"
+        class="feature-card feature-enter"
         :class="`fc-rotate-${i % 3}`"
+        :style="{ animationDelay: (0.06 * i).toFixed(2) + 's' }"
         @click="goPage(f.path)"
       >
         <view class="fc-tape" :class="`tape-${i % 3 === 0 ? 'amber' : i % 3 === 1 ? 'gold' : 'mint'}`"></view>
@@ -294,18 +295,11 @@ onShareAppMessage(() => ({
     radial-gradient(circle 200rpx at 85% 12%, rgba(224,123,62,0.10) 0%, transparent 70%),
     radial-gradient(circle 160rpx at 15% 70%, rgba(192,133,82,0.08) 0%, transparent 70%);
 }
-/* 功能卡片交错入场 */
-.feature-card:nth-child(1) { animation: slideInRight 0.4s var(--ease-page) 0.04s both; }
-.feature-card:nth-child(2) { animation: slideInRight 0.4s var(--ease-page) 0.10s both; }
-.feature-card:nth-child(3) { animation: slideInRight 0.4s var(--ease-page) 0.16s both; }
-.feature-card:nth-child(4) { animation: slideInRight 0.4s var(--ease-page) 0.22s both; }
-.feature-card:nth-child(5) { animation: slideInRight 0.4s var(--ease-page) 0.28s both; }
-.feature-card:nth-child(6) { animation: slideInRight 0.4s var(--ease-page) 0.34s both; }
-.feature-card:nth-child(7) { animation: slideInRight 0.4s var(--ease-page) 0.40s both; }
-@keyframes slideInRight {
-  from { opacity: 0; transform: translateX(16rpx); }
-  to   { opacity: 1; transform: translateX(0); }
+/* 功能卡片交错入场 — 引用全局 cardFloatIn keyframe */
+.feature-enter {
+  animation: cardFloatIn 0.45s var(--ease-page) both;
 }
+/* 第一张卡片无延迟（已通过内联 style 控制） */
 
 /* 水彩斑点 — 页面 ::before 确保在内容之上 */
 .discover-page::before {
