@@ -24,6 +24,8 @@ const props = withDefaults(defineProps<{
 }>(), {
   variant: 'primary',
   size: 'md',
+  loading: false,
+  disabled: false,
 })
 
 const emit = defineEmits<{ click: [] }>()
