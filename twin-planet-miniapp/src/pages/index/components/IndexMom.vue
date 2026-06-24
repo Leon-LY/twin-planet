@@ -486,8 +486,8 @@ const goRecord = () => emit('navigate', '/pages/record/index')
 <style scoped>
 .journal{position:relative}
 .bg-spot{position:absolute;pointer-events:none;z-index:0}
-.spot-a{width:400rpx;height:360rpx;top:20rpx;left:-100rpx;background:radial-gradient(ellipse 60% 55% at 35% 40%,rgba(224,123,62,0.025) 0%,transparent 70%),radial-gradient(ellipse 40% 50% at 55% 35%,rgba(224,123,62,0.015) 0%,transparent 60%)}
-.spot-b{width:300rpx;height:260rpx;bottom:320rpx;right:-60rpx;background:radial-gradient(ellipse 50% 60% at 40% 45%,rgba(79,174,110,0.02) 0%,transparent 70%),radial-gradient(ellipse 35% 45% at 55% 35%,rgba(79,174,110,0.012) 0%,transparent 60%)}
+.spot-a{width:400rpx;height:360rpx;top:20rpx;left:-100rpx;background:radial-gradient(ellipse 60% 55% at 35% 40%,rgba(224,123,62,0.10) 0%,transparent 70%),radial-gradient(ellipse 40% 50% at 55% 35%,rgba(224,123,62,0.06) 0%,transparent 60%)}
+.spot-b{width:300rpx;height:260rpx;bottom:320rpx;right:-60rpx;background:radial-gradient(ellipse 50% 60% at 40% 45%,rgba(79,174,110,0.08) 0%,transparent 70%),radial-gradient(ellipse 35% 45% at 55% 35%,rgba(79,174,110,0.05) 0%,transparent 60%)}
 
 .masthead{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32rpx}
 .masthead-left{display:flex;flex-direction:column;gap:8rpx}
