@@ -166,12 +166,12 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '能力观察' }) })
 .ms-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
 
 .baby-tabs { display: flex; gap: 16rpx; margin-bottom: 24rpx; }
-.baby-tab { flex: 1; text-align: center; padding: 18rpx 0; background: linear-gradient(180deg,rgba(255,255,255,0.5) 0%,var(--twin-card-bg) 100%); border: 4rpx solid var(--twin-border); border-radius: 16rpx; font-size: 28rpx; color: var(--twin-text-tertiary); box-shadow:0 2rpx 6rpx rgba(0,0,0,.05),0 1rpx 0 rgba(255,255,255,.8); transition:all .15s cubic-bezier(.25,.1,.1,1); }
+.baby-tab { flex: 1; text-align: center; padding: 18rpx 0; background: linear-gradient(180deg,rgba(255,255,255,0.5) 0%,var(--twin-card-bg) 100%); border: 4rpx solid var(--twin-border); border-radius: 16rpx; font-size: 28rpx; color: var(--twin-text-tertiary); box-shadow:0 2rpx 6rpx rgba(0,0,0,.05),0 1rpx 0 rgba(255,255,255,.8); transition:all .15s var(--ease-stamp); }
 .baby-tab.active.amber { border-color: var(--twin-baby-a); background: var(--twin-baby-a-light); color: var(--twin-text); font-weight: 600; box-shadow:inset 0 2rpx 4rpx rgba(0,0,0,.06); transform:scale(.97); }
 .baby-tab.active.rose { border-color: var(--twin-baby-b); background: var(--twin-baby-b-light); color: var(--twin-text); font-weight: 600; box-shadow:inset 0 2rpx 4rpx rgba(0,0,0,.06); transform:scale(.97); }
 
 .domain-cards { display: flex; flex-direction: column; gap: 10rpx; margin-bottom: 28rpx; }
-.domain-card { background: linear-gradient(180deg,rgba(255,255,255,0.45) 0%,var(--twin-card-bg) 100%); border-radius: 16rpx; padding: 20rpx; box-shadow:0 1rpx 0 rgba(0,0,0,.03),0 2rpx 8rpx rgba(0,0,0,.04); transition:all .15s cubic-bezier(.25,.1,.1,1); }
+.domain-card { background: linear-gradient(180deg,rgba(255,255,255,0.45) 0%,var(--twin-card-bg) 100%); border-radius: 16rpx; padding: 20rpx; box-shadow:0 1rpx 0 rgba(0,0,0,.03),0 2rpx 8rpx rgba(0,0,0,.04); transition:all .15s var(--ease-stamp); }
 .domain-card:active{transform:scale(.98);box-shadow:inset 0 2rpx 6rpx rgba(0,0,0,.04),0 1rpx 0 rgba(0,0,0,.02);}
 .domain-head { display: flex; align-items: center; gap: 14rpx; }
 .domain-emoji { font-size: 32rpx; }

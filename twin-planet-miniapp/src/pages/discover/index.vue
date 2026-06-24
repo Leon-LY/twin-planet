@@ -420,7 +420,7 @@ onShareAppMessage(() => ({
   gap: 10rpx;
   border: 2rpx solid var(--dot);
   box-shadow: 0 1rpx 0 rgba(0,0,0,.03), 0 2rpx 8rpx rgba(0,0,0,.04);
-  transition: all .15s cubic-bezier(.25,.1,.1,1);
+  transition: all .15s var(--ease-stamp);
   overflow: hidden;
 }
 .feature-card:active {

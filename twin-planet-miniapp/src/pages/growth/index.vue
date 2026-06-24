@@ -281,7 +281,7 @@ async function exportClinicCard(){
 .page-subtitle{font-size:var(--font-body);color:var(--ink-md);margin-top:4rpx}
 
 .indicator-tabs{display:flex;gap:12rpx;margin-bottom:24rpx}
-.tab-item{flex:1;text-align:center;padding:20rpx 0;border-radius:var(--radius-md);font-size:var(--font-body);font-weight:600;color:var(--ink-md);background:linear-gradient(180deg,rgba(255,255,255,0.5) 0%,var(--cream) 100%);border:2rpx solid var(--dot);box-shadow:0 2rpx 6rpx rgba(0,0,0,0.05),0 1rpx 0 rgba(255,255,255,0.8);transition:all .15s cubic-bezier(.25,.1,.1,1)}
+.tab-item{flex:1;text-align:center;padding:20rpx 0;border-radius:var(--radius-md);font-size:var(--font-body);font-weight:600;color:var(--ink-md);background:linear-gradient(180deg,rgba(255,255,255,0.5) 0%,var(--cream) 100%);border:2rpx solid var(--dot);box-shadow:0 2rpx 6rpx rgba(0,0,0,0.05),0 1rpx 0 rgba(255,255,255,0.8);transition:all .15s var(--ease-stamp)}
 .tab-item.active{background:var(--ink);color:#FFF;border-color:var(--ink);box-shadow:inset 0 2rpx 6rpx rgba(0,0,0,0.15);transform:scale(.97)}
 
 .empty-state{text-align:center;padding:120rpx 40rpx}
@@ -312,15 +312,15 @@ async function exportClinicCard(){
 .card-no-data{font-size:var(--font-caption);color:var(--ink-lt);margin-top:16rpx;display:block}
 
 .add-section{margin-top:8rpx}
-.add-toggle{text-align:center;padding:20rpx;font-size:var(--font-body);color:var(--amber);font-weight:600;transition:all .15s cubic-bezier(.25,.1,.1,1)}
+.add-toggle{text-align:center;padding:20rpx;font-size:var(--font-body);color:var(--amber);font-weight:600;transition:all .15s var(--ease-stamp)}
 .add-toggle:active{transform:scale(.95);opacity:.8}
 .add-form{background:var(--cream);border:2rpx solid var(--dot);border-radius:var(--radius-md);padding:28rpx;box-shadow:0 1rpx 0 rgba(0,0,0,.03),0 2rpx 8rpx rgba(0,0,0,.04)}
 .add-row{display:flex;gap:16rpx;margin-bottom:20rpx}
-.add-baby-chip{flex:1;text-align:center;padding:16rpx;border-radius:var(--radius-sm);font-size:var(--font-body);font-weight:600;background:linear-gradient(180deg,rgba(255,255,255,0.5) 0%,var(--paper) 100%);color:var(--ink-md);border:2rpx solid var(--dot);box-shadow:0 2rpx 6rpx rgba(0,0,0,.05),0 1rpx 0 rgba(255,255,255,.8);transition:all .15s cubic-bezier(.25,.1,.1,1)}
+.add-baby-chip{flex:1;text-align:center;padding:16rpx;border-radius:var(--radius-sm);font-size:var(--font-body);font-weight:600;background:linear-gradient(180deg,rgba(255,255,255,0.5) 0%,var(--paper) 100%);color:var(--ink-md);border:2rpx solid var(--dot);box-shadow:0 2rpx 6rpx rgba(0,0,0,.05),0 1rpx 0 rgba(255,255,255,.8);transition:all .15s var(--ease-stamp)}
 .add-baby-chip.active{border-color:var(--amber);color:var(--amber);background:var(--amber-lt);box-shadow:inset 0 2rpx 4rpx rgba(0,0,0,.06);transform:scale(.97)}
 .add-inputs{display:flex;gap:12rpx;margin-bottom:16rpx}
 .add-input{flex:1;padding:16rpx 20rpx;background:var(--paper);border:2rpx solid var(--dot);border-radius:var(--radius-sm);font-size:var(--font-body);color:var(--ink);box-shadow:inset 0 2rpx 6rpx rgba(0,0,0,.04),0 1rpx 0 rgba(255,255,255,.6)}
-.add-btn{width:100%;padding:22rpx;background:linear-gradient(180deg,rgba(255,255,255,.16) 0%,transparent 55%,rgba(0,0,0,.05) 100%),var(--amber);color:#FFF;border:none;border-radius:var(--radius-md);font-size:var(--font-body);font-weight:700;box-shadow:0 3rpx 8rpx rgba(0,0,0,.08),0 1rpx 0 rgba(255,255,255,.15);transition:all .15s cubic-bezier(.25,.1,.1,1)}
+.add-btn{width:100%;padding:22rpx;background:linear-gradient(180deg,rgba(255,255,255,.16) 0%,transparent 55%,rgba(0,0,0,.05) 100%),var(--amber);color:#FFF;border:none;border-radius:var(--radius-md);font-size:var(--font-body);font-weight:700;box-shadow:0 3rpx 8rpx rgba(0,0,0,.08),0 1rpx 0 rgba(255,255,255,.15);transition:all .15s var(--ease-stamp)}
 .add-btn:active{box-shadow:inset 0 3rpx 6rpx rgba(0,0,0,.1);transform:scale(.97)}
 .add-btn[disabled]{opacity:.4;box-shadow:none}
 
@@ -331,7 +331,7 @@ async function exportClinicCard(){
 .percentile-hint{display:block;font-size:var(--font-caption);color:var(--ink-md);margin-top:2rpx;font-family:var(--font-journal)}
 
 .export-section{display:flex;flex-direction:column;align-items:center;gap:12rpx;margin-top:48rpx;padding-top:32rpx;border-top:2rpx dashed var(--dot)}
-.export-btn{width:100%;padding:24rpx;background:linear-gradient(180deg,rgba(255,255,255,.4) 0%,var(--cream) 100%);border:2rpx solid var(--dot);border-radius:var(--radius-md);font-family:var(--font-journal);font-size:30rpx;font-weight:700;color:var(--ink);text-align:center;box-shadow:0 3rpx 8rpx rgba(0,0,0,.06),0 1rpx 0 rgba(255,255,255,.7);transition:all .15s cubic-bezier(.25,.1,.1,1)}
+.export-btn{width:100%;padding:24rpx;background:linear-gradient(180deg,rgba(255,255,255,.4) 0%,var(--cream) 100%);border:2rpx solid var(--dot);border-radius:var(--radius-md);font-family:var(--font-journal);font-size:30rpx;font-weight:700;color:var(--ink);text-align:center;box-shadow:0 3rpx 8rpx rgba(0,0,0,.06),0 1rpx 0 rgba(255,255,255,.7);transition:all .15s var(--ease-stamp)}
 .export-btn::after{border:none}
 .export-btn:active{background:var(--amber-lt);border-color:var(--amber);box-shadow:inset 0 3rpx 6rpx rgba(0,0,0,.08);transform:scale(.97)}
 .export-btn[disabled]{opacity:.4;box-shadow:none}

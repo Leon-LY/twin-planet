@@ -171,7 +171,7 @@ onShareAppMessage(() => {
   border: 3rpx solid var(--dot);
   background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 35%, rgba(0,0,0,0.03) 100%), var(--cream);
   box-shadow: 0 4rpx 0 rgba(0,0,0,0.06), 0 6rpx 16rpx rgba(0,0,0,0.04), 0 10rpx 28rpx rgba(0,0,0,0.03);
-  transition: all 0.15s cubic-bezier(0.25,0.1,0.1,1);
+  transition: all 0.15s var(--ease-stamp);
   position: relative;
   text-align: center;
 }
