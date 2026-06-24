@@ -95,6 +95,42 @@
       </view>
     </view>
 
+    <view class="action-center reveal-3">
+      <!-- 无记录 → gap-nudge 替代按钮 -->
+      <view v-if="showGapNudge" class="main-btn gap-btn" @click="openStampNote">
+        <text class="gn-emoji">📝</text>
+        <text class="btn-text">记一笔</text>
+        <text class="gn-sub">今天还没有记录哦</text>
+      </view>
+      <!-- 有记录 → 正常大按钮 -->
+      <button v-else class="main-btn" @click="openStampNote">
+        <text class="iconfont icon-edit stamp-icon"></text>
+        <text class="btn-text">记一笔</text>
+      </button>
+    </view>
+
+    <view class="quick-bar reveal-3" v-if="babyA && babyB && userStore.roleConfig.homeLayout!=='compact'">
+      <view class="q-chip q-primary" :class="{ 'chip-stamped': stampedType === 'feeding' }" @click="dualRecord('feeding')"><text class="iconfont icon-bottle icon-sm"></text> 都喂了</view>
+      <view class="q-chip" :class="{ 'chip-stamped': stampedType === 'sleep' }" @click="dualRecord('sleep')"><text class="iconfont icon-sleep icon-sm"></text> 都睡了</view>
+      <view class="q-chip" :class="{ 'chip-stamped': stampedType === 'diaper' }" @click="dualRecord('diaper')"><text class="iconfont icon-diaper"></text></view>
+    </view>
+
+    <!-- 快速参数选择 — 记录创建后出现，可选细化 -->
+    <view class="detail-pills" v-if="detailPills">
+      <view
+        v-for="opt in PILL_OPTIONS[detailPills.type]"
+        :key="opt.label"
+        class="dp-chip"
+        @click="refineRecord(opt.key, opt.value)"
+      >
+        <text v-if="opt.emoji" class="dp-emoji">{{ opt.emoji }}</text>
+        <text class="dp-label">{{ opt.label }}</text>
+      </view>
+      <view class="dp-chip dp-dismiss" @click="dismissPills">
+        <text class="dp-label">✕</text>
+      </view>
+    </view>
+
     <view class="sticker-zone reveal-4" v-if="userStore.roleConfig.homeLayout==='full'">
       <StickerStrip :stickers="stickersStore.todayStickers" :showMore="true" @viewAll="$emit('navigate','/pages/stickers/index')" />
     </view>
@@ -129,42 +165,6 @@
       <view class="qr-item journal-sticky" v-if="quickRef.lastSleep!=='—'"><text class="qr-emoji iconfont icon-sleep"></text><text class="qr-text">上次睡觉 {{ quickRef.lastSleep }}</text></view>
     </view>
 
-    <view class="action-center reveal-5">
-      <!-- 无记录 → gap-nudge 替代按钮 -->
-      <view v-if="showGapNudge" class="main-btn gap-btn" @click="openStampNote">
-        <text class="gn-emoji">📝</text>
-        <text class="btn-text">记一笔</text>
-        <text class="gn-sub">今天还没有记录哦</text>
-      </view>
-      <!-- 有记录 → 正常大按钮 -->
-      <button v-else class="main-btn" @click="openStampNote">
-        <text class="iconfont icon-edit stamp-icon"></text>
-        <text class="btn-text">记一笔</text>
-      </button>
-    </view>
-
-    <view class="quick-bar reveal-6" v-if="babyA && babyB && userStore.roleConfig.homeLayout!=='compact'">
-      <view class="q-chip q-primary" :class="{ 'chip-stamped': stampedType === 'feeding' }" @click="dualRecord('feeding')"><text class="iconfont icon-bottle icon-sm"></text> 都喂了</view>
-      <view class="q-chip" :class="{ 'chip-stamped': stampedType === 'sleep' }" @click="dualRecord('sleep')"><text class="iconfont icon-sleep icon-sm"></text> 都睡了</view>
-      <view class="q-chip" :class="{ 'chip-stamped': stampedType === 'diaper' }" @click="dualRecord('diaper')"><text class="iconfont icon-diaper"></text></view>
-    </view>
-
-    <!-- 快速参数选择 — 记录创建后出现，可选细化 -->
-    <view class="detail-pills" v-if="detailPills">
-      <view
-        v-for="opt in PILL_OPTIONS[detailPills.type]"
-        :key="opt.label"
-        class="dp-chip"
-        @click="refineRecord(opt.key, opt.value)"
-      >
-        <text v-if="opt.emoji" class="dp-emoji">{{ opt.emoji }}</text>
-        <text class="dp-label">{{ opt.label }}</text>
-      </view>
-      <view class="dp-chip dp-dismiss" @click="dismissPills">
-        <text class="dp-label">✕</text>
-      </view>
-    </view>
-
     <!-- journal-nav: 手帳导航（生长/贴纸/发现） -->
     <view class="journal-nav reveal-5" v-if="userStore.roleConfig.homeLayout==='full'">
       <view class="jn-item" @click="$emit('navigate', '/pages/growth/index')">
@@ -181,10 +181,21 @@
       </view>
     </view>
 
-    <view class="duty-card reveal-6" v-if="userStore.roleConfig.homeLayout==='compact' && babyA && babyB">
-      <view class="q-chip q-primary" @click="dualRecord('feeding')"><text class="iconfont icon-bottle icon-sm"></text> 都喂了</view>
-      <view class="q-chip" @click="dualRecord('sleep')"><text class="iconfont icon-sleep icon-sm"></text> 都睡了</view>
-      <view class="q-chip" @click="dualRecord('diaper')"><text class="iconfont icon-diaper icon-sm"></text> 都换了</view>
+    <view class="duty-card reveal-5" v-if="userStore.roleConfig.homeLayout==='compact' && babyA && babyB">
+      <view v-for="(action, i) in compactQuickActions" :key="action.type"
+        class="q-chip" :class="{ 'q-primary': i === 0, 'chip-stamped': stampedType === action.type }"
+        @click="dualRecord(action.type)">
+        <text :class="['iconfont', action.icon, 'icon-sm']"></text> {{ action.label }}
+      </view>
+    </view>
+
+    <!-- compact 底部导航（育儿嫂等角色的功能入口） -->
+    <view class="compact-footer reveal-5" v-if="userStore.roleConfig.homeLayout==='compact'">
+      <text class="ft-link" @click="$emit('navigate','/pages/growth/index')"><text class="iconfont icon-chart icon-sm"></text> 生长曲线</text>
+      <text class="ft-dot">·</text>
+      <text class="ft-link" @click="$emit('navigate','/pages/snapshot/index')">📸 快照</text>
+      <text class="ft-dot">·</text>
+      <text class="ft-link" @click="$emit('navigate','/pages/handover/index')">🎤 交接班</text>
     </view>
 
     <view class="footer-tools reveal-6" v-if="userStore.roleConfig.homeLayout==='full'">
@@ -481,6 +492,18 @@ const PILL_OPTIONS: Record<string, { emoji: string; label: string; key: string; 
   ],
 }
 
+/** compact 布局快捷操作 — 根据角色 quickActions 配置动态渲染 */
+const QUICK_ACTION_CFG: Record<string, { label: string; icon: string }> = {
+  feeding: { label: '都喂了', icon: 'icon-bottle' },
+  sleep: { label: '都睡了', icon: 'icon-sleep' },
+  diaper: { label: '都换了', icon: 'icon-diaper' },
+}
+const compactQuickActions = computed(() =>
+  userStore.roleConfig.quickActions
+    .filter(a => QUICK_ACTION_CFG[a])
+    .map(a => ({ type: a as 'feeding' | 'sleep' | 'diaper', ...QUICK_ACTION_CFG[a] }))
+)
+
 function dualRecord(t: 'feeding' | 'sleep' | 'diaper') {
   const ids: string[] = []
   if (babyA.value) {
@@ -699,6 +722,9 @@ function dismissPills() {
   opacity: 0.5;
   padding: 10rpx 14rpx;
 }
+
+/* compact 底部导航（育儿嫂等） */
+.compact-footer{display:flex;justify-content:center;gap:16rpx;margin-top:20rpx;margin-bottom:12rpx;position:relative;z-index:1}
 
 /* journal-nav — 手帳导航横条 */
 .journal-nav{display:flex;justify-content:space-around;padding:16rpx 32rpx;margin-bottom:16rpx;position:relative;z-index:1}

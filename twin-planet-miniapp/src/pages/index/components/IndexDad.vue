@@ -58,6 +58,11 @@
       </view>
       <text class="gn-arrow">→</text>
     </view>
+    <view class="record-entry" v-else @click="openStampNote">
+      <text class="re-emoji">📝</text>
+      <text class="re-label">记一笔</text>
+      <text class="re-arrow">→</text>
+    </view>
     <view class="dad-snapshot" v-if="todaySummary"><text class="ds-text">{{ todaySummary }}</text></view>
     <view class="dad-actions">
       <button class="dad-duty-btn" @click="goDuty"><text class="dd-icon iconfont icon-clipboard"></text><text class="dd-label">值班清单</text></button>
@@ -358,5 +363,11 @@ const goDuty = () => emit('navigate', '/pages/duty/index')
 .gn-title{font-family:var(--font-journal);font-size:26rpx;font-weight:600;color:var(--ink)}
 .gn-desc{font-size:22rpx;color:var(--ink-md)}
 .gn-arrow{font-size:28rpx;color:var(--mint);font-weight:700}
+/* 持久记录入口（有记录时替代 gap-nudge） */
+.record-entry{display:flex;align-items:center;gap:12rpx;padding:14rpx 20rpx;margin-bottom:16rpx;background:linear-gradient(135deg,rgba(224,123,62,0.08),rgba(224,123,62,0.02));border-radius:12rpx;border:1.5rpx solid rgba(224,123,62,0.18);animation:cardFloatIn .5s var(--ease-page) both}
+.record-entry:active{transform:scale(.97);background:var(--amber-lt)}
+.re-emoji{font-size:32rpx;flex-shrink:0}
+.re-label{flex:1;font-family:var(--font-journal);font-size:26rpx;font-weight:600;color:var(--amber)}
+.re-arrow{font-size:24rpx;color:var(--amber);font-weight:700}
 .ft-link{font-size:20rpx;color:var(--ink-lt)}.ft-link:active{color:var(--amber)}.ft-dot{font-size:20rpx;color:var(--ink-lt)}
 </style>

@@ -26,6 +26,12 @@
       <view class="granny-btn granny-help" @click="goHelp"><view class="granny-phone-icon"><view class="granny-phone-body"></view><view class="granny-phone-dot"></view></view><text class="granny-label">问家里人</text></view>
     </view>
     <text class="last-update" v-if="lastUpdateText">最后更新 {{ lastUpdateText }}</text>
+
+    <!-- 角色切换：底部小标签，点击弹出 ActionSheet -->
+    <view class="granny-role-tag" @click="switchRoleAction">
+      <text class="grt-label">{{ roleEmoji }} {{ roleLabel }}</text>
+      <text class="grt-hint">轻触切换角色</text>
+    </view>
   </view>
 </template>
 
@@ -86,6 +92,22 @@ const lastUpdateText = computed(() => {
   if (m < 1) return '刚刚'; if (m < 60) return `${m}分钟前`
   return `${Math.floor(m / 60)}小时前`
 })
+
+const roleEmoji = computed(() => userStore.roleEmoji)
+const roleLabel = computed(() => userStore.roleLabel)
+function switchRoleAction() {
+  uni.showActionSheet({
+    itemList: ['👩 妈妈', '👨 爸爸', '👵 奶奶', '👴 爷爷', '👩‍🍼 育儿嫂'],
+    success: (res) => {
+      const roles = ['mom', 'dad', 'grandma', 'grandpa', 'nanny']
+      const r = roles[res.tapIndex]
+      if (r) {
+        userStore.setRole(r as any)
+        uni.showToast({ title: '已切换为' + (userStore.roleLabel), icon: 'success', duration: 1500 })
+      }
+    },
+  })
+}
 </script>
 
 <style scoped>
@@ -114,4 +136,9 @@ const lastUpdateText = computed(() => {
 .granny-summary-text{font-size:32rpx;color:var(--ink);line-height:1.5}
 .granny-summary-empty{text-align:center;padding:24rpx}
 .last-update{text-align:center;font-size:var(--font-caption);color:var(--ink-lt);margin-top:40rpx}
+/* 角色切换标签 */
+.granny-role-tag{display:flex;flex-direction:column;align-items:center;gap:4rpx;margin-top:32rpx;padding:16rpx 24rpx;border-radius:16rpx;background:var(--cream);border:1.5px solid var(--dot);transition:all .15s var(--ease-stamp)}
+.granny-role-tag:active{transform:scale(.96);border-color:var(--amber);background:var(--amber-lt)}
+.grt-label{font-family:var(--font-journal);font-size:26rpx;color:var(--ink-md);font-weight:600}
+.grt-hint{font-size:20rpx;color:var(--ink-lt)}
 </style>
