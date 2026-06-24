@@ -1,8 +1,6 @@
 <!-- 双宝广场 — 发现页 v2：周报+功能入口+成就动态 -->
 <template>
   <view class="discover-page journal-paper page-enter">
-    <view class="discover-spot-a"></view>
-    <view class="discover-spot-b"></view>
     <view class="page-header">
       <text class="page-icon">🧭</text>
       <text class="page-title">双宝广场</text>
@@ -291,18 +289,27 @@ onShareAppMessage(() => ({
   padding: 32rpx 32rpx calc(100rpx + env(safe-area-inset-bottom));
   position: relative;
 }
-/* 水彩斑点 — 页面装饰 */
-.discover-spot-a {
-  position: absolute; top: 120rpx; right: 40rpx;
-  width: 200rpx; height: 200rpx; border-radius: 50%; z-index: 0; pointer-events: none;
-  background: rgba(224,123,62,0.2);
-  animation: watercolorBreathe 8s var(--ease-soft) infinite;
+/* 功能卡片交错入场 */
+.feature-card:nth-child(1) { animation: slideInRight 0.4s var(--ease-page) 0.04s both; }
+.feature-card:nth-child(2) { animation: slideInRight 0.4s var(--ease-page) 0.10s both; }
+.feature-card:nth-child(3) { animation: slideInRight 0.4s var(--ease-page) 0.16s both; }
+.feature-card:nth-child(4) { animation: slideInRight 0.4s var(--ease-page) 0.22s both; }
+.feature-card:nth-child(5) { animation: slideInRight 0.4s var(--ease-page) 0.28s both; }
+.feature-card:nth-child(6) { animation: slideInRight 0.4s var(--ease-page) 0.34s both; }
+.feature-card:nth-child(7) { animation: slideInRight 0.4s var(--ease-page) 0.40s both; }
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(16rpx); }
+  to   { opacity: 1; transform: translateX(0); }
 }
-.discover-spot-b {
-  position: absolute; bottom: 200rpx; left: 40rpx;
-  width: 160rpx; height: 160rpx; border-radius: 50%; z-index: 0; pointer-events: none;
-  background: rgba(192,133,82,0.18);
-  animation: watercolorBreathe 8s var(--ease-soft) infinite reverse;
+
+/* 水彩斑点 — 页面 ::before 确保在内容之上 */
+.discover-page::before {
+  content: '';
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 999; pointer-events: none;
+  background:
+    radial-gradient(circle 180rpx at 85% 15%, rgba(224,123,62,0.12) 0%, transparent 70%),
+    radial-gradient(circle 140rpx at 15% 75%, rgba(192,133,82,0.1) 0%, transparent 70%);
 }
 
 /* === 周报卡片 === */
