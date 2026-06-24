@@ -198,6 +198,11 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.onboard-page {
+  min-height: 100vh;
+  background: var(--paper);
+  padding: 48rpx 32rpx 40rpx;
+}
 .progress-bar {
   display: flex; align-items: center; justify-content: center;
   margin-bottom: 32rpx;

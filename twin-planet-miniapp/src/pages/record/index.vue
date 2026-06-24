@@ -444,7 +444,7 @@ const stopAll=()=>{const log=recordsStore.stopTimer();if(log)showUndo(log);reset
 /* 空状态 */
 .empty-state{padding:160rpx 0;text-align:center;position:relative;z-index:1}
 .empty-icon-row{display:flex;justify-content:center;gap:4rpx;margin-bottom:20rpx}
-.empty-emoji{font-size:80rpx;display:block;margin-bottom:20rpx}
+.empty-emoji{font-size:80rpx;display:block;margin-bottom:20rpx;color:var(--dot)}
 .empty-icon-row .empty-emoji{margin-bottom:0}
 .empty-title{display:block;font-family:var(--font-journal);font-size:36rpx;color:var(--ink);margin-bottom:8rpx}
 .empty-desc{font-size:26rpx;color:var(--ink-md)}
@@ -452,7 +452,7 @@ const stopAll=()=>{const log=recordsStore.stopTimer();if(log)showUndo(log);reset
 /* 宝宝标签 */
 .baby-tabs{display:flex;gap:0;margin-bottom:24rpx;position:relative;z-index:1}
 .baby-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:8rpx;padding:20rpx;border-radius:20rpx 20rpx 0 0;opacity:.45;transition:opacity .2s,border-color .2s;border-bottom:3rpx solid transparent}
-.baby-tab.active{opacity:1}.baby-tab.tab-a.active{border-bottom-color:var(--amber);background:linear-gradient(to top,var(--amber-lt),transparent 60%)}.baby-tab.tab-b.active{border-bottom-color:var(--rose);background:linear-gradient(to top,var(--rose-lt),transparent 60%)}.tab-emoji{font-size:40rpx;transition:transform .3s var(--ease-bounce)}.baby-tab:active .tab-emoji{transform:scale(1.2)}.tab-name{font-family:var(--font-journal);font-size:26rpx;font-weight:700;color:var(--ink)}.tab-check{font-size:20rpx;color:var(--mint)}
+.baby-tab.active{opacity:1}.baby-tab.tab-a.active{border-bottom-color:var(--amber);background:linear-gradient(to top,var(--amber-lt),transparent 60%)}.baby-tab.tab-b.active{border-bottom-color:var(--rose);background:linear-gradient(to top,var(--rose-lt),transparent 60%)}.tab-emoji{font-size:40rpx;transition:transform .3s var(--ease-bounce);color:var(--ink)}.baby-tab:active .tab-emoji{transform:scale(1.2)}.tab-name{font-family:var(--font-journal);font-size:26rpx;font-weight:700;color:var(--ink)}.tab-check{font-size:20rpx;color:var(--mint)}
 
 /* 区域标签 */
 .section-label{font-size:24rpx;color:var(--ink-md);margin-bottom:14rpx;padding-left:8rpx;font-weight:700;position:relative;z-index:1;font-family:var(--font-journal);letter-spacing:1rpx}
@@ -465,15 +465,16 @@ const stopAll=()=>{const log=recordsStore.stopTimer();if(log)showUndo(log);reset
 .ta-feed:active{border-color:var(--amber);background:var(--amber-lt)}
 .ta-sleep{border-color:rgba(156,142,124,.2);background:linear-gradient(135deg,rgba(156,142,124,.06),var(--cream))}
 .ta-sleep:active{border-color:var(--ink-md);background:rgba(156,142,124,.08)}
-.ta-emoji{font-size:48rpx;transition:transform .3s var(--ease-bounce)}
+.ta-emoji{font-size:48rpx;color:var(--amber);transition:transform .3s var(--ease-bounce)}
 .ta-btn:active .ta-emoji{transform:scale(1.2)}
+.ta-sleep .ta-emoji{color:var(--ink-md)}
 .ta-label{font-size:26rpx;font-weight:700;color:var(--ink)}
 
 /* 即时型操作 */
 .quick-actions{display:flex;gap:10rpx;margin-bottom:16rpx;position:relative;z-index:1}
 .qa-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:6rpx;padding:20rpx 6rpx;background:linear-gradient(180deg,rgba(255,255,255,0.5) 0%,transparent 40%,rgba(0,0,0,0.02) 100%),var(--cream);border:1.5px solid var(--dot);border-radius:18rpx;box-shadow:0 1.5rpx 0 rgba(0,0,0,0.03),0 2rpx 4rpx rgba(0,0,0,0.02);transition:all .15s var(--ease-stamp)}
 .qa-btn:active{transform:scale(.9);border-color:var(--amber);background:var(--amber-lt);box-shadow:inset 0 1rpx 3rpx rgba(0,0,0,0.06)}
-.qa-emoji{font-size:32rpx;transition:transform .2s var(--ease-bounce)}
+.qa-emoji{font-size:32rpx;color:var(--ink-md);transition:transform .2s var(--ease-bounce)}
 .qa-btn:active .qa-emoji{transform:scale(1.2)}
 .qa-label{font-size:22rpx;font-weight:600;color:var(--ink-md)}
 
