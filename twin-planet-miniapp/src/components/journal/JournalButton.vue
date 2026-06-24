@@ -30,6 +30,8 @@ const emit = defineEmits<{ click: [] }>()
 
 function handleTap() {
   if (props.disabled || props.loading) return
+  // DEBUG: verify tap reaches here
+  uni.showToast({ title: 'tap!', icon: 'none', duration: 500 })
   emit('click')
 }
 
