@@ -116,16 +116,6 @@
       </view>
     </view>
 
-    <!-- 记录空窗提醒 — 今天还没记过 -->
-    <view class="gap-nudge reveal-3" v-if="showGapNudge" @click="openStampNote">
-      <text class="gn-emoji">📝</text>
-      <view class="gn-body">
-        <text class="gn-title">今天还没有记录哦</text>
-        <text class="gn-desc">点这里开始记录双宝的日常吧~</text>
-      </view>
-      <text class="gn-arrow">→</text>
-    </view>
-
     <!-- 「该喂了」提醒 — 基于历史模式推算 -->
     <view class="feed-reminder reveal-4" v-for="r in feedingReminder" :key="r.babyId">
       <text class="fr-emoji">🍼</text>
@@ -140,7 +130,14 @@
     </view>
 
     <view class="action-center reveal-5">
-      <button class="main-btn" @click="openStampNote">
+      <!-- 无记录 → gap-nudge 替代按钮 -->
+      <view v-if="showGapNudge" class="main-btn gap-btn" @click="openStampNote">
+        <text class="gn-emoji">📝</text>
+        <text class="btn-text">记一笔</text>
+        <text class="gn-sub">今天还没有记录哦</text>
+      </view>
+      <!-- 有记录 → 正常大按钮 -->
+      <button v-else class="main-btn" @click="openStampNote">
         <text class="iconfont icon-edit stamp-icon"></text>
         <text class="btn-text">记一笔</text>
       </button>
@@ -645,6 +642,12 @@ function dismissPills() {
 .main-btn{width:300rpx;height:300rpx;border-radius:48% 52% 46% 54% / 52% 48% 54% 46%;position:relative;z-index:2;background:var(--amber);border:none;color:#FFF;font-family:var(--font-journal);box-shadow:0 20rpx 56rpx rgba(224,123,62,0.2),0 6rpx 12rpx rgba(224,123,62,0.1),inset 0 3rpx 0 rgba(255,255,255,.2),inset 0 -6rpx 12rpx rgba(0,0,0,.06);transform:rotate(-2deg);transition:transform .18s var(--ease-bounce),box-shadow .18s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10rpx;}
 .main-btn::after{content:'';position:absolute;top:14rpx;left:22%;right:22%;height:32%;background:radial-gradient(ellipse at center,rgba(255,255,255,.25) 0%,transparent 70%);border-radius:50%;pointer-events:none}
 .main-btn:active{transform:rotate(-2deg)scale(.86);box-shadow:0 6rpx 20rpx rgba(224,123,62,.16),0 2rpx 4rpx rgba(224,123,62,.08)}
+
+/* gap-nudge 替代按钮：绿色提醒版 */
+.gap-btn{background:linear-gradient(135deg,rgba(79,174,110,0.85),var(--mint))!important;box-shadow:0 20rpx 56rpx rgba(79,174,110,0.2),0 6rpx 12rpx rgba(79,174,110,0.1),inset 0 3rpx 0 rgba(255,255,255,.2),inset 0 -6rpx 12rpx rgba(0,0,0,.06)!important;flex-direction:column!important;gap:2rpx!important;border:none!important}
+.gap-btn::after{content:'';position:absolute;top:14rpx;left:22%;right:22%;height:32%;background:radial-gradient(ellipse at center,rgba(255,255,255,.25) 0%,transparent 70%);border-radius:50%;pointer-events:none}
+.gap-btn:active{transform:rotate(-2deg)scale(.86);box-shadow:0 6rpx 20rpx rgba(79,174,110,.16),0 2rpx 4rpx rgba(79,174,110,.08)}
+.gn-sub{font-size:22rpx;font-weight:400;opacity:.85;position:relative;z-index:1}
 
 .pen-image{width:56rpx;height:56rpx;z-index:1}
 
