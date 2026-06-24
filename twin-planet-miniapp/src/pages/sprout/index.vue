@@ -167,7 +167,7 @@ onShareAppMessage(() => {
 </script>
 
 <style scoped>
-.sprout-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx calc(120rpx + env(safe-area-inset-bottom)); }
+.sprout-page { min-height: 100vh; background: var(--paper); background-image: radial-gradient(circle 180rpx at 85% 18%, rgba(79,174,110,0.07) 0%, transparent 70%), radial-gradient(circle 120rpx at 10% 70%, rgba(224,123,62,0.05) 0%, transparent 70%); padding: 32rpx 32rpx calc(120rpx + env(safe-area-inset-bottom)); }
 
 /* 头部 */
 .header-top { display: flex; align-items: center; justify-content: space-between; }

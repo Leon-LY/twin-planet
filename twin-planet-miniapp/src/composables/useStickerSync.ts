@@ -2,6 +2,7 @@
  * useStickerSync — 统一的贴纸同步逻辑
  * 消除 index/record/duty/sprout 4 处重复代码
  */
+import { ref } from 'vue'
 import { useRecordsStore } from '@/stores/records'
 import { useBabiesStore } from '@/stores/babies'
 import { useSproutStore } from '@/stores/sprout'
@@ -61,6 +62,16 @@ export function useStickerSync() {
   const sproutStore = useSproutStore()
   const dutyStore = useDutyStore()
   const stickersStore = useStickersStore()
+
+  /** 最近一次同步解锁的贴纸列表（消费后清空） */
+  const lastNewStickers = ref<Array<{ label: string; emoji: string; rarity: string; collection: string }>>([])
+
+  /** 消费并清空新贴纸列表 */
+  function consumeNewStickers() {
+    const s = lastNewStickers.value
+    lastNewStickers.value = []
+    return s
+  }
 
   /** 同步贴纸：根据当前上下文检查解锁 */
   function syncStickers(overrides?: StickerSyncOverrides) {
@@ -153,6 +164,23 @@ export function useStickerSync() {
 
     const newStickers = stickersStore.sync(ctx)
 
+    // 记录最新解锁贴纸（汇总卡片用）
+    if (newStickers && newStickers.length > 0) {
+      const rules = stickersStore.rules
+      lastNewStickers.value = [
+        ...newStickers.map((label: string) => {
+          const rule = rules.find(r => r.label === label)
+          return {
+            label,
+            emoji: rule?.emoji || '🏷️',
+            rarity: rule?.rarity || 'common',
+            collection: rule?.collection || 'daily',
+          }
+        }),
+        ...lastNewStickers.value, // 保留旧的未消费贴纸
+      ]
+    }
+
     // 更新 Tab 贴纸红点
     if (newStickers && newStickers.length > 0) {
       try {
@@ -171,5 +199,5 @@ export function useStickerSync() {
     return newStickers
   }
 
-  return { syncStickers }
+  return { syncStickers, consumeNewStickers }
 }

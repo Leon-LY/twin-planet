@@ -99,6 +99,16 @@
       <StickerStrip :stickers="stickersStore.todayStickers" :showMore="true" @viewAll="$emit('navigate','/pages/stickers/index')" />
     </view>
 
+    <!-- 记录空窗提醒 — 今天还没记过 -->
+    <view class="gap-nudge reveal-3" v-if="showGapNudge" @click="goRecord">
+      <text class="gn-emoji">📝</text>
+      <view class="gn-body">
+        <text class="gn-title">今天还没有记录哦</text>
+        <text class="gn-desc">点这里开始记录双宝的日常吧~</text>
+      </view>
+      <text class="gn-arrow">→</text>
+    </view>
+
     <!-- 「该喂了」提醒 — 基于历史模式推算 -->
     <view class="feed-reminder reveal-4" v-for="r in feedingReminder" :key="r.babyId">
       <text class="fr-emoji">🍼</text>
@@ -230,7 +240,7 @@ import { useQuickRef } from '@/composables/useQuickRef'
 import StickerStrip from '@/components/journal/StickerStrip.vue'
 import { getSeasonalHint } from '@/config/seasonal'
 import { useBabyStatus } from '@/composables/useBabyStatus'
-import { useFeedingReminder } from "/@/composables/useFeedingReminder"
+import { useFeedingReminder } from '@/composables/useFeedingReminder'
 import { useHaptic } from '@/composables/useHaptic'
 
 const emit = defineEmits<{
@@ -264,6 +274,7 @@ const recordsStore = useRecordsStore()
 const alertsStore = useAlertsStore()
 const stickersStore = useStickersStore()
 const { quickRef } = useQuickRef()
+const { reminders: feedingReminder } = useFeedingReminder()
 
 const babyA = computed(() => babiesStore.babyA)
 const babyB = computed(() => babiesStore.babyB)
@@ -323,46 +334,11 @@ const compareBarB = computed(() => {
 
 const seasonalHint = computed(() => getSeasonalHint())
 
-/** 「该喂了」提醒 — 基于过去3天的喂养间隔推算预期下次喂奶时间（30秒刷新一次） */
-const feedingReminder = computed(() => {
-  const now = nowTick.value
-  const threeDaysAgo = now - 3 * 86400000
-  const reminders: { babyId: string; name: string; color: string; minutesAgo: number; avgInterval: number }[] = []
-
-  for (const baby of [babiesStore.babyA, babiesStore.babyB]) {
-    if (!baby) continue
-    const feedLogs = recordsStore.logs
-      .filter(l => l.babyId === baby.id && l.type === 'feeding' && l.createdAt >= threeDaysAgo)
-      .sort((a, b) => b.createdAt - a.createdAt)
-    if (feedLogs.length < 2) continue // 数据不足
-
-    const lastFeed = feedLogs[0].createdAt
-    const minutesSince = Math.floor((now - lastFeed) / 60000)
-
-    // 计算过去3天的平均喂奶间隔
-    let totalInterval = 0; let intervalCount = 0
-    for (let i = 0; i < feedLogs.length - 1; i++) {
-      const interval = (feedLogs[i].createdAt - feedLogs[i + 1].createdAt) / 60000
-      if (interval > 30 && interval < 480) { // 排除异常值：<30min 或 >8h
-        totalInterval += interval
-        intervalCount++
-      }
-    }
-    if (intervalCount === 0) continue
-    const avgInterval = Math.round(totalInterval / intervalCount)
-
-    // 超过平均间隔的80%就提醒
-    if (minutesSince >= avgInterval * 0.8) {
-      reminders.push({
-        babyId: baby.id,
-        name: baby.nickname || baby.name,
-        color: baby.birthOrder === 1 ? 'amber' : 'terracotta',
-        minutesAgo: minutesSince,
-        avgInterval,
-      })
-    }
-  }
-  return reminders
+/** 记录空窗提醒：上午9点后若今日无任何记录则温和提醒 */
+const showGapNudge = computed(() => {
+  if (todayLogCount.value > 0) return false
+  const h = new Date().getHours()
+  return h >= 9
 })
 
 const todaySummary = computed(() => {
@@ -565,6 +541,15 @@ const goRecord = () => emit('navigate', '/pages/record/index')
 .tc-label-a{color:var(--amber)}
 .tc-label-b{color:var(--terracotta)}
 .tc-sync{font-size:18rpx;color:var(--gold);font-family:var(--font-journal);padding:2rpx 10rpx;background:rgba(200,153,62,0.1);border-radius:8rpx}
+
+/* 记录空窗提醒 — 温和手帐便签 */
+.gap-nudge{display:flex;align-items:center;gap:12rpx;padding:16rpx 20rpx;margin-bottom:16rpx;background:linear-gradient(135deg,rgba(79,174,110,0.08),rgba(79,174,110,0.02));border-radius:12rpx;border:1.5rpx dashed rgba(79,174,110,0.25);position:relative;z-index:1;animation:cardFloatIn .5s var(--ease-page) both}
+.gap-nudge:active{transform:scale(.97);background:rgba(79,174,110,0.12)}
+.gn-emoji{font-size:36rpx;flex-shrink:0}
+.gn-body{flex:1;display:flex;flex-direction:column;gap:4rpx}
+.gn-title{font-family:var(--font-journal);font-size:26rpx;font-weight:600;color:var(--ink)}
+.gn-desc{font-size:22rpx;color:var(--ink-md)}
+.gn-arrow{font-size:28rpx;color:var(--mint);font-weight:700}
 
 /* 「该喂了」提醒 */
 .feed-reminder{display:flex;align-items:center;gap:8rpx;padding:12rpx 18rpx;margin-bottom:12rpx;background:linear-gradient(135deg,rgba(224,123,62,0.08),rgba(224,123,62,0.03));border-radius:12rpx;border:1.5rpx solid rgba(224,123,62,0.15);position:relative;z-index:1}

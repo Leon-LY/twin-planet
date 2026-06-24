@@ -50,6 +50,14 @@
       <text class="fr-text">{{ r.name }}距上次喂奶 {{ formatMinutes(r.minutesAgo) }}</text>
       <text class="fr-hint">（通常{{ r.avgInterval }}分钟）</text>
     </view>
+    <view class="gap-nudge" v-if="showGapNudge" @click="goRecord">
+      <text class="gn-emoji">📝</text>
+      <view class="gn-body">
+        <text class="gn-title">今天还没有记录</text>
+        <text class="gn-desc">点这里开始记录吧~</text>
+      </view>
+      <text class="gn-arrow">→</text>
+    </view>
     <view class="dad-snapshot" v-if="todaySummary"><text class="ds-text">{{ todaySummary }}</text></view>
     <view class="dad-actions">
       <button class="dad-duty-btn" @click="goDuty"><text class="dd-icon iconfont icon-clipboard"></text><text class="dd-label">值班清单</text></button>
@@ -182,6 +190,10 @@ const PILL_OPTIONS: Record<string, { emoji: string; label: string; key: string; 
 const { reminders: feedingReminder } = useFeedingReminder()
 function formatMinutes(m: number) { if (m < 60) return m + '分钟'; const h = Math.floor(m / 60); const r = m % 60; return r > 0 ? h + '小时' + r + '分钟' : h + '小时' }
 
+/** 记录空窗提醒：上午9点后若今日无任何记录则温和提醒 */
+const todayLogCount = computed(() => recordsStore.logs.filter(l => l.createdAt >= new Date().setHours(0,0,0,0)).length)
+const showGapNudge = computed(() => todayLogCount.value === 0 && new Date().getHours() >= 9)
+
 const todaySummary = computed(() => {
   const today = recordsStore.logs.filter(l => l.createdAt >= new Date().setHours(0,0,0,0))
   if (!today.length) return ''
@@ -301,5 +313,13 @@ const goDuty = () => emit('navigate', '/pages/duty/index')
 .fr-emoji{font-size:28rpx}
 .fr-text{font-weight:600}
 .fr-hint{color:var(--ink-md);font-size:20rpx}
+/* 记录空窗提醒 */
+.gap-nudge{display:flex;align-items:center;gap:12rpx;padding:16rpx 20rpx;margin-bottom:16rpx;background:linear-gradient(135deg,rgba(79,174,110,0.08),rgba(79,174,110,0.02));border-radius:12rpx;border:1.5rpx dashed rgba(79,174,110,0.25);animation:cardFloatIn .5s var(--ease-page) both}
+.gap-nudge:active{transform:scale(.97);background:rgba(79,174,110,0.12)}
+.gn-emoji{font-size:36rpx;flex-shrink:0}
+.gn-body{flex:1;display:flex;flex-direction:column;gap:4rpx}
+.gn-title{font-family:var(--font-journal);font-size:26rpx;font-weight:600;color:var(--ink)}
+.gn-desc{font-size:22rpx;color:var(--ink-md)}
+.gn-arrow{font-size:28rpx;color:var(--mint);font-weight:700}
 .ft-link{font-size:20rpx;color:var(--ink-lt)}.ft-link:active{color:var(--amber)}.ft-dot{font-size:20rpx;color:var(--ink-lt)}
 </style>

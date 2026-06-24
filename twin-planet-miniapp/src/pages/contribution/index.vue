@@ -144,7 +144,7 @@ onShareAppMessage(() => {
 </script>
 
 <style scoped>
-.contrib-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx calc(120rpx + env(safe-area-inset-bottom)); }
+.contrib-page { min-height: 100vh; background: var(--paper); background-image: radial-gradient(circle 180rpx at 80% 15%, rgba(200,153,62,0.07) 0%, transparent 70%), radial-gradient(circle 130rpx at 12% 65%, rgba(79,174,110,0.05) 0%, transparent 70%); padding: 32rpx 32rpx calc(120rpx + env(safe-area-inset-bottom)); }
 
 /* 头部 */
 .header-top { display: flex; align-items: center; justify-content: space-between; }

@@ -301,7 +301,7 @@ onShareAppMessage(() => ({
 </script>
 
 <style scoped>
-.handover-page { min-height: 100vh; background: var(--paper); padding: 40rpx 28rpx calc(120rpx + env(safe-area-inset-bottom)); }
+.handover-page { min-height: 100vh; background: var(--paper); background-image: radial-gradient(circle 180rpx at 90% 8%, rgba(192,133,82,0.07) 0%, transparent 70%), radial-gradient(circle 140rpx at 6% 60%, rgba(224,123,62,0.06) 0%, transparent 70%); padding: 40rpx 28rpx calc(120rpx + env(safe-area-inset-bottom)); }
 /* 使用全局 .page-header 页头模式 */
 
 .recorder-section { margin-bottom: 40rpx; }

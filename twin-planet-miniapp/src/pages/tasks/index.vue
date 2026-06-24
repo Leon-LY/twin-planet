@@ -86,6 +86,7 @@ import { ref, computed, onMounted } from 'vue'
 import { DAILY_TASKS, WEEKLY_TASKS, TASK_ACHIEVEMENTS } from '@/config/tasks'
 import { trackPageView } from '@/utils/analytics'
 import { createPersistence, PERSIST_KEYS } from '@/utils/persist'
+import { useStickerSync } from '@/composables/useStickerSync'
 
 interface TaskRecord {
   taskId: string
@@ -95,6 +96,7 @@ interface TaskRecord {
 
 const _p = createPersistence<TaskRecord[]>(PERSIST_KEYS.tasks)
 const records = ref<TaskRecord[]>(_p.load() ?? [])
+const { syncStickers } = useStickerSync()
 
 function saveRecords() {
   // 只保留最近 30 天的记录，避免无限增长
@@ -154,6 +156,7 @@ function toggleTask(taskId: string) {
     uni.vibrateShort?.({ type: 'light' })
   }
   saveRecords()
+  syncStickers() // 任务完成 → 贴纸联动
 }
 
 function toggleWeeklyTask(taskId: string) {
@@ -164,6 +167,7 @@ function toggleWeeklyTask(taskId: string) {
     uni.vibrateShort?.({ type: 'light' })
   }
   saveRecords()
+  syncStickers() // 每周任务完成 → 贴纸联动
 }
 
 // === 成就 ===

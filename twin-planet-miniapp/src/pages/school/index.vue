@@ -145,7 +145,7 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '入园助手' }) })
 </script>
 
 <style scoped>
-.school-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 100rpx; }
+.school-page { min-height: 100vh; background: var(--paper); background-image: radial-gradient(circle 180rpx at 85% 15%, rgba(200,153,62,0.07) 0%, transparent 70%), radial-gradient(circle 140rpx at 10% 60%, rgba(79,174,110,0.05) 0%, transparent 70%); padding: 32rpx 32rpx 100rpx; }
 
 .card-title { display: block; font-size: 28rpx; font-weight: 600; color: var(--twin-text); margin-bottom: 12rpx; }
 .card-sub { display: block; font-size: 22rpx; color: var(--twin-text-secondary); margin-bottom: 16rpx; margin-top: -8rpx; }

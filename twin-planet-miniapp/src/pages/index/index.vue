@@ -10,6 +10,25 @@
 
     <IndexDad v-else-if="isDad && !loading" @navigate="navigate" />
 
+    <!-- 新贴纸解锁汇总弹窗 -->
+    <view class="celebrate-overlay" v-if="showNewStickers" @click="showNewStickers = false">
+      <view class="celebrate-card new-sticker-card" @click.stop>
+        <text class="celebrate-emoji">🏷️</text>
+        <text class="celebrate-title">解锁了新贴纸！</text>
+        <text class="celebrate-desc">又有 {{ newStickerCards.length }} 张贴纸加入收藏册</text>
+        <view class="new-sticker-list">
+          <view v-for="s in newStickerCards" :key="s.label" class="ns-item">
+            <text class="ns-emoji">{{ s.emoji }}</text>
+            <text class="ns-label">{{ s.label }}</text>
+          </view>
+        </view>
+        <view class="ns-actions">
+          <button class="milestone-action-btn" @click="showNewStickers = false; navigate('/pages/stickers/index')">去看看 👀</button>
+          <button class="invite-decline" @click="showNewStickers = false">稍后再说</button>
+        </view>
+      </view>
+    </view>
+
     <IndexMom v-else-if="!loading"
       :showWelcome="showWelcome"
       :showCelebrate="showCelebrate"
@@ -58,7 +77,7 @@ const userStore = useUserStore()
 const babiesStore = useBabiesStore()
 const recordsStore = useRecordsStore()
 const stickersStore = useStickersStore()
-const { syncStickers } = useStickerSync()
+const { syncStickers, consumeNewStickers } = useStickerSync()
 
 const isGrandma = computed(() => userStore.isGrandmaMode)
 const isDad = computed(() => userStore.isDad && !userStore.isGrandmaMode)
@@ -111,6 +130,17 @@ function checkCelebrate() {
   } catch {}
 }
 function doMilestoneAction() { showCelebrate.value = false; uni.navigateTo({ url: '/pages/snapshot/index' }) }
+
+// ---- 新贴纸汇总弹窗 ----
+const showNewStickers = ref(false)
+const newStickerCards = ref<Array<{ label: string; emoji: string; rarity: string; collection: string }>>([])
+function checkNewStickers() {
+  const stickers = consumeNewStickers()
+  if (stickers.length > 0) {
+    newStickerCards.value = stickers
+    showNewStickers.value = true
+  }
+}
 
 // ---- 邀请 ----
 const inviteToken = ref('')
@@ -218,6 +248,7 @@ onMounted(() => {
     loading.value = false
     trackSessionStart(); trackPageView('index')
     syncStickers()
+    checkNewStickers()
     // 仅在有服务器 token 时同步和请求，避免 401 刷屏
     if (!userStore.isOffline) {
       initSync().catch(() => {})
@@ -243,4 +274,23 @@ onShow(() => {
 
 <style scoped>
 .page-root { min-height: 100vh; padding-bottom: calc(100rpx + env(safe-area-inset-bottom)); }
+
+/* 新贴纸汇总弹窗（复用 celebrate 样式，但在此页面内定义） */
+.celebrate-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(45,35,24,.45);display:flex;align-items:center;justify-content:center;z-index:999;animation:fadeIn .3s var(--ease-soft)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.celebrate-card{background:var(--paper);border-radius:var(--radius-lg);padding:48rpx 40rpx 40rpx;text-align:center;margin:0 48rpx;max-width:560rpx;box-shadow:0 16rpx 48rpx rgba(45,35,24,.15);animation:cornerFold .55s var(--ease-page) both}
+.celebrate-emoji{font-size:80rpx;display:block;margin-bottom:12rpx}
+.celebrate-title{display:block;font-family:var(--font-journal);font-size:40rpx;color:var(--ink);font-weight:700}
+.celebrate-desc{display:block;font-size:26rpx;color:var(--ink-md);margin-top:10rpx;line-height:1.5}
+.new-sticker-list{display:flex;flex-wrap:wrap;gap:10rpx;justify-content:center;margin-top:24rpx}
+.ns-item{display:flex;align-items:center;gap:6rpx;padding:8rpx 16rpx;background:var(--cream);border:1.5rpx solid var(--dot);border-radius:20rpx;font-size:22rpx;color:var(--ink)}
+.ns-emoji{font-size:28rpx}
+.ns-label{font-family:var(--font-journal)}
+.ns-actions{margin-top:28rpx;display:flex;flex-direction:column;gap:12rpx}
+.milestone-action-btn{width:100%;padding:22rpx 0;background:linear-gradient(180deg,rgba(255,255,255,0.16) 0%,transparent 55%,rgba(0,0,0,0.05) 100%),var(--amber);color:#FFF;border:none;border-radius:var(--radius-full);font-size:30rpx;font-weight:700;box-shadow:0 3rpx 0 rgba(192,104,52,0.5),0 4rpx 8rpx rgba(0,0,0,0.06),0 8rpx 20rpx rgba(224,123,62,0.2);transition:all .15s var(--ease-stamp)}
+.milestone-action-btn::after{border:none}
+.milestone-action-btn:active{transform:scale(.94);box-shadow:inset 0 2rpx 4rpx rgba(0,0,0,0.1),0 1rpx 0 rgba(192,104,52,0.4)}
+.invite-decline{width:100%;padding:16rpx 0;background:transparent;color:var(--ink-md);border:none;font-size:24rpx;transition:all .15s var(--ease-soft)}
+.invite-decline::after{border:none}
+.invite-decline:active{color:var(--ink);background:rgba(0,0,0,0.03);border-radius:var(--radius-sm)}
 </style>

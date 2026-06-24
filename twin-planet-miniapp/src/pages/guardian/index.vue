@@ -118,7 +118,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.guard-page { min-height: 100vh; background: var(--paper); position: relative; padding: 40rpx 28rpx calc(120rpx + env(safe-area-inset-bottom)); }
+.guard-page { min-height: 100vh; background: var(--paper); background-image: radial-gradient(circle 200rpx at 88% 12%, rgba(200,153,62,0.08) 0%, transparent 70%), radial-gradient(circle 160rpx at 8% 70%, rgba(79,174,110,0.06) 0%, transparent 70%), radial-gradient(circle 120rpx at 50% 40%, rgba(224,123,62,0.05) 0%, transparent 70%); position: relative; padding: 40rpx 28rpx calc(120rpx + env(safe-area-inset-bottom)); }
 
 .page-header { margin-bottom: 32rpx; position: relative; z-index: 1; }
 .page-title { display: block; font-family: var(--font-journal); font-size: var(--font-title); color: var(--ink); }

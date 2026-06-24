@@ -163,7 +163,7 @@ onMounted(() => { uni.setNavigationBarTitle({ title: '能力观察' }) })
 </script>
 
 <style scoped>
-.ms-page { min-height: 100vh; background: var(--twin-bg); padding: 32rpx 32rpx 80rpx; }
+.ms-page { min-height: 100vh; background: var(--paper); background-image: radial-gradient(circle 180rpx at 85% 20%, rgba(224,123,62,0.06) 0%, transparent 70%), radial-gradient(circle 130rpx at 8% 55%, rgba(200,153,62,0.05) 0%, transparent 70%); padding: 32rpx 32rpx 80rpx; }
 
 .baby-tabs { display: flex; gap: 16rpx; margin-bottom: 24rpx; }
 .baby-tab { flex: 1; text-align: center; padding: 18rpx 0; background: linear-gradient(180deg,rgba(255,255,255,0.5) 0%,var(--twin-card-bg) 100%); border: 4rpx solid var(--twin-border); border-radius: 16rpx; font-size: 28rpx; color: var(--twin-text-tertiary); box-shadow:0 2rpx 6rpx rgba(0,0,0,.05),0 1rpx 0 rgba(255,255,255,.8); transition:all .15s var(--ease-stamp); }
