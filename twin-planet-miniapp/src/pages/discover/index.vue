@@ -288,6 +288,7 @@ onShareAppMessage(() => ({
   min-height: 100vh;
   padding: 32rpx 32rpx calc(100rpx + env(safe-area-inset-bottom));
   position: relative;
+  background: #ff0000 !important;
 }
 /* 功能卡片交错入场 */
 .feature-card:nth-child(1) { animation: slideInRight 0.4s var(--ease-page) 0.04s both; }
