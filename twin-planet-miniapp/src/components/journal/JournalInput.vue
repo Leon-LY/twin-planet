@@ -4,7 +4,6 @@
     class="input-lined j-input"
     v-model="innerValue"
     :placeholder="placeholder"
-    @input="onInput"
     :maxlength="maxlength > 0 ? maxlength : -1"
   />
   <textarea
@@ -12,7 +11,6 @@
     class="input-field j-input"
     v-model="innerValue"
     :placeholder="placeholder"
-    @input="onInput"
     :maxlength="maxlength > 0 ? maxlength : -1"
   />
   <input
@@ -49,15 +47,15 @@ const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
 
 const innerValue = ref(props.modelValue)
 
+// 父 → 子同步
 watch(() => props.modelValue, v => {
   if (innerValue.value !== v) innerValue.value = v || ''
 })
 
-function onInput(e: any) {
-  // uni-app 的 @input 事件：e.detail.value 是输入文本
-  const val = (e && e.detail && typeof e.detail.value === 'string') ? e.detail.value : innerValue.value
-  emit('update:modelValue', val)
-}
+// 子 → 父同步：watch innerValue 而非依赖 @input 事件（uni-app 编译会丢弃部分 @input）
+watch(innerValue, v => {
+  emit('update:modelValue', v)
+})
 </script>
 
 <style scoped>
