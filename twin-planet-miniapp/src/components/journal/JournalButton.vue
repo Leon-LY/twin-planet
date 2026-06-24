@@ -47,8 +47,8 @@ const btnClass = computed(() => ({
 </script>
 
 <style scoped>
-/* 重置小程序原生 button 默认样式 */
-button {
+/* 重置小程序原生 button 默认样式 — 用 class 选择器（组件 WXSS 禁标签选择器） */
+.j-btn {
   padding: 0;
   margin: 0;
   border: none;
@@ -57,12 +57,7 @@ button {
   font-size: inherit;
   color: inherit;
   border-radius: 0;
-}
-button::after {
-  border: none;
-}
 
-.j-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -71,6 +66,7 @@ button::after {
   width: 100%;
   box-sizing: border-box;
 }
+.j-btn::after { border: none; }
 .j-btn-icon { font-size: 1.1em; }
 
 /* ── 主按钮：陶土色 ── */
