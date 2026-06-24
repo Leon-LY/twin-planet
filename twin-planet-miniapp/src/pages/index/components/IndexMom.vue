@@ -185,7 +185,7 @@
       <view v-for="(action, i) in compactQuickActions" :key="action.type"
         class="q-chip" :class="{ 'q-primary': i === 0, 'chip-stamped': stampedType === action.type }"
         @click="dualRecord(action.type)">
-        <text :class="['iconfont', action.icon, 'icon-sm']"></text> {{ action.label }}
+        <text class="iconfont icon-sm" :class="action.icon"></text> {{ action.label }}
       </view>
     </view>
 
