@@ -1,7 +1,7 @@
 <!-- 双宝记 v5 · 首页（薄外壳，三角色组件分发） -->
 <template>
-  <canvas v-if="babyA && babyB" canvas-id="index-share-canvas" style="position:fixed;left:-9999px;top:-9999px;width:345px;height:480px"></canvas>
   <view :class="[themeClass, { 'font-large': isGrandma }]">
+    <canvas v-if="babyA && babyB" canvas-id="index-share-canvas" style="position:fixed;left:-9999px;top:-9999px;width:345px;height:480px"></canvas>
     <template v-if="loading">
       <view class="page-shell"><TwinSkeleton type="brand" /><TwinSkeleton type="twins" /></view>
     </template>

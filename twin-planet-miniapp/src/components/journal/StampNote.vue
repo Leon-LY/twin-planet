@@ -54,7 +54,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useRecordsStore } from '@/stores/records'
-import { useBabiesStore } from '@/stores/babies'
 import { useHaptic } from '@/composables/useHaptic'
 
 interface Baby {
@@ -76,7 +75,6 @@ const emit = defineEmits<{
 }>()
 
 const recordsStore = useRecordsStore()
-const babiesStore = useBabiesStore()
 const haptic = useHaptic()
 
 const STAMPS = [
