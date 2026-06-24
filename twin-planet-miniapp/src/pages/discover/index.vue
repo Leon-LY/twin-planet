@@ -293,17 +293,15 @@ onShareAppMessage(() => ({
 }
 /* 水彩斑点 — 页面装饰 */
 .discover-spot-a {
-  position: absolute; top: 60rpx; right: -60rpx;
-  width: 300rpx; height: 280rpx; z-index: 0; pointer-events: none;
-  background: radial-gradient(ellipse 55% 60% at 40% 45%, rgba(224,123,62,0.12) 0%, transparent 65%),
-              radial-gradient(ellipse 40% 48% at 55% 38%, rgba(224,123,62,0.08) 0%, transparent 55%);
+  position: absolute; top: 120rpx; right: 40rpx;
+  width: 200rpx; height: 200rpx; border-radius: 50%; z-index: 0; pointer-events: none;
+  background: rgba(224,123,62,0.2);
   animation: watercolorBreathe 8s var(--ease-soft) infinite;
 }
 .discover-spot-b {
-  position: absolute; bottom: 300rpx; left: -50rpx;
-  width: 240rpx; height: 220rpx; z-index: 0; pointer-events: none;
-  background: radial-gradient(ellipse 50% 55% at 45% 40%, rgba(192,133,82,0.1) 0%, transparent 65%),
-              radial-gradient(ellipse 38% 45% at 50% 38%, rgba(192,133,82,0.06) 0%, transparent 55%);
+  position: absolute; bottom: 200rpx; left: 40rpx;
+  width: 160rpx; height: 160rpx; border-radius: 50%; z-index: 0; pointer-events: none;
+  background: rgba(192,133,82,0.18);
   animation: watercolorBreathe 8s var(--ease-soft) infinite reverse;
 }
 
