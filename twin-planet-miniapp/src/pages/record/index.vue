@@ -76,12 +76,11 @@
             <view class="card-tape" :class="i===0?'tape-amber':'tape-terracotta'"></view>
             <!-- 头像 -->
             <image
-              v-if="babyAvatar(i)"
-              :src="babyAvatar(i)"
+              :src="i===0 ? '/static/avatars/baby-a-amber.png' : '/static/avatars/baby-b-terracotta.png'"
               class="card-avatar"
               mode="aspectFill"
+              @error="e => e.target.style.display='none'"
             />
-            <text v-else class="card-avatar-emoji">{{ i===0?'🦊':'🦊' }}</text>
             <!-- 名字 -->
             <text class="card-name">{{ b.nickname || b.name }}</text>
             <!-- 今日摘要 -->
@@ -184,11 +183,6 @@ const haptic = useHaptic()
 const twins = computed(() => [babiesStore.babyA, babiesStore.babyB].filter((b): b is NonNullable<typeof b> => !!b))
 const babyA = computed(() => babiesStore.babyA)
 const babyB = computed(() => babiesStore.babyB)
-
-function babyAvatar(i: number) {
-  const b = i===0 ? babyA.value : babyB.value
-  return b?.avatar || ''
-}
 
 function todayCount(babyId: string, type: RecordType): number {
   const t0 = new Date().setHours(0,0,0,0)
@@ -471,43 +465,71 @@ onMounted(() => {
 .dt-all-stop { margin-top:8rpx; padding:14rpx 48rpx; background:var(--twin-danger); color:var(--cream); border-radius:24rpx; font-size:26rpx; }
 
 /* === 双宝卡片 === */
-.baby-cards { display:flex; gap:16rpx; margin-bottom:24rpx; }
+.baby-cards { display:flex; gap:16rpx; margin-bottom:20rpx; }
 .baby-card {
   flex:1; position:relative; overflow:hidden;
   display:flex; flex-direction:column; align-items:center;
-  padding: 40rpx 16rpx 24rpx;
-  border-radius: 24rpx;
-  box-shadow: var(--shadow-layer-1);
-  transition: all 0.2s var(--ease-stamp);
+  padding: 38rpx 16rpx 20rpx;
+  /* 手撕纸不规则圆角 */
+  border-radius: 28rpx 8rpx 28rpx 12rpx;
+  box-shadow: var(--shadow-layer-2);
+  transition: all 0.25s var(--ease-stamp);
+  /* 水彩渐变底 */
+  background:
+    radial-gradient(ellipse 60% 50% at 35% 30%, var(--amber-lt) 0%, transparent 55%),
+    var(--cream);
 }
-.baby-card.amber { background: linear-gradient(165deg, var(--amber-lt), var(--cream) 60%); border: 2rpx solid rgba(224,123,62,0.2); }
-.baby-card.terracotta { background: linear-gradient(165deg, var(--terracotta-lt), var(--cream) 60%); border: 2rpx solid rgba(192,133,82,0.2); }
+.baby-card:nth-child(2) {
+  border-radius: 8rpx 28rpx 12rpx 28rpx;
+  background:
+    radial-gradient(ellipse 60% 50% at 65% 30%, var(--terracotta-lt) 0%, transparent 55%),
+    var(--cream);
+}
+.baby-card.amber { border: 2rpx solid rgba(224,123,62,0.2); }
+.baby-card.terracotta { border: 2rpx solid rgba(192,133,82,0.2); }
 
-/* 卡片胶带 */
+/* 卡片胶带 — 和纸撕裂边感 */
 .card-tape {
-  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-  width: 72rpx; height: 20rpx; border-radius: 6rpx 6rpx 2rpx 2rpx;
+  position: absolute; top: -6rpx; left: 50%; transform: translateX(-50%) rotate(-2deg);
+  width: 68rpx; height: 18rpx;
+  border-radius: 4rpx 1rpx 5rpx 2rpx;
+  box-shadow: 0 1rpx 2rpx rgba(0,0,0,0.06);
 }
-.card-tape.tape-amber { background: rgba(224,123,62,0.3); }
-.card-tape.tape-terracotta { background: rgba(192,133,82,0.3); }
+.card-tape.tape-amber { background: linear-gradient(175deg, rgba(224,123,62,0.35), rgba(224,123,62,0.15)); }
+.card-tape.tape-terracotta { background: linear-gradient(175deg, rgba(192,133,82,0.35), rgba(192,133,82,0.15)); transform: translateX(-50%) rotate(1.5deg); }
 
-/* 选中印章后的卡片状态 */
-.baby-card.stamp-target { border-style: solid; }
-.baby-card.stamp-target.amber { border-color: var(--amber); box-shadow: 0 0 0 4rpx rgba(224,123,62,0.12), var(--shadow-layer-2); }
-.baby-card.stamp-target.terracotta { border-color: var(--terracotta); box-shadow: 0 0 0 4rpx rgba(192,133,82,0.12), var(--shadow-layer-2); }
+/* 选中印章后的卡片状态 — 暖色光晕 */
+.baby-card.stamp-target { border-style: solid; cursor: pointer; }
+.baby-card.stamp-target.amber { border-color: var(--amber); box-shadow: 0 0 0 6rpx rgba(224,123,62,0.1), var(--shadow-layer-2); }
+.baby-card.stamp-target.terracotta { border-color: var(--terracotta); box-shadow: 0 0 0 6rpx rgba(192,133,82,0.1), var(--shadow-layer-2); }
 
 /* 盖下瞬间 */
-.baby-card.stamp-hit { transform: scale(0.96); }
+.baby-card.stamp-hit { transform: scale(0.94); }
 .stamp-effect { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:10; pointer-events:none; animation: stampDown 0.5s var(--ease-stamp) both; }
-.stamp-effect-icon { font-size: 120rpx; opacity: 0.5; }
+.stamp-effect-icon { font-size: 100rpx; }
 
-.card-avatar { width: 72rpx; height: 72rpx; border-radius: 50%; margin-bottom: 10rpx; border: 3rpx solid var(--cream); box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.08); }
-.card-avatar-emoji { font-size: 48rpx; margin-bottom: 10rpx; }
-.card-name { font-family: var(--font-journal); font-size: var(--font-card); color: var(--ink); font-weight: 600; margin-bottom: 8rpx; }
-.card-summary { display:flex; gap:10rpx; flex-wrap:wrap; justify-content:center; }
-.cs-item { font-size:22rpx; color:var(--ink-md); background:var(--paper); padding:2rpx 10rpx; border-radius:8rpx; }
-.stamp-hint { margin-top:12rpx; display:flex; align-items:center; gap:6rpx; font-size:22rpx; color:var(--amber); font-weight:500; animation: subtleFloat 2s var(--ease-soft) infinite; }
-.stamp-hint-icon { font-size:28rpx; }
+.card-avatar {
+  width: 72rpx; height: 72rpx; border-radius: 50%; margin-bottom: 8rpx;
+  border: 3rpx solid var(--cream);
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.08);
+}
+.card-name {
+  font-family: var(--font-journal);
+  font-size: var(--font-card); color: var(--ink); font-weight: 600;
+  margin-bottom: 6rpx;
+}
+.card-summary { display:flex; gap:8rpx; flex-wrap:wrap; justify-content:center; margin-top:4rpx; }
+.cs-item {
+  font-size:20rpx; color:var(--ink-md);
+  background:var(--paper); padding:2rpx 8rpx; border-radius:6rpx;
+  font-family: var(--font-journal);
+}
+.stamp-hint {
+  margin-top:10rpx; display:flex; align-items:center; gap:6rpx;
+  font-size:20rpx; color:var(--amber); font-weight:500;
+  animation: subtleFloat 2s var(--ease-soft) infinite;
+}
+.stamp-hint-icon { font-size:24rpx; }
 
 /* === 选中印章提示条 === */
 .stamp-action-bar {
@@ -520,37 +542,122 @@ onMounted(() => {
 
 /* === 印章台 === */
 .stamp-tray {
-  display: flex; gap: 6rpx; justify-content: center;
-  padding: 16rpx 8rpx;
-  background: linear-gradient(180deg, var(--cream), var(--paper));
-  border-radius: 20rpx;
+  display: flex; gap: 4rpx; justify-content: center;
+  padding: 12rpx 6rpx 8rpx;
+  background: linear-gradient(180deg, rgba(0,0,0,0.02), transparent 30%, var(--paper));
+  border-radius: 16rpx;
   border: 1.5rpx solid var(--dot);
   box-shadow: var(--shadow-recess);
   margin-bottom: 16rpx;
 }
 .stamp-item {
-  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4rpx;
-  padding: 12rpx 4rpx; border-radius: 14rpx;
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6rpx;
+  padding: 8rpx 2rpx 6rpx; border-radius: 12rpx;
   transition: all 0.2s var(--ease-stamp);
+  position: relative;
 }
+.stamp-item:active { transform: scale(0.94); }
 .stamp-item.selected {
-  transform: scale(1.08);
-  background: var(--amber-lt);
-  box-shadow: 0 0 0 3rpx rgba(224,123,62,0.2), 0 4rpx 12rpx rgba(224,123,62,0.15);
+  transform: translateY(-8rpx) scale(1.06);
+  background: transparent;
 }
-.stamp-item.dimmed { opacity: 0.45; transform: scale(0.94); }
+.stamp-item.dimmed { opacity: 0.4; transform: scale(0.92); }
+
+/* 印章本体 — 手绘不规则感 */
 .stamp-body {
-  width: 64rpx; height: 64rpx; border-radius: 50%;
-  background: var(--cream);
+  width: 68rpx; height: 68rpx;
+  /* 非对称圆角：手刻印章的不规则边缘 */
+  border-radius: 46% 54% 52% 48% / 48% 50% 54% 52%;
+  background:
+    /* 水彩晕染层 */
+    radial-gradient(ellipse 55% 60% at 38% 42%, rgba(224,123,62,0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 48% at 55% 38%, rgba(224,123,62,0.04) 0%, transparent 50%),
+    /* 纸面底色 */
+    var(--cream);
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
-  border: 2rpx solid var(--dot);
+  /* 印章厚度：底层深色 + 投影 */
+  box-shadow:
+    0 2rpx 0 rgba(160,110,70,0.3),
+    0 3rpx 8rpx rgba(0,0,0,0.08),
+    0 1rpx 0 rgba(255,255,255,0.6) inset;
+  position: relative;
+  /* 微旋转：手工印章不会完全对齐 */
+  transform: rotate(-1deg);
+  transition: all 0.25s var(--ease-stamp);
 }
+/* 印章木质纹理 — 细微横纹 */
+.stamp-body::before {
+  content: '';
+  position: absolute; inset: 4rpx; border-radius: inherit; z-index: 0; pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 3rpx, rgba(0,0,0,0.015) 3rpx, rgba(0,0,0,0.015) 4rpx);
+}
+/* 印章墨迹 — 边缘不规则颜色积累 */
+.stamp-body::after {
+  content: '';
+  position: absolute; inset: -1rpx; border-radius: inherit; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(ellipse 30% 50% at 15% 40%, rgba(224,123,62,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 25% 45% at 80% 55%, rgba(224,123,62,0.06) 0%, transparent 55%);
+  opacity: 0.6;
+}
+
+/* 各印章颜色主题 */
+.stamp-item:nth-child(1) .stamp-body { /* 喂奶 — amber */
+  --stamp-ink: rgba(224,123,62,0.15);
+  box-shadow: 0 2rpx 0 rgba(160,110,70,0.3), 0 3rpx 8rpx rgba(0,0,0,0.08), 0 1rpx 0 rgba(255,255,255,0.6) inset;
+}
+.stamp-item:nth-child(2) .stamp-body { /* 哄睡 — ink */
+  background:
+    radial-gradient(ellipse 50% 55% at 40% 45%, rgba(45,35,24,0.04) 0%, transparent 55%),
+    var(--cream);
+  box-shadow: 0 2rpx 0 rgba(60,50,40,0.3), 0 3rpx 8rpx rgba(0,0,0,0.06);
+  transform: rotate(1.5deg);
+}
+.stamp-item:nth-child(3) .stamp-body { /* 尿布 — terracotta */
+  background:
+    radial-gradient(ellipse 55% 60% at 44% 40%, rgba(192,133,82,0.06) 0%, transparent 55%),
+    var(--cream);
+  box-shadow: 0 2rpx 0 rgba(150,100,65,0.3), 0 3rpx 8rpx rgba(0,0,0,0.06);
+  transform: rotate(-2deg);
+}
+.stamp-item:nth-child(4) .stamp-body { /* 体温 — mint */
+  background:
+    radial-gradient(ellipse 50% 55% at 42% 45%, rgba(79,174,110,0.05) 0%, transparent 55%),
+    var(--cream);
+  box-shadow: 0 2rpx 0 rgba(70,140,95,0.3), 0 3rpx 8rpx rgba(0,0,0,0.06);
+  transform: rotate(0.8deg);
+}
+.stamp-item:nth-child(5) .stamp-body { /* 用药 — gold */
+  background:
+    radial-gradient(ellipse 55% 60% at 40% 43%, rgba(200,153,62,0.06) 0%, transparent 55%),
+    var(--cream);
+  box-shadow: 0 2rpx 0 rgba(170,130,50,0.3), 0 3rpx 8rpx rgba(0,0,0,0.06);
+  transform: rotate(-1.2deg);
+}
+.stamp-item:nth-child(6) .stamp-body { /* 洗澡 — 暖灰 */
+  background:
+    radial-gradient(ellipse 50% 55% at 45% 40%, rgba(156,142,124,0.05) 0%, transparent 55%),
+    var(--cream);
+  box-shadow: 0 2rpx 0 rgba(120,110,100,0.3), 0 3rpx 8rpx rgba(0,0,0,0.06);
+  transform: rotate(1.8deg);
+}
+
+/* 选中态印章 */
 .stamp-item.selected .stamp-body {
-  border-color: var(--amber);
-  box-shadow: 0 4rpx 16rpx rgba(224,123,62,0.2);
+  box-shadow:
+    0 0 0 3rpx rgba(224,123,62,0.2),
+    0 4rpx 20rpx rgba(224,123,62,0.25),
+    0 2rpx 0 rgba(160,110,70,0.4);
+  transform: translateY(-2rpx) rotate(0deg);
 }
-.stamp-emoji { font-size: 32rpx; }
+.stamp-emoji {
+  font-size: 30rpx;
+  position: relative; z-index: 1;
+  /* emoji 模拟印章墨迹不均匀感 */
+  opacity: 0.75;
+}
+.stamp-item.selected .stamp-emoji { opacity: 1; }
 .stamp-label { font-size: 20rpx; color: var(--ink-md); font-weight: 500; }
 .stamp-item.selected .stamp-label { color: var(--amber); font-weight: 700; }
 
