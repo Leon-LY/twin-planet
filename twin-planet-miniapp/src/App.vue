@@ -1283,6 +1283,66 @@ page {
   50%     { opacity: 0.4; transform: scale(0.65); }
 }
 
+/* ── v7 新增：水彩呼吸 — 背景水彩斑点缓慢脉动 ── */
+@keyframes watercolorBreathe {
+  0%,100% { opacity: 0.65; transform: scale(1) rotate(0deg); }
+  25%     { opacity: 0.85; transform: scale(1.04) rotate(0.5deg); }
+  50%     { opacity: 0.7;  transform: scale(1.02) rotate(-0.3deg); }
+  75%     { opacity: 0.9;  transform: scale(1.05) rotate(0.2deg); }
+}
+
+/* ── v7 新增：柔和漂浮 — 装饰元素缓慢升降 ── */
+@keyframes subtleFloat {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-6rpx); }
+}
+
+/* ── v7 新增：按压反馈 — 快速压入 + 弹回 ── */
+@keyframes pressIn {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(0.92); }
+  60%  { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+/* ── v7 新增：水平扫入 — 列表项依次从右进入 ── */
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(16rpx); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── v7 新增：淡入放大 — 焦点元素温和登场 ── */
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ═══════════════════════════════════════════
+   v7 动效工具类 · Animation Utility Classes
+   ═══════════════════════════════════════════ */
+
+/* 水彩呼吸 — 给背景水彩斑点用 */
+.breathe-wash { animation: watercolorBreathe 8s var(--ease-soft) infinite; }
+
+/* 柔和漂浮 — 给装饰元素用 */
+.float-gentle { animation: subtleFloat 4s var(--ease-soft) infinite; }
+
+/* 统一按压反馈 — 替代手写 :active 样式 */
+.press-in:active { animation: pressIn 0.25s var(--ease-stamp) both; }
+
+/* 列表交错入场 — 父元素添加此类，子元素自动错位 */
+.stagger-list > *:nth-child(1) { animation: slideInRight 0.4s var(--ease-page) 0.04s both; }
+.stagger-list > *:nth-child(2) { animation: slideInRight 0.4s var(--ease-page) 0.10s both; }
+.stagger-list > *:nth-child(3) { animation: slideInRight 0.4s var(--ease-page) 0.16s both; }
+.stagger-list > *:nth-child(4) { animation: slideInRight 0.4s var(--ease-page) 0.22s both; }
+.stagger-list > *:nth-child(5) { animation: slideInRight 0.4s var(--ease-page) 0.28s both; }
+.stagger-list > *:nth-child(6) { animation: slideInRight 0.4s var(--ease-page) 0.34s both; }
+.stagger-list > *:nth-child(7) { animation: slideInRight 0.4s var(--ease-page) 0.40s both; }
+.stagger-list > *:nth-child(8) { animation: slideInRight 0.4s var(--ease-page) 0.46s both; }
+
+/* 淡入放大 — 焦点卡片入场 */
+.enter-scale { animation: fadeInScale 0.5s var(--ease-page) both; }
+
 /* 纸页标签 — 替代emoji的小书签标记 */
 .page-tab {
   display: inline-flex;

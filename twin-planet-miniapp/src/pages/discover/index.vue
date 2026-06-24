@@ -46,7 +46,7 @@
 
     <!-- 功能入口（手帐贴纸风格） -->
     <view class="section-label reveal-2">功能入口</view>
-    <view class="feature-grid">
+    <view class="feature-grid stagger-list">
       <view
         v-for="(f, i) in features"
         :key="f.key"
