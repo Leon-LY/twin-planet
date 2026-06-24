@@ -3,7 +3,7 @@
     :class="btnClass"
     :loading="loading"
     :disabled="disabled"
-    @click="$emit('click', $event)"
+    @tap="handleTap"
     class="j-btn"
   >
     <text v-if="icon" class="j-btn-icon iconfont" :class="icon"></text>
@@ -26,7 +26,12 @@ const props = withDefaults(defineProps<{
   size: 'md',
 })
 
-defineEmits<{ click: [event: any] }>()
+const emit = defineEmits<{ click: [] }>()
+
+function handleTap() {
+  if (props.disabled || props.loading) return
+  emit('click')
+}
 
 const btnClass = computed(() => ({
   'btn-primary': props.variant === 'primary',
