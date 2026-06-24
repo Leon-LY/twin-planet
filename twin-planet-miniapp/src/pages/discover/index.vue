@@ -147,6 +147,8 @@ const userStore = useUserStore()
 const recordsStore = useRecordsStore()
 const stickersStore = useStickersStore()
 const babiesStore = useBabiesStore()
+const babyA = computed(() => babiesStore.babyA)
+const babyB = computed(() => babiesStore.babyB)
 
 interface FeatureItem {
   key: string
