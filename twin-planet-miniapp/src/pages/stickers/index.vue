@@ -203,16 +203,11 @@ onShareAppMessage(() => ({
 .stickers-page {
   min-height: 100vh;
   background: var(--paper);
+  background-image:
+    radial-gradient(circle 180rpx at 85% 18%, rgba(200,153,62,0.09) 0%, transparent 70%),
+    radial-gradient(circle 140rpx at 10% 55%, rgba(79,174,110,0.07) 0%, transparent 70%);
   padding: 40rpx 28rpx calc(100rpx + env(safe-area-inset-bottom));
   position: relative;
-}
-.stickers-page::before {
-  content: '';
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  z-index: 999; pointer-events: none;
-  background:
-    radial-gradient(circle 160rpx at 80% 20%, rgba(200,153,62,0.1) 0%, transparent 70%),
-    radial-gradient(circle 120rpx at 10% 60%, rgba(79,174,110,0.08) 0%, transparent 70%);
 }
 .page-header { margin-bottom: 24rpx; }
 .page-title { display: block; font-family: var(--font-journal); font-size: var(--font-title); color: var(--ink); }

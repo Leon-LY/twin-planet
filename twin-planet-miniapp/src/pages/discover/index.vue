@@ -301,15 +301,6 @@ onShareAppMessage(() => ({
 }
 /* 第一张卡片无延迟（已通过内联 style 控制） */
 
-/* 水彩斑点 — 页面 ::before 确保在内容之上 */
-.discover-page::before {
-  content: '';
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  z-index: 999; pointer-events: none;
-  background:
-    radial-gradient(circle 180rpx at 85% 15%, rgba(224,123,62,0.12) 0%, transparent 70%),
-    radial-gradient(circle 140rpx at 15% 75%, rgba(192,133,82,0.1) 0%, transparent 70%);
-}
 
 /* === 周报卡片 === */
 .weekly-card {
